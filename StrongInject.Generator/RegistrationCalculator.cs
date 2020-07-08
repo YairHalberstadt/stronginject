@@ -8,53 +8,67 @@ using System.Threading;
 
 namespace StrongInject.Generator
 {
-    internal static class RegistrationCalculator
+    internal class RegistrationCalculator
     {
-        public static Dictionary<ITypeSymbol, Registration> CalculateRegistrations(
-            INamedTypeSymbol containerOrModule,
+        public RegistrationCalculator(
             Compilation compilation,
             Action<Diagnostic> reportDiagnostic,
             CancellationToken cancellationToken)
         {
-            var registrationAttributeType = compilation.GetType(typeof(RegistrationAttribute));
-            var moduleRegistrationAttributeType = compilation.GetType(typeof(ModuleRegistrationAttribute));
-            var iFactoryType = compilation.GetType(typeof(IFactory<>));
-            var iRequiresInitializationType = compilation.GetType(typeof(IRequiresInitialization));
-            if (registrationAttributeType is null || moduleRegistrationAttributeType is null || iFactoryType is null || iRequiresInitializationType is null)
-                return new Dictionary<ITypeSymbol, Registration>(); //ToDo Report Diagnostic
-
-            return new Dictionary<ITypeSymbol, Registration>(
-                CalculateRegistrations(
-                    containerOrModule,
-                    compilation,
-                    reportDiagnostic,
-                    registrationAttributeType,
-                    moduleRegistrationAttributeType,
-                    iFactoryType,
-                    iRequiresInitializationType,
-                    cancellationToken));
+            _reportDiagnostic = reportDiagnostic;
+            _cancellationToken = cancellationToken;
+            _registrationAttributeType = compilation.GetType(typeof(RegistrationAttribute))!;
+            _moduleRegistrationAttributeType = compilation.GetType(typeof(ModuleRegistrationAttribute))!;
+            _iFactoryType = compilation.GetType(typeof(IFactory<>))!;
+            _iRequiresInitializationType = compilation.GetType(typeof(IRequiresInitialization))!;
+            if (_registrationAttributeType is null || _moduleRegistrationAttributeType is null || _iFactoryType is null || _iRequiresInitializationType is null)
+            {
+                _valid = false;
+                //ToDo Report Diagnostic
+            }
+            else
+            {
+                _valid = true;
+            }
         }
 
-        private static IEnumerable<KeyValuePair<ITypeSymbol, Registration>> CalculateRegistrations(
-            INamedTypeSymbol containerOrModule,
-            Compilation compilation,
-            Action<Diagnostic> reportDiagnostic,
-            INamedTypeSymbol registrationAttributeType, 
-            INamedTypeSymbol moduleRegistrationAttributeType,
-            INamedTypeSymbol iFactoryType,
-            INamedTypeSymbol iRequiresInitializationType,
-            CancellationToken cancellationToken)
+        private Dictionary<INamedTypeSymbol, Dictionary<ITypeSymbol, Registration>> _registrations = new();
+        private INamedTypeSymbol _registrationAttributeType;
+        private INamedTypeSymbol _moduleRegistrationAttributeType;
+        private INamedTypeSymbol _iFactoryType;
+        private INamedTypeSymbol _iRequiresInitializationType;
+        private readonly Action<Diagnostic> _reportDiagnostic;
+        private readonly CancellationToken _cancellationToken;
+        private bool _valid;
+
+        public IReadOnlyDictionary<ITypeSymbol, Registration> GetRegistrations(INamedTypeSymbol module)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (!_valid)
+            {
+                return ImmutableDictionary<ITypeSymbol, Registration>.Empty;
+            }
 
-            var attributes = containerOrModule.GetAttributes();
+            if (!_registrations.TryGetValue(module, out var registrations))
+            {
+                registrations = CalculateRegistrations(module);
+                _registrations[module] = registrations;
+            }
+            return registrations;
+        }
 
-            var directRegistrations = CalculateDirectRegistrations(attributes, reportDiagnostic, registrationAttributeType, iFactoryType, iRequiresInitializationType, cancellationToken);
+        private Dictionary<ITypeSymbol, Registration> CalculateRegistrations(
+            INamedTypeSymbol container)
+        {
+            _cancellationToken.ThrowIfCancellationRequested();
+
+            var attributes = container.GetAttributes();
+
+            var directRegistrations = CalculateDirectRegistrations(attributes);
 
             var moduleRegistrations = new List<(AttributeData, Dictionary<ITypeSymbol, Registration> registrations)>();
-            foreach (var moduleRegistrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(moduleRegistrationAttributeType, SymbolEqualityComparer.Default) ?? false))
+            foreach (var moduleRegistrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(_moduleRegistrationAttributeType, SymbolEqualityComparer.Default) ?? false))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 var moduleConstant = moduleRegistrationAttribute.ConstructorArguments.FirstOrDefault();
                 if (moduleConstant.Kind != TypedConstantKind.Type)
                 {
@@ -64,35 +78,27 @@ namespace StrongInject.Generator
                 var moduleType = (INamedTypeSymbol)moduleConstant.Value!;
 
                 var exclusionListConstants = moduleRegistrationAttribute.ConstructorArguments.FirstOrDefault(x => x.Kind == TypedConstantKind.Array).Values;
-                var exclusionList = exclusionListConstants.IsDefault 
+                var exclusionList = exclusionListConstants.IsDefault
                     ? new HashSet<INamedTypeSymbol>()
-                    : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default); 
+                    : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 
-                var registrations = CalculateRegistrations(
-                    moduleType,
-                    compilation,
-                    reportDiagnostic,
-                    registrationAttributeType,
-                    moduleRegistrationAttributeType,
-                    iFactoryType,
-                    iRequiresInitializationType,
-                    cancellationToken);
+                var registrations = GetRegistrations(moduleType);
 
                 var thisModuleRegistrations = new Dictionary<ITypeSymbol, Registration>();
-                foreach(var (type, registration) in registrations)
+                foreach (var (type, registration) in registrations)
                 {
                     if (exclusionList.Contains(type))
                         continue;
                     if (directRegistrations.ContainsKey(type))
                         continue;
                     var use = true;
-                    foreach(var (otherModuleRegistrationAttribute, otherModuleRegistrations) in moduleRegistrations)
+                    foreach (var (otherModuleRegistrationAttribute, otherModuleRegistrations) in moduleRegistrations)
                     {
                         if (otherModuleRegistrations.ContainsKey(type))
                         {
                             use = false;
-                            reportDiagnostic(RegisteredByMultipleModules(moduleRegistrationAttribute, moduleType, type, otherModuleRegistrationAttribute, cancellationToken));
-                            reportDiagnostic(RegisteredByMultipleModules(otherModuleRegistrationAttribute, moduleType, type, otherModuleRegistrationAttribute, cancellationToken));
+                            _reportDiagnostic(RegisteredByMultipleModules(moduleRegistrationAttribute, moduleType, type, otherModuleRegistrationAttribute, _cancellationToken));
+                            _reportDiagnostic(RegisteredByMultipleModules(otherModuleRegistrationAttribute, moduleType, type, otherModuleRegistrationAttribute, _cancellationToken));
                             break;
                         }
                     }
@@ -104,7 +110,7 @@ namespace StrongInject.Generator
                 moduleRegistrations.Add((moduleRegistrationAttribute, thisModuleRegistrations));
             }
 
-            return directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations));
+            return new Dictionary<ITypeSymbol, Registration>(directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)));
         }
 
         private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, ITypeSymbol type, AttributeData otherModuleRegistrationAttribute, CancellationToken cancellationToken)
@@ -123,18 +129,12 @@ namespace StrongInject.Generator
                 moduleType);
         }
 
-        public static Dictionary<ITypeSymbol, Registration> CalculateDirectRegistrations(
-            ImmutableArray<AttributeData> attributes,
-            Action<Diagnostic> reportDiagnostic,
-            INamedTypeSymbol registrationAttributeType,
-            INamedTypeSymbol iFactoryType,
-            INamedTypeSymbol iRequiresInitializationType,
-            CancellationToken cancellationToken)
+        private Dictionary<ITypeSymbol, Registration> CalculateDirectRegistrations(ImmutableArray<AttributeData> attributes)
         {
             var directRegistrations = new Dictionary<ITypeSymbol, Registration>();
-            foreach (var registrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(registrationAttributeType, SymbolEqualityComparer.Default) ?? false))
+            foreach (var registrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(_registrationAttributeType, SymbolEqualityComparer.Default) ?? false))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 var countConstructorArguments = registrationAttribute.ConstructorArguments.Length;
                 if (countConstructorArguments is not (2 or 3))
                 {
@@ -150,16 +150,16 @@ namespace StrongInject.Generator
                 }
                 if (typeConstant.Value is not INamedTypeSymbol type || type.ReferencesTypeParametersOrErrorTypes())
                 {
-                    reportDiagnostic(InvalidType(
+                    _reportDiagnostic(InvalidType(
                         (ITypeSymbol)typeConstant.Value!,
-                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None));
+                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                     continue;
                 }
                 else if (!type.IsPublic())
                 {
-                    reportDiagnostic(TypeNotPublic(
+                    _reportDiagnostic(TypeNotPublic(
                         (ITypeSymbol)typeConstant.Value!,
-                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None));
+                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                     continue;
                 }
 
@@ -167,7 +167,7 @@ namespace StrongInject.Generator
                 var applicableConstructors = type.Constructors.Where(x => x.DeclaredAccessibility == Accessibility.Public).ToList();
                 if (applicableConstructors.Count == 0)
                 {
-                    reportDiagnostic(NoConstructor(registrationAttribute, type, cancellationToken));
+                    _reportDiagnostic(NoConstructor(registrationAttribute, type, _cancellationToken));
                     continue;
                 }
                 else if (applicableConstructors.Count == 1)
@@ -188,14 +188,14 @@ namespace StrongInject.Generator
                     }
                     else
                     {
-                        reportDiagnostic(MultipleConstructors(registrationAttribute, type, cancellationToken));
+                        _reportDiagnostic(MultipleConstructors(registrationAttribute, type, _cancellationToken));
                         continue;
                     }
                 }
 
-                if(constructor.Parameters.Any(x => x.Type is not INamedTypeSymbol))
+                if (constructor.Parameters.Any(x => x.Type is not INamedTypeSymbol))
                 {
-                    reportDiagnostic(ConstructorParameterNonNamedTypeSymbol(registrationAttribute, type, constructor, cancellationToken));
+                    _reportDiagnostic(ConstructorParameterNonNamedTypeSymbol(registrationAttribute, type, constructor, _cancellationToken));
                     continue;
                 }
 
@@ -211,41 +211,41 @@ namespace StrongInject.Generator
                 {
                     if (directTarget.ReferencesTypeParametersOrErrorTypes())
                     {
-                        reportDiagnostic(InvalidType(
+                        _reportDiagnostic(InvalidType(
                             directTarget,
-                            registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None));
+                            registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                         continue;
                     }
                     else if (!directTarget.IsPublic())
                     {
-                        reportDiagnostic(TypeNotPublic(
+                        _reportDiagnostic(TypeNotPublic(
                             (ITypeSymbol)typeConstant.Value!,
-                            registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None));
+                            registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                         continue;
                     }
 
                     if (!interfacesAndBaseTypes.Contains(directTarget))
                     {
-                        reportDiagnostic(DoesNotImplement(registrationAttribute, type, directTarget, cancellationToken));
+                        _reportDiagnostic(DoesNotImplement(registrationAttribute, type, directTarget, _cancellationToken));
                         continue;
                     }
 
-                    var requiresInitialization = interfacesAndBaseTypes.Contains(iRequiresInitializationType);
+                    var requiresInitialization = interfacesAndBaseTypes.Contains(_iRequiresInitializationType);
                     if (directRegistrations.ContainsKey(directTarget))
                     {
-                        reportDiagnostic(DuplicateRegistration(registrationAttribute, directTarget, cancellationToken));
+                        _reportDiagnostic(DuplicateRegistration(registrationAttribute, directTarget, _cancellationToken));
                         continue;
                     }
 
                     directRegistrations.Add(directTarget, new Registration(type, directTarget, lifeTime, directTarget, isFactory: false, requiresInitialization, constructor));
 
-                    if (directTarget.OriginalDefinition.Equals(iFactoryType, SymbolEqualityComparer.Default))
+                    if (directTarget.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default))
                     {
                         var factoryTarget = directTarget.TypeArguments.First();
 
                         if (directRegistrations.ContainsKey(factoryTarget))
                         {
-                            reportDiagnostic(DuplicateRegistration(registrationAttribute, factoryTarget, cancellationToken));
+                            _reportDiagnostic(DuplicateRegistration(registrationAttribute, factoryTarget, _cancellationToken));
                             continue;
                         }
 

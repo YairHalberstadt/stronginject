@@ -7,7 +7,7 @@ using Xunit;
 
 namespace StrongInject.Generator.Tests.Unit
 {
-    public class CalculateRegistrationsTests : TestBase
+    public class RegistrationCalculatorTests : TestBase
     {
         [Fact]
         public void CalculatesDirectRegistrations()
@@ -29,8 +29,8 @@ public interface IB {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -95,8 +95,8 @@ public interface ID {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -158,8 +158,8 @@ public interface IA {}
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
 
-            var moduleRegistrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Module"), comp, x => Assert.False(true, x.ToString()), default);
-            moduleRegistrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            var moduleRegistrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Module"));
+            moduleRegistrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -171,8 +171,8 @@ public interface IA {}
                         requiresAsyncInitialization: false),
             });
 
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -215,7 +215,7 @@ public class B : IA {}
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => diagnostics.Add(x), default);
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (5,2): Error SI0002: 'IA' is registered by both modules 'ModuleA' and 'ModuleB'.
                 // ModuleRegistration(typeof(ModuleA))
@@ -223,8 +223,8 @@ public class B : IA {}
                 // (6,2): Error SI0002: 'IA' is registered by both modules 'ModuleA' and 'ModuleB'.
                 // ModuleRegistration(typeof(ModuleB))
                 new DiagnosticResult("SI0002", @"ModuleRegistration(typeof(ModuleB))").WithLocation(6, 2));
-            registrations.Should().HaveCount(1);
-            registrations.Should().ContainKey(comp.GetTypeByMetadataName("IA")!);
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().HaveCount(1);
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().ContainKey(comp.GetTypeByMetadataName("IA")!);
         }
 
         [Fact]
@@ -256,8 +256,8 @@ public class B : IA {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -299,8 +299,8 @@ public class B : IA {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -333,12 +333,12 @@ public class B : IA {}
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => diagnostics.Add(x), default);
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (6,2): Error SI0004: Module already contains registration for 'IA'.
                 // Registration(typeof(B), typeof(IA))
                 new DiagnosticResult("SI0004", @"Registration(typeof(B), typeof(IA))").WithLocation(6, 2));
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -372,14 +372,14 @@ public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => diagnostics.Add(x), default);
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (7,2): Error SI0004: Module already contains registration for 'IA'.
                 // Registration(typeof(B), typeof(IFactory<IA>))
                 new DiagnosticResult("SI0004", @"Registration(typeof(B), typeof(IFactory<IA>))").WithLocation(7, 2));
 
             var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -422,7 +422,7 @@ public class B<T> {
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => diagnostics.Add(x), default);
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (5,2): Error SI0003: 'A<>' is invalid in a registration.
                 // Registration(typeof(A<>))
@@ -434,7 +434,7 @@ public class B<T> {
                 // Registration(typeof(B<>.C))
                 new DiagnosticResult("SI0003", @"Registration(typeof(B<>.C))").WithLocation(7, 2));
 
-            registrations.Should().BeEmpty();
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
         }
 
         [Fact]
@@ -463,7 +463,7 @@ public interface IE {}
             Assert.Empty(comp.GetDiagnostics());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => diagnostics.Add(x), default);
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (5,2): Error SI0001: 'A' does not implement 'C<string>'.
                 // Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))
@@ -480,7 +480,7 @@ public interface IE {}
 
             var cIntType = comp.AssertGetTypeByMetadataName("C`1").Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
             var icIntType = comp.AssertGetTypeByMetadataName("IC`1").Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     Registration(
@@ -559,9 +559,9 @@ public class B : IFactory<A> { public ValueTask<A> CreateAsync() => throw null; 
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     Registration(
@@ -600,9 +600,9 @@ public class B : IFactory<A>, IRequiresInitialization { public ValueTask<A> Crea
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     Registration(
@@ -657,7 +657,7 @@ public class I { internal I(int a) {} public I(bool b) {} }
             Assert.Equal("(24,39): error CS0111: Type 'G' already defines a member called '.ctor' with the same parameter types", Assert.Single(comp.GetDiagnostics()).ToString());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => diagnostics.Add(x), default);
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (7,2): Error SI0006: 'C' has multiple non-default public constructors.
                 // Registration(typeof(C))
@@ -669,7 +669,7 @@ public class I { internal I(int a) {} public I(bool b) {} }
                 // Registration(typeof(H))
                 new DiagnosticResult("SI0005", @"Registration(typeof(H))").WithLocation(12, 2));
 
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     Registration(
@@ -754,7 +754,7 @@ internal class Outer
             Assert.Empty(comp.GetDiagnostics());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => diagnostics.Add(x), default);
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (5,2): Error SI0007: 'A' is not public.
                 // Registration(typeof(A))
@@ -772,7 +772,7 @@ internal class Outer
                 // Registration(typeof(Outer.Inner))
                 new DiagnosticResult("SI0007", @"Registration(typeof(Outer.Inner))").WithLocation(8, 2));
 
-            registrations.Should().BeEmpty();
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
         }
 
         [Fact]
@@ -795,8 +795,8 @@ public interface IB {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
@@ -842,10 +842,10 @@ public class A : IFactory<int[]> { public ValueTask<int[]> CreateAsync() => thro
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var intArray = comp.CreateArrayTypeSymbol(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
             var factoryOfIntArray = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(intArray);
-            registrations.Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
             {
                 [intArray] =
                     Registration(

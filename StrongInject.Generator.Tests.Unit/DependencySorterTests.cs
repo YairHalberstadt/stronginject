@@ -41,7 +41,7 @@ public class D
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var sorted = DependencySorter.SortDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => Assert.True(false, x.ToString()), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.NotNull(sorted);
             sorted.Should().Equal(new[]
@@ -84,7 +84,7 @@ public class D
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.False(true, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var sorted = DependencySorter.SortDependencies(comp.AssertGetTypeByMetadataName("B"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => Assert.True(false, x.ToString()), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.NotNull(sorted);
             sorted.Should().Equal(new[]
@@ -130,7 +130,7 @@ public class D
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.True(false, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var sorted = DependencySorter.SortDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.Null(sorted);
             diagnostics.Verify(
@@ -174,7 +174,7 @@ public class D
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.True(false, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var sorted = DependencySorter.SortDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation()); Assert.Null(sorted);
             diagnostics.Verify(
                 // (9,14): Error SI0101: Error whilst resolving dependencies for 'A': 'C' has a circular dependency
@@ -214,7 +214,7 @@ public class D
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.True(false, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var sorted = DependencySorter.SortDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());            Assert.Null(sorted);
             diagnostics.Verify(
                 // (9,14): Error SI0101: Error whilst resolving dependencies for 'A': 'A' has a circular dependency
@@ -253,7 +253,7 @@ public class D
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
-            var registrations = RegistrationCalculator.CalculateRegistrations(comp.AssertGetTypeByMetadataName("Container"), comp, x => Assert.True(false, x.ToString()), default);
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var sorted = DependencySorter.SortDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.Null(sorted);
             diagnostics.Verify(
