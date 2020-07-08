@@ -94,11 +94,14 @@ namespace StrongInject.Generator
                     var use = true;
                     foreach (var (otherModuleRegistrationAttribute, otherModuleRegistrations) in moduleRegistrations)
                     {
-                        if (otherModuleRegistrations.ContainsKey(type))
+                        if (otherModuleRegistrations.TryGetValue(type, out var otherRegistration))
                         {
                             use = false;
-                            _reportDiagnostic(RegisteredByMultipleModules(moduleRegistrationAttribute, moduleType, type, otherModuleRegistrationAttribute, _cancellationToken));
-                            _reportDiagnostic(RegisteredByMultipleModules(otherModuleRegistrationAttribute, moduleType, type, otherModuleRegistrationAttribute, _cancellationToken));
+                            if (!registration.Equals(otherRegistration))
+                            {
+                                _reportDiagnostic(RegisteredByMultipleModules(moduleRegistrationAttribute, moduleType, otherModuleRegistrationAttribute, type, _cancellationToken));
+                                _reportDiagnostic(RegisteredByMultipleModules(otherModuleRegistrationAttribute, moduleType, otherModuleRegistrationAttribute, type, _cancellationToken));
+                            }
                             break;
                         }
                     }
@@ -113,20 +116,20 @@ namespace StrongInject.Generator
             return new Dictionary<ITypeSymbol, Registration>(directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)));
         }
 
-        private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, ITypeSymbol type, AttributeData otherModuleRegistrationAttribute, CancellationToken cancellationToken)
+        private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, AttributeData otherModuleRegistrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0002",
-                    "Type registered by multiple modules",
-                    "'{0}' is registered by both modules '{1}' and '{2}'.",
+                    "Modules provide differing registrations for Type",
+                    "Modules '{0}' and '{1}' provide differing registrations for '{2}'.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 attributeForLocation.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                type,
                 otherModuleRegistrationAttribute.ConstructorArguments[0].Value,
-                moduleType);
+                moduleType,
+                type);
         }
 
         private Dictionary<ITypeSymbol, Registration> CalculateDirectRegistrations(ImmutableArray<AttributeData> attributes)

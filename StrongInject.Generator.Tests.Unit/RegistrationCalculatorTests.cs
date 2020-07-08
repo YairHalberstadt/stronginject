@@ -217,10 +217,10 @@ public class B : IA {}
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (5,2): Error SI0002: 'IA' is registered by both modules 'ModuleA' and 'ModuleB'.
+                // (5,2): Error SI0002: Modules 'ModuleA' and 'ModuleB' provide differing registrations for 'IA'.
                 // ModuleRegistration(typeof(ModuleA))
                 new DiagnosticResult("SI0002", @"ModuleRegistration(typeof(ModuleA))").WithLocation(5, 2),
-                // (6,2): Error SI0002: 'IA' is registered by both modules 'ModuleA' and 'ModuleB'.
+                // (6,2): Error SI0002: Modules 'ModuleA' and 'ModuleB' provide differing registrations for 'IA'.
                 // ModuleRegistration(typeof(ModuleB))
                 new DiagnosticResult("SI0002", @"ModuleRegistration(typeof(ModuleB))").WithLocation(6, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().HaveCount(1);
@@ -861,6 +861,52 @@ public class A : IFactory<int[]> { public ValueTask<int[]> CreateAsync() => thro
                         registeredAs: factoryOfIntArray,
                         lifetime: Lifetime.InstancePerDependency,
                         castTarget: factoryOfIntArray,
+                        isFactory: false,
+                        requiresAsyncInitialization: false),
+            });
+        }
+
+        [Fact]
+        public void NoErrorIfTwoModulesRegisterSameModule()
+        {
+            string userSource = @"
+using StrongInject.Runtime;
+
+[Container]
+[ModuleRegistration(typeof(ModuleA))]
+[ModuleRegistration(typeof(ModuleB))]
+public class Container
+{
+}
+
+[ModuleRegistration(typeof(ModuleC))]
+public class ModuleA
+{
+}
+
+[ModuleRegistration(typeof(ModuleC))]
+public class ModuleB
+{
+}
+
+[Registration(typeof(A))]
+public class ModuleC
+{
+}
+
+public class A {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, Registration>
+            {
+                [comp.AssertGetTypeByMetadataName("A")] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: comp.AssertGetTypeByMetadataName("A"),
+                        lifetime: Lifetime.InstancePerDependency,
+                        castTarget: comp.AssertGetTypeByMetadataName("A"),
                         isFactory: false,
                         requiresAsyncInitialization: false),
             });
