@@ -49,7 +49,7 @@ public class D
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
@@ -95,7 +95,7 @@ public interface IC {}
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
@@ -148,7 +148,7 @@ public class E : IRequiresInitialization
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
@@ -207,7 +207,7 @@ public class DFactoryTarget {}
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     async global::System.Threading.Tasks.ValueTask<global::AFactoryTarget> global::StrongInject.Runtime.IContainer<global::AFactoryTarget>.ResolveAsync()
@@ -256,7 +256,7 @@ public class D
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private global::A _singleInstanceField0;
@@ -323,7 +323,7 @@ public interface IC {}
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private global::C _singleInstanceField0;
@@ -386,7 +386,7 @@ public class E : IRequiresInitialization
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private global::A _singleInstanceField0;
@@ -465,7 +465,7 @@ public class DFactoryTarget {}
             var comp = RunGenerator(userSource, out var diagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().Be(@"#pragma warning disable CS1998
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private global::A _singleInstanceField0;
