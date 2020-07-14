@@ -32,7 +32,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private Dictionary<INamedTypeSymbol, Dictionary<ITypeSymbol, Registration>> _registrations = new();
+        private Dictionary<INamedTypeSymbol, Dictionary<ITypeSymbol, InstanceSource>> _registrations = new();
         private INamedTypeSymbol _registrationAttributeType;
         private INamedTypeSymbol _moduleRegistrationAttributeType;
         private INamedTypeSymbol _iFactoryType;
@@ -41,11 +41,11 @@ namespace StrongInject.Generator
         private readonly CancellationToken _cancellationToken;
         private bool _valid;
 
-        public IReadOnlyDictionary<ITypeSymbol, Registration> GetRegistrations(INamedTypeSymbol module)
+        public IReadOnlyDictionary<ITypeSymbol, InstanceSource> GetRegistrations(INamedTypeSymbol module)
         {
             if (!_valid)
             {
-                return ImmutableDictionary<ITypeSymbol, Registration>.Empty;
+                return ImmutableDictionary<ITypeSymbol, InstanceSource>.Empty;
             }
 
             if (!_registrations.TryGetValue(module, out var registrations))
@@ -56,7 +56,7 @@ namespace StrongInject.Generator
             return registrations;
         }
 
-        private Dictionary<ITypeSymbol, Registration> CalculateRegistrations(
+        private Dictionary<ITypeSymbol, InstanceSource> CalculateRegistrations(
             INamedTypeSymbol container)
         {
             _cancellationToken.ThrowIfCancellationRequested();
@@ -65,7 +65,7 @@ namespace StrongInject.Generator
 
             var directRegistrations = CalculateDirectRegistrations(attributes);
 
-            var moduleRegistrations = new List<(AttributeData, Dictionary<ITypeSymbol, Registration> registrations)>();
+            var moduleRegistrations = new List<(AttributeData, Dictionary<ITypeSymbol, InstanceSource> registrations)>();
             foreach (var moduleRegistrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(_moduleRegistrationAttributeType, SymbolEqualityComparer.Default) ?? false))
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -84,7 +84,7 @@ namespace StrongInject.Generator
 
                 var registrations = GetRegistrations(moduleType);
 
-                var thisModuleRegistrations = new Dictionary<ITypeSymbol, Registration>();
+                var thisModuleRegistrations = new Dictionary<ITypeSymbol, InstanceSource>();
                 foreach (var (type, registration) in registrations)
                 {
                     if (exclusionList.Contains(type))
@@ -113,7 +113,7 @@ namespace StrongInject.Generator
                 moduleRegistrations.Add((moduleRegistrationAttribute, thisModuleRegistrations));
             }
 
-            return new Dictionary<ITypeSymbol, Registration>(directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)));
+            return new Dictionary<ITypeSymbol, InstanceSource>(directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)));
         }
 
         private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, AttributeData otherModuleRegistrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
@@ -132,14 +132,14 @@ namespace StrongInject.Generator
                 type);
         }
 
-        private Dictionary<ITypeSymbol, Registration> CalculateDirectRegistrations(ImmutableArray<AttributeData> attributes)
+        private Dictionary<ITypeSymbol, InstanceSource> CalculateDirectRegistrations(ImmutableArray<AttributeData> attributes)
         {
-            var directRegistrations = new Dictionary<ITypeSymbol, Registration>();
+            var directRegistrations = new Dictionary<ITypeSymbol, InstanceSource>();
             foreach (var registrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(_registrationAttributeType, SymbolEqualityComparer.Default) ?? false))
             {
                 _cancellationToken.ThrowIfCancellationRequested();
                 var countConstructorArguments = registrationAttribute.ConstructorArguments.Length;
-                if (countConstructorArguments is not (2 or 3))
+                if (countConstructorArguments is not (2 or 3 or 4))
                 {
                     // Invalid code, ignore;
                     continue;
@@ -196,14 +196,12 @@ namespace StrongInject.Generator
                     }
                 }
 
-                if (constructor.Parameters.Any(x => x.Type is not INamedTypeSymbol))
-                {
-                    _reportDiagnostic(ConstructorParameterNonNamedTypeSymbol(registrationAttribute, type, constructor, _cancellationToken));
-                    continue;
-                }
+                var lifetime = countConstructorArguments is 3 or 4 && registrationAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int lifetimeInt }
+                    ? (Lifetime)lifetimeInt
+                    : Lifetime.InstancePerDependency;
 
-                var lifeTime = countConstructorArguments == 3 && registrationAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int value }
-                    ? (Lifetime)value
+                var factoryTargetLifetime = countConstructorArguments is 4 && registrationAttribute.ConstructorArguments[2] is { Kind: TypedConstantKind.Enum, Value: int factoryTargetLifetimeInt }
+                    ? (Lifetime)factoryTargetLifetimeInt
                     : Lifetime.InstancePerDependency;
 
                 var registeredAsConstants = registrationAttribute.ConstructorArguments[countConstructorArguments - 1].Values;
@@ -240,53 +238,63 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    directRegistrations.Add(directTarget, new Registration(type, directTarget, lifeTime, directTarget, isFactory: false, requiresInitialization, constructor));
+                    if (lifetime == Lifetime.SingleInstance && type.TypeKind == TypeKind.Struct)
+                    {
+                        _reportDiagnostic(StructWithSingleInstanceLifetime(registrationAttribute, type, _cancellationToken));
+                        continue;
+                    }
+
+                    directRegistrations.Add(directTarget, new Registration(type, directTarget, lifetime, requiresInitialization, constructor));
 
                     if (directTarget.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default))
                     {
-                        var factoryTarget = directTarget.TypeArguments.First();
+                        var factoryOf = directTarget.TypeArguments.First();
 
-                        if (directRegistrations.ContainsKey(factoryTarget))
+                        if (directRegistrations.ContainsKey(factoryOf))
                         {
-                            _reportDiagnostic(DuplicateRegistration(registrationAttribute, factoryTarget, _cancellationToken));
+                            _reportDiagnostic(DuplicateRegistration(registrationAttribute, factoryOf, _cancellationToken));
                             continue;
                         }
 
-                        directRegistrations.Add(factoryTarget, new Registration(type, factoryTarget, lifeTime, directTarget, isFactory: true, requiresInitialization, constructor));
+                        if (factoryTargetLifetime == Lifetime.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
+                        {
+                            _reportDiagnostic(StructWithSingleInstanceLifetime(registrationAttribute, factoryOf, _cancellationToken));
+                            continue;
+                        }
+
+                        directRegistrations.Add(factoryOf, new FactoryRegistration(directTarget, factoryOf, factoryTargetLifetime));
                     }
                 }
             }
             return directRegistrations;
         }
 
-        private static Diagnostic ConstructorParameterNonNamedTypeSymbol(AttributeData registrationAttribute, INamedTypeSymbol type, IMethodSymbol constructor, CancellationToken cancellationToken)
+        private static Diagnostic StructWithSingleInstanceLifetime(AttributeData registrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
         {
-            return
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "SI0008",
-                        "Constructor has parameter not of named type symbol",
-                        "'{0}' does not have any public constructors.",
-                        "StrongInject",
-                        DiagnosticSeverity.Error,
-                        isEnabledByDefault: true),
-                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                    type);
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0008",
+                    "Struct cannot have Single Instance lifetime",
+                    "'{0}' is a struct and cannot have a Single Instance lifetime.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                type);
         }
 
         private static Diagnostic NoConstructor(AttributeData registrationAttribute, INamedTypeSymbol type, CancellationToken cancellationToken)
         {
-            return
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "SI0005",
-                        "Registered type does not have any public constructors",
-                        "'{0}' does not have any public constructors.",
-                        "StrongInject",
-                        DiagnosticSeverity.Error,
-                        isEnabledByDefault: true),
-                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                    type);
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0005",
+                    "Registered type does not have any public constructors",
+                    "'{0}' does not have any public constructors.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                type);
         }
 
         private static Diagnostic MultipleConstructors(AttributeData registrationAttribute, INamedTypeSymbol type, CancellationToken cancellationToken)

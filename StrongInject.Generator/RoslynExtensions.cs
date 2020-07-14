@@ -3,44 +3,55 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class RoslynExtensions
+namespace StrongInject.Generator
 {
-    public static INamedTypeSymbol? GetType(this Compilation compilation, Type type) => compilation.GetTypeByMetadataName(type.FullName);
-
-    public static IEnumerable<INamedTypeSymbol> GetBaseTypesAndThis(this INamedTypeSymbol? namedType)
+    public static class RoslynExtensions
     {
-        var current = namedType;
-        while (current != null)
+        public static INamedTypeSymbol? GetType(this Compilation compilation, Type type) => compilation.GetTypeByMetadataName(type.FullName);
+
+        public static IEnumerable<INamedTypeSymbol> GetBaseTypesAndThis(this INamedTypeSymbol? namedType)
         {
-            yield return current;
-            current = current.BaseType;
+            var current = namedType;
+            while (current != null)
+            {
+                yield return current;
+                current = current.BaseType;
+            }
         }
-    }
 
-    public static bool ReferencesTypeParametersOrErrorTypes(this ITypeSymbol type)
-    {
-        if (type.ContainingType?.ReferencesTypeParametersOrErrorTypes() ?? false)
-            return true;
-        return type switch
+        public static bool ReferencesTypeParametersOrErrorTypes(this ITypeSymbol type)
         {
-            ITypeParameterSymbol or IErrorTypeSymbol => true,
-            IArrayTypeSymbol array => ReferencesTypeParametersOrErrorTypes(array.ElementType),
-            IPointerTypeSymbol pointer => ReferencesTypeParametersOrErrorTypes(pointer.PointedAtType),
-            INamedTypeSymbol named => named.TypeArguments.Any(ReferencesTypeParametersOrErrorTypes),
-            _ => false,
-        };
-    }
+            if (type.ContainingType?.ReferencesTypeParametersOrErrorTypes() ?? false)
+                return true;
+            return type switch
+            {
+                ITypeParameterSymbol or IErrorTypeSymbol => true,
+                IArrayTypeSymbol array => array.ElementType.ReferencesTypeParametersOrErrorTypes(),
+                IPointerTypeSymbol pointer => pointer.PointedAtType.ReferencesTypeParametersOrErrorTypes(),
+                INamedTypeSymbol named => named.TypeArguments.Any(ReferencesTypeParametersOrErrorTypes),
+                _ => false,
+            };
+        }
 
-    public static bool IsPublic(this ITypeSymbol type)
-    {
-        if (!type.ContainingType?.IsPublic() ?? false)
-            return false;
-        return type switch
+        public static bool IsPublic(this ITypeSymbol type)
         {
-            IArrayTypeSymbol array => IsPublic(array.ElementType),
-            IPointerTypeSymbol pointer => IsPublic(pointer.PointedAtType),
-            INamedTypeSymbol named => named.DeclaredAccessibility == Accessibility.Public && named.TypeArguments.All(IsPublic),
-            _ => false,
-        };
+            if (!type.ContainingType?.IsPublic() ?? false)
+                return false;
+            return type switch
+            {
+                IArrayTypeSymbol array => array.ElementType.IsPublic(),
+                IPointerTypeSymbol pointer => pointer.PointedAtType.IsPublic(),
+                INamedTypeSymbol named => named.DeclaredAccessibility == Accessibility.Public && named.TypeArguments.All(IsPublic),
+                _ => false,
+            };
+        }
+
+        public static string FullName(this INamespaceOrTypeSymbol namespaceOrType)
+        {
+            return namespaceOrType.ToDisplayString(new SymbolDisplayFormat(
+                globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+        }
     }
 }
