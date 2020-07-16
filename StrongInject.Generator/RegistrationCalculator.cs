@@ -17,14 +17,13 @@ namespace StrongInject.Generator
         {
             _reportDiagnostic = reportDiagnostic;
             _cancellationToken = cancellationToken;
-            _registrationAttributeType = compilation.GetType(typeof(RegistrationAttribute))!;
-            _moduleRegistrationAttributeType = compilation.GetType(typeof(ModuleRegistrationAttribute))!;
-            _iFactoryType = compilation.GetType(typeof(IFactory<>))!;
-            _iRequiresInitializationType = compilation.GetType(typeof(IRequiresInitialization))!;
+            _registrationAttributeType = compilation.GetTypeOrReport(typeof(RegistrationAttribute), reportDiagnostic)!;
+            _moduleRegistrationAttributeType = compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), _reportDiagnostic)!;
+            _iFactoryType = compilation.GetTypeOrReport(typeof(IFactory<>), _reportDiagnostic)!;
+            _iRequiresInitializationType = compilation.GetTypeOrReport(typeof(IRequiresInitialization), _reportDiagnostic)!;
             if (_registrationAttributeType is null || _moduleRegistrationAttributeType is null || _iFactoryType is null || _iRequiresInitializationType is null)
             {
                 _valid = false;
-                //ToDo Report Diagnostic
             }
             else
             {

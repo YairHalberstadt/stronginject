@@ -8,6 +8,24 @@ namespace StrongInject.Generator
     public static class RoslynExtensions
     {
         public static INamedTypeSymbol? GetType(this Compilation compilation, Type type) => compilation.GetTypeByMetadataName(type.FullName);
+        public static INamedTypeSymbol? GetTypeOrReport(this Compilation compilation, Type type, Action<Diagnostic> reportDiagnostic)
+        {
+            var typeSymbol = compilation.GetType(type);
+            if (typeSymbol is null)
+            {
+                reportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                            "SI0201",
+                            "Missing Type",
+                            "Missing Type '{0}'. Are you missing an assembly reference?",
+                            "StrongInject",
+                            DiagnosticSeverity.Error,
+                            isEnabledByDefault: true),
+                        Location.None,
+                        type));
+            }
+            return typeSymbol;
+        }
 
         public static IEnumerable<INamedTypeSymbol> GetBaseTypesAndThis(this INamedTypeSymbol? namedType)
         {
@@ -52,6 +70,13 @@ namespace StrongInject.Generator
                 globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
                 genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+        }
+
+        public static IEnumerable<INamedTypeSymbol> AllInterfacesAndSelf(this ITypeSymbol type)
+        {
+            if (type.TypeKind != TypeKind.Interface)
+                return type.AllInterfaces;
+            return type.AllInterfaces.Prepend((INamedTypeSymbol)type);
         }
     }
 }

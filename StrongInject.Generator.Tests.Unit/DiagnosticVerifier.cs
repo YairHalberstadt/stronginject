@@ -77,7 +77,7 @@ namespace StrongInject.Generator.Tests.Unit
                             expected.Id, expected.Id, actual.Id, FormatDiagnostics(actual)));
                 }
 
-                var expectedSeverity = expected.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+                var expectedSeverity = expected.Severity;
                 if (actual.Severity != expectedSeverity)
                 {
                     Assert.True(false,
@@ -92,13 +92,6 @@ namespace StrongInject.Generator.Tests.Unit
                         string.Format("Expected squiggled text to be \"{0}\", was \"{1}\"\r\n\r\nDiagnostic:\r\n{2}\r\n",
                         expected.SquiggledText, squiggledText, FormatDiagnostics(actual)));
                 }
-
-                //if (actual.GetMessage() != expected.Message)
-                //{
-                //    Assert.True(false,
-                //        string.Format("Expected diagnostic message to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-                //            expected.Message, actual.GetMessage(), FormatDiagnostics(actual)));
-                //}
             }
         }
 
@@ -112,9 +105,6 @@ namespace StrongInject.Generator.Tests.Unit
         {
             var actualSpan = actual.GetLineSpan();
 
-            //Assert.True(actualSpan.Path == expected.Path || (actualSpan.Path != null && actualSpan.Path.Contains("Test0.") && expected.Path.Contains("Test.")),
-            //    string.Format("Expected diagnostic to be in file \"{0}\" was actually in file \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-            //        expected.Path, actualSpan.Path, FormatDiagnostics(diagnostic)));
 
             var actualLinePosition = actualSpan.StartLinePosition;
 
@@ -158,7 +148,7 @@ namespace StrongInject.Generator.Tests.Unit
                 string squiggledText = "<UNKNOWN>";
                 if (location == Location.None)
                 {
-                    builder.AppendFormat("// {0}.{1}", diagnostics[i].Descriptor.Title, diagnostics[i].Id);
+                    builder.AppendFormat("// {0}.{1}\r\n", diagnostics[i].Descriptor.Title, diagnostics[i].Id);
                 }
                 else
                 {
@@ -170,9 +160,10 @@ namespace StrongInject.Generator.Tests.Unit
                 }
 
                 var id = diagnostics[i].Id;
-                builder.AppendFormat("new DiagnosticResult(\"{0}\", @\"{1}\").WithLocation({2}, {3})",
+                builder.AppendFormat("new DiagnosticResult(\"{0}\", @\"{1}\", DiagnosticSeverity.{2}).WithLocation({3}, {4})",
                     id,
                     squiggledText.Replace("\"", "\"\""),
+                    diagnostics[i].Severity,
                     mappedSpan.Start.Line + 1,
                     mappedSpan.Start.Character + 1);
                 if (i < diagnostics.Length - 1)
@@ -184,7 +175,7 @@ namespace StrongInject.Generator.Tests.Unit
 
         private static string GetSquiggledText(Diagnostic diagnostic)
         {
-            return diagnostic.Location.SourceTree!.GetText().ToString(diagnostic.Location.SourceSpan);
+            return diagnostic.Location.SourceTree?.GetText().ToString(diagnostic.Location.SourceSpan) ?? "<UNKNOWN>";
         }
     }
 
@@ -192,13 +183,14 @@ namespace StrongInject.Generator.Tests.Unit
     {
         public string Id { get; }
         public string SquiggledText { get; }
-        public bool IsError { get; set; } = true;
+        public DiagnosticSeverity Severity { get; }
         public List<DiagnosticResultLocation> Locations { get; } = new List<DiagnosticResultLocation>();
 
-        public DiagnosticResult(string code, string squiggledText)
+        public DiagnosticResult(string code, string squiggledText, DiagnosticSeverity severity = DiagnosticSeverity.Error)
         {
             this.Id = code;
             this.SquiggledText = squiggledText;
+            Severity = severity;
         }
 
         public DiagnosticResult WithLocation(int line, int column)
@@ -206,7 +198,6 @@ namespace StrongInject.Generator.Tests.Unit
             this.Locations.Add(new DiagnosticResultLocation(line, column));
             return this;
         }
-
     }
 
     public struct DiagnosticResultLocation
