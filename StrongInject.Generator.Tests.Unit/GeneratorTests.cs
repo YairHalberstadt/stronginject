@@ -1,12 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
-using NuGet.Frameworks;
 using StrongInject.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -53,19 +47,20 @@ public class D
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _2 = new global::C();
         var _3 = new global::D((global::C)_2);
         var _1 = new global::B((global::C)_2, (global::D)_3);
         var _0 = new global::A((global::B)_1, (global::C)_2);
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        return result;
     }
 }");
         }
 
         [Fact]
-        public void InstancePerDependencyDependenciesWihCasts()
+        public void InstancePerDependencyDependenciesWithCasts()
         {
             string userSource = @"
 using StrongInject.Runtime;
@@ -100,13 +95,14 @@ public interface IC {}
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _2 = new global::C();
         var _3 = new global::D((global::C)_2);
         var _1 = new global::B((global::IC)_2, (global::D)_3);
         var _0 = new global::A((global::B)_1, (global::IC)_2);
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        return result;
     }
 }");
         }
@@ -154,7 +150,7 @@ public class E : IRequiresInitialization
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _2 = new global::C();
         await ((global::StrongInject.Runtime.IRequiresInitialization)_2).InitializeAsync();
@@ -163,7 +159,8 @@ partial class Container
         var _1 = new global::B((global::C)_2, (global::D)_3);
         var _0 = new global::A((global::B)_1, (global::C)_2);
         await ((global::StrongInject.Runtime.IRequiresInitialization)_0).InitializeAsync();
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        return result;
     }
 }");
         }
@@ -214,7 +211,7 @@ public class DFactoryTarget {}
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
-    async global::System.Threading.Tasks.ValueTask<global::AFactoryTarget> global::StrongInject.Runtime.IContainer<global::AFactoryTarget>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::AFactoryTarget>.RunAsync<TResult, TParam>(global::System.Func<global::AFactoryTarget, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _4 = new global::C();
         var _7 = await ((global::StrongInject.Runtime.IFactory<global::CFactoryTarget>)_4).CreateAsync();
@@ -224,7 +221,13 @@ partial class Container
         var _2 = await ((global::StrongInject.Runtime.IFactory<global::BFactoryTarget>)_3).CreateAsync();
         var _1 = new global::A(_2, _7);
         var _0 = await ((global::StrongInject.Runtime.IFactory<global::AFactoryTarget>)_1).CreateAsync();
-        return (global::AFactoryTarget)_0;
+        var result = await func((global::AFactoryTarget)_0, param);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_0);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_7);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_2);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_5);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_7);
+        return result;
     }
 }");
         }
@@ -288,10 +291,11 @@ partial class Container
         return _singleInstanceField0;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await GetSingleInstanceField0();
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        return result;
     }
 }");
         }
@@ -342,13 +346,14 @@ partial class Container
         return _singleInstanceField0;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _2 = await GetSingleInstanceField0();
         var _3 = new global::D((global::C)_2);
         var _1 = new global::B((global::IC)_2, (global::D)_3);
         var _0 = new global::A((global::B)_1, (global::IC)_2);
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        return result;
     }
 }");
         }
@@ -422,10 +427,11 @@ partial class Container
         return _singleInstanceField0;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await GetSingleInstanceField0();
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        return result;
     }
 }");
         }
@@ -523,11 +529,13 @@ partial class Container
         return _singleInstanceField0;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::AFactoryTarget> global::StrongInject.Runtime.IContainer<global::AFactoryTarget>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::AFactoryTarget>.RunAsync<TResult, TParam>(global::System.Func<global::AFactoryTarget, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _1 = await GetSingleInstanceField0();
         var _0 = await ((global::StrongInject.Runtime.IFactory<global::AFactoryTarget>)_1).CreateAsync();
-        return (global::AFactoryTarget)_0;
+        var result = await func((global::AFactoryTarget)_0, param);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_0);
+        return result;
     }
 }");
         }
@@ -578,19 +586,21 @@ partial class Container
         return _singleInstanceField0;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _1 = await GetSingleInstanceField0();
         var _0 = new global::A((global::IC)_1);
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        return result;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::B> global::StrongInject.Runtime.IContainer<global::B>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _1 = await GetSingleInstanceField0();
         var _2 = new global::D((global::C)_1);
         var _0 = new global::B((global::C)_1, (global::D)_2);
-        return (global::B)_0;
+        var result = await func((global::B)_0, param);
+        return result;
     }
 }");
         }
@@ -603,13 +613,16 @@ partial class Container
             generatorDiagnostics.Verify(
                 // (1,1): Error SI0201: Missing Type 'StrongInject.Runtime.RegistrationAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>").WithLocation(1, 1),
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.Runtime.ModuleRegistrationAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>").WithLocation(1, 1),
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.Runtime.IRequiresInitialization'. Are you missing an assembly reference?
                 // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>").WithLocation(1, 1));
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.Runtime.Helpers'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1));
             comp.GetDiagnostics().Verify();
         }
 
@@ -655,34 +668,44 @@ public interface IInstanceProvider : IInstanceProvider<C>, IInstanceProvider<D>
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::A>)this._instanceProvider1).GetAsync();
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::A>)this._instanceProvider1).ReleaseAsync(_0);
+        return result;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::B> global::StrongInject.Runtime.IContainer<global::B>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::B>)this._instanceProvider1).GetAsync();
-        return (global::B)_0;
+        var result = await func((global::B)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::B>)this._instanceProvider1).ReleaseAsync(_0);
+        return result;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::C> global::StrongInject.Runtime.IContainer<global::C>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::C>)this._instanceProvider2).GetAsync();
-        return (global::C)_0;
+        var result = await func((global::C)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::C>)this._instanceProvider2).ReleaseAsync(_0);
+        return result;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::D> global::StrongInject.Runtime.IContainer<global::D>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::D>.RunAsync<TResult, TParam>(global::System.Func<global::D, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::D>)this._instanceProvider2).GetAsync();
-        return (global::D)_0;
+        var result = await func((global::D)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::D>)this._instanceProvider2).ReleaseAsync(_0);
+        return result;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::System.Int32[]> global::StrongInject.Runtime.IContainer<global::System.Int32[]>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::System.Int32[]>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32[], TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Int32[]>)this._instanceProvider3).GetAsync();
-        return (global::System.Int32[])_0;
+        var result = await func((global::System.Int32[])_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Int32[]>)this._instanceProvider3).ReleaseAsync(_0);
+        return result;
     }
 }");
         }
@@ -801,14 +824,17 @@ public class InstanceProvider : IInstanceProvider<IC>, IInstanceProvider<D>
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
-    async global::System.Threading.Tasks.ValueTask<global::A> global::StrongInject.Runtime.IContainer<global::A>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _2 = new global::C();
         var _3 = await ((global::StrongInject.Runtime.IInstanceProvider<global::D>)this._instanceProvider).GetAsync();
         var _1 = new global::B((global::C)_2, _3);
         var _4 = await ((global::StrongInject.Runtime.IInstanceProvider<global::IC>)this._instanceProvider).GetAsync();
         var _0 = new global::A((global::B)_1, _4);
-        return (global::A)_0;
+        var result = await func((global::A)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::IC>)this._instanceProvider).ReleaseAsync(_4);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::D>)this._instanceProvider).ReleaseAsync(_3);
+        return result;
     }
 }");
         }
@@ -866,22 +892,160 @@ public class InstanceProvider2 : IInstanceProvider<string>, IInstanceProvider<bo
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
-    async global::System.Threading.Tasks.ValueTask<global::System.Int32> global::StrongInject.Runtime.IContainer<global::System.Int32>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::System.Int32>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Int32>)this._instanceProvider1).GetAsync();
-        return (global::System.Int32)_0;
+        var result = await func((global::System.Int32)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Int32>)this._instanceProvider1).ReleaseAsync(_0);
+        return result;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::System.String> global::StrongInject.Runtime.IContainer<global::System.String>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::System.String>.RunAsync<TResult, TParam>(global::System.Func<global::System.String, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::System.String>)this._instanceProvider2).GetAsync();
-        return (global::System.String)_0;
+        var result = await func((global::System.String)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::System.String>)this._instanceProvider2).ReleaseAsync(_0);
+        return result;
     }
 
-    async global::System.Threading.Tasks.ValueTask<global::System.Boolean> global::StrongInject.Runtime.IContainer<global::System.Boolean>.ResolveAsync()
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         var _0 = await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Boolean>)this._instanceProvider1).GetAsync();
-        return (global::System.Boolean)_0;
+        var result = await func((global::System.Boolean)_0, param);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Boolean>)this._instanceProvider1).ReleaseAsync(_0);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CorrectDisposal()
+        {
+            string userSource = @"
+using StrongInject.Runtime;
+using System.Threading.Tasks;
+using System;
+
+[Registration(typeof(A), typeof(IFactory<AFactoryTarget>))]
+[Registration(typeof(B), Lifetime.SingleInstance, Lifetime.SingleInstance, typeof(IFactory<BFactoryTarget>))]
+[Registration(typeof(C), Lifetime.InstancePerDependency, Lifetime.SingleInstance, typeof(C), typeof(IFactory<CFactoryTarget>))]
+[Registration(typeof(D), Lifetime.InstancePerDependency, Lifetime.InstancePerDependency, typeof(IFactory<DFactoryTarget>))]
+[Registration(typeof(E))]
+[Registration(typeof(F))]
+[Registration(typeof(G))]
+[Registration(typeof(H))]
+[Registration(typeof(I), Lifetime.SingleInstance)]
+public partial class Container : IContainer<AFactoryTarget>
+{
+    IInstanceProvider<int> instanceProvider;
+}
+
+public class A : IFactory<AFactoryTarget>
+{
+    public A(BFactoryTarget b, CFactoryTarget c, E e, int i){}
+    ValueTask<AFactoryTarget> IFactory<AFactoryTarget>.CreateAsync() => new ValueTask<AFactoryTarget>(new AFactoryTarget());
+}
+public class AFactoryTarget {}
+public class B : IFactory<BFactoryTarget>, IDisposable
+{
+    public B(C c, DFactoryTarget d){}
+    ValueTask<BFactoryTarget> IFactory<BFactoryTarget>.CreateAsync() => new ValueTask<BFactoryTarget>(new BFactoryTarget());
+    public void Dispose() {}
+}
+public class BFactoryTarget {}
+public class C : IFactory<CFactoryTarget> 
+{
+    ValueTask<CFactoryTarget> IFactory<CFactoryTarget>.CreateAsync() => new ValueTask<CFactoryTarget>(new CFactoryTarget());
+}
+public class CFactoryTarget {}
+public class D : IFactory<DFactoryTarget>
+{
+    public D(CFactoryTarget c){}
+    ValueTask<DFactoryTarget> IFactory<DFactoryTarget>.CreateAsync() => new ValueTask<DFactoryTarget>(new DFactoryTarget());
+}
+public class DFactoryTarget {}
+public class E : IDisposable { public E(F f) {} public void Dispose() {} }
+public class F : IAsyncDisposable { public F(G g) {} ValueTask IAsyncDisposable.DisposeAsync() => default; }
+public class G : IDisposable, IAsyncDisposable { public G(H h) {} void IDisposable.Dispose() {} public ValueTask DisposeAsync() => default; }
+public class H { public H(I i) {} }
+public class I : IDisposable { public I(int i) {} public void Dispose() {} }
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify(
+                // (17,28): Warning CS0649: Field 'Container.instanceProvider' is never assigned to, and will always have its default value null
+                // instanceProvider
+                new DiagnosticResult("CS0649", @"instanceProvider", DiagnosticSeverity.Warning).WithLocation(17, 28));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private global::BFactoryTarget _singleInstanceField0;
+    private global::B _singleInstanceField1;
+    private global::CFactoryTarget _singleInstanceField2;
+    private async System.Threading.Tasks.ValueTask<CFactoryTarget> GetSingleInstanceField2()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField2, null))
+            return _singleInstanceField2;
+        var _1 = new global::C();
+        var _0 = await ((global::StrongInject.Runtime.IFactory<global::CFactoryTarget>)_1).CreateAsync();
+        global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField2, _0, null);
+        return _singleInstanceField2;
+    }
+
+    private async System.Threading.Tasks.ValueTask<B> GetSingleInstanceField1()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField1, null))
+            return _singleInstanceField1;
+        var _1 = new global::C();
+        var _4 = await GetSingleInstanceField2();
+        var _3 = new global::D(_4);
+        var _2 = await ((global::StrongInject.Runtime.IFactory<global::DFactoryTarget>)_3).CreateAsync();
+        var _0 = new global::B((global::C)_1, _2);
+        global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField1, _0, null);
+        return _singleInstanceField1;
+    }
+
+    private async System.Threading.Tasks.ValueTask<BFactoryTarget> GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        var _1 = await GetSingleInstanceField1();
+        var _0 = await ((global::StrongInject.Runtime.IFactory<global::BFactoryTarget>)_1).CreateAsync();
+        global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField0, _0, null);
+        return _singleInstanceField0;
+    }
+
+    private global::I _singleInstanceField3;
+    private async System.Threading.Tasks.ValueTask<I> GetSingleInstanceField3()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField3, null))
+            return _singleInstanceField3;
+        var _1 = await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Int32>)this.instanceProvider).GetAsync();
+        var _0 = new global::I(_1);
+        global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField3, _0, null);
+        return _singleInstanceField3;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::AFactoryTarget>.RunAsync<TResult, TParam>(global::System.Func<global::AFactoryTarget, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        var _2 = await GetSingleInstanceField0();
+        var _3 = await GetSingleInstanceField2();
+        var _8 = await GetSingleInstanceField3();
+        var _7 = new global::H((global::I)_8);
+        var _6 = new global::G((global::H)_7);
+        var _5 = new global::F((global::G)_6);
+        var _4 = new global::E((global::F)_5);
+        var _9 = await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Int32>)this.instanceProvider).GetAsync();
+        var _1 = new global::A(_2, _3, (global::E)_4, _9);
+        var _0 = await ((global::StrongInject.Runtime.IFactory<global::AFactoryTarget>)_1).CreateAsync();
+        var result = await func((global::AFactoryTarget)_0, param);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_0);
+        await ((global::StrongInject.Runtime.IInstanceProvider<global::System.Int32>)this.instanceProvider).ReleaseAsync(_9);
+        ((global::System.IDisposable)_4).Dispose();
+        await ((global::System.IAsyncDisposable)_5).DisposeAsync();
+        await ((global::System.IAsyncDisposable)_6).DisposeAsync();
+        return result;
     }
 }");
         }
