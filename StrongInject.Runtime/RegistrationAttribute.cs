@@ -16,8 +16,17 @@ namespace StrongInject.Runtime
             Lifetime = lifetime;
         }
 
+        public RegistrationAttribute(Type type, Lifetime lifetime, Lifetime factoryTargetLifetime, params Type[] registeredAs)
+        {
+            Type = type;
+            RegisteredAs = registeredAs;
+            Lifetime = lifetime;
+            FactoryLifetime = factoryTargetLifetime;
+        }
+
         public Type Type { get; }
         public Type[] RegisteredAs { get; }
         public Lifetime Lifetime { get; }
+        public Lifetime FactoryLifetime { get; }
     }
 }
