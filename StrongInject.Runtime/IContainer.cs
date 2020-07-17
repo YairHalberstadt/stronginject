@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace StrongInject.Runtime
 {
     public interface IContainer<T>
     {
-        ValueTask<T> ResolveAsync();
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        ValueTask<TResult> RunAsync<TResult, TParam>(Func<T, TParam, ValueTask<TResult>> func, TParam param);
     }
 }

@@ -24,12 +24,18 @@ namespace StrongInject.Generator
             var iRequiresInitializationType = context.Compilation.GetTypeOrReport(typeof(IRequiresInitialization), context.ReportDiagnostic);
             var valueTask1Type = context.Compilation.GetTypeOrReport(typeof(ValueTask<>), context.ReportDiagnostic);
             var interlockedType = context.Compilation.GetTypeOrReport(typeof(Interlocked), context.ReportDiagnostic);
+            var helpersType = context.Compilation.GetTypeOrReport(typeof(Helpers), context.ReportDiagnostic);
+            var iAsyncDisposableType = context.Compilation.GetTypeOrReport(typeof(IAsyncDisposable), context.ReportDiagnostic);
+            var iDisposableType = context.Compilation.GetTypeOrReport(typeof(IDisposable), context.ReportDiagnostic);
 
             if (registrationAttribute is null 
                 || moduleRegistrationAttribute is null 
                 || iRequiresInitializationType is null 
                 || valueTask1Type is null 
-                || interlockedType is null)
+                || interlockedType is null
+                || helpersType is null
+                || iAsyncDisposableType is null
+                || iDisposableType is null)
             {
                 return;
             }
@@ -95,14 +101,76 @@ namespace StrongInject.Generator
                     methodSource.Append(constructedContainerInterface.FullName());
                     methodSource.Append(".");
                     methodSource.Append(methodSymbol.Name);
-                    methodSource.Append("(){");
-                    var variableName = CreateVariable(instanceSources[target], methodSource, isSingleInstanceCreation: false);
-                    methodSource.Append("return (");
+                    methodSource.Append("<");
+                    for (int i = 0; i < methodSymbol.TypeParameters.Length; i++)
+                    {
+                        var typeParam = methodSymbol.TypeParameters[i];
+                        if (i != 0)
+                            methodSource.Append(",");
+                        methodSource.Append(typeParam.Name);
+                    }
+                    methodSource.Append(">(");
+                    for (int i = 0; i < methodSymbol.Parameters.Length; i++)
+                    {
+                        var param = methodSymbol.Parameters[i];
+                        if (i != 0)
+                            methodSource.Append(",");
+                        methodSource.Append(param.Type.FullName());
+                        methodSource.Append(" ");
+                        methodSource.Append(param.Name);
+                    }
+                    methodSource.Append("){");
+                    var resultVariableName = CreateVariable(instanceSources[target], methodSource, isSingleInstanceCreation: false, out var orderOfCreation);
+                    methodSource.Append("var result = await func((");
                     methodSource.Append(target.FullName());
                     methodSource.Append(")");
-                    methodSource.Append(variableName);
-                    methodSource.Append(";}");
+                    methodSource.Append(resultVariableName);
+                    methodSource.Append(", param);");
 
+                    for(int i = orderOfCreation.Count - 1; i >= 0; i--)
+                    {
+                        var (variableName, source) = orderOfCreation[i];
+                        switch (source)
+                        {
+                            case FactoryRegistration { lifetime: Lifetime.InstancePerDependency }:
+                                methodSource.Append("await ");
+                                methodSource.Append(helpersType.FullName());
+                                methodSource.Append("." + nameof(Helpers.DisposeAsync) + "(");
+                                methodSource.Append(variableName);
+                                methodSource.Append(");");
+                                break;
+                            case InstanceProvider { instanceProviderField: var field, castTo: var cast }:
+                                methodSource.Append("await ((");
+                                methodSource.Append(cast.FullName());
+                                methodSource.Append(")this.");
+                                methodSource.Append(field.Name);
+                                methodSource.Append(")." + nameof(IInstanceProvider<object>.ReleaseAsync) + "(");
+                                methodSource.Append(variableName);
+                                methodSource.Append(");");
+                                break;
+                            case Registration { type: var type, lifetime: Lifetime.InstancePerDependency }:
+                                if (type.AllInterfaces.Contains(iAsyncDisposableType))
+                                {
+                                    methodSource.Append("await ((");
+                                    methodSource.Append(iAsyncDisposableType.FullName());
+                                    methodSource.Append(")");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + "(");
+                                    methodSource.Append(");");
+                                }
+                                else if (type.AllInterfaces.Contains(iDisposableType))
+                                {
+                                    methodSource.Append("((");
+                                    methodSource.Append(iDisposableType.FullName());
+                                    methodSource.Append(")");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append(")." + nameof(IDisposable.Dispose) + "(");
+                                    methodSource.Append(");");
+                                }
+                                break;
+                        }
+                    }
+                    methodSource.Append("return result;}");
 
                     (containerMembersSource ??= new()).Append(methodSource);
                 }
@@ -132,10 +200,11 @@ namespace StrongInject.Generator
                         CSharpSyntaxTree.ParseText(SourceText.From(file.ToString())).GetRoot().NormalizeWhitespace().SyntaxTree.GetText());
                 }
 
-                string CreateVariable(InstanceSource target, StringBuilder methodSource, bool isSingleInstanceCreation)
+                string CreateVariable(InstanceSource target, StringBuilder methodSource, bool isSingleInstanceCreation, out List<(string variableName, InstanceSource source)> orderOfCreation)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-
+                    orderOfCreation = new();
+                    var orderOfCreationTemp = orderOfCreation;
                     var variables = new Dictionary<InstanceSource, string>(InstanceSourceComparer.Instance);
                     var outerTarget = target;
                     return CreateVariableInternal(target);
@@ -218,6 +287,7 @@ namespace StrongInject.Generator
                             }
 
                         }
+                        orderOfCreationTemp.Add((variableName, target));
                         return variableName;
                     }
 
@@ -251,7 +321,7 @@ namespace StrongInject.Generator
                             methodSource.Append("return ");
                             methodSource.Append(singleInstanceFieldName);
                             methodSource.Append(";");
-                            var variableName = CreateVariable(registration, methodSource, isSingleInstanceCreation: true);
+                            var variableName = CreateVariable(registration, methodSource, isSingleInstanceCreation: true, out _);
 
                             methodSource.Append(interlockedType.FullName());
                             methodSource.Append("." + nameof(Interlocked.CompareExchange));
