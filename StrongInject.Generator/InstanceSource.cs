@@ -3,14 +3,14 @@ using StrongInject.Runtime;
 
 namespace StrongInject.Generator
 {
-    internal record InstanceSource(Lifetime lifetime) { }
+    internal record InstanceSource(Scope scope) { }
 
     internal record Registration(
         INamedTypeSymbol type,
         ITypeSymbol registeredAs,
-        Lifetime lifetime,
+        Scope scope,
         bool requiresAsyncInitialization,
-        IMethodSymbol constructor) : InstanceSource(lifetime) {}
-    internal record InstanceProvider(ITypeSymbol providedType, IFieldSymbol instanceProviderField, INamedTypeSymbol castTo) : InstanceSource(Lifetime.InstancePerDependency) { }
-    internal record FactoryRegistration(ITypeSymbol factoryType, ITypeSymbol factoryOf, Lifetime lifetime) : InstanceSource(lifetime) { }
+        IMethodSymbol constructor) : InstanceSource(scope) {}
+    internal record InstanceProvider(ITypeSymbol providedType, IFieldSymbol instanceProviderField, INamedTypeSymbol castTo) : InstanceSource(Scope.InstancePerResolution) { }
+    internal record FactoryRegistration(ITypeSymbol factoryType, ITypeSymbol factoryOf, Scope scope) : InstanceSource(scope) { }
 }

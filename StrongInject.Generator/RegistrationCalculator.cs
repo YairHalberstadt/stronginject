@@ -195,13 +195,13 @@ namespace StrongInject.Generator
                     }
                 }
 
-                var lifetime = countConstructorArguments is 3 or 4 && registrationAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int lifetimeInt }
-                    ? (Lifetime)lifetimeInt
-                    : Lifetime.InstancePerDependency;
+                var scope = countConstructorArguments is 3 or 4 && registrationAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
+                    ? (Scope)scopeInt
+                    : Scope.InstancePerResolution;
 
-                var factoryTargetLifetime = countConstructorArguments is 4 && registrationAttribute.ConstructorArguments[2] is { Kind: TypedConstantKind.Enum, Value: int factoryTargetLifetimeInt }
-                    ? (Lifetime)factoryTargetLifetimeInt
-                    : Lifetime.InstancePerDependency;
+                var factoryTargetScope = countConstructorArguments is 4 && registrationAttribute.ConstructorArguments[2] is { Kind: TypedConstantKind.Enum, Value: int factoryTargetScopeInt }
+                    ? (Scope)factoryTargetScopeInt
+                    : Scope.InstancePerResolution;
 
                 var registeredAsConstants = registrationAttribute.ConstructorArguments[countConstructorArguments - 1].Values;
                 var registeredAs = registeredAsConstants.IsDefaultOrEmpty ? new[] { type } : registeredAsConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToArray();
@@ -237,13 +237,13 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    if (lifetime == Lifetime.SingleInstance && type.TypeKind == TypeKind.Struct)
+                    if (scope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
                     {
-                        _reportDiagnostic(StructWithSingleInstanceLifetime(registrationAttribute, type, _cancellationToken));
+                        _reportDiagnostic(StructWithSingleInstanceScope(registrationAttribute, type, _cancellationToken));
                         continue;
                     }
 
-                    directRegistrations.Add(directTarget, new Registration(type, directTarget, lifetime, requiresInitialization, constructor));
+                    directRegistrations.Add(directTarget, new Registration(type, directTarget, scope, requiresInitialization, constructor));
 
                     if (directTarget.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default))
                     {
@@ -255,26 +255,26 @@ namespace StrongInject.Generator
                             continue;
                         }
 
-                        if (factoryTargetLifetime == Lifetime.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
+                        if (factoryTargetScope == Scope.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
                         {
-                            _reportDiagnostic(StructWithSingleInstanceLifetime(registrationAttribute, factoryOf, _cancellationToken));
+                            _reportDiagnostic(StructWithSingleInstanceScope(registrationAttribute, factoryOf, _cancellationToken));
                             continue;
                         }
 
-                        directRegistrations.Add(factoryOf, new FactoryRegistration(directTarget, factoryOf, factoryTargetLifetime));
+                        directRegistrations.Add(factoryOf, new FactoryRegistration(directTarget, factoryOf, factoryTargetScope));
                     }
                 }
             }
             return directRegistrations;
         }
 
-        private static Diagnostic StructWithSingleInstanceLifetime(AttributeData registrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
+        private static Diagnostic StructWithSingleInstanceScope(AttributeData registrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0008",
-                    "Struct cannot have Single Instance lifetime",
-                    "'{0}' is a struct and cannot have a Single Instance lifetime.",
+                    "Struct cannot have Single Instance scope",
+                    "'{0}' is a struct and cannot have a Single Instance scope.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
