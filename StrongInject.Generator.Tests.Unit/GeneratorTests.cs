@@ -13,7 +13,7 @@ namespace StrongInject.Generator.Tests.Unit
         }
 
         [Fact]
-        public void InstancePerDependencyDependencies()
+        public void InstancePerResolutionDependencies()
         {
             string userSource = @"
 using StrongInject.Runtime;
@@ -60,7 +60,7 @@ partial class Container
         }
 
         [Fact]
-        public void InstancePerDependencyDependenciesWithCasts()
+        public void InstancePerResolutionDependenciesWithCasts()
         {
             string userSource = @"
 using StrongInject.Runtime;
@@ -108,7 +108,7 @@ partial class Container
         }
 
         [Fact]
-        public void InstancePerDependencyDependenciesWithRequiresInitialization()
+        public void InstancePerResolutionDependenciesWithRequiresInitialization()
         {
             string userSource = @"
 using StrongInject.Runtime;
@@ -166,7 +166,7 @@ partial class Container
         }
 
         [Fact]
-        public void InstancePerDependencyDependenciesWithFactories()
+        public void InstancePerResolutionDependenciesWithFactories()
         {
             string userSource = @"
 using StrongInject.Runtime;
@@ -233,15 +233,246 @@ partial class Container
         }
 
         [Fact]
+        public void InstancePerDependencyDependencies()
+        {
+            string userSource = @"
+using StrongInject.Runtime;
+
+[Registration(typeof(A), Scope.InstancePerDependency)]
+[Registration(typeof(B))]
+[Registration(typeof(C), Scope.InstancePerDependency)]
+[Registration(typeof(D))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A 
+{
+    public A(B b, C c){}
+}
+public class B 
+{
+    public B(C c, D d){}
+}
+public class C {}
+public class D 
+{
+    public D(C c){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        var _2 = new global::C();
+        var _4 = new global::C();
+        var _3 = new global::D((global::C)_4);
+        var _1 = new global::B((global::C)_2, (global::D)_3);
+        var _5 = new global::C();
+        var _0 = new global::A((global::B)_1, (global::C)_5);
+        var result = await func((global::A)_0, param);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void InstancePerDependencyDependenciesWithCasts()
+        {
+            string userSource = @"
+using StrongInject.Runtime;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+[Registration(typeof(C), Scope.InstancePerDependency, typeof(C), typeof(IC))]
+[Registration(typeof(D), Scope.InstancePerDependency)]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A 
+{
+    public A(B b, IC c){}
+}
+public class B 
+{
+    public B(IC c, D d){}
+}
+public class C : IC {}
+public class D 
+{
+    public D(C c){}
+}
+public interface IC {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        var _2 = new global::C();
+        var _4 = new global::C();
+        var _3 = new global::D((global::C)_4);
+        var _1 = new global::B((global::IC)_2, (global::D)_3);
+        var _5 = new global::C();
+        var _0 = new global::A((global::B)_1, (global::IC)_5);
+        var result = await func((global::A)_0, param);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void InstancePerDependencyDependenciesWithRequiresInitialization()
+        {
+            string userSource = @"
+using StrongInject.Runtime;
+using System.Threading.Tasks;
+
+[Registration(typeof(A), Scope.InstancePerDependency)]
+[Registration(typeof(B), Scope.InstancePerDependency)]
+[Registration(typeof(C))]
+[Registration(typeof(D))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A : IRequiresInitialization
+{
+    public A(B b, C c, B b1){}
+
+    ValueTask IRequiresInitialization.InitializeAsync() => new ValueTask();
+}
+public class B 
+{
+    public B(C c, D d){}
+}
+public class C : IRequiresInitialization { public ValueTask InitializeAsync()  => new ValueTask();  }
+public class D : E
+{
+    public D(C c){}
+}
+
+public class E : IRequiresInitialization
+{
+    ValueTask IRequiresInitialization.InitializeAsync() => new ValueTask();
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        var _2 = new global::C();
+        await ((global::StrongInject.Runtime.IRequiresInitialization)_2).InitializeAsync();
+        var _3 = new global::D((global::C)_2);
+        await ((global::StrongInject.Runtime.IRequiresInitialization)_3).InitializeAsync();
+        var _1 = new global::B((global::C)_2, (global::D)_3);
+        var _4 = new global::B((global::C)_2, (global::D)_3);
+        var _0 = new global::A((global::B)_1, (global::C)_2, (global::B)_4);
+        await ((global::StrongInject.Runtime.IRequiresInitialization)_0).InitializeAsync();
+        var result = await func((global::A)_0, param);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void InstancePerDependencyDependenciesWithFactories()
+        {
+            string userSource = @"
+using StrongInject.Runtime;
+using System.Threading.Tasks;
+
+[Registration(typeof(A), typeof(IFactory<AFactoryTarget>))]
+[Registration(typeof(B), Scope.InstancePerDependency, typeof(IFactory<BFactoryTarget>))]
+[Registration(typeof(C), Scope.InstancePerResolution, Scope.InstancePerDependency, typeof(C), typeof(IFactory<CFactoryTarget>))]
+[Registration(typeof(D), Scope.InstancePerDependency, Scope.InstancePerDependency, typeof(IFactory<DFactoryTarget>))]
+public partial class Container : IContainer<AFactoryTarget>
+{
+}
+
+public class A : IFactory<AFactoryTarget>
+{
+    public A(BFactoryTarget b, CFactoryTarget c, DFactoryTarget d){}
+    ValueTask<AFactoryTarget> IFactory<AFactoryTarget>.CreateAsync() => new ValueTask<AFactoryTarget>(new AFactoryTarget());
+}
+public class AFactoryTarget {}
+public class B : IFactory<BFactoryTarget>
+{
+    public B(C c, DFactoryTarget d){}
+    ValueTask<BFactoryTarget> IFactory<BFactoryTarget>.CreateAsync() => new ValueTask<BFactoryTarget>(new BFactoryTarget());
+}
+public class BFactoryTarget {}
+public class C : IFactory<CFactoryTarget> 
+{
+    ValueTask<CFactoryTarget> IFactory<CFactoryTarget>.CreateAsync() => new ValueTask<CFactoryTarget>(new CFactoryTarget());
+}
+public class CFactoryTarget {}
+public class D : IFactory<DFactoryTarget>
+{
+    public D(CFactoryTarget c){}
+    ValueTask<DFactoryTarget> IFactory<DFactoryTarget>.CreateAsync() => new ValueTask<DFactoryTarget>(new DFactoryTarget());
+}
+public class DFactoryTarget {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.Runtime.IContainer<global::AFactoryTarget>.RunAsync<TResult, TParam>(global::System.Func<global::AFactoryTarget, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        var _4 = new global::C();
+        var _7 = await ((global::StrongInject.Runtime.IFactory<global::CFactoryTarget>)_4).CreateAsync();
+        var _6 = new global::D(_7);
+        var _5 = await ((global::StrongInject.Runtime.IFactory<global::DFactoryTarget>)_6).CreateAsync();
+        var _3 = new global::B((global::C)_4, _5);
+        var _2 = await ((global::StrongInject.Runtime.IFactory<global::BFactoryTarget>)_3).CreateAsync();
+        var _8 = await ((global::StrongInject.Runtime.IFactory<global::CFactoryTarget>)_4).CreateAsync();
+        var _11 = await ((global::StrongInject.Runtime.IFactory<global::CFactoryTarget>)_4).CreateAsync();
+        var _10 = new global::D(_11);
+        var _9 = await ((global::StrongInject.Runtime.IFactory<global::DFactoryTarget>)_10).CreateAsync();
+        var _1 = new global::A(_2, _8, _9);
+        var _0 = await ((global::StrongInject.Runtime.IFactory<global::AFactoryTarget>)_1).CreateAsync();
+        var result = await func((global::AFactoryTarget)_0, param);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_0);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_9);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_11);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_8);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_2);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_5);
+        await global::StrongInject.Runtime.Helpers.DisposeAsync(_7);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
         public void SingleInstanceDependencies()
         {
             string userSource = @"
 using StrongInject.Runtime;
 
-[Registration(typeof(A), Lifetime.SingleInstance)]
+[Registration(typeof(A), Scope.SingleInstance)]
 [Registration(typeof(B))]
 [Registration(typeof(C))]
-[Registration(typeof(D), Lifetime.SingleInstance)]
+[Registration(typeof(D), Scope.SingleInstance)]
 public partial class Container : IContainer<A>
 {
 }
@@ -308,7 +539,7 @@ using StrongInject.Runtime;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
-[Registration(typeof(C), Lifetime.SingleInstance, typeof(C), typeof(IC))]
+[Registration(typeof(C), Scope.SingleInstance, typeof(C), typeof(IC))]
 [Registration(typeof(D))]
 public partial class Container : IContainer<A>
 {
@@ -365,9 +596,9 @@ partial class Container
 using StrongInject.Runtime;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), Lifetime.SingleInstance)]
+[Registration(typeof(A), Scope.SingleInstance)]
 [Registration(typeof(B))]
-[Registration(typeof(C), Lifetime.SingleInstance)]
+[Registration(typeof(C), Scope.SingleInstance)]
 [Registration(typeof(D))]
 public partial class Container : IContainer<A>
 {
@@ -443,10 +674,10 @@ partial class Container
 using StrongInject.Runtime;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), Lifetime.SingleInstance, Lifetime.InstancePerDependency, typeof(IFactory<AFactoryTarget>))]
-[Registration(typeof(B), Lifetime.SingleInstance, Lifetime.SingleInstance, typeof(IFactory<BFactoryTarget>))]
-[Registration(typeof(C), Lifetime.InstancePerDependency, Lifetime.SingleInstance, typeof(C), typeof(IFactory<CFactoryTarget>))]
-[Registration(typeof(D), Lifetime.InstancePerDependency, Lifetime.InstancePerDependency, typeof(IFactory<DFactoryTarget>))]
+[Registration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution, typeof(IFactory<AFactoryTarget>))]
+[Registration(typeof(B), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<BFactoryTarget>))]
+[Registration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance, typeof(C), typeof(IFactory<CFactoryTarget>))]
+[Registration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution, typeof(IFactory<DFactoryTarget>))]
 public partial class Container : IContainer<AFactoryTarget>
 {
 }
@@ -548,7 +779,7 @@ using StrongInject.Runtime;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
-[Registration(typeof(C), Lifetime.SingleInstance, typeof(C), typeof(IC))]
+[Registration(typeof(C), Scope.SingleInstance, typeof(C), typeof(IC))]
 [Registration(typeof(D))]
 public partial class Container : IContainer<A>, IContainer<B>
 {
@@ -927,14 +1158,14 @@ using System.Threading.Tasks;
 using System;
 
 [Registration(typeof(A), typeof(IFactory<AFactoryTarget>))]
-[Registration(typeof(B), Lifetime.SingleInstance, Lifetime.SingleInstance, typeof(IFactory<BFactoryTarget>))]
-[Registration(typeof(C), Lifetime.InstancePerDependency, Lifetime.SingleInstance, typeof(C), typeof(IFactory<CFactoryTarget>))]
-[Registration(typeof(D), Lifetime.InstancePerDependency, Lifetime.InstancePerDependency, typeof(IFactory<DFactoryTarget>))]
+[Registration(typeof(B), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<BFactoryTarget>))]
+[Registration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance, typeof(C), typeof(IFactory<CFactoryTarget>))]
+[Registration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution, typeof(IFactory<DFactoryTarget>))]
 [Registration(typeof(E))]
 [Registration(typeof(F))]
 [Registration(typeof(G))]
 [Registration(typeof(H))]
-[Registration(typeof(I), Lifetime.SingleInstance)]
+[Registration(typeof(I), Scope.SingleInstance)]
 public partial class Container : IContainer<AFactoryTarget>
 {
     IInstanceProvider<int> instanceProvider;

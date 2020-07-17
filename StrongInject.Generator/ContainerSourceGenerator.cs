@@ -130,9 +130,11 @@ namespace StrongInject.Generator
                     for(int i = orderOfCreation.Count - 1; i >= 0; i--)
                     {
                         var (variableName, source) = orderOfCreation[i];
+                        if (source.scope is Scope.SingleInstance)
+                            continue;
                         switch (source)
                         {
-                            case FactoryRegistration { lifetime: Lifetime.InstancePerDependency }:
+                            case FactoryRegistration:
                                 methodSource.Append("await ");
                                 methodSource.Append(helpersType.FullName());
                                 methodSource.Append("." + nameof(Helpers.DisposeAsync) + "(");
@@ -148,7 +150,7 @@ namespace StrongInject.Generator
                                 methodSource.Append(variableName);
                                 methodSource.Append(");");
                                 break;
-                            case Registration { type: var type, lifetime: Lifetime.InstancePerDependency }:
+                            case Registration { type: var type }:
                                 if (type.AllInterfaces.Contains(iAsyncDisposableType))
                                 {
                                     methodSource.Append("await ((");
@@ -210,7 +212,7 @@ namespace StrongInject.Generator
                     return CreateVariableInternal(target);
                     string CreateVariableInternal(InstanceSource target)
                     {
-                        if (!variables.TryGetValue(target, out var variableName))
+                        if (target.scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out var variableName))
                         {
                             variableName = "_" + variables.Count;
                             variables.Add(target, variableName);
@@ -225,7 +227,7 @@ namespace StrongInject.Generator
                                     methodSource.Append(field.Name);
                                     methodSource.Append(")." + nameof(IInstanceProvider<object>.GetAsync) + "();");
                                     break;
-                                case { lifetime: Lifetime.SingleInstance } registration
+                                case { scope: Scope.SingleInstance } registration
                                     when !(isSingleInstanceCreation && ReferenceEquals(outerTarget, target)):
                                     methodSource.Append("var ");
                                     methodSource.Append(variableName);
@@ -233,7 +235,7 @@ namespace StrongInject.Generator
                                     methodSource.Append(GetSingleInstanceMethodName(registration));
                                     methodSource.Append("();");
                                     break;
-                                case FactoryRegistration(var factoryType, var factoryOf, var lifetime) registration:
+                                case FactoryRegistration(var factoryType, var factoryOf, var scope) registration:
                                     var factory = CreateVariableInternal(instanceSources[factoryType]);
                                     methodSource.Append("var ");
                                     methodSource.Append(variableName);
@@ -243,7 +245,7 @@ namespace StrongInject.Generator
                                     methodSource.Append(factory);
                                     methodSource.Append(")." + nameof(IFactory<object>.CreateAsync) + "();");
                                     break;
-                                case Registration(var type, _, var lifetime, var requiresAsyncInitialization, var constructor) registration:
+                                case Registration(var type, _, var scope, var requiresAsyncInitialization, var constructor) registration:
                                     var variableSource = new StringBuilder();
                                     variableSource.Append("var ");
                                     variableSource.Append(variableName);
@@ -402,8 +404,9 @@ namespace StrongInject.Generator
                 return (x, y) switch
                 {
                     (null, null) => true,
-                    (Registration rX, Registration rY) => rX.lifetime == rY.lifetime && rX.type.Equals(rY.type, SymbolEqualityComparer.Default),
-                    (FactoryRegistration fX, FactoryRegistration fY) => fX.lifetime == fY.lifetime && fX.factoryType.Equals(fY.factoryType, SymbolEqualityComparer.Default),
+                    ({ scope: Scope.InstancePerDependency}, _) => false,
+                    (Registration rX, Registration rY) => rX.scope == rY.scope && rX.type.Equals(rY.type, SymbolEqualityComparer.Default),
+                    (FactoryRegistration fX, FactoryRegistration fY) => fX.scope == fY.scope && fX.factoryType.Equals(fY.factoryType, SymbolEqualityComparer.Default),
                     (InstanceProvider iX, InstanceProvider iY) => iX.providedType.Equals(iY.providedType, SymbolEqualityComparer.Default),
                     _ => false,
                 };
@@ -414,9 +417,10 @@ namespace StrongInject.Generator
                 return obj switch
                 {
                     null => 0,
-                    Registration r => HashCode.Combine(r.lifetime, r.type),
+                    { scope: Scope.InstancePerDependency } => new Random().Next(),
+                    Registration r => HashCode.Combine(r.scope, r.type),
                     InstanceProvider i => HashCode.Combine(i.instanceProviderField),
-                    FactoryRegistration f => HashCode.Combine(f.lifetime, f.factoryType),
+                    FactoryRegistration f => HashCode.Combine(f.scope, f.factoryType),
                     _ => throw new SwitchExpressionException(obj),
                 };
             }

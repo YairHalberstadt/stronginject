@@ -21,7 +21,7 @@ namespace StrongInject.Generator.Tests.Unit
 using StrongInject.Runtime;
 
 [Registration(typeof(A), typeof(IA))]
-[Registration(typeof(B), Lifetime.SingleInstance, typeof(B), typeof(IB))]
+[Registration(typeof(B), Scope.SingleInstance, typeof(B), typeof(IB))]
 public class Container
 {
 }
@@ -40,19 +40,19 @@ public interface IB {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
-                        lifetime: Lifetime.SingleInstance,
+                        scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
-                        lifetime: Lifetime.SingleInstance,
+                        scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
             });
         }
@@ -76,7 +76,7 @@ public class ModuleA
 }
 
 [Registration(typeof(C), typeof(IC))]
-[Registration(typeof(D), Lifetime.SingleInstance, typeof(D), typeof(ID))]
+[Registration(typeof(D), Scope.SingleInstance, typeof(D), typeof(ID))]
 public class ModuleB
 {
 }
@@ -99,25 +99,25 @@ public interface ID {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IC")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("C"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IC"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("D")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("D"),
                         registeredAs: comp.AssertGetTypeByMetadataName("D"),
-                        lifetime: Lifetime.SingleInstance,
+                        scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
             });
         }
@@ -153,7 +153,7 @@ public interface IA {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
 
@@ -164,7 +164,7 @@ public interface IA {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -245,7 +245,7 @@ public class B : IA {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -285,7 +285,7 @@ public class B : IA {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -320,7 +320,7 @@ public class B : IA {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -358,13 +358,13 @@ public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [factoryOfIA] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: factoryOfIA,
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -453,43 +453,43 @@ public interface IE {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("A"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [cIntType] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: cIntType,
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [icIntType] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: icIntType,
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("ID")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("ID"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -519,12 +519,12 @@ public class B : IFactory<A> { public ValueTask<A> CreateAsync() => throw null; 
                     new FactoryRegistration(
                         factoryType: factoryOfA,
                         factoryOf: comp.AssertGetTypeByMetadataName("A"),
-                        lifetime: Lifetime.InstancePerDependency),
+                        scope: Scope.InstancePerResolution),
                 [factoryOfA] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: factoryOfA,
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -554,12 +554,12 @@ public class B : IFactory<A>, IRequiresInitialization { public ValueTask<A> Crea
                     new FactoryRegistration(
                         factoryType: factoryOfA,
                         factoryOf: comp.AssertGetTypeByMetadataName("A"),
-                        lifetime: Lifetime.InstancePerDependency),
+                        scope: Scope.InstancePerResolution),
                 [factoryOfA] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: factoryOfA,
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: true),
             });
         }
@@ -615,39 +615,39 @@ public class I { internal I(int a) {} public I(bool b) {} }
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("A"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("D")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("D"),
                         registeredAs: comp.AssertGetTypeByMetadataName("D"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("E")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("E"),
                         registeredAs: comp.AssertGetTypeByMetadataName("E"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false,
                         constructor: comp.AssertGetTypeByMetadataName("E").Constructors.First(x => x.Parameters.Length > 0)),
                 [comp.AssertGetTypeByMetadataName("G")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("G"),
                         registeredAs: comp.AssertGetTypeByMetadataName("G"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false,
                         constructor: comp.AssertGetTypeByMetadataName("G").Constructors[0]),
                 [comp.AssertGetTypeByMetadataName("I")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("I"),
                         registeredAs: comp.AssertGetTypeByMetadataName("I"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false,
                         constructor: comp.AssertGetTypeByMetadataName("I").Constructors.First(x => x.DeclaredAccessibility == Accessibility.Public)),
             });
@@ -709,7 +709,7 @@ internal class Outer
 using StrongInject.Runtime;
 
 [Registration(registeredAs: new[] { typeof(IA) }, type: typeof(A))]
-[Registration(lifetime: Lifetime.SingleInstance, registeredAs: new[] { typeof(B), typeof(IB) }, type: typeof(B))]
+[Registration(scope: Scope.SingleInstance, registeredAs: new[] { typeof(B), typeof(IB) }, type: typeof(B))]
 public class Container
 {
 }
@@ -728,19 +728,19 @@ public interface IB {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
-                        lifetime: Lifetime.SingleInstance,
+                        scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
-                        lifetime: Lifetime.SingleInstance,
+                        scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
             });
         }
@@ -770,12 +770,12 @@ public class A : IFactory<int[]> { public ValueTask<int[]> CreateAsync() => thro
                     new FactoryRegistration(
                         factoryType: factoryOfIntArray,
                         factoryOf: intArray,
-                        lifetime: Lifetime.InstancePerDependency),
+                        scope: Scope.InstancePerResolution),
                 [factoryOfIntArray] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: factoryOfIntArray,
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -818,7 +818,7 @@ public class A {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("A"),
-                        lifetime: Lifetime.InstancePerDependency,
+                        scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: false),
             });
         }
@@ -829,8 +829,8 @@ public class A {}
             string userSource = @"
 using StrongInject.Runtime;
 
-[Registration(typeof(A), Lifetime.SingleInstance, typeof(IA))]
-[Registration(typeof(B), Lifetime.SingleInstance)]
+[Registration(typeof(A), Scope.SingleInstance, typeof(IA))]
+[Registration(typeof(B), Scope.SingleInstance)]
 public class Container
 {
 }
@@ -844,12 +844,12 @@ public struct B {}
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (4,2): Error SI0008: 'A' is a struct and cannot have a Single Instance lifetime.
-                // Registration(typeof(A), Lifetime.SingleInstance, typeof(IA))
-                new DiagnosticResult("SI0008", @"Registration(typeof(A), Lifetime.SingleInstance, typeof(IA))").WithLocation(4, 2),
-                // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance lifetime.
-                // Registration(typeof(B), Lifetime.SingleInstance)
-                new DiagnosticResult("SI0008", @"Registration(typeof(B), Lifetime.SingleInstance)").WithLocation(5, 2));
+                // (4,2): Error SI0008: 'A' is a struct and cannot have a Single Instance scope.
+                // Registration(typeof(A), Scope.SingleInstance, typeof(IA))
+                new DiagnosticResult("SI0008", @"Registration(typeof(A), Scope.SingleInstance, typeof(IA))").WithLocation(4, 2),
+                // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
+                // Registration(typeof(B), Scope.SingleInstance)
+                new DiagnosticResult("SI0008", @"Registration(typeof(B), Scope.SingleInstance)").WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
         }
 
@@ -860,7 +860,7 @@ public struct B {}
 using StrongInject.Runtime;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), Lifetime.SingleInstance, Lifetime.SingleInstance, typeof(IFactory<B>))]
+[Registration(typeof(A), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<B>))]
 public class Container
 {
 }
@@ -873,9 +873,9 @@ public struct B {}
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance lifetime.
-                // Registration(typeof(A), Lifetime.SingleInstance, Lifetime.SingleInstance, typeof(IFactory<B>))
-                new DiagnosticResult("SI0008", @"Registration(typeof(A), Lifetime.SingleInstance, Lifetime.SingleInstance, typeof(IFactory<B>))").WithLocation(5, 2));
+                // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
+                // Registration(typeof(A), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<B>))
+                new DiagnosticResult("SI0008", @"Registration(typeof(A), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<B>))").WithLocation(5, 2));
             var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
@@ -883,7 +883,7 @@ public struct B {}
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: factoryOfB,
-                        lifetime: Lifetime.SingleInstance,
+                        scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
             });
         }
@@ -891,7 +891,7 @@ public struct B {}
         private static Registration Registration(
             INamedTypeSymbol type,
             ITypeSymbol registeredAs,
-            Lifetime lifetime,
+            Scope scope,
             bool requiresAsyncInitialization,
             IMethodSymbol? constructor = null)
         {
@@ -900,7 +900,7 @@ public struct B {}
                 constructor = Assert.Single(type.Constructors);
             }
 
-            return new Registration(type, registeredAs, lifetime, requiresAsyncInitialization, constructor);
+            return new Registration(type, registeredAs, scope, requiresAsyncInitialization, constructor);
         }
     }
 }
