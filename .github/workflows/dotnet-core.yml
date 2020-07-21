@@ -23,3 +23,10 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+    - name: Get timestamp
+      uses: gerred/actions/current-time@master
+      id: current-time
+    - name: Pack
+      run: dotnet pack StrongInject/StrongInject.csproj -c RELEASE --include-source --include-symbols -o out --version-suffix "${{ steps.current-time.outputs.time }}"
+    - name: Push
+      run: dotnet nuget push StrongInject/out/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://nuget.org
