@@ -10,7 +10,7 @@
 
 	<PropertyGroup>
 		<RestoreAdditionalProjectSources>https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json ;$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
-		<Version>0.0.1</Version>
+		<VersionPrefix>0.0.1</VersionPrefix>
 		<PackageId>StrongInject</PackageId>
 		<Authors>StrongInject</Authors>
 		<Product>StrongInject</Product>
