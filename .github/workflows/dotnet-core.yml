@@ -31,4 +31,4 @@ jobs:
     - name: Pack
       run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
     - name: Push
-      run: dotnet nuget push StrongInject/out/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://nuget.org
+      run: dotnet nuget push out/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://nuget.org
