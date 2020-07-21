@@ -381,7 +381,12 @@ namespace StrongInject.Generator
             var stringBuilder = new StringBuilder(container.ContainingNamespace.FullName());
             foreach (var type in container.GetContainingTypesAndThis().Reverse())
             {
-                stringBuilder.Append(type.MetadataName);
+                stringBuilder.Append(type.Name);
+                if (type.TypeParameters.Length > 0)
+                {
+                    stringBuilder.Append("_");
+                    stringBuilder.Append(type.TypeParameters.Length);
+                }    
             }
             stringBuilder.Append(".generated.cs");
             return stringBuilder.ToString();
