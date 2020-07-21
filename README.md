@@ -1,3 +1,4 @@
+![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 # stronginject
 compile time dependency injection for .Net
 
