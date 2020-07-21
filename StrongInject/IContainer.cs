@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace StrongInject.Runtime
+namespace StrongInject
 {
     public interface IContainer<T>
     {

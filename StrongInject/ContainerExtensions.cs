@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace StrongInject.Runtime
+namespace StrongInject
 {
     public static class ContainerExtensions
     {
@@ -34,7 +34,7 @@ namespace StrongInject.Runtime
             return container.RunAsync((t, action) =>
             {
                 action(t);
-                return new ValueTask<object?>(default);
+                return new ValueTask<object?>(default(object));
             }, action).AsValueTask();
         }
     }

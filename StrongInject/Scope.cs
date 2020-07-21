@@ -1,4 +1,4 @@
-﻿namespace StrongInject.Runtime
+﻿namespace StrongInject
 {
     public enum Scope
     {

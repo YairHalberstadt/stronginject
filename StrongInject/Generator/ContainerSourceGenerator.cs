@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using StrongInject.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +13,33 @@ using System.Threading.Tasks;
 namespace StrongInject.Generator
 {
     [Generator]
-    public class ContainerSourceGenerator : ISourceGenerator
+    internal class ContainerSourceGenerator : ISourceGenerator
     {
         public void Execute(SourceGeneratorContext context)
+        {
+            try
+            {
+                ExecuteInternal(context);
+            }
+            catch (Exception e)
+            {
+                //This is temporary till https://github.com/dotnet/roslyn/issues/46084 is fixed
+                context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        "SI0000",
+                        "An exception was thrown by the StrongInject generator",
+                        "An exception was thrown by the StrongInject generator: '{0}'",
+                        "StrongInject",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    Location.None,
+                    e.ToString()));
+            }
+        }
+
+        //By not inlining we make sure we can catch assembly loading errors when jitting this method
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ExecuteInternal(SourceGeneratorContext context)
         {
             var cancellationToken = context.CancellationToken;
             var registrationAttribute = context.Compilation.GetTypeOrReport(typeof(RegistrationAttribute), context.ReportDiagnostic);
@@ -25,13 +48,13 @@ namespace StrongInject.Generator
             var valueTask1Type = context.Compilation.GetTypeOrReport(typeof(ValueTask<>), context.ReportDiagnostic);
             var interlockedType = context.Compilation.GetTypeOrReport(typeof(Interlocked), context.ReportDiagnostic);
             var helpersType = context.Compilation.GetTypeOrReport(typeof(Helpers), context.ReportDiagnostic);
-            var iAsyncDisposableType = context.Compilation.GetTypeOrReport(typeof(IAsyncDisposable), context.ReportDiagnostic);
+            var iAsyncDisposableType = context.Compilation.GetTypeOrReport("System.IAsyncDisposable", context.ReportDiagnostic);
             var iDisposableType = context.Compilation.GetTypeOrReport(typeof(IDisposable), context.ReportDiagnostic);
 
-            if (registrationAttribute is null 
-                || moduleRegistrationAttribute is null 
-                || iRequiresInitializationType is null 
-                || valueTask1Type is null 
+            if (registrationAttribute is null
+                || moduleRegistrationAttribute is null
+                || iRequiresInitializationType is null
+                || valueTask1Type is null
                 || interlockedType is null
                 || helpersType is null
                 || iAsyncDisposableType is null
@@ -127,7 +150,7 @@ namespace StrongInject.Generator
                     methodSource.Append(resultVariableName);
                     methodSource.Append(", param);");
 
-                    for(int i = orderOfCreation.Count - 1; i >= 0; i--)
+                    for (int i = orderOfCreation.Count - 1; i >= 0; i--)
                     {
                         var (variableName, source) = orderOfCreation[i];
                         if (source.scope is Scope.SingleInstance)
@@ -180,26 +203,34 @@ namespace StrongInject.Generator
                 if (containerMembersSource is not null)
                 {
                     var file = new StringBuilder("#pragma warning disable CS1998\n");
-                    bool requiresNamespace = module.ContainingNamespace is { IsGlobalNamespace: false };
-                    if (requiresNamespace)
+                    var closingBraceCount = 0;
+                    if (module.ContainingNamespace is { IsGlobalNamespace: false })
                     {
+                        closingBraceCount++;
                         file.Append("namespace ");
                         file.Append(module.ContainingNamespace.FullName());
                         file.Append("{");
                     }
-                    file.Append("partial class ");
-                    file.Append(module.Name);
-                    file.Append("{");
+
+                    foreach (var type in module.GetContainingTypesAndThis().Reverse())
+                    {
+                        closingBraceCount++;
+                        file.Append("partial class ");
+                        file.Append(type.NameWithGenerics());
+                        file.Append("{");
+                    }
+
                     file.Append(containerMembersSource);
-                    file.Append("}");
-                    if (requiresNamespace)
+
+                    for (int i = 0; i < closingBraceCount; i++)
                     {
                         file.Append("}");
                     }
 
+                    var source = CSharpSyntaxTree.ParseText(SourceText.From(file.ToString(), Encoding.UTF8)).GetRoot().NormalizeWhitespace().SyntaxTree.GetText();
                     context.AddSource(
                         module.Name + ".generated.cs",
-                        CSharpSyntaxTree.ParseText(SourceText.From(file.ToString())).GetRoot().NormalizeWhitespace().SyntaxTree.GetText());
+                        source);
                 }
 
                 string CreateVariable(InstanceSource target, StringBuilder methodSource, bool isSingleInstanceCreation, out List<(string variableName, InstanceSource source)> orderOfCreation)
@@ -404,7 +435,7 @@ namespace StrongInject.Generator
                 return (x, y) switch
                 {
                     (null, null) => true,
-                    ({ scope: Scope.InstancePerDependency}, _) => false,
+                    ({ scope: Scope.InstancePerDependency }, _) => false,
                     (Registration rX, Registration rY) => rX.scope == rY.scope && rX.type.Equals(rY.type, SymbolEqualityComparer.Default),
                     (FactoryRegistration fX, FactoryRegistration fY) => fX.scope == fY.scope && fX.factoryType.Equals(fY.factoryType, SymbolEqualityComparer.Default),
                     (InstanceProvider iX, InstanceProvider iY) => iX.providedType.Equals(iY.providedType, SymbolEqualityComparer.Default),
@@ -418,10 +449,10 @@ namespace StrongInject.Generator
                 {
                     null => 0,
                     { scope: Scope.InstancePerDependency } => new Random().Next(),
-                    Registration r => HashCode.Combine(r.scope, r.type),
-                    InstanceProvider i => HashCode.Combine(i.instanceProviderField),
-                    FactoryRegistration f => HashCode.Combine(f.scope, f.factoryType),
-                    _ => throw new SwitchExpressionException(obj),
+                    Registration r => r.scope.GetHashCode() * 17 + r.type.GetHashCode(),
+                    InstanceProvider i => i.instanceProviderField.GetHashCode(),
+                    FactoryRegistration f => 13 + f.scope.GetHashCode() * 17 + f.factoryType.GetHashCode(),
+                    _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };
             }
         }

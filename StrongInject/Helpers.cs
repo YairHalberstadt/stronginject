@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace StrongInject.Runtime
+namespace StrongInject
 {
     public static class Helpers
     {

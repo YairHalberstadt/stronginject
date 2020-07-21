@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace StrongInject.Runtime
+namespace StrongInject
 {
     public interface IFactory<T>
     {
