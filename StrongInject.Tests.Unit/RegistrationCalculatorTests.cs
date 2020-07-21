@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
-using StrongInject.Runtime;
+using StrongInject;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -18,7 +18,7 @@ namespace StrongInject.Generator.Tests.Unit
         public void CalculatesDirectRegistrations()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A), typeof(IA))]
 [Registration(typeof(B), Scope.SingleInstance, typeof(B), typeof(IB))]
@@ -61,7 +61,7 @@ public interface IB {}
         public void CalculatesIndirectRegistrations()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A), typeof(IA))]
 [ModuleRegistration(typeof(ModuleA))]
@@ -126,7 +126,7 @@ public interface ID {}
         public void DirectRegistrationsHasPriorityOverIndirect()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A), typeof(IA))]
 [ModuleRegistration(typeof(Module))]
@@ -173,7 +173,7 @@ public interface IA {}
         public void ErrorIfTwoModulesRegisterSameType()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [ModuleRegistration(typeof(ModuleA))]
 [ModuleRegistration(typeof(ModuleB))]
@@ -214,7 +214,7 @@ public class B : IA {}
         public void NoErrorIfTwoModulesRegisterSameTypeButTypeIsExcludedFromOne1()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [ModuleRegistration(typeof(ModuleA))]
 [ModuleRegistration(typeof(ModuleB), typeof(IA))]
@@ -254,7 +254,7 @@ public class B : IA {}
         public void NoErrorIfTwoModulesRegisterSameTypeButTypeIsExcludedFromOne2()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [ModuleRegistration(typeof(ModuleA), typeof(IA))]
 [ModuleRegistration(typeof(ModuleB))]
@@ -294,7 +294,7 @@ public class B : IA {}
         public void ErrorIfModuleRegistersSameTypeTwice()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A), typeof(IA))]
 [Registration(typeof(B), typeof(IA))]
@@ -329,7 +329,7 @@ public class B : IA {}
         public void ErrorIfModuleRegistersSameTypeTwiceThroughFactory()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 using System.Threading.Tasks;
 
 [Registration(typeof(A), typeof(IA))]
@@ -373,7 +373,7 @@ public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null
         public void ErrorWhenRegisteringOpenGeneric()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A<>))]
 [Registration(typeof(A<int>), typeof(A<>))]
@@ -409,7 +409,7 @@ public class B<T> {
         public void ErrorIfRegisteredTypeIsNotBaseTypeOfRegisteredAs()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))]
 public class Container
@@ -498,7 +498,7 @@ public interface IE {}
         public void RegistersFactoryTypes()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 using System.Threading.Tasks;
 
 [Registration(typeof(B), typeof(IFactory<A>))]
@@ -533,7 +533,7 @@ public class B : IFactory<A> { public ValueTask<A> CreateAsync() => throw null; 
         public void RegistersRequiresInitializationTypes()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 using System.Threading.Tasks;
 
 [Registration(typeof(B), typeof(IFactory<A>))]
@@ -568,7 +568,7 @@ public class B : IFactory<A>, IRequiresInitialization { public ValueTask<A> Crea
         public void ErrorIfMultipleConstructors()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
@@ -657,7 +657,7 @@ public class I { internal I(int a) {} public I(bool b) {} }
         public void ErrorIfRegisteredOrRegisteredAsTypesAreNotPublic()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B), typeof(IB), typeof(IB<A>))]
@@ -706,7 +706,7 @@ internal class Outer
         public void ParametersRearrangedWithNamedParameters()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(registeredAs: new[] { typeof(IA) }, type: typeof(A))]
 [Registration(scope: Scope.SingleInstance, registeredAs: new[] { typeof(B), typeof(IB) }, type: typeof(B))]
@@ -749,7 +749,7 @@ public interface IB {}
         public void CanRegisterNonNamedTypeSymbolViaFactory()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 using System.Threading.Tasks;
 
 [Registration(typeof(A), typeof(IFactory<int[]>))]
@@ -784,7 +784,7 @@ public class A : IFactory<int[]> { public ValueTask<int[]> CreateAsync() => thro
         public void NoErrorIfTwoModulesRegisterSameModule()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [ModuleRegistration(typeof(ModuleA))]
 [ModuleRegistration(typeof(ModuleB))]
@@ -827,7 +827,7 @@ public class A {}
         public void ErrorIfStructIsRegisteredAsSingleInstance()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A), Scope.SingleInstance, typeof(IA))]
 [Registration(typeof(B), Scope.SingleInstance)]
@@ -857,7 +857,7 @@ public struct B {}
         public void ErrorIfStructIsRegisteredAsSingleInstanceThroughFactory()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 using System.Threading.Tasks;
 
 [Registration(typeof(A), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<B>))]

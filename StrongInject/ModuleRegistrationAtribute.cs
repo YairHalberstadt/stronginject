@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StrongInject.Runtime
+namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public class ModuleRegistrationAttribute : Attribute

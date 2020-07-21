@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace StrongInject.Generator
 {
-    public static class RoslynExtensions
+    internal static class RoslynExtensions
     {
         public static INamedTypeSymbol? GetType(this Compilation compilation, Type type) => compilation.GetTypeByMetadataName(type.FullName);
         public static INamedTypeSymbol? GetTypeOrReport(this Compilation compilation, Type type, Action<Diagnostic> reportDiagnostic)

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using StrongInject.Runtime;
+using StrongInject;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -19,7 +19,7 @@ namespace StrongInject.Generator.Tests.Unit
         public void NoErrorForCorrectDependencies()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
@@ -54,7 +54,7 @@ public class D
         public void IgnoresErrorsInUnusedDependencies()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
@@ -90,7 +90,7 @@ public class E {}
         public void ErrorOnCircularDependency1()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
@@ -133,7 +133,7 @@ public class D
         public void ErrorOnCircularDependency2()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
@@ -176,7 +176,7 @@ public class D
         public void ErrorOnCircularDependency3()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
@@ -216,7 +216,7 @@ public class D
         public void ErrorWhenDependencyNotRegistered()
         {
             string userSource = @"
-using StrongInject.Runtime;
+using StrongInject;
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]

@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using StrongInject.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -112,7 +111,7 @@ namespace StrongInject.Generator
                 moduleRegistrations.Add((moduleRegistrationAttribute, thisModuleRegistrations));
             }
 
-            return new Dictionary<ITypeSymbol, InstanceSource>(directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)));
+            return directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)).ToDictionary(x => x.Key, x => x.Value);
         }
 
         private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, AttributeData otherModuleRegistrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)

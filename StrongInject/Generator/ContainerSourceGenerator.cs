@@ -2,11 +2,9 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using StrongInject.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +12,7 @@ using System.Threading.Tasks;
 namespace StrongInject.Generator
 {
     [Generator]
-    public class ContainerSourceGenerator : ISourceGenerator
+    internal class ContainerSourceGenerator : ISourceGenerator
     {
         public void Execute(SourceGeneratorContext context)
         {
@@ -28,10 +26,10 @@ namespace StrongInject.Generator
             var iAsyncDisposableType = context.Compilation.GetTypeOrReport(typeof(IAsyncDisposable), context.ReportDiagnostic);
             var iDisposableType = context.Compilation.GetTypeOrReport(typeof(IDisposable), context.ReportDiagnostic);
 
-            if (registrationAttribute is null 
-                || moduleRegistrationAttribute is null 
-                || iRequiresInitializationType is null 
-                || valueTask1Type is null 
+            if (registrationAttribute is null
+                || moduleRegistrationAttribute is null
+                || iRequiresInitializationType is null
+                || valueTask1Type is null
                 || interlockedType is null
                 || helpersType is null
                 || iAsyncDisposableType is null
@@ -127,7 +125,7 @@ namespace StrongInject.Generator
                     methodSource.Append(resultVariableName);
                     methodSource.Append(", param);");
 
-                    for(int i = orderOfCreation.Count - 1; i >= 0; i--)
+                    for (int i = orderOfCreation.Count - 1; i >= 0; i--)
                     {
                         var (variableName, source) = orderOfCreation[i];
                         if (source.scope is Scope.SingleInstance)
@@ -404,7 +402,7 @@ namespace StrongInject.Generator
                 return (x, y) switch
                 {
                     (null, null) => true,
-                    ({ scope: Scope.InstancePerDependency}, _) => false,
+                    ({ scope: Scope.InstancePerDependency }, _) => false,
                     (Registration rX, Registration rY) => rX.scope == rY.scope && rX.type.Equals(rY.type, SymbolEqualityComparer.Default),
                     (FactoryRegistration fX, FactoryRegistration fY) => fX.scope == fY.scope && fX.factoryType.Equals(fY.factoryType, SymbolEqualityComparer.Default),
                     (InstanceProvider iX, InstanceProvider iY) => iX.providedType.Equals(iY.providedType, SymbolEqualityComparer.Default),
@@ -418,10 +416,10 @@ namespace StrongInject.Generator
                 {
                     null => 0,
                     { scope: Scope.InstancePerDependency } => new Random().Next(),
-                    Registration r => HashCode.Combine(r.scope, r.type),
-                    InstanceProvider i => HashCode.Combine(i.instanceProviderField),
-                    FactoryRegistration f => HashCode.Combine(f.scope, f.factoryType),
-                    _ => throw new SwitchExpressionException(obj),
+                    Registration r => r.scope.GetHashCode() * 17 + r.type.GetHashCode(),
+                    InstanceProvider i => i.instanceProviderField.GetHashCode(),
+                    FactoryRegistration f => 13 + f.scope.GetHashCode() * 17 + f.factoryType.GetHashCode(),
+                    _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };
             }
         }

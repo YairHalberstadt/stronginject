@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using StrongInject.Runtime;
 
 namespace StrongInject.Generator
 {
@@ -10,7 +9,8 @@ namespace StrongInject.Generator
         ITypeSymbol registeredAs,
         Scope scope,
         bool requiresAsyncInitialization,
-        IMethodSymbol constructor) : InstanceSource(scope) {}
+        IMethodSymbol constructor) : InstanceSource(scope)
+    { }
     internal record InstanceProvider(ITypeSymbol providedType, IFieldSymbol instanceProviderField, INamedTypeSymbol castTo) : InstanceSource(Scope.InstancePerResolution) { }
     internal record FactoryRegistration(ITypeSymbol factoryType, ITypeSymbol factoryOf, Scope scope) : InstanceSource(scope) { }
 }
