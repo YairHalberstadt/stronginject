@@ -229,7 +229,7 @@ namespace StrongInject.Generator
 
                     var source = CSharpSyntaxTree.ParseText(SourceText.From(file.ToString(), Encoding.UTF8)).GetRoot().NormalizeWhitespace().SyntaxTree.GetText();
                     context.AddSource(
-                        module.Name + ".generated.cs",
+                        GenerateNameHint(module),
                         source);
                 }
 
@@ -374,6 +374,17 @@ namespace StrongInject.Generator
                     }
                 }
             }
+        }
+
+        private static string GenerateNameHint(INamedTypeSymbol container)
+        {
+            var stringBuilder = new StringBuilder(container.ContainingNamespace.FullName());
+            foreach (var type in container.GetContainingTypesAndThis().Reverse())
+            {
+                stringBuilder.Append(type.MetadataName);
+            }
+            stringBuilder.Append(".generated.cs");
+            return stringBuilder.ToString();
         }
 
         private static Dictionary<ITypeSymbol, InstanceSource> GatherInstanceSources(INamedTypeSymbol? instanceProviderInterface, INamedTypeSymbol module, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Action<Diagnostic> reportDiagnostic, CancellationToken cancellationToken)
