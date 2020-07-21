@@ -3,7 +3,7 @@ using Xunit;
 
 namespace StrongInject.Generator.Tests.Unit
 {
-    public class TestInstancePerResolutionHasCorrectScope
+    public partial class TestInstancePerResolutionHasCorrectScope
     {
         public record A(B b, C c) { }
         public record B(D d) { }
@@ -14,10 +14,8 @@ namespace StrongInject.Generator.Tests.Unit
         [Registration(typeof(C))]
         [Registration(typeof(B))]
         [Registration(typeof(A))]
-        public class Container : IContainer<A>
+        public partial class Container : IContainer<A>
         {
-
-
         }
 
         [Fact]
@@ -31,7 +29,7 @@ namespace StrongInject.Generator.Tests.Unit
             Assert.NotSame(a1, a2);
             Assert.NotSame(a1.b, a2.b);
             Assert.NotSame(a1.c, a2.c);
-            Assert.NotSame(a2.b.d, a2.b.d);
+            Assert.NotSame(a1.b.d, a2.b.d);
         }
     }
 }

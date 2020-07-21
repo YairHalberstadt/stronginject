@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,30 @@ namespace StrongInject.Generator
     {
         public void Execute(SourceGeneratorContext context)
         {
+            try
+            {
+                ExecuteInternal(context);
+            }
+            catch (Exception e)
+            {
+                //This is temporary till https://github.com/dotnet/roslyn/issues/46084 is fixed
+                context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        "SI0000",
+                        "An exception was thrown by the StrongInject generator",
+                        "An exception was thrown by the StrongInject generator: '{0}'",
+                        "StrongInject",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    Location.None,
+                    e.ToString()));
+            }
+        }
+
+        //By not inlining we make sure we can catch assembly loading errors when jitting this method
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ExecuteInternal(SourceGeneratorContext context)
+        {
             var cancellationToken = context.CancellationToken;
             var registrationAttribute = context.Compilation.GetTypeOrReport(typeof(RegistrationAttribute), context.ReportDiagnostic);
             var moduleRegistrationAttribute = context.Compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), context.ReportDiagnostic);
@@ -23,7 +48,7 @@ namespace StrongInject.Generator
             var valueTask1Type = context.Compilation.GetTypeOrReport(typeof(ValueTask<>), context.ReportDiagnostic);
             var interlockedType = context.Compilation.GetTypeOrReport(typeof(Interlocked), context.ReportDiagnostic);
             var helpersType = context.Compilation.GetTypeOrReport(typeof(Helpers), context.ReportDiagnostic);
-            var iAsyncDisposableType = context.Compilation.GetTypeOrReport(typeof(IAsyncDisposable), context.ReportDiagnostic);
+            var iAsyncDisposableType = context.Compilation.GetTypeOrReport("System.IAsyncDisposable", context.ReportDiagnostic);
             var iDisposableType = context.Compilation.GetTypeOrReport(typeof(IDisposable), context.ReportDiagnostic);
 
             if (registrationAttribute is null
@@ -178,26 +203,34 @@ namespace StrongInject.Generator
                 if (containerMembersSource is not null)
                 {
                     var file = new StringBuilder("#pragma warning disable CS1998\n");
-                    bool requiresNamespace = module.ContainingNamespace is { IsGlobalNamespace: false };
-                    if (requiresNamespace)
+                    var closingBraceCount = 0;
+                    if (module.ContainingNamespace is { IsGlobalNamespace: false })
                     {
+                        closingBraceCount++;
                         file.Append("namespace ");
                         file.Append(module.ContainingNamespace.FullName());
                         file.Append("{");
                     }
-                    file.Append("partial class ");
-                    file.Append(module.Name);
-                    file.Append("{");
+
+                    foreach (var type in module.GetContainingTypesAndThis().Reverse())
+                    {
+                        closingBraceCount++;
+                        file.Append("partial class ");
+                        file.Append(type.NameWithGenerics());
+                        file.Append("{");
+                    }
+
                     file.Append(containerMembersSource);
-                    file.Append("}");
-                    if (requiresNamespace)
+
+                    for (int i = 0; i < closingBraceCount; i++)
                     {
                         file.Append("}");
                     }
 
+                    var source = CSharpSyntaxTree.ParseText(SourceText.From(file.ToString(), Encoding.UTF8)).GetRoot().NormalizeWhitespace().SyntaxTree.GetText();
                     context.AddSource(
                         module.Name + ".generated.cs",
-                        CSharpSyntaxTree.ParseText(SourceText.From(file.ToString())).GetRoot().NormalizeWhitespace().SyntaxTree.GetText());
+                        source);
                 }
 
                 string CreateVariable(InstanceSource target, StringBuilder methodSource, bool isSingleInstanceCreation, out List<(string variableName, InstanceSource source)> orderOfCreation)

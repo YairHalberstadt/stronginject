@@ -14,18 +14,33 @@ namespace StrongInject.Generator
             if (typeSymbol is null)
             {
                 reportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                            "SI0201",
-                            "Missing Type",
-                            "Missing Type '{0}'. Are you missing an assembly reference?",
-                            "StrongInject",
-                            DiagnosticSeverity.Error,
-                            isEnabledByDefault: true),
-                        Location.None,
-                        type));
+                    MissingTypeDescriptor,
+                    Location.None,
+                    type));
             }
             return typeSymbol;
         }
+
+        public static INamedTypeSymbol? GetTypeOrReport(this Compilation compilation, string metadataName, Action<Diagnostic> reportDiagnostic)
+        {
+            var typeSymbol = compilation.GetTypeByMetadataName(metadataName);
+            if (typeSymbol is null)
+            {
+                reportDiagnostic(Diagnostic.Create(
+                    MissingTypeDescriptor,
+                    Location.None,
+                    metadataName));
+            }
+            return typeSymbol;
+        }
+
+        private static DiagnosticDescriptor MissingTypeDescriptor => new DiagnosticDescriptor(
+            "SI0201",
+            "Missing Type",
+            "Missing Type '{0}'. Are you missing an assembly reference?",
+            "StrongInject",
+            DiagnosticSeverity.Error,
+            isEnabledByDefault: true);
 
         public static IEnumerable<INamedTypeSymbol> GetBaseTypesAndThis(this INamedTypeSymbol? namedType)
         {
@@ -34,6 +49,16 @@ namespace StrongInject.Generator
             {
                 yield return current;
                 current = current.BaseType;
+            }
+        }
+
+        public static IEnumerable<INamedTypeSymbol> GetContainingTypesAndThis(this INamedTypeSymbol? namedType)
+        {
+            var current = namedType;
+            while (current != null)
+            {
+                yield return current;
+                current = current.ContainingType;
             }
         }
 
@@ -64,12 +89,22 @@ namespace StrongInject.Generator
             };
         }
 
-        public static string FullName(this INamespaceOrTypeSymbol namespaceOrType)
+        public static string FullName(this ITypeSymbol type)
         {
-            return namespaceOrType.ToDisplayString(new SymbolDisplayFormat(
+            return type.ToDisplayString(new SymbolDisplayFormat(
                 globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
                 genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+        }
+
+        public static string FullName(this INamespaceSymbol @namespace)
+        {
+            return @namespace.ToDisplayString(new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
+        }
+
+        public static string NameWithGenerics(this ITypeSymbol type)
+        {
+            return type.ToDisplayString(new SymbolDisplayFormat(genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
         }
 
         public static IEnumerable<INamedTypeSymbol> AllInterfacesAndSelf(this ITypeSymbol type)

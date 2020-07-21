@@ -1280,5 +1280,140 @@ partial class Container
     }
 }");
         }
+
+        [Fact]
+        public void GeneratesContainerInNamespace()
+        {
+            string userSource = @"
+using StrongInject;
+
+namespace N.O.P
+{
+    [Registration(typeof(A))]
+    public partial class Container : IContainer<A>
+    {
+    }
+
+    public class A 
+    {
+    }
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+namespace N.O.P
+{
+    partial class Container
+    {
+        async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IContainer<global::N.O.P.A>.RunAsync<TResult, TParam>(global::System.Func<global::N.O.P.A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+        {
+            var _0 = new global::N.O.P.A();
+            var result = await func((global::N.O.P.A)_0, param);
+            return result;
+        }
+    }
+}");
+        }
+
+        [Fact]
+        public void GeneratesContainerInNestedType()
+        {
+            string userSource = @"
+using StrongInject;
+
+namespace N.O.P
+{
+    public partial class Outer1
+    {
+        public partial class Outer2
+        {
+            [Registration(typeof(A))]
+            public partial class Container : IContainer<A>
+            {
+            }
+
+            public class A 
+            {
+            }
+        }
+    }
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+namespace N.O.P
+{
+    partial class Outer1
+    {
+        partial class Outer2
+        {
+            partial class Container
+            {
+                async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IContainer<global::N.O.P.Outer1.Outer2.A>.RunAsync<TResult, TParam>(global::System.Func<global::N.O.P.Outer1.Outer2.A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+                {
+                    var _0 = new global::N.O.P.Outer1.Outer2.A();
+                    var result = await func((global::N.O.P.Outer1.Outer2.A)_0, param);
+                    return result;
+                }
+            }
+        }
+    }
+}");
+        }
+
+        [Fact]
+        public void GeneratesContainerInGenericNestedType()
+        {
+            string userSource = @"
+using StrongInject;
+
+namespace N.O.P
+{
+    public partial class Outer1<T>
+    {
+        public partial class Outer2<T1, T2>
+        {
+            [Registration(typeof(A))]
+            public partial class Container : IContainer<A>
+            {
+            }
+        }
+    }
+
+    public class A 
+    {
+    }
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+namespace N.O.P
+{
+    partial class Outer1<T>
+    {
+        partial class Outer2<T1, T2>
+        {
+            partial class Container
+            {
+                async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IContainer<global::N.O.P.A>.RunAsync<TResult, TParam>(global::System.Func<global::N.O.P.A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+                {
+                    var _0 = new global::N.O.P.A();
+                    var result = await func((global::N.O.P.A)_0, param);
+                    return result;
+                }
+            }
+        }
+    }
+}");
+        }
     }
 }
