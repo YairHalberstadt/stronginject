@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>true</WarningsAsErrors>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<NoWarn>CS1591</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -18,6 +19,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 	
 	<ItemGroup>
