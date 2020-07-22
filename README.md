@@ -2,6 +2,25 @@
 # stronginject
 compile time dependency injection for .Net
 
+## Table of Contents
+
+- [stronginject](#stronginject)
+  * [Table of Contents](#table-of-contents)
+  * [Aims](#aims)
+  * [Requirements](#requirements)
+  * [Nuget](#nuget)
+  * [Usage](#usage)
+    + [Declaring a container](#declaring-a-container)
+    + [Using a container.](#using-a-container)
+    + [Registration](#registration)
+      - [Scope](#scope)
+      - [Modules](#modules)
+      - [Factory Registrations](#factory-registrations)
+      - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+    + [Async initialization](#async-initialization)
+    + [Disposal](#disposal)
+  * [Contributing](#contributing)
+
 ## Aims
 
 1. **Compile time checked dependency injection.** If the type you're resolving isn't registered you get an error at compile time, not runtime.
@@ -255,7 +274,7 @@ public partial class Container : IContainer<IInterface>
 
 `GetAsync` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to returna singleton or not.
 
-### Post contructor initialization / async initialization
+### Async initialization
 
 If your type implements `IRequiresInitialization`, `InitializeAsync` will be called after construction.
 
