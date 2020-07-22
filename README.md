@@ -10,6 +10,18 @@ compile time dependency injection for .Net
 4. **No reflection or runtime code generation.** Instead StrongInject uses roslyn Source Generators, meaning it's fast, and works well on UWP/IOS too.
 5. **Async support.** StrongInject fully supports async initialization and disposal, a feature sorely lacking in many IOC containers.
 
+## Requirements
+
+[Visual Studio preview version](https://visualstudio.microsoft.com/vs/preview/)
+[.Net 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0)
+
+## Nuget
+
+https://www.nuget.org/packages/StrongInject/
+
+We recommend you use floating versions for now, as `StrongInject` is still in preview and changing rapidly. 
+`<PackageReference Include="StrongInject" Version="0.0.1-CI-*" />`
+
 ## Usage
 
 ### Declaring a container
@@ -240,3 +252,98 @@ public partial class Container : IContainer<IInterface>
   public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
 }
 ```
+
+`GetAsync` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to returna singleton or not.
+
+### Post contructor initialization / async initialization
+
+If your type implements `IRequiresInitialization`, `InitializeAsync` will be called after construction.
+
+Here is a full fledged example where data will be loaded from the database as part of resolution:
+
+```csharp
+using StrongInject;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+public interface IDb
+{
+    Task<Dictionary<string, string>> GetUserPasswordsAsync();
+}
+
+public class PasswordChecker : IRequiresInitialization, IAsyncDisposable
+{
+    private readonly IDb _db;
+
+    private Dictionary<string, string> _userPasswords;
+
+    private Timer _timer;
+
+    public PasswordChecker(IDb db)
+    {
+        _db = db;
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        _userPasswords = await _db.GetUserPasswordsAsync();
+        _timer = new Timer(async _ => { _userPasswords = await _db.GetUserPasswordsAsync(); }, null, 60000, 60000);
+    }
+
+    public bool CheckPassword(string user, string password) => _userPasswords.TryGetValue(user, out var correctPassword) && password == correctPassword;
+
+    public ValueTask DisposeAsync()
+    {
+        return _timer.DisposeAsync();
+    }
+}
+
+public class DbInstanceProvider : IInstanceProvider<IDb>
+{
+    private readonly IDb _db;
+
+    public DbInstanceProvider(IDb db)
+    {
+        _db = db;
+    }
+
+    public ValueTask<IDb> GetAsync()
+    {
+        return new ValueTask<IDb>(_db);
+    }
+
+    public ValueTask ReleaseAsync(IDb instance)
+    {
+        return default;
+    }
+}
+
+[Registration(typeof(PasswordChecker), Scope.SingleInstance)]
+public partial class Container : IContainer<PasswordChecker>
+{
+    public DbInstanceProvider _dbInstanceProvider;
+
+    public Container(DbInstanceProvider dbInstanceProvider)
+    {
+        _dbInstanceProvider = dbInstanceProvider;
+    }
+}
+```
+
+### Disposal
+
+Once a call to `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `RunAsync` will be disposed.
+
+If the types implement `IAsyncDisposable` it will be prefferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
+
+Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.ReleaseAsync(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .Net Standard 2.1 package `ReleaseAsync` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .Net Standard 2.0 package you will need to implement it either way.
+
+## Contributing
+
+This is currently in preview, meaning we can (and will) make API breaking changes. Now is the best time to file suggestions if you feel like the API could be approved.
+
+Similiarly please do open issues if you spot any bugs.
+
+Please feel free to work on any open issue and open a PR. Ideally open an issue before working on something, so that the effort doesn't go to waste if it's not suitable.
