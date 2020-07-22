@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
-using StrongInject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -886,6 +886,119 @@ public struct B {}
                         scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
             });
+        }
+
+
+        [Fact]
+        public void CanRegisterTypeAsCovariantInterfaceItImplements()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A), typeof(IA<object>))]
+public class Container
+{
+}
+
+public interface IA<out T> {}
+public class A : IA<string> {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            var iAOfObject = comp.AssertGetTypeByMetadataName("IA`1").Construct(comp.AssertGetTypeByMetadataName(typeof(object).FullName!));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [iAOfObject] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: iAOfObject,
+                        scope: Scope.InstancePerResolution,
+                        requiresAsyncInitialization: false),
+            });
+        }
+
+        [Fact]
+        public void CanRegisterStructAsInterface()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A), typeof(IA))]
+public class Container
+{
+}
+
+public interface IA {}
+public struct A : IA {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [comp.AssertGetTypeByMetadataName("IA")] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: comp.AssertGetTypeByMetadataName("IA"),
+                        scope: Scope.InstancePerResolution,
+                        requiresAsyncInitialization: false),
+            });
+        }
+
+        [Fact]
+        public void CanRegisterStructAsNullableConversion()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A), typeof(A?))]
+public class Container
+{
+}
+
+public struct A {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            var nullableA = comp.AssertGetTypeByMetadataName(typeof(Nullable<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [nullableA] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: nullableA,
+                        scope: Scope.InstancePerResolution,
+                        requiresAsyncInitialization: false),
+            });
+        }
+
+        [Fact]
+        public void CannotRegisterAsUserDefinedConversion()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B), typeof(A))]
+public class Container
+{
+}
+
+public class A {}
+public class B 
+{
+    public static implicit operator A(B b) => new A();
+}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify(
+                // (4,2): Error SI0001: 'B' does not have an identity, implicit reference, or boxing conversion to 'A'.
+                // Registration(typeof(B), typeof(A))
+                new DiagnosticResult("SI0001", @"Registration(typeof(B), typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
+            Assert.Empty(registrations);
         }
 
         private static Registration Registration(

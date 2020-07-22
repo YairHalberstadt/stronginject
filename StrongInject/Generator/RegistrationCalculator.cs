@@ -14,6 +14,7 @@ namespace StrongInject.Generator
             Action<Diagnostic> reportDiagnostic,
             CancellationToken cancellationToken)
         {
+            _compilation = compilation;
             _reportDiagnostic = reportDiagnostic;
             _cancellationToken = cancellationToken;
             _registrationAttributeType = compilation.GetTypeOrReport(typeof(RegistrationAttribute), reportDiagnostic)!;
@@ -35,6 +36,7 @@ namespace StrongInject.Generator
         private INamedTypeSymbol _moduleRegistrationAttributeType;
         private INamedTypeSymbol _iFactoryType;
         private INamedTypeSymbol _iRequiresInitializationType;
+        private readonly Compilation _compilation;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly CancellationToken _cancellationToken;
         private bool _valid;
@@ -205,7 +207,7 @@ namespace StrongInject.Generator
                 var registeredAsConstants = registrationAttribute.ConstructorArguments[countConstructorArguments - 1].Values;
                 var registeredAs = registeredAsConstants.IsDefaultOrEmpty ? new[] { type } : registeredAsConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToArray();
 
-                var interfacesAndBaseTypes = type.GetBaseTypesAndThis().Concat(type.AllInterfaces).ToHashSet(SymbolEqualityComparer.Default);
+                var requiresInitialization = type.AllInterfaces.Contains(_iRequiresInitializationType);
                 foreach (var directTarget in registeredAs)
                 {
                     if (directTarget.ReferencesTypeParametersOrErrorTypes())
@@ -223,13 +225,12 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    if (!interfacesAndBaseTypes.Contains(directTarget))
+                    if (_compilation.ClassifyCommonConversion(type, directTarget) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
                     {
-                        _reportDiagnostic(DoesNotImplement(registrationAttribute, type, directTarget, _cancellationToken));
+                        _reportDiagnostic(DoesNotHaveSuitableConversion(registrationAttribute, type, directTarget, _cancellationToken));
                         continue;
                     }
 
-                    var requiresInitialization = interfacesAndBaseTypes.Contains(_iRequiresInitializationType);
                     if (directRegistrations.ContainsKey(directTarget))
                     {
                         _reportDiagnostic(DuplicateRegistration(registrationAttribute, directTarget, _cancellationToken));
@@ -309,13 +310,13 @@ namespace StrongInject.Generator
                 type);
         }
 
-        private static Diagnostic DoesNotImplement(AttributeData registrationAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
+        private static Diagnostic DoesNotHaveSuitableConversion(AttributeData registrationAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0001",
-                    "Registered type does not implement registered as type",
-                    "'{0}' does not implement '{1}'.",
+                    "Registered type does not have an identity, implicit reference, boxing or nullable conversion to registered as type",
+                    "'{0}' does not have an identity, implicit reference, boxing or nullable conversion to '{1}'.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
