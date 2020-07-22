@@ -1,52 +1,26 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table Of Contents
-
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 # stronginject
-compile time dependency injection for .Net [stronginject](#stronginject)
-  ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Aims](#aims)
-  ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Requirements](#requirements)
-  ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Nuget](#nuget)
-  ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Usage](#usage)
-    ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Declaring a container](#declaring-a-container)
-    ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Using a container.](#using-a-container)
-    ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Registration](#registration)
-      ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Scope](#scope)
-      ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Modules](#modules)
-      ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Factory Registrations](#factory-registrations)
-      ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
-    ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Async initialization](#async-initialization)
-    ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Disposal](#disposal)
-  ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net [Contributing](#contributing)
+compile time dependency injection for .Net
+
+## Table Of Contents
+
+- [stronginject](#stronginject)
+  - [Aims](#aims)
+  - [Requirements](#requirements)
+  - [Nuget](#nuget)
+  - [Usage](#usage)
+    - [Declaring a container](#declaring-a-container)
+    - [Using a container.](#using-a-container)
+    - [Registration](#registration)
+      - [Scope](#scope)
+      - [Modules](#modules)
+      - [Factory Registrations](#factory-registrations)
+      - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+    - [Async initialization](#async-initialization)
+    - [Disposal](#disposal)
+  - [Contributing](#contributing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
