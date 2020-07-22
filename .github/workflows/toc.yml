@@ -7,9 +7,10 @@ jobs:
     steps:
       - uses: technote-space/toc-generator@v2
         with:
-          TOC_TITLE: '## Table Of Contents'
-          ENTRY_PREFIX: |
+          TOC_TITLE: |
             ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
             # stronginject
             compile time dependency injection for .Net
+            
+            ## Table Of Contents
 
