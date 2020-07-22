@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 
-namespace StrongInject.Generator.Tests.Unit
+namespace StrongInject.Tests.Integration
 {
     public partial class TestInstancePerResolutionHasCorrectScope
     {
