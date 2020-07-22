@@ -1,9 +1,10 @@
 name: .NET Core
 
 on:
-  pull_request:
   push:
-    branches: [ master ]
+    branches:
+      - master
+  pull_request:
 
 jobs:
   build-test-push-release:
