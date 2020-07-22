@@ -4,7 +4,7 @@ compile time dependency injection for .Net
 
 ## Aims
 
-1. **Compile time checked dependency injection.** If the type you're resolving isn't registered you get an exception at compile time, not runtime.
+1. **Compile time checked dependency injection.** If the type you're resolving isn't registered you get an error at compile time, not runtime.
 2. **Fast.** There's no dictionary lookups, no runtime code generation. Just the fastest code it's possible to generate to resolve your type.
 3. **Encourage best practices.** You can't use the container as a service locator. You can't forget to dispose the resolved types.
 4. **No reflection or runtime code generation.** Instead StrongInject uses roslyn Source Generators, meaning it's fast, and works well on UWP/IOS too.
