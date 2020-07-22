@@ -6,21 +6,20 @@ compile time dependency injection for .Net
 
 ## Table Of Contents
 
-- [stronginject](#stronginject)
-  - [Aims](#aims)
-  - [Requirements](#requirements)
-  - [Nuget](#nuget)
-  - [Usage](#usage)
-    - [Declaring a container](#declaring-a-container)
-    - [Using a container.](#using-a-container)
-    - [Registration](#registration)
-      - [Scope](#scope)
-      - [Modules](#modules)
-      - [Factory Registrations](#factory-registrations)
-      - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
-    - [Async initialization](#async-initialization)
-    - [Disposal](#disposal)
-  - [Contributing](#contributing)
+- [Aims](#aims)
+- [Requirements](#requirements)
+- [Nuget](#nuget)
+- [Usage](#usage)
+  - [Declaring a container](#declaring-a-container)
+  - [Using a container.](#using-a-container)
+  - [Registration](#registration)
+    - [Scope](#scope)
+    - [Modules](#modules)
+    - [Factory Registrations](#factory-registrations)
+    - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+  - [Async initialization](#async-initialization)
+  - [Disposal](#disposal)
+- [Contributing](#contributing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
