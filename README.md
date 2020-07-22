@@ -24,10 +24,6 @@ compile time dependency injection for .Net
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
-compile time dependency injection for .Net
-
 ## Aims
 
 1. **Compile time checked dependency injection.** If the type you're resolving isn't registered you get an error at compile time, not runtime.
