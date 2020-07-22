@@ -2,7 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 # stronginject
-compile time dependency injection for .NET
+compile time dependency injection for .Net
 
 ## Table Of Contents
 
