@@ -94,9 +94,9 @@ using StrongInject;
 
 public class BaseBase {}
 public interface IBase {}
-public class Base : BaseBase {}
+public class Base : BaseBase, IBase {}
 public interface IA {}
-public class A : Base {}
+public class A : Base, IA {}
 
 [Registration(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
 public partial class Container : IContainer<BaseBase> {}
@@ -156,7 +156,7 @@ using StrongInject;
 
 public class A {}
 
-[Registration(tyepof(A))]
+[Registration(typeof(A))]
 public class Module {}
 
 [ModuleRegistration(typeof(Module))]
