@@ -190,7 +190,7 @@ public class InterfaceArrayFactory : IFactory<IInterface[]>
   private A _a;
   private B _b;
   public InterfaceArrayFactory(A a, B b) => (_a, _b) = (a, b);
-  public ValueTask<IInterface[]> CreateAsync() => new ValueTask(new IInterface[] {_a, _b});
+  public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] {_a, _b});
 }
 
 [Registration(typeof(A))]
@@ -240,7 +240,7 @@ public class InterfaceFactory : IFactory<IInterface>
   private B _b;
   private InterfaceToUse _interfaceToUse;
   public InterfaceArrayFactory(A a, B b, InterfaceToUse interfaceToUse) => (_a, _b, _interfaceToUse) = (a, b, interfaceToUse);
-  public ValueTask<IInterface> CreateAsync() => new ValueTask(_interfaceToUse == InterfaceToUse.UseA ? _a : _b);
+  public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(_interfaceToUse == InterfaceToUse.UseA ? _a : _b);
 }
 
 [Registration(typeof(A))]
