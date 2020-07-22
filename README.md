@@ -3,7 +3,6 @@
 **Table of Contents**
 
 - [stronginject](#stronginject)
-  - [Table of Contents](#table-of-contents)
   - [Aims](#aims)
   - [Requirements](#requirements)
   - [Nuget](#nuget)
