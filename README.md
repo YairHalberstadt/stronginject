@@ -1,25 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 # stronginject
 compile time dependency injection for .Net
 
-## Table of Contents
+## Table Of Contents
 
-- [stronginject](#stronginject)
-  * [Table of Contents](#table-of-contents)
-  * [Aims](#aims)
-  * [Requirements](#requirements)
-  * [Nuget](#nuget)
-  * [Usage](#usage)
-    + [Declaring a container](#declaring-a-container)
-    + [Using a container.](#using-a-container)
-    + [Registration](#registration)
-      - [Scope](#scope)
-      - [Modules](#modules)
-      - [Factory Registrations](#factory-registrations)
-      - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
-    + [Async initialization](#async-initialization)
-    + [Disposal](#disposal)
-  * [Contributing](#contributing)
+- [Aims](#aims)
+- [Requirements](#requirements)
+- [Nuget](#nuget)
+- [Usage](#usage)
+  - [Declaring a container](#declaring-a-container)
+  - [Using a container.](#using-a-container)
+  - [Registration](#registration)
+    - [Scope](#scope)
+    - [Modules](#modules)
+    - [Factory Registrations](#factory-registrations)
+    - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+  - [Async initialization](#async-initialization)
+  - [Disposal](#disposal)
+- [Contributing](#contributing)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Aims
 
@@ -32,7 +34,7 @@ compile time dependency injection for .Net
 ## Requirements
 
 [Visual Studio preview version](https://visualstudio.microsoft.com/vs/preview/)
-[.Net 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0)
+[.NET 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0)
 
 ## Nuget
 
@@ -355,9 +357,9 @@ public partial class Container : IContainer<PasswordChecker>
 
 Once a call to `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `RunAsync` will be disposed.
 
-If the types implement `IAsyncDisposable` it will be prefferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
+If the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
 
-Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.ReleaseAsync(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .Net Standard 2.1 package `ReleaseAsync` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .Net Standard 2.0 package you will need to implement it either way.
+Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.ReleaseAsync(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `ReleaseAsync` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
 
 ## Contributing
 

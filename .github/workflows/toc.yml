@@ -1,0 +1,17 @@
+on: push
+name: TOC Generator
+jobs:
+  generateTOC:
+    name: TOC Generator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/toc-generator@v2
+        with:
+          TOC_TITLE: |
+            ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
+            # stronginject
+            compile time dependency injection for .Net
+            
+            ## Table Of Contents
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
