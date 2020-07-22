@@ -76,6 +76,8 @@ public partial class Container : IContainer<A>, IContainer<B> {}
 
 To use a container, you'll want to use the `RunAsync` extension methods defined in `StrongInject.ContainerExtensions`, so make sure you're `using StrongInject;`
 
+The `RunAsync` method on `IContainer<T>` takes a `Func<T>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in an async lambda, or a void returning lambda.
+
 ```csharp
 using StrongInject;
 
@@ -87,9 +89,6 @@ public class Program
   }
 }
 ```
-
-The `RunAsync` method ensures that all resolved objects are disposed after the call to `RunAsync`. Make sure not too leak those objects out of the delegate.
-There are also overloads that allow you to pass in an async lambda, or a void returning lambda.
 
 ### Registration
 
