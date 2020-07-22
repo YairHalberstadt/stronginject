@@ -13,4 +13,5 @@ jobs:
             compile time dependency injection for .Net
             
             ## Table Of Contents
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
