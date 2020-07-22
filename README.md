@@ -217,30 +217,30 @@ Here is a full fledged example of how you could provide configuration for a regi
 using StrongInject;
 using System.Threading.Tasks;
 
-public interface IInterface {}
-public class A : IInterface {}
-public class B : IInterface {}
+public interface IInterface { }
+public class A : IInterface { }
+public class B : IInterface { }
 
 public enum InterfaceToUse
 {
-  UseA,
-  UseB
+    UseA,
+    UseB
 }
 
 public class InstanceProvider : IInstanceProvider<InterfaceToUse>
 {
-  _interfaceToUse = interfaceToUse;
-  public Instanceprovider(InterfaceToUse interfaceToUse)
-  public async ValueTask<InterfaceToUse> GetAsync() => _interfaceToUse;
+    InterfaceToUse _interfaceToUse;
+    public InstanceProvider(InterfaceToUse interfaceToUse) => _interfaceToUse = interfaceToUse;
+    public async ValueTask<InterfaceToUse> GetAsync() => _interfaceToUse;
 }
 
 public class InterfaceFactory : IFactory<IInterface>
 {
-  private A _a;
-  private B _b;
-  private InterfaceToUse _interfaceToUse;
-  public InterfaceArrayFactory(A a, B b, InterfaceToUse interfaceToUse) => (_a, _b, _interfaceToUse) = (a, b, interfaceToUse);
-  public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(_interfaceToUse == InterfaceToUse.UseA ? _a : _b);
+    private A _a;
+    private B _b;
+    private InterfaceToUse _interfaceToUse;
+    public InterfaceFactory(A a, B b, InterfaceToUse interfaceToUse) => (_a, _b, _interfaceToUse) = (a, b, interfaceToUse);
+    public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(_interfaceToUse == InterfaceToUse.UseA ? (IInterface)_a : _b);
 }
 
 [Registration(typeof(A))]
@@ -248,8 +248,8 @@ public class InterfaceFactory : IFactory<IInterface>
 [Registration(typeof(InterfaceFactory), typeof(IFactory<IInterface>))]
 public partial class Container : IContainer<IInterface>
 {
-  private InstanceProvider _instanceProvider;
-  public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
+    private InstanceProvider _instanceProvider;
+    public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
 }
 ```
 
