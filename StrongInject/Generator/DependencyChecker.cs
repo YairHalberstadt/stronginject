@@ -53,7 +53,7 @@ namespace StrongInject.Generator
                 new DiagnosticDescriptor(
                         "SI0101",
                         "Type contains circular dependency",
-                        "Error whilst resolving dependencies for '{0}': '{1}' has a circular dependency",
+                        "Error while resolving dependencies for '{0}': '{1}' has a circular dependency",
                         "StrongInject",
                         DiagnosticSeverity.Error,
                         isEnabledByDefault: true),
@@ -68,7 +68,7 @@ namespace StrongInject.Generator
                 new DiagnosticDescriptor(
                         "SI0102",
                         "Type contains circular dependency",
-                        "Error whilst resolving dependencies for '{0}': We have no source for instance of type '{1}'",
+                        "Error while resolving dependencies for '{0}': We have no source for instance of type '{1}'",
                         "StrongInject",
                         DiagnosticSeverity.Error,
                         isEnabledByDefault: true),

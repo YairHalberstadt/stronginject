@@ -972,19 +972,19 @@ public interface IInstanceProvider : IInstanceProvider<C>, IInstanceProvider<D>
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out _, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error whilst resolving dependencies for 'A': We have no source for instance of type 'A'
+                // (5,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container").WithLocation(5, 22),
-                // (5,22): Error SI0102: Error whilst resolving dependencies for 'B': We have no source for instance of type 'B'
+                // (5,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
                 // Container
                 new DiagnosticResult("SI0102", @"Container").WithLocation(5, 22),
-                // (5,22): Error SI0102: Error whilst resolving dependencies for 'C': We have no source for instance of type 'C'
+                // (5,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
                 // Container
                 new DiagnosticResult("SI0102", @"Container").WithLocation(5, 22),
-                // (5,22): Error SI0102: Error whilst resolving dependencies for 'D': We have no source for instance of type 'D'
+                // (5,22): Error SI0102: Error while resolving dependencies for 'D': We have no source for instance of type 'D'
                 // Container
                 new DiagnosticResult("SI0102", @"Container").WithLocation(5, 22),
-                // (5,22): Error SI0102: Error whilst resolving dependencies for 'int[]': We have no source for instance of type 'int[]'
+                // (5,22): Error SI0102: Error while resolving dependencies for 'int[]': We have no source for instance of type 'int[]'
                 // Container
                 new DiagnosticResult("SI0102", @"Container").WithLocation(5, 22));
             comp.GetDiagnostics().Verify(
