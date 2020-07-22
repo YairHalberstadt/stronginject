@@ -225,8 +225,7 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    var conversion = _compilation.ClassifyCommonConversion(type, directTarget);
-                    if (!conversion.IsIdentity && conversion is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
+                    if (_compilation.ClassifyCommonConversion(type, directTarget) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
                     {
                         _reportDiagnostic(DoesNotHaveSuitableConversion(registrationAttribute, type, directTarget, _cancellationToken));
                         continue;
