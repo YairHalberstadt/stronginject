@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [stronginject](#stronginject)
+  - [Table of Contents](#table-of-contents)
+  - [Aims](#aims)
+  - [Requirements](#requirements)
+  - [Nuget](#nuget)
+  - [Usage](#usage)
+    - [Declaring a container](#declaring-a-container)
+    - [Using a container.](#using-a-container)
+    - [Registration](#registration)
+      - [Scope](#scope)
+      - [Modules](#modules)
+      - [Factory Registrations](#factory-registrations)
+      - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+    - [Async initialization](#async-initialization)
+    - [Disposal](#disposal)
+  - [Contributing](#contributing)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 # stronginject
 compile time dependency injection for .Net
