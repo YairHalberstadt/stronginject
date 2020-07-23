@@ -392,15 +392,73 @@ public class B<T> {
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (4,2): Error SI0003: 'A<>' is invalid in a registration.
+                // (4,2): Error SI0011: Unbound Generic Type 'A<>' is invalid in a registration.
                 // Registration(typeof(A<>))
-                new DiagnosticResult("SI0003", @"Registration(typeof(A<>))").WithLocation(4, 2),
-                // (5,2): Error SI0003: 'A<>' is invalid in a registration.
+                new DiagnosticResult("SI0011", @"Registration(typeof(A<>))", DiagnosticSeverity.Error).WithLocation(4, 2),
+                // (5,2): Error SI0011: Unbound Generic Type 'A<>' is invalid in a registration.
                 // Registration(typeof(A<int>), typeof(A<>))
-                new DiagnosticResult("SI0003", @"Registration(typeof(A<int>), typeof(A<>))").WithLocation(5, 2),
-                // (6,2): Error SI0003: 'B<>.C' is invalid in a registration.
+                new DiagnosticResult("SI0011", @"Registration(typeof(A<int>), typeof(A<>))", DiagnosticSeverity.Error).WithLocation(5, 2),
+                // (6,2): Error SI0011: Unbound Generic Type 'B<>.C' is invalid in a registration.
                 // Registration(typeof(B<>.C))
-                new DiagnosticResult("SI0003", @"Registration(typeof(B<>.C))").WithLocation(6, 2));
+                new DiagnosticResult("SI0011", @"Registration(typeof(B<>.C))", DiagnosticSeverity.Error).WithLocation(6, 2));
+
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
+        }
+
+        [Fact]
+        public void NoErrorWhenRegisteringErrorType()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(Invalid))]
+[Registration(typeof(A<int>), typeof(Invalid))]
+[Registration(typeof(A<int>), registeredAs: new [] { typeof(Invalid) })]
+[Registration(typeof(A<int>), registeredAs: new System.Type[] { typeof(Invalid) })]
+[Registration(typeof(A<Invalid>))]
+[ModuleRegistration(typeof(Invalid))]
+[ModuleRegistration(typeof(A<>), typeof(Invalid))]
+[ModuleRegistration(typeof(A<>), exclusionList: new [] { typeof(Invalid) })]
+[ModuleRegistration(typeof(A<>), exclusionList: new System.Type[] { typeof(Invalid) })]
+public class Container
+{
+}
+
+public class A<T> {}
+public class A<T1, T2> {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify(
+                // (4,22): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (5,38): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(5, 38),
+                // (6,61): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(6, 61),
+                // (7,72): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(7, 72),
+                // (8,24): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(8, 24),
+                // (9,28): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(9, 28),
+                // (10,41): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(10, 41),
+                // (11,65): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(11, 65),
+                // (12,76): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // Invalid
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(12, 76));
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify();
 
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
         }
@@ -1064,6 +1122,29 @@ public class ModuleC {}
                 // (5,14): Error SI0009: Registration for 'ModuleA' is recursive.
                 // ModuleA
                 new DiagnosticResult("SI0009", @"ModuleA", DiagnosticSeverity.Error).WithLocation(5, 14));
+            Assert.Empty(registrations);
+        }
+
+        [Fact]
+        public void ErrorOnRegisteringAbstractClassWithPublicConstructor()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+public class Container
+{
+}
+
+public abstract class A { public A(){} }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify(
+                // (4,2): Error SI0010: Cannot register 'A' as it is abstract.
+                // Registration(typeof(A))
+                new DiagnosticResult("SI0010", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
             Assert.Empty(registrations);
         }
 
