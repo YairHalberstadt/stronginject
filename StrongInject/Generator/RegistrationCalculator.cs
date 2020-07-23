@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -48,20 +49,30 @@ namespace StrongInject.Generator
                 return ImmutableDictionary<ITypeSymbol, InstanceSource>.Empty;
             }
 
+            return GetRegistrations(module, dependantModules: null);
+        }
+
+        private IReadOnlyDictionary<ITypeSymbol, InstanceSource> GetRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules)
+        {
             if (!_registrations.TryGetValue(module, out var registrations))
             {
-                registrations = CalculateRegistrations(module);
+                if (!(dependantModules ??= new()).Add(module))
+                {
+                    _reportDiagnostic(RecursiveModuleRegistration(module, _cancellationToken));
+                    return ImmutableDictionary<ITypeSymbol, InstanceSource>.Empty;
+                }
+
+                registrations = CalculateRegistrations(module, dependantModules);
                 _registrations[module] = registrations;
             }
             return registrations;
         }
 
-        private Dictionary<ITypeSymbol, InstanceSource> CalculateRegistrations(
-            INamedTypeSymbol container)
+        private Dictionary<ITypeSymbol, InstanceSource> CalculateRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules)
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
-            var attributes = container.GetAttributes();
+            var attributes = module.GetAttributes();
 
             var directRegistrations = CalculateDirectRegistrations(attributes);
 
@@ -82,7 +93,7 @@ namespace StrongInject.Generator
                     ? new HashSet<INamedTypeSymbol>()
                     : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 
-                var registrations = GetRegistrations(moduleType);
+                var registrations = GetRegistrations(moduleType, dependantModules);
 
                 var thisModuleRegistrations = new Dictionary<ITypeSymbol, InstanceSource>();
                 foreach (var (type, registration) in registrations)
@@ -114,22 +125,6 @@ namespace StrongInject.Generator
             }
 
             return directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)).ToDictionary(x => x.Key, x => x.Value);
-        }
-
-        private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, AttributeData otherModuleRegistrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0002",
-                    "Modules provide differing registrations for Type",
-                    "Modules '{0}' and '{1}' provide differing registrations for '{2}'.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                attributeForLocation.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                otherModuleRegistrationAttribute.ConstructorArguments[0].Value,
-                moduleType,
-                type);
         }
 
         private Dictionary<ITypeSymbol, InstanceSource> CalculateDirectRegistrations(ImmutableArray<AttributeData> attributes)
@@ -268,18 +263,63 @@ namespace StrongInject.Generator
             return directRegistrations;
         }
 
-        private static Diagnostic StructWithSingleInstanceScope(AttributeData registrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
+        private static Diagnostic DoesNotHaveSuitableConversion(AttributeData registrationAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
-                    "SI0008",
-                    "Struct cannot have Single Instance scope",
-                    "'{0}' is a struct and cannot have a Single Instance scope.",
+                    "SI0001",
+                    "Registered type does not have an identity, implicit reference, boxing or nullable conversion to registered as type",
+                    "'{0}' does not have an identity, implicit reference, boxing or nullable conversion to '{1}'.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                registeredType,
+                registeredAsType);
+        }
+
+        private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, AttributeData otherModuleRegistrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0002",
+                    "Modules provide differing registrations for Type",
+                    "Modules '{0}' and '{1}' provide differing registrations for '{2}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                attributeForLocation.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                otherModuleRegistrationAttribute.ConstructorArguments[0].Value,
+                moduleType,
                 type);
+        }
+
+        private static Diagnostic InvalidType(ITypeSymbol typeSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0003",
+                    "Type is invalid in a registration",
+                    "'{0}' is invalid in a registration.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                typeSymbol);
+        }
+
+        private static Diagnostic DuplicateRegistration(AttributeData registrationAttribute, ITypeSymbol registeredAsType, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0004",
+                    "Module already contains registration for type",
+                    "Module already contains registration for '{0}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                registeredAsType);
         }
 
         private static Diagnostic NoConstructor(AttributeData registrationAttribute, INamedTypeSymbol type, CancellationToken cancellationToken)
@@ -310,49 +350,6 @@ namespace StrongInject.Generator
                 type);
         }
 
-        private static Diagnostic DoesNotHaveSuitableConversion(AttributeData registrationAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0001",
-                    "Registered type does not have an identity, implicit reference, boxing or nullable conversion to registered as type",
-                    "'{0}' does not have an identity, implicit reference, boxing or nullable conversion to '{1}'.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                registeredType,
-                registeredAsType);
-        }
-
-        private static Diagnostic DuplicateRegistration(AttributeData registrationAttribute, ITypeSymbol registeredAsType, CancellationToken cancellationToken)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0004",
-                    "Module already contains registration for type",
-                    "Module already contains registration for '{0}'.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                registeredAsType);
-        }
-
-        private static Diagnostic InvalidType(ITypeSymbol typeSymbol, Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0003",
-                    "Type is invalid in a registration",
-                    "'{0}' is invalid in a registration.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                location,
-                typeSymbol);
-        }
-
         private static Diagnostic TypeNotPublic(ITypeSymbol typeSymbol, Location location)
         {
             return Diagnostic.Create(
@@ -365,6 +362,34 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 typeSymbol);
+        }
+
+        private static Diagnostic StructWithSingleInstanceScope(AttributeData registrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0008",
+                    "Struct cannot have Single Instance scope",
+                    "'{0}' is a struct and cannot have a Single Instance scope.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                registrationAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                type);
+        }
+
+        private static Diagnostic RecursiveModuleRegistration(INamedTypeSymbol module, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0009",
+                    "Registration for Module is recursive",
+                    "Registration for '{0}' is recursive.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                (module.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellationToken) as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? Location.None,
+                module);
         }
     }
 }

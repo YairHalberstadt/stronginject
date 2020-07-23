@@ -1001,6 +1001,72 @@ public class B
             Assert.Empty(registrations);
         }
 
+        [Fact]
+        public void ErrorOnModuleRegisteringItself()
+        {
+            string userSource = @"
+using StrongInject;
+
+[ModuleRegistration(typeof(ModuleA))]
+public class ModuleA {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
+            diagnostics.Verify(
+                // (5,14): Error SI0009: Registration for 'ModuleA' is recursive.
+                // ModuleA
+                new DiagnosticResult("SI0009", @"ModuleA", DiagnosticSeverity.Error).WithLocation(5, 14));
+            Assert.Empty(registrations);
+        }
+
+        [Fact]
+        public void ErrorOnRecursiveModuleRegistrations1()
+        {
+            string userSource = @"
+using StrongInject;
+
+[ModuleRegistration(typeof(ModuleB))]
+public class ModuleA {}
+
+[ModuleRegistration(typeof(ModuleA))]
+public class ModuleB {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
+            diagnostics.Verify(
+                // (5,14): Error SI0009: Registration for 'ModuleA' is recursive.
+                // ModuleA
+                new DiagnosticResult("SI0009", @"ModuleA", DiagnosticSeverity.Error).WithLocation(5, 14));
+            Assert.Empty(registrations);
+        }
+
+        [Fact]
+        public void ErrorOnRecursiveModuleRegistrations2()
+        {
+            string userSource = @"
+using StrongInject;
+
+[ModuleRegistration(typeof(ModuleB))]
+public class ModuleA {}
+
+[ModuleRegistration(typeof(ModuleC))]
+public class ModuleB {}
+
+[ModuleRegistration(typeof(ModuleA))]
+public class ModuleC {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
+            diagnostics.Verify(
+                // (5,14): Error SI0009: Registration for 'ModuleA' is recursive.
+                // ModuleA
+                new DiagnosticResult("SI0009", @"ModuleA", DiagnosticSeverity.Error).WithLocation(5, 14));
+            Assert.Empty(registrations);
+        }
+
         private static Registration Registration(
             INamedTypeSymbol type,
             ITypeSymbol registeredAs,
