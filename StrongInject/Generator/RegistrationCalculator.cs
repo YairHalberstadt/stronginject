@@ -87,8 +87,19 @@ namespace StrongInject.Generator
                     continue;
                 }
                 var moduleType = (INamedTypeSymbol)moduleConstant.Value!;
+                if (moduleType.IsOrReferencesErrorType())
+                {
+                    // Invalid code, ignore;
+                    continue;
+                }
 
-                var exclusionListConstants = moduleRegistrationAttribute.ConstructorArguments.FirstOrDefault(x => x.Kind == TypedConstantKind.Array).Values;
+                var exclusionListConstant = moduleRegistrationAttribute.ConstructorArguments.FirstOrDefault(x => x.Kind == TypedConstantKind.Array);
+                if (exclusionListConstant.Kind is not TypedConstantKind.Array)
+                {
+                    // Invalid code, ignore;
+                    continue;
+                }
+                var exclusionListConstants = exclusionListConstant.Values;
                 var exclusionList = exclusionListConstants.IsDefault
                     ? new HashSet<INamedTypeSymbol>()
                     : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
@@ -146,18 +157,8 @@ namespace StrongInject.Generator
                     // Invalid code, ignore;
                     continue;
                 }
-                if (typeConstant.Value is not INamedTypeSymbol type || type.ReferencesTypeParametersOrErrorTypes())
+                if (!CheckValidType(registrationAttribute, typeConstant, out var type))
                 {
-                    _reportDiagnostic(InvalidType(
-                        (ITypeSymbol)typeConstant.Value!,
-                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-                    continue;
-                }
-                if (!type.IsPublic())
-                {
-                    _reportDiagnostic(TypeNotPublic(
-                        type!,
-                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                     continue;
                 }
                 if (type.IsAbstract)
@@ -206,24 +207,22 @@ namespace StrongInject.Generator
                     ? (Scope)factoryTargetScopeInt
                     : Scope.InstancePerResolution;
 
-                var registeredAsConstants = registrationAttribute.ConstructorArguments[countConstructorArguments - 1].Values;
-                var registeredAs = registeredAsConstants.IsDefaultOrEmpty ? new[] { type } : registeredAsConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToArray();
+                var registeredAsConstant = registrationAttribute.ConstructorArguments[countConstructorArguments - 1];
+                if (registeredAsConstant.Kind is not TypedConstantKind.Array)
+                {
+                    // error case.
+                    continue;
+                }
+                var registeredAsConstants = registeredAsConstant.Values;
+                var registeredAs = registeredAsConstants.IsDefaultOrEmpty 
+                    ? new[] { typeConstant } 
+                    : registeredAsConstants.Where(x => x.Kind == TypedConstantKind.Type).ToArray();
 
                 var requiresInitialization = type.AllInterfaces.Contains(_iRequiresInitializationType);
-                foreach (var directTarget in registeredAs)
+                foreach (var registeredAsTypeConstant in registeredAs)
                 {
-                    if (directTarget.ReferencesTypeParametersOrErrorTypes())
+                    if (!CheckValidType(registrationAttribute, registeredAsTypeConstant, out var directTarget))
                     {
-                        _reportDiagnostic(InvalidType(
-                            directTarget,
-                            registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-                        continue;
-                    }
-                    else if (!directTarget.IsPublic())
-                    {
-                        _reportDiagnostic(TypeNotPublic(
-                            (ITypeSymbol)typeConstant.Value!,
-                            registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                         continue;
                     }
 
@@ -268,6 +267,38 @@ namespace StrongInject.Generator
                 }
             }
             return directRegistrations;
+        }
+
+        private bool CheckValidType(AttributeData registrationAttribute, TypedConstant typedConstant, out INamedTypeSymbol type)
+        {
+            type = (typedConstant.Value as INamedTypeSymbol)!;
+            if (typedConstant.Value is null)
+            {
+                _reportDiagnostic(InvalidType(
+                    (ITypeSymbol)typedConstant.Value!,
+                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                return false;
+            }
+            if (type.IsOrReferencesErrorType())
+            {
+                // we will report an error for this case anyway.
+                return false;
+            }
+            if (type.IsUnboundGenericType)
+            {
+                _reportDiagnostic(UnboundGenericType(
+                    (ITypeSymbol)typedConstant.Value!,
+                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                return false;
+            }
+            if (!type.IsPublic())
+            {
+                _reportDiagnostic(TypeNotPublic(
+                    type!,
+                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                return false;
+            }
+            return true;
         }
 
         private static Diagnostic DoesNotHaveSuitableConversion(AttributeData registrationAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
@@ -406,6 +437,20 @@ namespace StrongInject.Generator
                     "SI0010",
                     "Cannot register Type as it is abstract",
                     "Cannot register '{0}' as it is abstract.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                typeSymbol);
+        }
+
+        private static Diagnostic UnboundGenericType(ITypeSymbol typeSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0011",
+                    "Unbound Generic Type is invalid in a registration",
+                    "Unbound Generic Type '{0}' is invalid in a registration.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),

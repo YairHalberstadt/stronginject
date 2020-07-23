@@ -62,16 +62,16 @@ namespace StrongInject.Generator
             }
         }
 
-        public static bool ReferencesTypeParametersOrErrorTypes(this ITypeSymbol type)
+        public static bool IsOrReferencesErrorType(this ITypeSymbol type)
         {
-            if (type.ContainingType?.ReferencesTypeParametersOrErrorTypes() ?? false)
-                return true;
+            if (!type.ContainingType?.IsOrReferencesErrorType() ?? false)
+                return false;
             return type switch
             {
-                ITypeParameterSymbol or IErrorTypeSymbol => true,
-                IArrayTypeSymbol array => array.ElementType.ReferencesTypeParametersOrErrorTypes(),
-                IPointerTypeSymbol pointer => pointer.PointedAtType.ReferencesTypeParametersOrErrorTypes(),
-                INamedTypeSymbol named => named.TypeArguments.Any(ReferencesTypeParametersOrErrorTypes),
+                IErrorTypeSymbol => true,
+                IArrayTypeSymbol array => array.ElementType.IsOrReferencesErrorType(),
+                IPointerTypeSymbol pointer => pointer.PointedAtType.IsOrReferencesErrorType(),
+                INamedTypeSymbol named => named.IsUnboundGenericType ? false : named.TypeArguments.Any(IsOrReferencesErrorType),
                 _ => false,
             };
         }
