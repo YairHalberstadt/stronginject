@@ -1067,6 +1067,29 @@ public class ModuleC {}
             Assert.Empty(registrations);
         }
 
+        [Fact]
+        public void ErrorOnRegisteringAbstractClassWithPublicConstructor()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+public class Container
+{
+}
+
+public abstract class A { public A(){} }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify(
+                // (4,2): Error SI0010: Cannot register 'A' as it is abstract.
+                // Registration(typeof(A))
+                new DiagnosticResult("SI0010", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
+            Assert.Empty(registrations);
+        }
+
         private static Registration Registration(
             INamedTypeSymbol type,
             ITypeSymbol registeredAs,

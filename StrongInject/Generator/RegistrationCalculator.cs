@@ -153,10 +153,17 @@ namespace StrongInject.Generator
                         registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                     continue;
                 }
-                else if (!type.IsPublic())
+                if (!type.IsPublic())
                 {
                     _reportDiagnostic(TypeNotPublic(
-                        (ITypeSymbol)typeConstant.Value!,
+                        type!,
+                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                    continue;
+                }
+                if (type.IsAbstract)
+                {
+                    _reportDiagnostic(TypeIsAbstract(
+                        type!,
                         registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                     continue;
                 }
@@ -390,6 +397,20 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 (module.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellationToken) as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? Location.None,
                 module);
+        }
+
+        private static Diagnostic TypeIsAbstract(ITypeSymbol typeSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0010",
+                    "Cannot register Type as it is abstract",
+                    "Cannot register '{0}' as it is abstract.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                typeSymbol);
         }
     }
 }
