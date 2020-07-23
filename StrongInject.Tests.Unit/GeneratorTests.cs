@@ -988,21 +988,6 @@ public interface IInstanceProvider : IInstanceProvider<C>, IInstanceProvider<D>
                 // Container
                 new DiagnosticResult("SI0102", @"Container").WithLocation(5, 22));
             comp.GetDiagnostics().Verify(
-                // (5,34): Error CS0535: 'Container' does not implement interface member 'IContainer<A>.ResolveAsync()'
-                // IContainer<A>
-                new DiagnosticResult("CS0535", @"IContainer<A>", DiagnosticSeverity.Error).WithLocation(5, 34),
-                // (5,49): Error CS0535: 'Container' does not implement interface member 'IContainer<B>.ResolveAsync()'
-                // IContainer<B>
-                new DiagnosticResult("CS0535", @"IContainer<B>", DiagnosticSeverity.Error).WithLocation(5, 49),
-                // (5,64): Error CS0535: 'Container' does not implement interface member 'IContainer<C>.ResolveAsync()'
-                // IContainer<C>
-                new DiagnosticResult("CS0535", @"IContainer<C>", DiagnosticSeverity.Error).WithLocation(5, 64),
-                // (5,79): Error CS0535: 'Container' does not implement interface member 'IContainer<D>.ResolveAsync()'
-                // IContainer<D>
-                new DiagnosticResult("CS0535", @"IContainer<D>", DiagnosticSeverity.Error).WithLocation(5, 79),
-                // (5,94): Error CS0535: 'Container' does not implement interface member 'IContainer<int[]>.ResolveAsync()'
-                // IContainer<int[]>
-                new DiagnosticResult("CS0535", @"IContainer<int[]>", DiagnosticSeverity.Error).WithLocation(5, 94),
                 // (8,39): Warning CS0649: Field 'Container._instanceProvider2' is never assigned to, and will always have its default value null
                 // _instanceProvider2
                 new DiagnosticResult("CS0649", @"_instanceProvider2", DiagnosticSeverity.Warning).WithLocation(8, 39),
@@ -1412,6 +1397,35 @@ namespace N.O.P
                 }
             }
         }
+    }
+}");
+        }
+
+        [Fact]
+        public void GeneratesThrowingImplementationForContainerWithMissingDependencies()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+
+partial class Container : IContainer<A>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,15): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new System.NotImplementedException();
     }
 }");
         }
