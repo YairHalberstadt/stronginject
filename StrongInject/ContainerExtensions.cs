@@ -5,7 +5,7 @@ namespace StrongInject
 {
     public static class ContainerExtensions
     {
-        public static ValueTask<TResult> RunAsync<T, TResult, TParam>(this IContainer<T> container, Func<T, ValueTask<TResult>> func, TParam param)
+        public static ValueTask<TResult> RunAsync<T, TResult, TParam>(this IContainer<T> container, Func<T, TParam, ValueTask<TResult>> func, TParam param)
         {
             return container.RunAsync(func, param);
         }
