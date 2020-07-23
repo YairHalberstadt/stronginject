@@ -104,18 +104,6 @@ namespace StrongInject.Generator
 
                     var target = constructedContainerInterface.TypeArguments[0];
 
-                    if (DependencyChecker.HasCircularOrMissingDependencies(
-                            target,
-                            instanceSources,
-                            context.ReportDiagnostic,
-                            // Ideally we would use the location of the interface in the base list, however getting that location is complex and not critical for now.
-                            // See http://sourceroslyn.io/#Microsoft.CodeAnalysis.CSharp/Symbols/Source/SourceMemberContainerSymbol_ImplementationChecks.cs,333
-                            ((ClassDeclarationSyntax)module.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation()))
-                    {
-                        // error reported. Move on to next containerInterface
-                        continue;
-                    }
-
                     var methodSource = new StringBuilder();
                     var methodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers()[0];
                     methodSource.Append("async ");
@@ -143,59 +131,74 @@ namespace StrongInject.Generator
                         methodSource.Append(param.Name);
                     }
                     methodSource.Append("){");
-                    var resultVariableName = CreateVariable(instanceSources[target], methodSource, isSingleInstanceCreation: false, out var orderOfCreation);
-                    methodSource.Append("var result = await func((");
-                    methodSource.Append(target.FullName());
-                    methodSource.Append(")");
-                    methodSource.Append(resultVariableName);
-                    methodSource.Append(", param);");
 
-                    for (int i = orderOfCreation.Count - 1; i >= 0; i--)
+                    if (DependencyChecker.HasCircularOrMissingDependencies(
+                            target,
+                            instanceSources,
+                            context.ReportDiagnostic,
+                            // Ideally we would use the location of the interface in the base list, however getting that location is complex and not critical for now.
+                            // See http://sourceroslyn.io/#Microsoft.CodeAnalysis.CSharp/Symbols/Source/SourceMemberContainerSymbol_ImplementationChecks.cs,333
+                            ((ClassDeclarationSyntax)module.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation()))
                     {
-                        var (variableName, source) = orderOfCreation[i];
-                        if (source.scope is Scope.SingleInstance)
-                            continue;
-                        switch (source)
-                        {
-                            case FactoryRegistration:
-                                methodSource.Append("await ");
-                                methodSource.Append(helpersType.FullName());
-                                methodSource.Append("." + nameof(Helpers.DisposeAsync) + "(");
-                                methodSource.Append(variableName);
-                                methodSource.Append(");");
-                                break;
-                            case InstanceProvider { instanceProviderField: var field, castTo: var cast }:
-                                methodSource.Append("await ((");
-                                methodSource.Append(cast.FullName());
-                                methodSource.Append(")this.");
-                                methodSource.Append(field.Name);
-                                methodSource.Append(")." + nameof(IInstanceProvider<object>.ReleaseAsync) + "(");
-                                methodSource.Append(variableName);
-                                methodSource.Append(");");
-                                break;
-                            case Registration { type: var type }:
-                                if (type.AllInterfaces.Contains(iAsyncDisposableType))
-                                {
-                                    methodSource.Append("await ((");
-                                    methodSource.Append(iAsyncDisposableType.FullName());
-                                    methodSource.Append(")");
-                                    methodSource.Append(variableName);
-                                    methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + "(");
-                                    methodSource.Append(");");
-                                }
-                                else if (type.AllInterfaces.Contains(iDisposableType))
-                                {
-                                    methodSource.Append("((");
-                                    methodSource.Append(iDisposableType.FullName());
-                                    methodSource.Append(")");
-                                    methodSource.Append(variableName);
-                                    methodSource.Append(")." + nameof(IDisposable.Dispose) + "(");
-                                    methodSource.Append(");");
-                                }
-                                break;
-                        }
+                        // error reported. Implement with throwing implementation to remove NotImplemented error CS0535
+                        methodSource.Append("throw new System.NotImplementedException();}");
                     }
-                    methodSource.Append("return result;}");
+                    else
+                    {
+                        var resultVariableName = CreateVariable(instanceSources[target], methodSource, isSingleInstanceCreation: false, out var orderOfCreation);
+                        methodSource.Append("var result = await func((");
+                        methodSource.Append(target.FullName());
+                        methodSource.Append(")");
+                        methodSource.Append(resultVariableName);
+                        methodSource.Append(", param);");
+
+                        for (int i = orderOfCreation.Count - 1; i >= 0; i--)
+                        {
+                            var (variableName, source) = orderOfCreation[i];
+                            if (source.scope is Scope.SingleInstance)
+                                continue;
+                            switch (source)
+                            {
+                                case FactoryRegistration:
+                                    methodSource.Append("await ");
+                                    methodSource.Append(helpersType.FullName());
+                                    methodSource.Append("." + nameof(Helpers.DisposeAsync) + "(");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append(");");
+                                    break;
+                                case InstanceProvider { instanceProviderField: var field, castTo: var cast }:
+                                    methodSource.Append("await ((");
+                                    methodSource.Append(cast.FullName());
+                                    methodSource.Append(")this.");
+                                    methodSource.Append(field.Name);
+                                    methodSource.Append(")." + nameof(IInstanceProvider<object>.ReleaseAsync) + "(");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append(");");
+                                    break;
+                                case Registration { type: var type }:
+                                    if (type.AllInterfaces.Contains(iAsyncDisposableType))
+                                    {
+                                        methodSource.Append("await ((");
+                                        methodSource.Append(iAsyncDisposableType.FullName());
+                                        methodSource.Append(")");
+                                        methodSource.Append(variableName);
+                                        methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + "(");
+                                        methodSource.Append(");");
+                                    }
+                                    else if (type.AllInterfaces.Contains(iDisposableType))
+                                    {
+                                        methodSource.Append("((");
+                                        methodSource.Append(iDisposableType.FullName());
+                                        methodSource.Append(")");
+                                        methodSource.Append(variableName);
+                                        methodSource.Append(")." + nameof(IDisposable.Dispose) + "(");
+                                        methodSource.Append(");");
+                                    }
+                                    break;
+                            }
+                        }
+                        methodSource.Append("return result;}");
+                    }
 
                     (containerMembersSource ??= new()).Append(methodSource);
                 }

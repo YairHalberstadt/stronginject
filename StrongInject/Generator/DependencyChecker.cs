@@ -17,33 +17,34 @@ namespace StrongInject.Generator
             {
                 if (visited.Contains(node))
                     return false;
-                if (currentlyVisiting.Contains(node))
+
+                if (!currentlyVisiting.Add(node))
                 {
                     reportDiagnostic(CircularDependency(location, target, node));
                     return true;
                 }
-                currentlyVisiting.Add(node);
+
+                var result = false;
                 if (!registrations.TryGetValue(node, out var instanceSource))
                 {
                     reportDiagnostic(NoSourceForType(location, target, node));
-                    return true;
+                    result = true;
                 }
-                if (instanceSource is Registration { constructor: { Parameters: var parameters } })
+                else if (instanceSource is Registration { constructor: { Parameters: var parameters } })
                 {
                     foreach (var param in parameters)
                     {
-                        if (Visit(param.Type))
-                            return true;
+                        result |= Visit(param.Type);
                     }
                 }
                 else if (instanceSource is FactoryRegistration { factoryType: var factoryType })
                 {
-                    if (Visit(factoryType))
-                        return true;
+                    result = Visit(factoryType);
                 }
+
                 currentlyVisiting.Remove(node);
                 visited.Add(node);
-                return false;
+                return result;
             }
         }
 
