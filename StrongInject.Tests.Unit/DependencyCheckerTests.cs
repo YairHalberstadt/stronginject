@@ -250,5 +250,87 @@ public class D
                 // Container
                 new DiagnosticResult("SI0102", @"Container").WithLocation(7, 14));
         }
+
+        [Fact]
+        public void ErrorForAllMissingDependencies1()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public class Container
+{
+}
+
+public class A 
+{
+    public A(B b, C c){}
+}
+public class B 
+{
+    public B(C c, D d){}
+}
+public class C {}
+public class D 
+{
+}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            var diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            Assert.True(hasErrors);
+            diagnostics.Verify(
+                // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'C'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14),
+                // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'D'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14));
+        }
+
+        [Fact]
+        public void ErrorForAllMissingDependencies2()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public class Container
+{
+}
+
+public class A 
+{
+    public A(B b, C c){}
+}
+public class B 
+{
+    public B(D d, E e){}
+}
+public class C {}
+public class D {}
+public class E {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            var diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            Assert.True(hasErrors);
+            diagnostics.Verify(
+                // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'D'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14),
+                // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'E'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14),
+                // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'C'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14));
+        }
     }
 }
