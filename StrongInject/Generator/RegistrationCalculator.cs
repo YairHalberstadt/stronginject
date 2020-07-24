@@ -21,8 +21,8 @@ namespace StrongInject.Generator
             _registrationAttributeType = compilation.GetTypeOrReport(typeof(RegistrationAttribute), reportDiagnostic)!;
             _factoryRegistrationAttributeType = compilation.GetTypeOrReport(typeof(FactoryRegistrationAttribute), reportDiagnostic)!;
             _moduleRegistrationAttributeType = compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), _reportDiagnostic)!;
-            _iFactoryType = compilation.GetTypeOrReport(typeof(IFactory<>), _reportDiagnostic)!;
-            _iRequiresInitializationType = compilation.GetTypeOrReport(typeof(IRequiresInitialization), _reportDiagnostic)!;
+            _iFactoryType = compilation.GetTypeOrReport(typeof(IAsyncFactory<>), _reportDiagnostic)!;
+            _iRequiresInitializationType = compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), _reportDiagnostic)!;
             if (_registrationAttributeType is null 
                 || _factoryRegistrationAttributeType is null 
                 || _moduleRegistrationAttributeType is null 
@@ -557,8 +557,8 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0012",
-                    "Type is registered as a factory but does not implement StrongInject.IFactory<T>",
-                    "'{0}' is registered as a factory but does not implement StrongInject.IFactory<T>",
+                    "Type is registered as a factory but does not implement StrongInject.IAsyncFactory<T>",
+                    "'{0}' is registered as a factory but does not implement StrongInject.IAsyncFactory<T>",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),

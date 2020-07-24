@@ -31,7 +31,7 @@ public interface IA {}
 public class B : IB {}
 public interface IB {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -90,7 +90,7 @@ public interface IC {}
 public class D : ID {}
 public interface ID {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -143,7 +143,7 @@ public class A : IA {}
 public class B : IA {}
 public interface IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
 
             var moduleRegistrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Module"));
@@ -195,7 +195,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -236,7 +236,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -276,7 +276,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -306,7 +306,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -340,9 +340,9 @@ public class Container
 
 public class A : IA {}
 public interface IA {}
-public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null; }
+public class B : IAsyncFactory<IA> { public ValueTask<IA> CreateAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -351,7 +351,7 @@ public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null
                 // FactoryRegistration(typeof(B))
                 new DiagnosticResult("SI0004", @"FactoryRegistration(typeof(B))", DiagnosticSeverity.Error).WithLocation(6, 2));
 
-            var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
+            var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
@@ -387,7 +387,7 @@ public class B<T> {
     public class C {}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -427,7 +427,7 @@ public class Container
 public class A<T> {}
 public class A<T1, T2> {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify(
                 // (4,22): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
@@ -484,7 +484,7 @@ public interface IC<T> {}
 public interface ID {}
 public interface IE {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
@@ -565,12 +565,12 @@ public class Container
 }
 
 public class A {}
-public class B : IFactory<A> { public ValueTask<A> CreateAsync() => throw null; }
+public class B : IAsyncFactory<A> { public ValueTask<A> CreateAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
+            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
@@ -601,13 +601,13 @@ public class Container
 }
 
 public class A {}
-public class B : IFactory<A>, IRequiresInitialization { public ValueTask<A> CreateAsync() => throw null; public ValueTask InitializeAsync() => throw null; }
-public class C : IRequiresInitialization { public ValueTask InitializeAsync() => throw null; }
+public class B : IAsyncFactory<A>, IRequiresAsyncInitialization { public ValueTask<A> CreateAsync() => throw null; public ValueTask InitializeAsync() => throw null; }
+public class C : IRequiresAsyncInitialization { public ValueTask InitializeAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
+            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
@@ -659,7 +659,7 @@ public class G { public G() {} public G() {} }
 public class H { internal H() {} }
 public class I { internal I(int a) {} public I(bool b) {} }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Equal("(23,39): error CS0111: Type 'G' already defines a member called '.ctor' with the same parameter types", Assert.Single(comp.GetDiagnostics()).ToString());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
@@ -743,7 +743,7 @@ internal class Outer
     public class Inner {}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
@@ -785,7 +785,7 @@ public interface IA {}
 public class B : IB {}
 public interface IB {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -823,13 +823,13 @@ public class Container
 {
 }
 
-public class A : IFactory<int[]> { public ValueTask<int[]> CreateAsync() => throw null; }
+public class A : IAsyncFactory<int[]> { public ValueTask<int[]> CreateAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var intArray = comp.CreateArrayTypeSymbol(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            var factoryOfIntArray = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(intArray);
+            var factoryOfIntArray = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(intArray);
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [intArray] =
@@ -875,7 +875,7 @@ public class ModuleC
 
 public class A {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -905,7 +905,7 @@ public struct A : IA {}
 public interface IA {}
 public struct B {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -931,10 +931,10 @@ public class Container
 {
 }
 
-public class A : IFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
+public class A : IAsyncFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
 public struct B {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -942,7 +942,7 @@ public struct B {}
                 // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
                 // FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)
                 new DiagnosticResult("SI0008", @"FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)", DiagnosticSeverity.Error).WithLocation(5, 2));
-            var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
+            var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [factoryOfB] =
@@ -966,10 +966,10 @@ public class Container
 {
 }
 
-public struct A : IFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
+public struct A : IAsyncFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
 public struct B {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -995,7 +995,7 @@ public class Container
 public interface IA<out T> {}
 public class A : IA<string> {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var iAOfObject = comp.AssertGetTypeByMetadataName("IA`1").Construct(comp.AssertGetTypeByMetadataName(typeof(object).FullName!));
@@ -1024,7 +1024,7 @@ public class Container
 public interface IA {}
 public struct A : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -1051,7 +1051,7 @@ public class Container
 
 public struct A {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var nullableA = comp.AssertGetTypeByMetadataName(typeof(Nullable<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
@@ -1083,7 +1083,7 @@ public class B
     public static implicit operator A(B b) => new A();
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
@@ -1102,7 +1102,7 @@ using StrongInject;
 [ModuleRegistration(typeof(ModuleA))]
 public class ModuleA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
             diagnostics.Verify(
@@ -1124,7 +1124,7 @@ public class ModuleA {}
 [ModuleRegistration(typeof(ModuleA))]
 public class ModuleB {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
             diagnostics.Verify(
@@ -1149,7 +1149,7 @@ public class ModuleB {}
 [ModuleRegistration(typeof(ModuleA))]
 public class ModuleC {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
             diagnostics.Verify(
@@ -1172,7 +1172,7 @@ public class Container
 
 public abstract class A { public A(){} }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
@@ -1195,12 +1195,12 @@ public class Container
 
 public class A {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (4,2): Error SI0012: 'A' is registered as a factory but does not implement StrongInject.IFactory<T>
+                // (4,2): Error SI0012: 'A' is registered as a factory but does not implement StrongInject.IAsyncFactory<T>
                 // FactoryRegistration(typeof(A))
                 new DiagnosticResult("SI0012", @"FactoryRegistration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
             Assert.Empty(registrations);
@@ -1218,14 +1218,14 @@ public class Container
 {
 }
 
-public class A : IFactory<int> { public ValueTask<int> CreateAsync() => new ValueTask<int>(0); }
+public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => new ValueTask<int>(0); }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (5,2): Warning SI1001: 'A' implements 'StrongInject.IFactory<int>'. Did you mean to use FactoryRegistration instead?
+                // (5,2): Warning SI1001: 'A' implements 'StrongInject.IAsyncFactory<int>'. Did you mean to use FactoryRegistration instead?
                 // Registration(typeof(A))
                 new DiagnosticResult("SI1001", @"Registration(typeof(A))", DiagnosticSeverity.Warning).WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>

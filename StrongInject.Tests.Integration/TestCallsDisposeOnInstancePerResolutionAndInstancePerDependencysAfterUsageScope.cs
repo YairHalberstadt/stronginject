@@ -51,7 +51,7 @@ namespace StrongInject.Tests.Integration
         [Registration(typeof(C), Scope.InstancePerResolution)]
         [Registration(typeof(B))]
         [Registration(typeof(A))]
-        public partial class Container1 : IContainer<A>
+        public partial class Container1 : IAsyncContainer<A>
         {
         }
 
@@ -72,7 +72,7 @@ namespace StrongInject.Tests.Integration
         [Registration(typeof(C))]
         [Registration(typeof(B), Scope.SingleInstance)]
         [Registration(typeof(A))]
-        public partial class Container2 : IContainer<A>
+        public partial class Container2 : IAsyncContainer<A>
         {
         }
 

@@ -2,7 +2,7 @@
 
 namespace StrongInject
 {
-    public interface IFactory<T>
+    public interface IAsyncFactory<T>
     {
         ValueTask<T> CreateAsync();
     }

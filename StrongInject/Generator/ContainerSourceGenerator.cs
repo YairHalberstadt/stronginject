@@ -44,7 +44,7 @@ namespace StrongInject.Generator
             var cancellationToken = context.CancellationToken;
             var registrationAttribute = context.Compilation.GetTypeOrReport(typeof(RegistrationAttribute), context.ReportDiagnostic);
             var moduleRegistrationAttribute = context.Compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), context.ReportDiagnostic);
-            var iRequiresInitializationType = context.Compilation.GetTypeOrReport(typeof(IRequiresInitialization), context.ReportDiagnostic);
+            var iRequiresInitializationType = context.Compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), context.ReportDiagnostic);
             var valueTask1Type = context.Compilation.GetTypeOrReport(typeof(ValueTask<>), context.ReportDiagnostic);
             var interlockedType = context.Compilation.GetTypeOrReport(typeof(Interlocked), context.ReportDiagnostic);
             var helpersType = context.Compilation.GetTypeOrReport(typeof(Helpers), context.ReportDiagnostic);
@@ -64,8 +64,8 @@ namespace StrongInject.Generator
             }
 
             var registrationCalculator = new RegistrationCalculator(context.Compilation, context.ReportDiagnostic, cancellationToken);
-            var containerInterface = context.Compilation.GetType(typeof(IContainer<>));
-            var instanceProviderInterface = context.Compilation.GetType(typeof(IInstanceProvider<>));
+            var containerInterface = context.Compilation.GetType(typeof(IAsyncContainer<>));
+            var instanceProviderInterface = context.Compilation.GetType(typeof(IAsyncInstanceProvider<>));
 
             foreach (var syntaxTree in context.Compilation.SyntaxTrees)
             {
@@ -171,7 +171,7 @@ namespace StrongInject.Generator
                                     methodSource.Append(cast.FullName());
                                     methodSource.Append(")this.");
                                     methodSource.Append(field.Name);
-                                    methodSource.Append(")." + nameof(IInstanceProvider<object>.ReleaseAsync) + "(");
+                                    methodSource.Append(")." + nameof(IAsyncInstanceProvider<object>.ReleaseAsync) + "(");
                                     methodSource.Append(variableName);
                                     methodSource.Append(");");
                                     break;
@@ -259,7 +259,7 @@ namespace StrongInject.Generator
                                     methodSource.Append(castTo.FullName());
                                     methodSource.Append(")this.");
                                     methodSource.Append(field.Name);
-                                    methodSource.Append(")." + nameof(IInstanceProvider<object>.GetAsync) + "();");
+                                    methodSource.Append(")." + nameof(IAsyncInstanceProvider<object>.GetAsync) + "();");
                                     break;
                                 case { scope: Scope.SingleInstance } registration
                                     when !(isSingleInstanceCreation && ReferenceEquals(outerTarget, target)):
@@ -277,7 +277,7 @@ namespace StrongInject.Generator
                                     methodSource.Append(factoryType.FullName());
                                     methodSource.Append(")");
                                     methodSource.Append(factory);
-                                    methodSource.Append(")." + nameof(IFactory<object>.CreateAsync) + "();");
+                                    methodSource.Append(")." + nameof(IAsyncFactory<object>.CreateAsync) + "();");
                                     break;
                                 case Registration(var type, _, var scope, var requiresAsyncInitialization, var constructor) registration:
                                     var variableSource = new StringBuilder();
@@ -316,7 +316,7 @@ namespace StrongInject.Generator
                                         methodSource.Append(iRequiresInitializationType.FullName());
                                         methodSource.Append(")");
                                         methodSource.Append(variableName);
-                                        methodSource.Append(")." + nameof(IRequiresInitialization.InitializeAsync) + "();");
+                                        methodSource.Append(")." + nameof(IRequiresAsyncInitialization.InitializeAsync) + "();");
                                     }
 
                                     break;

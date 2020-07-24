@@ -43,7 +43,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => Assert.True(false, x.ToString()), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
@@ -79,7 +79,7 @@ public class D
 }
 public class E {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("B"), registrations.ToDictionary(x => x.Key, x => (InstanceSource)x.Value), x => Assert.True(false, x.ToString()), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
@@ -117,7 +117,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -160,7 +160,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -200,7 +200,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -239,7 +239,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -276,7 +276,7 @@ public class D
 {
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -315,7 +315,7 @@ public class C {}
 public class D {}
 public class E {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));

@@ -2,7 +2,7 @@
 
 namespace StrongInject
 {
-    public interface IInstanceProvider<T>
+    public interface IAsyncInstanceProvider<T>
     {
         ValueTask<T> GetAsync();
 

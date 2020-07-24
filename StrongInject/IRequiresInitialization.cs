@@ -2,7 +2,7 @@
 
 namespace StrongInject
 {
-    public interface IRequiresInitialization
+    public interface IRequiresAsyncInitialization
     {
         ValueTask InitializeAsync();
     }
