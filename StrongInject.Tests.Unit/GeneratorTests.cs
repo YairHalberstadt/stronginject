@@ -508,7 +508,7 @@ partial class Container
 {
     private global::A _singleInstanceField0;
     private global::D _singleInstanceField1;
-    private async System.Threading.Tasks.ValueTask<D> GetSingleInstanceField1()
+    private global::D GetSingleInstanceField1()
     {
         if (!object.ReferenceEquals(_singleInstanceField1, null))
             return _singleInstanceField1;
@@ -518,12 +518,12 @@ partial class Container
         return _singleInstanceField1;
     }
 
-    private async System.Threading.Tasks.ValueTask<A> GetSingleInstanceField0()
+    private global::A GetSingleInstanceField0()
     {
         if (!object.ReferenceEquals(_singleInstanceField0, null))
             return _singleInstanceField0;
         var _2 = new global::C();
-        var _3 = await GetSingleInstanceField1();
+        var _3 = GetSingleInstanceField1();
         var _1 = new global::B((global::C)_2, (global::D)_3);
         var _0 = new global::A((global::B)_1, (global::C)_2);
         global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField0, _0, null);
@@ -532,7 +532,7 @@ partial class Container
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
-        var _0 = await GetSingleInstanceField0();
+        var _0 = GetSingleInstanceField0();
         var result = await func((global::A)_0, param);
         return result;
     }
@@ -576,7 +576,7 @@ public interface IC {}
 partial class Container
 {
     private global::C _singleInstanceField0;
-    private async System.Threading.Tasks.ValueTask<C> GetSingleInstanceField0()
+    private global::C GetSingleInstanceField0()
     {
         if (!object.ReferenceEquals(_singleInstanceField0, null))
             return _singleInstanceField0;
@@ -587,7 +587,7 @@ partial class Container
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
-        var _2 = await GetSingleInstanceField0();
+        var _2 = GetSingleInstanceField0();
         var _3 = new global::D((global::C)_2);
         var _1 = new global::B((global::IC)_2, (global::D)_3);
         var _0 = new global::A((global::B)_1, (global::IC)_2);
@@ -642,7 +642,7 @@ partial class Container
 {
     private global::A _singleInstanceField0;
     private global::C _singleInstanceField1;
-    private async System.Threading.Tasks.ValueTask<C> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::C> GetSingleInstanceField1()
     {
         if (!object.ReferenceEquals(_singleInstanceField1, null))
             return _singleInstanceField1;
@@ -652,7 +652,7 @@ partial class Container
         return _singleInstanceField1;
     }
 
-    private async System.Threading.Tasks.ValueTask<A> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::A> GetSingleInstanceField0()
     {
         if (!object.ReferenceEquals(_singleInstanceField0, null))
             return _singleInstanceField0;
@@ -725,7 +725,7 @@ partial class Container
     private global::BFactoryTarget _singleInstanceField1;
     private global::B _singleInstanceField2;
     private global::CFactoryTarget _singleInstanceField3;
-    private async System.Threading.Tasks.ValueTask<CFactoryTarget> GetSingleInstanceField3()
+    private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetSingleInstanceField3()
     {
         if (!object.ReferenceEquals(_singleInstanceField3, null))
             return _singleInstanceField3;
@@ -735,7 +735,7 @@ partial class Container
         return _singleInstanceField3;
     }
 
-    private async System.Threading.Tasks.ValueTask<B> GetSingleInstanceField2()
+    private async global::System.Threading.Tasks.ValueTask<global::B> GetSingleInstanceField2()
     {
         if (!object.ReferenceEquals(_singleInstanceField2, null))
             return _singleInstanceField2;
@@ -748,7 +748,7 @@ partial class Container
         return _singleInstanceField2;
     }
 
-    private async System.Threading.Tasks.ValueTask<BFactoryTarget> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetSingleInstanceField1()
     {
         if (!object.ReferenceEquals(_singleInstanceField1, null))
             return _singleInstanceField1;
@@ -758,7 +758,7 @@ partial class Container
         return _singleInstanceField1;
     }
 
-    private async System.Threading.Tasks.ValueTask<A> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::A> GetSingleInstanceField0()
     {
         if (!object.ReferenceEquals(_singleInstanceField0, null))
             return _singleInstanceField0;
@@ -817,7 +817,7 @@ public interface IC {}
 partial class Container
 {
     private global::C _singleInstanceField0;
-    private async System.Threading.Tasks.ValueTask<C> GetSingleInstanceField0()
+    private global::C GetSingleInstanceField0()
     {
         if (!object.ReferenceEquals(_singleInstanceField0, null))
             return _singleInstanceField0;
@@ -828,7 +828,7 @@ partial class Container
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
-        var _1 = await GetSingleInstanceField0();
+        var _1 = GetSingleInstanceField0();
         var _0 = new global::A((global::IC)_1);
         var result = await func((global::A)_0, param);
         return result;
@@ -836,7 +836,7 @@ partial class Container
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
-        var _1 = await GetSingleInstanceField0();
+        var _1 = GetSingleInstanceField0();
         var _2 = new global::D((global::C)_1);
         var _0 = new global::B((global::C)_1, (global::D)_2);
         var result = await func((global::B)_0, param);
@@ -1212,7 +1212,7 @@ partial class Container
     private global::BFactoryTarget _singleInstanceField0;
     private global::B _singleInstanceField1;
     private global::CFactoryTarget _singleInstanceField2;
-    private async System.Threading.Tasks.ValueTask<CFactoryTarget> GetSingleInstanceField2()
+    private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetSingleInstanceField2()
     {
         if (!object.ReferenceEquals(_singleInstanceField2, null))
             return _singleInstanceField2;
@@ -1222,7 +1222,7 @@ partial class Container
         return _singleInstanceField2;
     }
 
-    private async System.Threading.Tasks.ValueTask<B> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::B> GetSingleInstanceField1()
     {
         if (!object.ReferenceEquals(_singleInstanceField1, null))
             return _singleInstanceField1;
@@ -1235,7 +1235,7 @@ partial class Container
         return _singleInstanceField1;
     }
 
-    private async System.Threading.Tasks.ValueTask<BFactoryTarget> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetSingleInstanceField0()
     {
         if (!object.ReferenceEquals(_singleInstanceField0, null))
             return _singleInstanceField0;
@@ -1246,7 +1246,7 @@ partial class Container
     }
 
     private global::I _singleInstanceField3;
-    private async System.Threading.Tasks.ValueTask<I> GetSingleInstanceField3()
+    private async global::System.Threading.Tasks.ValueTask<global::I> GetSingleInstanceField3()
     {
         if (!object.ReferenceEquals(_singleInstanceField3, null))
             return _singleInstanceField3;

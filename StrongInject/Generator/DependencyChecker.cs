@@ -1,12 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace StrongInject.Generator
 {
     internal static class DependencyChecker
     {
-        public static bool HasCircularOrMissingDependencies(ITypeSymbol target, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Action<Diagnostic> reportDiagnostic, Location location)
+        public static bool HasCircularOrMissingDependencies(ITypeSymbol target, bool isAsync, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Action<Diagnostic> reportDiagnostic, Location location)
         {
             var visited = new HashSet<ITypeSymbol>();
             var currentlyVisiting = new HashSet<ITypeSymbol>();
@@ -29,6 +30,10 @@ namespace StrongInject.Generator
                 {
                     reportDiagnostic(NoSourceForType(location, target, node));
                     result = true;
+                }
+                else if (instanceSource.isAsync && !isAsync)
+                {
+                    reportDiagnostic(RequiresAsyncResolution(location, target, node));
                 }
                 else if (instanceSource is Registration { constructor: { Parameters: var parameters } })
                 {
@@ -76,6 +81,79 @@ namespace StrongInject.Generator
                     location,
                     target,
                     type);
+        }
+
+        private static Diagnostic RequiresAsyncResolution(Location location, ITypeSymbol target, ITypeSymbol type)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI0102",
+                        "Type can only be resolved asynchronously",
+                        "Error while resolving dependencies for '{0}': '{1}' can only be resolved asynchronously.",
+                        "StrongInject",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    type);
+        }
+
+        /// <summary>
+        /// Only call if <see cref="HasCircularOrMissingDependencies"/> returns true,
+        /// as this does no validation, and could throw or stack overflow otherwise.
+        /// </summary>
+        internal static bool RequiresAsync(InstanceSource source, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations)
+        {
+            var visited = new HashSet<InstanceSource>(ReferenceEqualityComparer.Instance);
+
+            return Visit(source);
+
+            bool Visit(InstanceSource source)
+            {
+                if (visited.Contains(source))
+                    return false;
+
+                if (source.isAsync)
+                {
+                    return true;
+                }
+
+                if (source is Registration { constructor: { Parameters: var parameters } })
+                {
+                    foreach (var param in parameters)
+                    {
+                        var paramSource = registrations[param.Type];
+                        if (Visit(paramSource))
+                            return true;
+                    }
+                }
+                else if (source is FactoryRegistration { factoryType: var factoryType })
+                {
+                    var factorySource = registrations[factoryType];
+                    if (Visit(factorySource))
+                        return true;
+                }
+
+                visited.Add(source);
+                return false;
+            }
+        }
+
+        private class ReferenceEqualityComparer : IEqualityComparer<InstanceSource>
+        {
+            private ReferenceEqualityComparer() { }
+
+            public static ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
+
+            public bool Equals(InstanceSource x, InstanceSource y)
+            {
+                return ReferenceEquals(x, y);
+            }
+
+            public int GetHashCode(InstanceSource obj)
+            {
+                return RuntimeHelpers.GetHashCode(obj);
+            }
         }
     }
 }
