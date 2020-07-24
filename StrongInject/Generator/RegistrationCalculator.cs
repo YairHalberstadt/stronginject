@@ -19,10 +19,15 @@ namespace StrongInject.Generator
             _reportDiagnostic = reportDiagnostic;
             _cancellationToken = cancellationToken;
             _registrationAttributeType = compilation.GetTypeOrReport(typeof(RegistrationAttribute), reportDiagnostic)!;
+            _factoryRegistrationAttributeType = compilation.GetTypeOrReport(typeof(FactoryRegistrationAttribute), reportDiagnostic)!;
             _moduleRegistrationAttributeType = compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), _reportDiagnostic)!;
             _iFactoryType = compilation.GetTypeOrReport(typeof(IFactory<>), _reportDiagnostic)!;
             _iRequiresInitializationType = compilation.GetTypeOrReport(typeof(IRequiresInitialization), _reportDiagnostic)!;
-            if (_registrationAttributeType is null || _moduleRegistrationAttributeType is null || _iFactoryType is null || _iRequiresInitializationType is null)
+            if (_registrationAttributeType is null 
+                || _factoryRegistrationAttributeType is null 
+                || _moduleRegistrationAttributeType is null 
+                || _iFactoryType is null 
+                || _iRequiresInitializationType is null)
             {
                 _valid = false;
             }
@@ -32,15 +37,16 @@ namespace StrongInject.Generator
             }
         }
 
-        private Dictionary<INamedTypeSymbol, Dictionary<ITypeSymbol, InstanceSource>> _registrations = new();
-        private INamedTypeSymbol _registrationAttributeType;
-        private INamedTypeSymbol _moduleRegistrationAttributeType;
-        private INamedTypeSymbol _iFactoryType;
-        private INamedTypeSymbol _iRequiresInitializationType;
+        private readonly Dictionary<INamedTypeSymbol, Dictionary<ITypeSymbol, InstanceSource>> _registrations = new();
+        private readonly INamedTypeSymbol _registrationAttributeType;
+        private readonly INamedTypeSymbol _factoryRegistrationAttributeType;
+        private readonly INamedTypeSymbol _moduleRegistrationAttributeType;
+        private readonly INamedTypeSymbol _iFactoryType;
+        private readonly INamedTypeSymbol _iRequiresInitializationType;
         private readonly Compilation _compilation;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly CancellationToken _cancellationToken;
-        private bool _valid;
+        private readonly bool _valid;
 
         public IReadOnlyDictionary<ITypeSymbol, InstanceSource> GetRegistrations(INamedTypeSymbol module)
         {
@@ -74,9 +80,9 @@ namespace StrongInject.Generator
 
             var attributes = module.GetAttributes();
 
-            var directRegistrations = CalculateDirectRegistrations(attributes);
+            var thisModuleRegistrations = CalculateThisModuleRegistrations(attributes);
 
-            var moduleRegistrations = new List<(AttributeData, Dictionary<ITypeSymbol, InstanceSource> registrations)>();
+            var importedModulesRegistrations = new List<(AttributeData moduleRegistrationAttribute, Dictionary<ITypeSymbol, InstanceSource> registrations)>();
             foreach (var moduleRegistrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(_moduleRegistrationAttributeType, SymbolEqualityComparer.Default) ?? false))
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -106,17 +112,17 @@ namespace StrongInject.Generator
 
                 var registrations = GetRegistrations(moduleType, dependantModules);
 
-                var thisModuleRegistrations = new Dictionary<ITypeSymbol, InstanceSource>();
+                var importedModuleRegistrations = new Dictionary<ITypeSymbol, InstanceSource>();
                 foreach (var (type, registration) in registrations)
                 {
                     if (exclusionList.Contains(type))
                         continue;
-                    if (directRegistrations.ContainsKey(type))
+                    if (thisModuleRegistrations.ContainsKey(type))
                         continue;
                     var use = true;
-                    foreach (var (otherModuleRegistrationAttribute, otherModuleRegistrations) in moduleRegistrations)
+                    foreach (var (otherModuleRegistrationAttribute, otherImportedModuleRegistrations) in importedModulesRegistrations)
                     {
-                        if (otherModuleRegistrations.TryGetValue(type, out var otherRegistration))
+                        if (otherImportedModuleRegistrations.TryGetValue(type, out var otherRegistration))
                         {
                             use = false;
                             if (!registration.Equals(otherRegistration))
@@ -130,22 +136,29 @@ namespace StrongInject.Generator
                     if (!use)
                         continue;
 
-                    thisModuleRegistrations.Add(type, registration);
+                    importedModuleRegistrations.Add(type, registration);
                 }
-                moduleRegistrations.Add((moduleRegistrationAttribute, thisModuleRegistrations));
+                importedModulesRegistrations.Add((moduleRegistrationAttribute, importedModuleRegistrations));
             }
 
-            return directRegistrations.Concat(moduleRegistrations.SelectMany(x => x.registrations)).ToDictionary(x => x.Key, x => x.Value);
+            return thisModuleRegistrations.Concat(importedModulesRegistrations.SelectMany(x => x.registrations)).ToDictionary(x => x.Key, x => x.Value);
         }
 
-        private Dictionary<ITypeSymbol, InstanceSource> CalculateDirectRegistrations(ImmutableArray<AttributeData> attributes)
+        private Dictionary<ITypeSymbol, InstanceSource> CalculateThisModuleRegistrations(ImmutableArray<AttributeData> moduleAttributes)
         {
-            var directRegistrations = new Dictionary<ITypeSymbol, InstanceSource>();
-            foreach (var registrationAttribute in attributes.Where(x => x.AttributeClass?.Equals(_registrationAttributeType, SymbolEqualityComparer.Default) ?? false))
+            var registrations = new Dictionary<ITypeSymbol, InstanceSource>();
+            AppendSimpleRegistrations(registrations, moduleAttributes);
+            AppendFactoryRegistrations(registrations, moduleAttributes);
+            return registrations;
+        }
+
+        private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSource> registrations, ImmutableArray<AttributeData> moduleAttributes)
+        {
+            foreach (var registrationAttribute in moduleAttributes.Where(x => x.AttributeClass?.Equals(_registrationAttributeType, SymbolEqualityComparer.Default) ?? false))
             {
                 _cancellationToken.ThrowIfCancellationRequested();
                 var countConstructorArguments = registrationAttribute.ConstructorArguments.Length;
-                if (countConstructorArguments is not (2 or 3 or 4))
+                if (countConstructorArguments is not (2 or 3))
                 {
                     // Invalid code, ignore;
                     continue;
@@ -165,47 +178,24 @@ namespace StrongInject.Generator
                 {
                     _reportDiagnostic(TypeIsAbstract(
                         type!,
-                        registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                        registrationAttribute.GetLocation(_cancellationToken)));
                     continue;
                 }
 
-                IMethodSymbol constructor;
-                var applicableConstructors = type.Constructors.Where(x => x.DeclaredAccessibility == Accessibility.Public).ToList();
-                if (applicableConstructors.Count == 0)
+                if (!TryGetConstructor(registrationAttribute, type, out var constructor))
                 {
-                    _reportDiagnostic(NoConstructor(registrationAttribute, type, _cancellationToken));
                     continue;
                 }
-                else if (applicableConstructors.Count == 1)
-                {
-                    constructor = applicableConstructors[0];
-                }
-                else
-                {
-                    var nonDefaultConstructors = applicableConstructors.Where(x => x.Parameters.Length != 0).ToList();
-                    if (nonDefaultConstructors.Count == 0)
-                    {
-                        // We should only be able to get here in an error case. Take the first constructor.
-                        constructor = applicableConstructors[0];
-                    }
-                    else if (nonDefaultConstructors.Count == 1)
-                    {
-                        constructor = nonDefaultConstructors[0];
-                    }
-                    else
-                    {
-                        _reportDiagnostic(MultipleConstructors(registrationAttribute, type, _cancellationToken));
-                        continue;
-                    }
-                }
 
-                var scope = countConstructorArguments is 3 or 4 && registrationAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
+                var scope = countConstructorArguments is 3 && registrationAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
                     ? (Scope)scopeInt
                     : Scope.InstancePerResolution;
 
-                var factoryTargetScope = countConstructorArguments is 4 && registrationAttribute.ConstructorArguments[2] is { Kind: TypedConstantKind.Enum, Value: int factoryTargetScopeInt }
-                    ? (Scope)factoryTargetScopeInt
-                    : Scope.InstancePerResolution;
+                if (scope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
+                {
+                    _reportDiagnostic(StructWithSingleInstanceScope(registrationAttribute, type, _cancellationToken));
+                    continue;
+                }
 
                 var registeredAsConstant = registrationAttribute.ConstructorArguments[countConstructorArguments - 1];
                 if (registeredAsConstant.Kind is not TypedConstantKind.Array)
@@ -214,59 +204,129 @@ namespace StrongInject.Generator
                     continue;
                 }
                 var registeredAsConstants = registeredAsConstant.Values;
-                var registeredAs = registeredAsConstants.IsDefaultOrEmpty 
-                    ? new[] { typeConstant } 
+                var registeredAs = registeredAsConstants.IsDefaultOrEmpty
+                    ? new[] { typeConstant }
                     : registeredAsConstants.Where(x => x.Kind == TypedConstantKind.Type).ToArray();
 
                 var requiresInitialization = type.AllInterfaces.Contains(_iRequiresInitializationType);
+
+                ReportSuspiciousSimpleRegistrations(type, registrationAttribute);
+
                 foreach (var registeredAsTypeConstant in registeredAs)
                 {
-                    if (!CheckValidType(registrationAttribute, registeredAsTypeConstant, out var directTarget))
+                    if (!CheckValidType(registrationAttribute, registeredAsTypeConstant, out var target))
                     {
                         continue;
                     }
 
-                    if (_compilation.ClassifyCommonConversion(type, directTarget) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
+                    if (_compilation.ClassifyCommonConversion(type, target) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
                     {
-                        _reportDiagnostic(DoesNotHaveSuitableConversion(registrationAttribute, type, directTarget, _cancellationToken));
+                        _reportDiagnostic(DoesNotHaveSuitableConversion(registrationAttribute, type, target, _cancellationToken));
                         continue;
                     }
 
-                    if (directRegistrations.ContainsKey(directTarget))
+                    if (registrations.ContainsKey(target))
                     {
-                        _reportDiagnostic(DuplicateRegistration(registrationAttribute, directTarget, _cancellationToken));
+                        _reportDiagnostic(DuplicateRegistration(registrationAttribute, target, _cancellationToken));
                         continue;
                     }
 
-                    if (scope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
+                    registrations.Add(target, new Registration(type, target, scope, requiresInitialization, constructor));
+                }
+            }
+        }
+
+        private void ReportSuspiciousSimpleRegistrations(INamedTypeSymbol type, AttributeData registrationAttribute)
+        {
+            if (type.AllInterfaces.FirstOrDefault(x => x.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default)) is { } factoryType)
+            {
+                _reportDiagnostic(WarnSimpleRegistrationImplementingFactory(type, factoryType, registrationAttribute.GetLocation(_cancellationToken)));
+            }
+        }
+
+        private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSource> registrations, ImmutableArray<AttributeData> moduleAttributes)
+        {
+            foreach (var factoryRegistrationAttribute in moduleAttributes.Where(x => x.AttributeClass?.Equals(_factoryRegistrationAttributeType, SymbolEqualityComparer.Default) ?? false))
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+                var countConstructorArguments = factoryRegistrationAttribute.ConstructorArguments.Length;
+                if (countConstructorArguments != 3)
+                {
+                    // Invalid code, ignore;
+                    continue;
+                }
+
+                var typeConstant = factoryRegistrationAttribute.ConstructorArguments[0];
+                if (typeConstant.Kind != TypedConstantKind.Type)
+                {
+                    // Invalid code, ignore;
+                    continue;
+                }
+                if (!CheckValidType(factoryRegistrationAttribute, typeConstant, out var type))
+                {
+                    continue;
+                }
+                if (type.IsAbstract)
+                {
+                    _reportDiagnostic(TypeIsAbstract(
+                        type!,
+                        factoryRegistrationAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
+
+                if (!TryGetConstructor(factoryRegistrationAttribute, type, out var constructor))
+                {
+                    continue;
+                }
+
+                var factoryScope = factoryRegistrationAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int factoryScopeInt }
+                    ? (Scope)factoryScopeInt
+                    : Scope.InstancePerResolution;
+
+                var factoryTargetScope = factoryRegistrationAttribute.ConstructorArguments[2] is { Kind: TypedConstantKind.Enum, Value: int factoryTargetScopeInt }
+                    ? (Scope)factoryTargetScopeInt
+                    : Scope.InstancePerResolution;
+
+                if (factoryScope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
+                {
+                    _reportDiagnostic(StructWithSingleInstanceScope(factoryRegistrationAttribute, type, _cancellationToken));
+                    continue;
+                }
+
+                var requiresInitialization = type.AllInterfaces.Contains(_iRequiresInitializationType);
+
+                bool any = false;
+                foreach (var factoryType in type.AllInterfaces.Where(x => x.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default)))
+                {
+                    any = true;
+                    registrations.Add(factoryType, new Registration(type, factoryType, factoryScope, requiresInitialization, constructor));
+
+                    if (factoryType.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default))
                     {
-                        _reportDiagnostic(StructWithSingleInstanceScope(registrationAttribute, type, _cancellationToken));
-                        continue;
-                    }
+                        var factoryOf = factoryType.TypeArguments.First();
 
-                    directRegistrations.Add(directTarget, new Registration(type, directTarget, scope, requiresInitialization, constructor));
-
-                    if (directTarget.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default))
-                    {
-                        var factoryOf = directTarget.TypeArguments.First();
-
-                        if (directRegistrations.ContainsKey(factoryOf))
+                        if (registrations.ContainsKey(factoryOf))
                         {
-                            _reportDiagnostic(DuplicateRegistration(registrationAttribute, factoryOf, _cancellationToken));
+                            _reportDiagnostic(DuplicateRegistration(factoryRegistrationAttribute, factoryOf, _cancellationToken));
                             continue;
                         }
 
                         if (factoryTargetScope == Scope.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
                         {
-                            _reportDiagnostic(StructWithSingleInstanceScope(registrationAttribute, factoryOf, _cancellationToken));
+                            _reportDiagnostic(StructWithSingleInstanceScope(factoryRegistrationAttribute, factoryOf, _cancellationToken));
                             continue;
                         }
 
-                        directRegistrations.Add(factoryOf, new FactoryRegistration(directTarget, factoryOf, factoryTargetScope));
+                        registrations.Add(factoryOf, new FactoryRegistration(factoryType, factoryOf, factoryTargetScope));
                     }
                 }
+                if (!any)
+                {
+                    _reportDiagnostic(FactoryRegistrationNotAFactory(
+                        type,
+                        factoryRegistrationAttribute.GetLocation(_cancellationToken)));
+                }
             }
-            return directRegistrations;
         }
 
         private bool CheckValidType(AttributeData registrationAttribute, TypedConstant typedConstant, out INamedTypeSymbol type)
@@ -276,7 +336,7 @@ namespace StrongInject.Generator
             {
                 _reportDiagnostic(InvalidType(
                     (ITypeSymbol)typedConstant.Value!,
-                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                    registrationAttribute.GetLocation(_cancellationToken)));
                 return false;
             }
             if (type.IsOrReferencesErrorType())
@@ -288,15 +348,49 @@ namespace StrongInject.Generator
             {
                 _reportDiagnostic(UnboundGenericType(
                     (ITypeSymbol)typedConstant.Value!,
-                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                    registrationAttribute.GetLocation(_cancellationToken)));
                 return false;
             }
             if (!type.IsPublic())
             {
                 _reportDiagnostic(TypeNotPublic(
                     type!,
-                    registrationAttribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                    registrationAttribute.GetLocation(_cancellationToken)));
                 return false;
+            }
+            return true;
+        }
+
+        private bool TryGetConstructor(AttributeData registrationAttribute, INamedTypeSymbol type, out IMethodSymbol constructor)
+        {
+            constructor = default!;
+            var applicableConstructors = type.Constructors.Where(x => x.DeclaredAccessibility == Accessibility.Public).ToList();
+            if (applicableConstructors.Count == 0)
+            {
+                _reportDiagnostic(NoConstructor(registrationAttribute, type, _cancellationToken));
+                return false;
+            }
+            else if (applicableConstructors.Count == 1)
+            {
+                constructor = applicableConstructors[0];
+            }
+            else
+            {
+                var nonDefaultConstructors = applicableConstructors.Where(x => x.Parameters.Length != 0).ToList();
+                if (nonDefaultConstructors.Count == 0)
+                {
+                    // We should only be able to get here in an error case. Take the first constructor.
+                    constructor = applicableConstructors[0];
+                }
+                else if (nonDefaultConstructors.Count == 1)
+                {
+                    constructor = nonDefaultConstructors[0];
+                }
+                else
+                {
+                    _reportDiagnostic(MultipleConstructors(registrationAttribute, type, _cancellationToken));
+                    return false;
+                }
             }
             return true;
         }
@@ -456,6 +550,35 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 typeSymbol);
+        }
+
+        private static Diagnostic FactoryRegistrationNotAFactory(ITypeSymbol typeSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0012",
+                    "Type is registered as a factory but does not implement StrongInject.IFactory<T>",
+                    "'{0}' is registered as a factory but does not implement StrongInject.IFactory<T>",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                typeSymbol);
+        }
+
+        private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1001",
+                    "Type implements FactoryType. Did you mean to use FactoryRegistration instead?",
+                    "'{0}' implements '{1}'. Did you mean to use FactoryRegistration instead?",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true),
+                location,
+                type,
+                factoryType);
         }
     }
 }

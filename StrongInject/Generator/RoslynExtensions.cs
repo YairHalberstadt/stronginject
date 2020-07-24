@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace StrongInject.Generator
 {
@@ -113,5 +114,8 @@ namespace StrongInject.Generator
                 return type.AllInterfaces;
             return type.AllInterfaces.Prepend((INamedTypeSymbol)type);
         }
+
+        public static Location GetLocation(this AttributeData attributeData, CancellationToken cancellationToken)
+            => attributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None;
     }
 }
