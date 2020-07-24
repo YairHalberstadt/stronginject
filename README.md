@@ -196,7 +196,8 @@ Sometimes a type requires more complex construction than just calling the constr
 
 For such cases the `IFactory<T>` interface exists.
 
-When you register a type as `IFactory<T>` it will automatically register it as `T` as well. An instance of `T` will be constructed by calling `IFactory<T>.CreateAsync()`.
+You can register a type implementing `IFactory<T>` as a Factory Registration.
+This will automatically register it as both `IFactory<T>` and `T`. An instance of `T` will be constructed by calling `IFactory<T>.CreateAsync()`.
 
 ```csharp
 using StrongInject;
@@ -205,25 +206,26 @@ using System.Threading.Tasks;
 public interface IInterface {}
 public class A : IInterface {}
 public class B : IInterface {}
-public class InterfaceArrayFactory : IFactory<IInterface[]>
+public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
 {
-  private A _a;
-  private B _b;
-  public InterfaceArrayFactory(A a, B b) => (_a, _b) = (a, b);
-  public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] {_a, _b});
+    public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B };
 }
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
-[Registration(typeof(InterfaceArrayFactory), typeof(IFactory<IInterface[]>))]
-public partial class Container : IContainer<IInterface[]> {}
+[FactoryRegistration(typeof(InterfaceArrayFactory))]
+public partial class Container : IContainer<IInterface[]> { }
 ```
 
-The scope of the factory and the factory target is controlled seperately. This allows you to e.g. have a singleton factory, but call `CreateAsync` on every resolution:
+Whilst a factory doesn't have to be a record, doing so significantly shortens the amount of code you have to write.
+
+The scope of the factory and the factory target is controlled separately. This allows you to e.g. have a singleton factory, but call `CreateAsync` on every resolution:
 
 ```csharp
-[Registration(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
+[FactoryRegistration(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
 ```
+
+If a factory implements `IFactory<T>` for multiple `T`s it will be registered as a factory for all of them. 
 
 #### Providing registrations at runtime or integrating with other IOC containers
 
@@ -247,28 +249,22 @@ public enum InterfaceToUse
     UseB
 }
 
-public class InstanceProvider : IInstanceProvider<InterfaceToUse>
+public record InstanceProvider(InterfaceToUse InterfaceToUse) : IInstanceProvider<InterfaceToUse>
 {
-    InterfaceToUse _interfaceToUse;
-    public InstanceProvider(InterfaceToUse interfaceToUse) => _interfaceToUse = interfaceToUse;
-    public async ValueTask<InterfaceToUse> GetAsync() => _interfaceToUse;
+    public ValueTask<InterfaceToUse> GetAsync() => new ValueTask<InterfaceToUse>(InterfaceToUse);
 }
 
-public class InterfaceFactory : IFactory<IInterface>
+public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IFactory<IInterface>
 {
-    private A _a;
-    private B _b;
-    private InterfaceToUse _interfaceToUse;
-    public InterfaceFactory(A a, B b, InterfaceToUse interfaceToUse) => (_a, _b, _interfaceToUse) = (a, b, interfaceToUse);
-    public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(_interfaceToUse == InterfaceToUse.UseA ? (IInterface)_a : _b);
+    public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B);
 }
 
 [Registration(typeof(A))]
 [Registration(typeof(B))]
-[Registration(typeof(InterfaceFactory), typeof(IFactory<IInterface>))]
+[FactoryRegistration(typeof(InterfaceFactory))]
 public partial class Container : IContainer<IInterface>
 {
-    private InstanceProvider _instanceProvider;
+    private readonly InstanceProvider _instanceProvider;
     public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
 }
 ```

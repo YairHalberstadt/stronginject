@@ -172,10 +172,11 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), typeof(IFactory<AFactoryTarget>))]
-[Registration(typeof(B), typeof(IFactory<BFactoryTarget>))]
-[Registration(typeof(C), typeof(C), typeof(IFactory<CFactoryTarget>))]
-[Registration(typeof(D), typeof(IFactory<DFactoryTarget>))]
+[FactoryRegistration(typeof(A))]
+[FactoryRegistration(typeof(B))]
+[FactoryRegistration(typeof(C))]
+[FactoryRegistration(typeof(D))]
+[Registration(typeof(C))]
 public partial class Container : IContainer<AFactoryTarget>
 {
 }
@@ -397,10 +398,11 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), typeof(IFactory<AFactoryTarget>))]
-[Registration(typeof(B), Scope.InstancePerDependency, typeof(IFactory<BFactoryTarget>))]
-[Registration(typeof(C), Scope.InstancePerResolution, Scope.InstancePerDependency, typeof(C), typeof(IFactory<CFactoryTarget>))]
-[Registration(typeof(D), Scope.InstancePerDependency, Scope.InstancePerDependency, typeof(IFactory<DFactoryTarget>))]
+[FactoryRegistration(typeof(A))]
+[FactoryRegistration(typeof(B), Scope.InstancePerDependency)]
+[FactoryRegistration(typeof(C), Scope.InstancePerResolution, Scope.InstancePerDependency)]
+[FactoryRegistration(typeof(D), Scope.InstancePerDependency, Scope.InstancePerDependency)]
+[Registration(typeof(C))]
 public partial class Container : IContainer<AFactoryTarget>
 {
 }
@@ -674,10 +676,11 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution, typeof(IFactory<AFactoryTarget>))]
-[Registration(typeof(B), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<BFactoryTarget>))]
-[Registration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance, typeof(C), typeof(IFactory<CFactoryTarget>))]
-[Registration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution, typeof(IFactory<DFactoryTarget>))]
+[FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)]
+[FactoryRegistration(typeof(B), Scope.SingleInstance, Scope.SingleInstance)]
+[FactoryRegistration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance)]
+[FactoryRegistration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution)]
+[Registration(typeof(C), Scope.InstancePerResolution, typeof(C))]
 public partial class Container : IContainer<AFactoryTarget>
 {
 }
@@ -1142,10 +1145,11 @@ using StrongInject;
 using System.Threading.Tasks;
 using System;
 
-[Registration(typeof(A), typeof(IFactory<AFactoryTarget>))]
-[Registration(typeof(B), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<BFactoryTarget>))]
-[Registration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance, typeof(C), typeof(IFactory<CFactoryTarget>))]
-[Registration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution, typeof(IFactory<DFactoryTarget>))]
+[FactoryRegistration(typeof(A))]
+[FactoryRegistration(typeof(B), Scope.SingleInstance, Scope.SingleInstance)]
+[FactoryRegistration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance)]
+[FactoryRegistration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution)]
+[Registration(typeof(C))]
 [Registration(typeof(E))]
 [Registration(typeof(F))]
 [Registration(typeof(G))]
@@ -1189,9 +1193,9 @@ public class I : IDisposable { public I(int i) {} public void Dispose() {} }
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify(
-                // (17,28): Warning CS0649: Field 'Container.instanceProvider' is never assigned to, and will always have its default value null
+                // (18,28): Warning CS0649: Field 'Container.instanceProvider' is never assigned to, and will always have its default value null
                 // instanceProvider
-                new DiagnosticResult("CS0649", @"instanceProvider", DiagnosticSeverity.Warning).WithLocation(17, 28));
+                new DiagnosticResult("CS0649", @"instanceProvider", DiagnosticSeverity.Warning).WithLocation(18, 28));
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container

@@ -74,17 +74,14 @@ namespace StrongInject.Tests.Integration
             public interface IInterface { }
             public class A : IInterface { }
             public class B : IInterface { }
-            public class InterfaceArrayFactory : IFactory<IInterface[]>
+            public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
             {
-                private A _a;
-                private B _b;
-                public InterfaceArrayFactory(A a, B b) => (_a, _b) = (a, b);
-                public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { _a, _b });
+                public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B });
             }
 
             [Registration(typeof(A))]
             [Registration(typeof(B))]
-            [Registration(typeof(InterfaceArrayFactory), typeof(IFactory<IInterface[]>))]
+            [FactoryRegistration(typeof(InterfaceArrayFactory))]
             public partial class Container : IContainer<IInterface[]> { }
 
             [Fact]
@@ -105,17 +102,14 @@ namespace StrongInject.Tests.Integration
             public interface IInterface { }
             public class A : IInterface { }
             public class B : IInterface { }
-            public class InterfaceArrayFactory : IFactory<IInterface[]>
+            public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
             {
-                private A _a;
-                private B _b;
-                public InterfaceArrayFactory(A a, B b) => (_a, _b) = (a, b);
-                public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { _a, _b });
+                public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B });
             }
 
             [Registration(typeof(A))]
             [Registration(typeof(B))]
-            [Registration(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
+            [FactoryRegistration(typeof(InterfaceArrayFactory), factoryScope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution)]
             public partial class Container : IContainer<IInterface[]> { }
 
             [Fact]
@@ -152,30 +146,24 @@ namespace StrongInject.Tests.Integration
                 UseB
             }
 
-            public class InstanceProvider : IInstanceProvider<InterfaceToUse>
+            public record InstanceProvider(InterfaceToUse InterfaceToUse) : IInstanceProvider<InterfaceToUse>
             {
-                InterfaceToUse _interfaceToUse;
-                public InstanceProvider(InterfaceToUse interfaceToUse) => _interfaceToUse = interfaceToUse;
-                public async ValueTask<InterfaceToUse> GetAsync() => _interfaceToUse;
+                public ValueTask<InterfaceToUse> GetAsync() => new ValueTask<InterfaceToUse>(InterfaceToUse);
 
                 public ValueTask ReleaseAsync(InterfaceToUse instance) => default;
             }
 
-            public class InterfaceFactory : IFactory<IInterface>
+            public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IFactory<IInterface>
             {
-                private A _a;
-                private B _b;
-                private InterfaceToUse _interfaceToUse;
-                public InterfaceFactory(A a, B b, InterfaceToUse interfaceToUse) => (_a, _b, _interfaceToUse) = (a, b, interfaceToUse);
-                public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(_interfaceToUse == InterfaceToUse.UseA ? (IInterface)_a : _b);
+                public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B);
             }
 
             [Registration(typeof(A))]
             [Registration(typeof(B))]
-            [Registration(typeof(InterfaceFactory), typeof(IFactory<IInterface>))]
+            [FactoryRegistration(typeof(InterfaceFactory))]
             public partial class Container : IContainer<IInterface>
             {
-                private InstanceProvider _instanceProvider;
+                private readonly InstanceProvider _instanceProvider;
                 public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
             }
 

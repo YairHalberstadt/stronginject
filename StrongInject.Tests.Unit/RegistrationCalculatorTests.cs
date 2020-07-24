@@ -333,7 +333,7 @@ using StrongInject;
 using System.Threading.Tasks;
 
 [Registration(typeof(A), typeof(IA))]
-[Registration(typeof(B), typeof(IFactory<IA>))]
+[FactoryRegistration(typeof(B))]
 public class Container
 {
 }
@@ -348,8 +348,8 @@ public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (6,2): Error SI0004: Module already contains registration for 'IA'.
-                // Registration(typeof(B), typeof(IFactory<IA>))
-                new DiagnosticResult("SI0004", @"Registration(typeof(B), typeof(IFactory<IA>))").WithLocation(6, 2));
+                // FactoryRegistration(typeof(B))
+                new DiagnosticResult("SI0004", @"FactoryRegistration(typeof(B))", DiagnosticSeverity.Error).WithLocation(6, 2));
 
             var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -559,7 +559,7 @@ public interface IE {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(B), typeof(IFactory<A>))]
+[FactoryRegistration(typeof(B))]
 public class Container
 {
 }
@@ -588,19 +588,21 @@ public class B : IFactory<A> { public ValueTask<A> CreateAsync() => throw null; 
         }
 
         [Fact]
-        public void RegistersRequiresInitializationTypes()
+        public void RegistersRequiresInitialization()
         {
             string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(B), typeof(IFactory<A>))]
+[Registration(typeof(C))]
+[FactoryRegistration(typeof(B))]
 public class Container
 {
 }
 
 public class A {}
 public class B : IFactory<A>, IRequiresInitialization { public ValueTask<A> CreateAsync() => throw null; public ValueTask InitializeAsync() => throw null; }
+public class C : IRequiresInitialization { public ValueTask InitializeAsync() => throw null; }
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
@@ -617,6 +619,12 @@ public class B : IFactory<A>, IRequiresInitialization { public ValueTask<A> Crea
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: factoryOfA,
+                        scope: Scope.InstancePerResolution,
+                        requiresAsyncInitialization: true),
+                [comp.AssertGetTypeByMetadataName("C")] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("C"),
+                        registeredAs: comp.AssertGetTypeByMetadataName("C"),
                         scope: Scope.InstancePerResolution,
                         requiresAsyncInitialization: true),
             });
@@ -810,7 +818,7 @@ public interface IB {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), typeof(IFactory<int[]>))]
+[FactoryRegistration(typeof(A))]
 public class Container
 {
 }
@@ -918,7 +926,7 @@ public struct B {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<B>))]
+[FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)]
 public class Container
 {
 }
@@ -932,8 +940,8 @@ public struct B {}
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
                 // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
-                // Registration(typeof(A), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<B>))
-                new DiagnosticResult("SI0008", @"Registration(typeof(A), Scope.SingleInstance, Scope.SingleInstance, typeof(IFactory<B>))").WithLocation(5, 2));
+                // FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)
+                new DiagnosticResult("SI0008", @"FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)", DiagnosticSeverity.Error).WithLocation(5, 2));
             var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
@@ -944,6 +952,32 @@ public struct B {}
                         scope: Scope.SingleInstance,
                         requiresAsyncInitialization: false),
             });
+        }
+
+        [Fact]
+        public void ErrorIfStructIsRegisteredAsSingleInstanceFactory()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)]
+public class Container
+{
+}
+
+public struct A : IFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
+public struct B {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify(
+                // (5,2): Error SI0008: 'A' is a struct and cannot have a Single Instance scope.
+                // FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)
+                new DiagnosticResult("SI0008", @"FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)", DiagnosticSeverity.Error).WithLocation(5, 2));
+            Assert.Empty(registrations);
         }
 
 
@@ -1145,6 +1179,30 @@ public abstract class A { public A(){} }
                 // (4,2): Error SI0010: Cannot register 'A' as it is abstract.
                 // Registration(typeof(A))
                 new DiagnosticResult("SI0010", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
+            Assert.Empty(registrations);
+        }
+
+        [Fact]
+        public void ErrorIfFactoryRegistrationIsNotFactory()
+        {
+            string userSource = @"
+using StrongInject;
+
+[FactoryRegistration(typeof(A))]
+public class Container
+{
+}
+
+public class A {}
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify(
+                // (4,2): Error SI0012: 'A' is registered as a factory but does not implement StrongInject.IFactory<T>
+                // FactoryRegistration(typeof(A))
+                new DiagnosticResult("SI0012", @"FactoryRegistration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
             Assert.Empty(registrations);
         }
 
