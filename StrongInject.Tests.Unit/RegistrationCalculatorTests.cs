@@ -1206,6 +1206,39 @@ public class A {}
             Assert.Empty(registrations);
         }
 
+        [Fact]
+        public void WarnOnSimpleRegistrationOfTypeImplementingFactoryType()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IFactory<int> { public ValueTask<int> CreateAsync() => new ValueTask<int>(0); }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify(
+                // (5,2): Warning SI1001: 'A' implements 'StrongInject.IFactory<int>'. Did you mean to use FactoryRegistration instead?
+                // Registration(typeof(A))
+                new DiagnosticResult("SI1001", @"Registration(typeof(A))", DiagnosticSeverity.Warning).WithLocation(5, 2));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [comp.AssertGetTypeByMetadataName("A")] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: comp.AssertGetTypeByMetadataName("A"),
+                        scope: Scope.InstancePerResolution,
+                        requiresAsyncInitialization: false),
+            });
+        }
+
         private static Registration Registration(
             INamedTypeSymbol type,
             ITypeSymbol registeredAs,

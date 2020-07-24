@@ -210,27 +210,37 @@ namespace StrongInject.Generator
 
                 var requiresInitialization = type.AllInterfaces.Contains(_iRequiresInitializationType);
 
+                ReportSuspiciousSimpleRegistrations(type, registrationAttribute);
+
                 foreach (var registeredAsTypeConstant in registeredAs)
                 {
-                    if (!CheckValidType(registrationAttribute, registeredAsTypeConstant, out var directTarget))
+                    if (!CheckValidType(registrationAttribute, registeredAsTypeConstant, out var target))
                     {
                         continue;
                     }
 
-                    if (_compilation.ClassifyCommonConversion(type, directTarget) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
+                    if (_compilation.ClassifyCommonConversion(type, target) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
                     {
-                        _reportDiagnostic(DoesNotHaveSuitableConversion(registrationAttribute, type, directTarget, _cancellationToken));
+                        _reportDiagnostic(DoesNotHaveSuitableConversion(registrationAttribute, type, target, _cancellationToken));
                         continue;
                     }
 
-                    if (registrations.ContainsKey(directTarget))
+                    if (registrations.ContainsKey(target))
                     {
-                        _reportDiagnostic(DuplicateRegistration(registrationAttribute, directTarget, _cancellationToken));
+                        _reportDiagnostic(DuplicateRegistration(registrationAttribute, target, _cancellationToken));
                         continue;
                     }
 
-                    registrations.Add(directTarget, new Registration(type, directTarget, scope, requiresInitialization, constructor));
+                    registrations.Add(target, new Registration(type, target, scope, requiresInitialization, constructor));
                 }
+            }
+        }
+
+        private void ReportSuspiciousSimpleRegistrations(INamedTypeSymbol type, AttributeData registrationAttribute)
+        {
+            if (type.AllInterfaces.FirstOrDefault(x => x.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default)) is { } factoryType)
+            {
+                _reportDiagnostic(WarnSimpleRegistrationImplementingFactory(type, factoryType, registrationAttribute.GetLocation(_cancellationToken)));
             }
         }
 
@@ -554,6 +564,21 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 typeSymbol);
+        }
+
+        private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1001",
+                    "Type implements FactoryType. Did you mean to use FactoryRegistration instead?",
+                    "'{0}' implements '{1}'. Did you mean to use FactoryRegistration instead?",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true),
+                location,
+                type,
+                factoryType);
         }
     }
 }
