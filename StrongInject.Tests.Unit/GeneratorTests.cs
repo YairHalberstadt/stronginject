@@ -206,7 +206,10 @@ public class D : IFactory<DFactoryTarget>
 public class DFactoryTarget {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
-            generatorDiagnostics.Verify();
+            generatorDiagnostics.Verify(
+                // (9,2): Warning SI1001: 'C' implements 'StrongInject.IFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+                // Registration(typeof(C))
+                new DiagnosticResult("SI1001", @"Registration(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -432,7 +435,10 @@ public class D : IFactory<DFactoryTarget>
 public class DFactoryTarget {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
-            generatorDiagnostics.Verify();
+            generatorDiagnostics.Verify(
+                // (9,2): Warning SI1001: 'C' implements 'StrongInject.IFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+                // Registration(typeof(C))
+                new DiagnosticResult("SI1001", @"Registration(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -1191,7 +1197,10 @@ public class H { public H(I i) {} }
 public class I : IDisposable { public I(int i) {} public void Dispose() {} }
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
-            generatorDiagnostics.Verify();
+            generatorDiagnostics.Verify(
+                // (10,2): Warning SI1001: 'C' implements 'StrongInject.IFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+                // Registration(typeof(C))
+                new DiagnosticResult("SI1001", @"Registration(typeof(C))", DiagnosticSeverity.Warning).WithLocation(10, 2));
             comp.GetDiagnostics().Verify(
                 // (18,28): Warning CS0649: Field 'Container.instanceProvider' is never assigned to, and will always have its default value null
                 // instanceProvider
