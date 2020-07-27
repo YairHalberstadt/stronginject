@@ -857,6 +857,9 @@ partial class Container
                 // (1,1): Error SI0201: Missing Type 'StrongInject.ModuleRegistrationAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.IRequiresInitialization'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.IRequiresAsyncInitialization'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
@@ -1439,6 +1442,449 @@ partial class Container
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         throw new System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfAsyncTypeRequiredByContainer1()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A : IRequiresAsyncInitialization
+{
+    public ValueTask InitializeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0102: Error while resolving dependencies for 'A': 'A' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfAsyncTypeRequiredByContainer2()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A { public A(B b){} }
+public class B : IRequiresAsyncInitialization
+{
+    public ValueTask InitializeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfAsyncTypeRequiredByContainer3()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[FactoryRegistration(typeof(A))]
+public partial class Container : IContainer<int>
+{
+}
+
+public class A : IAsyncFactory<int>
+{
+    public ValueTask<int> CreateAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0103: Error while resolving dependencies for 'int': 'int' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+        }
+
+        [Fact]
+        public void ErrorIfAsyncTypeRequiredByContainer4()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[FactoryRegistration(typeof(A))]
+public partial class Container : IContainer<int>
+{
+}
+
+public class A : IFactory<int>, IRequiresAsyncInitialization
+{
+    public int Create() => default;
+    public ValueTask InitializeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0103: Error while resolving dependencies for 'int': 'StrongInject.IFactory<int>' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+        }
+
+        [Fact]
+        public void ErrorIfAsyncTypeRequiredByContainer5()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<int>
+{
+    public IAsyncInstanceProvider<int> _instanceProvider;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0103: Error while resolving dependencies for 'int': 'int' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+            comp.GetDiagnostics().Verify();
+        }
+
+        [Fact]
+        public void ErrorIfAsyncTypeRequiredByContainer6()
+        {
+            string userSource = @"
+using StrongInject;
+
+[FactoryRegistration(typeof(A))]
+public partial class Container : IContainer<int>
+{
+    public IAsyncInstanceProvider<B> _instanceProvider;
+}
+
+public class A : IFactory<int>
+{
+    public A(B b) {}
+    public int Create() => default;
+}
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (5,22): Error SI0103: Error while resolving dependencies for 'int': 'B' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+            comp.GetDiagnostics().Verify();
+        }
+
+        [Fact]
+        public void ErrorIfAsyncTypeRequiredByContainer7()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[FactoryRegistration(typeof(C))]
+[Registration(typeof(A))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A { public A(B b) {} }
+public class B {}
+public class C : IAsyncFactory<B>
+{
+    public ValueTask<B> CreateAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22) );
+            comp.GetDiagnostics().Verify();
+        }
+
+        [Fact]
+        public void CanGenerateSynchronousContainer()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A { public A(B b){} }
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        var _1 = new global::B();
+        var _0 = new global::A((global::B)_1);
+        var result = func((global::A)_0, param);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanGenerateSynchronousContainerWithRequiresInitialization()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A : IRequiresInitialization { public A(B b){} public void Initialize() {}}
+public class B : IRequiresInitialization { public void Initialize() {} }
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        var _1 = new global::B();
+        ((global::StrongInject.IRequiresInitialization)_1).Initialize();
+        var _0 = new global::A((global::B)_1);
+        ((global::StrongInject.IRequiresInitialization)_0).Initialize();
+        var result = func((global::A)_0, param);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanGenerateSynchronousContainerWithFactories()
+        {
+            string userSource = @"
+using StrongInject;
+
+[FactoryRegistration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<int>
+{
+}
+
+public class A : IFactory<int> { public A(B b){} public int Create() => default; }
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        var _2 = new global::B();
+        var _1 = new global::A((global::B)_2);
+        var _0 = ((global::StrongInject.IFactory<global::System.Int32>)_1).Create();
+        var result = func((global::System.Int32)_0, param);
+        global::StrongInject.Helpers.Dispose(_0);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanGenerateSynchronousContainerWithInstanceProviders()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<A>
+{
+    IInstanceProvider<int> _instanceProvider;
+}
+
+public class A { public A(B b, int i){} }
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify(
+                // (8,28): Warning CS0649: Field 'Container._instanceProvider' is never assigned to, and will always have its default value null
+                // _instanceProvider
+                new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 28));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        var _1 = new global::B();
+        var _2 = ((global::StrongInject.IInstanceProvider<global::System.Int32>)this._instanceProvider).Get();
+        var _0 = new global::A((global::B)_1, _2);
+        var result = func((global::A)_0, param);
+        ((global::StrongInject.IInstanceProvider<global::System.Int32>)this._instanceProvider).Release(_2);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanGenerateSynchronousContainerWithSingleInstanceDependencies()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B), Scope.SingleInstance)]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A { public A(B b){} }
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private global::B _singleInstanceField0;
+    private global::B GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        var _0 = new global::B();
+        global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField0, _0, null);
+        return _singleInstanceField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        var _1 = GetSingleInstanceField0();
+        var _0 = new global::A((global::B)_1);
+        var result = func((global::A)_0, param);
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void SynchronousAndAsynchronousResolvesCanShareSingleInstanceDependencies()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+[Registration(typeof(B), Scope.SingleInstance)]
+[Registration(typeof(C))]
+[Registration(typeof(D), Scope.SingleInstance)]
+public partial class Container : IContainer<A>, IAsyncContainer<C>
+{
+}
+
+public class A { public A(B b){} }
+public class B {}
+public class C : IRequiresAsyncInitialization { public C(B b, D d) {} public ValueTask InitializeAsync() => default; }
+public class D : IRequiresAsyncInitialization { public ValueTask InitializeAsync() => default; }
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private global::B _singleInstanceField0;
+    private global::B GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        var _0 = new global::B();
+        global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField0, _0, null);
+        return _singleInstanceField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        var _1 = GetSingleInstanceField0();
+        var _0 = new global::A((global::B)_1);
+        var result = func((global::A)_0, param);
+        return result;
+    }
+
+    private global::D _singleInstanceField1;
+    private async global::System.Threading.Tasks.ValueTask<global::D> GetSingleInstanceField1()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField1, null))
+            return _singleInstanceField1;
+        var _0 = new global::D();
+        await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+        global::System.Threading.Interlocked.CompareExchange(ref _singleInstanceField1, _0, null);
+        return _singleInstanceField1;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        var _1 = GetSingleInstanceField0();
+        var _2 = await GetSingleInstanceField1();
+        var _0 = new global::C((global::B)_1, (global::D)_2);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+        var result = await func((global::C)_0, param);
+        return result;
     }
 }");
         }

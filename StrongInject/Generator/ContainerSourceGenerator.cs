@@ -44,7 +44,8 @@ namespace StrongInject.Generator
             var cancellationToken = context.CancellationToken;
             var registrationAttribute = context.Compilation.GetTypeOrReport(typeof(RegistrationAttribute), context.ReportDiagnostic);
             var moduleRegistrationAttribute = context.Compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), context.ReportDiagnostic);
-            var iRequiresInitializationType = context.Compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), context.ReportDiagnostic);
+            var iRequiresInitializationType = context.Compilation.GetTypeOrReport(typeof(IRequiresInitialization), context.ReportDiagnostic);
+            var iRequiresAsyncInitializationType = context.Compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), context.ReportDiagnostic);
             var valueTask1Type = context.Compilation.GetTypeOrReport(typeof(ValueTask<>), context.ReportDiagnostic);
             var interlockedType = context.Compilation.GetTypeOrReport(typeof(Interlocked), context.ReportDiagnostic);
             var helpersType = context.Compilation.GetTypeOrReport(typeof(Helpers), context.ReportDiagnostic);
@@ -54,6 +55,7 @@ namespace StrongInject.Generator
             if (registrationAttribute is null
                 || moduleRegistrationAttribute is null
                 || iRequiresInitializationType is null
+                || iRequiresAsyncInitializationType is null
                 || valueTask1Type is null
                 || interlockedType is null
                 || helpersType is null
@@ -366,7 +368,9 @@ namespace StrongInject.Generator
                                     if (requiresInitialization)
                                     {
                                         methodSource.Append(isAsync ? "await ((" : "((");
-                                        methodSource.Append(iRequiresInitializationType.FullName());
+                                        methodSource.Append(isAsync
+                                            ? iRequiresAsyncInitializationType.FullName()
+                                            : iRequiresInitializationType.FullName());
                                         methodSource.Append(")");
                                         methodSource.Append(variableName);
                                         methodSource.Append(").");

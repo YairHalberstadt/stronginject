@@ -34,6 +34,7 @@ namespace StrongInject.Generator
                 else if (instanceSource.isAsync && !isAsync)
                 {
                     reportDiagnostic(RequiresAsyncResolution(location, target, node));
+                    result = true;
                 }
                 else if (instanceSource is Registration { constructor: { Parameters: var parameters } })
                 {
@@ -87,7 +88,7 @@ namespace StrongInject.Generator
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
-                        "SI0102",
+                        "SI0103",
                         "Type can only be resolved asynchronously",
                         "Error while resolving dependencies for '{0}': '{1}' can only be resolved asynchronously.",
                         "StrongInject",
