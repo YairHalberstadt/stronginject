@@ -31,7 +31,7 @@ public interface IA {}
 public class B : IB {}
 public interface IB {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -41,19 +41,19 @@ public interface IB {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
                         scope: Scope.SingleInstance,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
                         scope: Scope.SingleInstance,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -90,7 +90,7 @@ public interface IC {}
 public class D : ID {}
 public interface ID {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -100,25 +100,25 @@ public interface ID {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IC")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("C"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IC"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("D")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("D"),
                         registeredAs: comp.AssertGetTypeByMetadataName("D"),
                         scope: Scope.SingleInstance,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -143,7 +143,7 @@ public class A : IA {}
 public class B : IA {}
 public interface IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
 
             var moduleRegistrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Module"));
@@ -154,7 +154,7 @@ public interface IA {}
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
 
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -165,7 +165,7 @@ public interface IA {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -195,7 +195,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -236,7 +236,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -246,7 +246,7 @@ public class B : IA {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -276,7 +276,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -286,7 +286,7 @@ public class B : IA {}
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -306,7 +306,7 @@ public class A : IA {}
 public interface IA {}
 public class B : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -321,7 +321,7 @@ public class B : IA {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -340,9 +340,9 @@ public class Container
 
 public class A : IA {}
 public interface IA {}
-public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null; }
+public class B : IAsyncFactory<IA> { public ValueTask<IA> CreateAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -351,7 +351,7 @@ public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null
                 // FactoryRegistration(typeof(B))
                 new DiagnosticResult("SI0004", @"FactoryRegistration(typeof(B))", DiagnosticSeverity.Error).WithLocation(6, 2));
 
-            var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
+            var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
@@ -359,13 +359,13 @@ public class B : IFactory<IA> { public ValueTask<IA> CreateAsync() => throw null
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [factoryOfIA] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: factoryOfIA,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -387,7 +387,7 @@ public class B<T> {
     public class C {}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -427,7 +427,7 @@ public class Container
 public class A<T> {}
 public class A<T1, T2> {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify(
                 // (4,22): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
@@ -484,7 +484,7 @@ public interface IC<T> {}
 public interface ID {}
 public interface IE {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
@@ -512,43 +512,43 @@ public interface IE {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("A"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [cIntType] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: cIntType,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [icIntType] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: icIntType,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("ID")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("ID"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -565,25 +565,26 @@ public class Container
 }
 
 public class A {}
-public class B : IFactory<A> { public ValueTask<A> CreateAsync() => throw null; }
+public class B : IAsyncFactory<A> { public ValueTask<A> CreateAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
+            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     new FactoryRegistration(
                         factoryType: factoryOfA,
                         factoryOf: comp.AssertGetTypeByMetadataName("A"),
-                        scope: Scope.InstancePerResolution),
+                        scope: Scope.InstancePerResolution,
+                        isAsync: true),
                 [factoryOfA] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: factoryOfA,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -601,32 +602,35 @@ public class Container
 }
 
 public class A {}
-public class B : IFactory<A>, IRequiresInitialization { public ValueTask<A> CreateAsync() => throw null; public ValueTask InitializeAsync() => throw null; }
-public class C : IRequiresInitialization { public ValueTask InitializeAsync() => throw null; }
+public class B : IAsyncFactory<A>, IRequiresAsyncInitialization { public ValueTask<A> CreateAsync() => throw null; public ValueTask InitializeAsync() => throw null; }
+public class C : IRequiresAsyncInitialization { public ValueTask InitializeAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
+            var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     new FactoryRegistration(
                         factoryType: factoryOfA,
                         factoryOf: comp.AssertGetTypeByMetadataName("A"),
-                        scope: Scope.InstancePerResolution),
+                        scope: Scope.InstancePerResolution,
+                        isAsync: true),
                 [factoryOfA] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: factoryOfA,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: true),
+                        requiresInitialization: true,
+                        isAsync: true),
                 [comp.AssertGetTypeByMetadataName("C")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("C"),
                         registeredAs: comp.AssertGetTypeByMetadataName("C"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: true),
+                        requiresInitialization: true,
+                        isAsync: true),
             });
         }
 
@@ -659,7 +663,7 @@ public class G { public G() {} public G() {} }
 public class H { internal H() {} }
 public class I { internal I(int a) {} public I(bool b) {} }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Equal("(23,39): error CS0111: Type 'G' already defines a member called '.ctor' with the same parameter types", Assert.Single(comp.GetDiagnostics()).ToString());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
@@ -682,39 +686,39 @@ public class I { internal I(int a) {} public I(bool b) {} }
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("A"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("D")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("D"),
                         registeredAs: comp.AssertGetTypeByMetadataName("D"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("E")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("E"),
                         registeredAs: comp.AssertGetTypeByMetadataName("E"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false,
+                        requiresInitialization: false,
                         constructor: comp.AssertGetTypeByMetadataName("E").Constructors.First(x => x.Parameters.Length > 0)),
                 [comp.AssertGetTypeByMetadataName("G")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("G"),
                         registeredAs: comp.AssertGetTypeByMetadataName("G"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false,
+                        requiresInitialization: false,
                         constructor: comp.AssertGetTypeByMetadataName("G").Constructors[0]),
                 [comp.AssertGetTypeByMetadataName("I")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("I"),
                         registeredAs: comp.AssertGetTypeByMetadataName("I"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false,
+                        requiresInitialization: false,
                         constructor: comp.AssertGetTypeByMetadataName("I").Constructors.First(x => x.DeclaredAccessibility == Accessibility.Public)),
             });
         }
@@ -743,7 +747,7 @@ internal class Outer
     public class Inner {}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
 
             List<Diagnostic> diagnostics = new List<Diagnostic>();
@@ -785,7 +789,7 @@ public interface IA {}
 public class B : IB {}
 public interface IB {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -795,19 +799,19 @@ public interface IB {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("IB")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IB"),
                         scope: Scope.SingleInstance,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
                 [comp.AssertGetTypeByMetadataName("B")] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
                         registeredAs: comp.AssertGetTypeByMetadataName("B"),
                         scope: Scope.SingleInstance,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -823,26 +827,27 @@ public class Container
 {
 }
 
-public class A : IFactory<int[]> { public ValueTask<int[]> CreateAsync() => throw null; }
+public class A : IAsyncFactory<int[]> { public ValueTask<int[]> CreateAsync() => throw null; }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var intArray = comp.CreateArrayTypeSymbol(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            var factoryOfIntArray = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(intArray);
+            var factoryOfIntArray = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(intArray);
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [intArray] =
                     new FactoryRegistration(
                         factoryType: factoryOfIntArray,
                         factoryOf: intArray,
-                        scope: Scope.InstancePerResolution),
+                        scope: Scope.InstancePerResolution,
+                        isAsync: true),
                 [factoryOfIntArray] =
                     Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: factoryOfIntArray,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -875,7 +880,7 @@ public class ModuleC
 
 public class A {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -885,7 +890,7 @@ public class A {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("A"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -905,7 +910,7 @@ public struct A : IA {}
 public interface IA {}
 public struct B {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -931,10 +936,10 @@ public class Container
 {
 }
 
-public class A : IFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
+public class A : IAsyncFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
 public struct B {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -942,7 +947,7 @@ public struct B {}
                 // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
                 // FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)
                 new DiagnosticResult("SI0008", @"FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)", DiagnosticSeverity.Error).WithLocation(5, 2));
-            var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
+            var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [factoryOfB] =
@@ -950,7 +955,7 @@ public struct B {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: factoryOfB,
                         scope: Scope.SingleInstance,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -966,10 +971,10 @@ public class Container
 {
 }
 
-public struct A : IFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
+public struct A : IAsyncFactory<B> { public ValueTask<B> CreateAsync() => throw null; }
 public struct B {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -995,7 +1000,7 @@ public class Container
 public interface IA<out T> {}
 public class A : IA<string> {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var iAOfObject = comp.AssertGetTypeByMetadataName("IA`1").Construct(comp.AssertGetTypeByMetadataName(typeof(object).FullName!));
@@ -1006,7 +1011,7 @@ public class A : IA<string> {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: iAOfObject,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -1024,7 +1029,7 @@ public class Container
 public interface IA {}
 public struct A : IA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -1034,7 +1039,7 @@ public struct A : IA {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("IA"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -1051,7 +1056,7 @@ public class Container
 
 public struct A {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             var registrations = new RegistrationCalculator(comp, x => Assert.False(true, x.ToString()), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var nullableA = comp.AssertGetTypeByMetadataName(typeof(Nullable<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
@@ -1062,7 +1067,7 @@ public struct A {}
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: nullableA,
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
             });
         }
 
@@ -1083,7 +1088,7 @@ public class B
     public static implicit operator A(B b) => new A();
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
@@ -1102,7 +1107,7 @@ using StrongInject;
 [ModuleRegistration(typeof(ModuleA))]
 public class ModuleA {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
             diagnostics.Verify(
@@ -1124,7 +1129,7 @@ public class ModuleA {}
 [ModuleRegistration(typeof(ModuleA))]
 public class ModuleB {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
             diagnostics.Verify(
@@ -1149,7 +1154,7 @@ public class ModuleB {}
 [ModuleRegistration(typeof(ModuleA))]
 public class ModuleC {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("ModuleA"));
             diagnostics.Verify(
@@ -1172,7 +1177,7 @@ public class Container
 
 public abstract class A { public A(){} }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
@@ -1195,12 +1200,12 @@ public class Container
 
 public class A {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (4,2): Error SI0012: 'A' is registered as a factory but does not implement StrongInject.IFactory<T>
+                // (4,2): Error SI0012: 'A' is registered as a factory but does not implement StrongInject.IAsyncFactory<T>
                 // FactoryRegistration(typeof(A))
                 new DiagnosticResult("SI0012", @"FactoryRegistration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
             Assert.Empty(registrations);
@@ -1218,14 +1223,14 @@ public class Container
 {
 }
 
-public class A : IFactory<int> { public ValueTask<int> CreateAsync() => new ValueTask<int>(0); }
+public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => new ValueTask<int>(0); }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             Assert.Empty(comp.GetDiagnostics());
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify(
-                // (5,2): Warning SI1001: 'A' implements 'StrongInject.IFactory<int>'. Did you mean to use FactoryRegistration instead?
+                // (5,2): Warning SI1001: 'A' implements 'StrongInject.IAsyncFactory<int>'. Did you mean to use FactoryRegistration instead?
                 // Registration(typeof(A))
                 new DiagnosticResult("SI1001", @"Registration(typeof(A))", DiagnosticSeverity.Warning).WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -1235,7 +1240,250 @@ public class A : IFactory<int> { public ValueTask<int> CreateAsync() => new Valu
                         type: comp.AssertGetTypeByMetadataName("A"),
                         registeredAs: comp.AssertGetTypeByMetadataName("A"),
                         scope: Scope.InstancePerResolution,
-                        requiresAsyncInitialization: false),
+                        requiresInitialization: false),
+            });
+        }
+
+        [Fact]
+        public void RegistersInstanceOfIFactoryAsNotAsync()
+        {
+            string userSource = @"
+using StrongInject;
+
+[FactoryRegistration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IFactory<int> { public int Create() => 0; }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify();
+            var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [factoryOfInt] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: factoryOfInt,
+                        scope: Scope.InstancePerResolution,
+                        requiresInitialization: false),
+                [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
+                    new FactoryRegistration(
+                        factoryType: factoryOfInt,
+                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        scope: Scope.InstancePerResolution,
+                        isAsync: false),
+            });
+        }
+
+        [Fact]
+        public void RegistersInstanceImplementingRequiresInitializationAsNotAsync()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IRequiresInitialization { public void Initialize() {} }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify();
+            var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [comp.AssertGetTypeByMetadataName("A")] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: comp.AssertGetTypeByMetadataName("A"),
+                        scope: Scope.InstancePerResolution,
+                        requiresInitialization: true),
+            });
+        }
+
+        [Fact]
+        public void RegistersInstanceOfIFactoryImplementingRequiresInitializationAsNotAsync()
+        {
+            string userSource = @"
+using StrongInject;
+
+[FactoryRegistration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IFactory<int>, IRequiresInitialization { public int Create() => 0; public void Initialize() {} }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify();
+            var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [factoryOfInt] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: factoryOfInt,
+                        scope: Scope.InstancePerResolution,
+                        requiresInitialization: true),
+                [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
+                    new FactoryRegistration(
+                        factoryType: factoryOfInt,
+                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        scope: Scope.InstancePerResolution,
+                        isAsync: false),
+            });
+        }
+
+
+        [Fact]
+        public void RegistersInstanceOfIAsyncFactoryAsAsync()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[FactoryRegistration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => default; }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify();
+            var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [factoryOfInt] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: factoryOfInt,
+                        scope: Scope.InstancePerResolution,
+                        requiresInitialization: false),
+                [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
+                    new FactoryRegistration(
+                        factoryType: factoryOfInt,
+                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        scope: Scope.InstancePerResolution,
+                        isAsync: true),
+            });
+        }
+
+        [Fact]
+        public void RegistersInstanceImplementingRequiresAsyncInitializationAsAsync()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IRequiresAsyncInitialization { public ValueTask InitializeAsync() => default; }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify();
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [comp.AssertGetTypeByMetadataName("A")] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: comp.AssertGetTypeByMetadataName("A"),
+                        scope: Scope.InstancePerResolution,
+                        requiresInitialization: true,
+                        isAsync: true),
+            });
+        }
+
+        [Fact]
+        public void RegistersInstanceOfIAsyncFactoryImplementingRequiresAsyncInitializationAsAsync()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[FactoryRegistration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IAsyncFactory<int>, IRequiresAsyncInitialization { public ValueTask<int> CreateAsync() => default; public ValueTask InitializeAsync() => default; }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify();
+            var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [factoryOfInt] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: factoryOfInt,
+                        scope: Scope.InstancePerResolution,
+                        requiresInitialization: true,
+                        isAsync: true),
+                [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
+                    new FactoryRegistration(
+                        factoryType: factoryOfInt,
+                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        scope: Scope.InstancePerResolution,
+                        isAsync: true),
+            });
+        }
+
+        [Fact]
+        public void ErrorIfTypeImplementsRequiresInitializationAndRequiresAsyncInitialization()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+public class Container
+{
+}
+
+public class A : IRequiresInitialization, IRequiresAsyncInitialization { public void Initialize() {} public ValueTask InitializeAsync() => default; }
+";
+            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Assert.Empty(comp.GetDiagnostics());
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            var registrations = new RegistrationCalculator(comp, x => diagnostics.Add(x), default).GetRegistrations(comp.AssertGetTypeByMetadataName("Container"));
+            diagnostics.Verify(
+                // (5,2): Error SI0013: 'A' implements both IRequiresInitialization and IRequiresAsyncInitialization
+                // Registration(typeof(A))
+                new DiagnosticResult("SI0013", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(5, 2));
+            registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
+            {
+                [comp.AssertGetTypeByMetadataName("A")] =
+                    Registration(
+                        type: comp.AssertGetTypeByMetadataName("A"),
+                        registeredAs: comp.AssertGetTypeByMetadataName("A"),
+                        scope: Scope.InstancePerResolution,
+                        requiresInitialization: true,
+                        isAsync: true),
             });
         }
 
@@ -1243,7 +1491,8 @@ public class A : IFactory<int> { public ValueTask<int> CreateAsync() => new Valu
             INamedTypeSymbol type,
             ITypeSymbol registeredAs,
             Scope scope,
-            bool requiresAsyncInitialization,
+            bool requiresInitialization,
+            bool isAsync = false,
             IMethodSymbol? constructor = null)
         {
             if (constructor is null)
@@ -1251,7 +1500,7 @@ public class A : IFactory<int> { public ValueTask<int> CreateAsync() => new Valu
                 constructor = Assert.Single(type.Constructors);
             }
 
-            return new Registration(type, registeredAs, scope, requiresAsyncInitialization, constructor);
+            return new Registration(type, registeredAs, scope, requiresInitialization, constructor, isAsync);
         }
     }
 }

@@ -22,12 +22,16 @@ namespace StrongInject.Generator
             _factoryRegistrationAttributeType = compilation.GetTypeOrReport(typeof(FactoryRegistrationAttribute), reportDiagnostic)!;
             _moduleRegistrationAttributeType = compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), _reportDiagnostic)!;
             _iFactoryType = compilation.GetTypeOrReport(typeof(IFactory<>), _reportDiagnostic)!;
+            _iAsyncFactoryType = compilation.GetTypeOrReport(typeof(IAsyncFactory<>), _reportDiagnostic)!;
             _iRequiresInitializationType = compilation.GetTypeOrReport(typeof(IRequiresInitialization), _reportDiagnostic)!;
-            if (_registrationAttributeType is null 
-                || _factoryRegistrationAttributeType is null 
-                || _moduleRegistrationAttributeType is null 
-                || _iFactoryType is null 
-                || _iRequiresInitializationType is null)
+            _iRequiresAsyncInitializationType = compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), _reportDiagnostic)!;
+            if (_registrationAttributeType is null
+                || _factoryRegistrationAttributeType is null
+                || _moduleRegistrationAttributeType is null
+                || _iFactoryType is null
+                || _iAsyncFactoryType is null
+                || _iRequiresInitializationType is null
+                || _iRequiresAsyncInitializationType is null)
             {
                 _valid = false;
             }
@@ -42,7 +46,9 @@ namespace StrongInject.Generator
         private readonly INamedTypeSymbol _factoryRegistrationAttributeType;
         private readonly INamedTypeSymbol _moduleRegistrationAttributeType;
         private readonly INamedTypeSymbol _iFactoryType;
+        private readonly INamedTypeSymbol _iAsyncFactoryType;
         private readonly INamedTypeSymbol _iRequiresInitializationType;
+        private readonly INamedTypeSymbol _iRequiresAsyncInitializationType;
         private readonly Compilation _compilation;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly CancellationToken _cancellationToken;
@@ -209,6 +215,12 @@ namespace StrongInject.Generator
                     : registeredAsConstants.Where(x => x.Kind == TypedConstantKind.Type).ToArray();
 
                 var requiresInitialization = type.AllInterfaces.Contains(_iRequiresInitializationType);
+                var requiresAsyncInitialization = type.AllInterfaces.Contains(_iRequiresAsyncInitializationType);
+
+                if (requiresInitialization && requiresAsyncInitialization)
+                {
+                    _reportDiagnostic(TypeImplementsSyncAndAsyncRequiresInitialization(type, registrationAttribute.GetLocation(_cancellationToken)));
+                }
 
                 ReportSuspiciousSimpleRegistrations(type, registrationAttribute);
 
@@ -231,14 +243,21 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    registrations.Add(target, new Registration(type, target, scope, requiresInitialization, constructor));
+                    registrations.Add(target, new Registration(
+                        type,
+                        target,
+                        scope,
+                        requiresInitialization || requiresAsyncInitialization,
+                        constructor,
+                        isAsync: requiresAsyncInitialization));
+
                 }
             }
         }
 
         private void ReportSuspiciousSimpleRegistrations(INamedTypeSymbol type, AttributeData registrationAttribute)
         {
-            if (type.AllInterfaces.FirstOrDefault(x => x.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default)) is { } factoryType)
+            if (type.AllInterfaces.FirstOrDefault(x => x.OriginalDefinition.Equals(_iAsyncFactoryType, SymbolEqualityComparer.Default)) is { } factoryType)
             {
                 _reportDiagnostic(WarnSimpleRegistrationImplementingFactory(type, factoryType, registrationAttribute.GetLocation(_cancellationToken)));
             }
@@ -294,31 +313,51 @@ namespace StrongInject.Generator
                 }
 
                 var requiresInitialization = type.AllInterfaces.Contains(_iRequiresInitializationType);
+                var requiresAsyncInitialization = type.AllInterfaces.Contains(_iRequiresAsyncInitializationType);
+
+                if (requiresInitialization && requiresAsyncInitialization)
+                {
+                    _reportDiagnostic(TypeImplementsSyncAndAsyncRequiresInitialization(type, factoryRegistrationAttribute.GetLocation(_cancellationToken)));
+                }
 
                 bool any = false;
-                foreach (var factoryType in type.AllInterfaces.Where(x => x.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default)))
+                foreach (var factoryType in type.AllInterfaces.Where(x
+                    => x.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default)
+                    || x.OriginalDefinition.Equals(_iAsyncFactoryType, SymbolEqualityComparer.Default)))
                 {
                     any = true;
-                    registrations.Add(factoryType, new Registration(type, factoryType, factoryScope, requiresInitialization, constructor));
 
-                    if (factoryType.OriginalDefinition.Equals(_iFactoryType, SymbolEqualityComparer.Default))
+                    if (registrations.ContainsKey(factoryType))
                     {
-                        var factoryOf = factoryType.TypeArguments.First();
-
-                        if (registrations.ContainsKey(factoryOf))
-                        {
-                            _reportDiagnostic(DuplicateRegistration(factoryRegistrationAttribute, factoryOf, _cancellationToken));
-                            continue;
-                        }
-
-                        if (factoryTargetScope == Scope.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
-                        {
-                            _reportDiagnostic(StructWithSingleInstanceScope(factoryRegistrationAttribute, factoryOf, _cancellationToken));
-                            continue;
-                        }
-
-                        registrations.Add(factoryOf, new FactoryRegistration(factoryType, factoryOf, factoryTargetScope));
+                        _reportDiagnostic(DuplicateRegistration(factoryRegistrationAttribute, factoryType, _cancellationToken));
+                        continue;
                     }
+
+                    registrations.Add(factoryType, new Registration(
+                        type,
+                        factoryType,
+                        factoryScope,
+                        requiresInitialization || requiresAsyncInitialization,
+                        constructor,
+                        isAsync: requiresAsyncInitialization));
+
+                    var factoryOf = factoryType.TypeArguments.First();
+
+                    if (registrations.ContainsKey(factoryOf))
+                    {
+                        _reportDiagnostic(DuplicateRegistration(factoryRegistrationAttribute, factoryOf, _cancellationToken));
+                        continue;
+                    }
+
+                    if (factoryTargetScope == Scope.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
+                    {
+                        _reportDiagnostic(StructWithSingleInstanceScope(factoryRegistrationAttribute, factoryOf, _cancellationToken));
+                        continue;
+                    }
+
+                    bool isAsync = factoryType.OriginalDefinition.Equals(_iAsyncFactoryType, SymbolEqualityComparer.Default);
+
+                    registrations.Add(factoryOf, new FactoryRegistration(factoryType, factoryOf, factoryTargetScope, isAsync));
                 }
                 if (!any)
                 {
@@ -557,8 +596,22 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0012",
-                    "Type is registered as a factory but does not implement StrongInject.IFactory<T>",
-                    "'{0}' is registered as a factory but does not implement StrongInject.IFactory<T>",
+                    "Type is registered as a factory but does not implement StrongInject.IAsyncFactory<T>",
+                    "'{0}' is registered as a factory but does not implement StrongInject.IAsyncFactory<T>",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                typeSymbol);
+        }
+
+        private static Diagnostic TypeImplementsSyncAndAsyncRequiresInitialization(ITypeSymbol typeSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0013",
+                    "Type implements both IRequiresInitialization and IRequiresAsyncInitialization",
+                    "'{0}' implements both IRequiresInitialization and IRequiresAsyncInitialization",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
