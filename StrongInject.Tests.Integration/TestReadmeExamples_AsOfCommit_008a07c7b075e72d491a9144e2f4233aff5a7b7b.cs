@@ -9,19 +9,19 @@ namespace StrongInject.Tests.Integration
     /// <summary>
     /// These tests confirm the examples in README.md compile, and when appropriate run correctly
     /// </summary>
-    public partial class TestReadmeExamples
+    public partial class TestReadmeExamples_AsOfCommit_008a07c7b075e72d491a9144e2f4233aff5a7b7b
     {
         public partial class DeclaringAndUsingAContainer1
         {
             public class A { }
 
             [Registration(typeof(A))]
-            public partial class Container : IContainer<A> { }
+            public partial class Container : IAsyncContainer<A> { }
 
             [Fact]
-            public static void Test()
+            public static async Task Test()
             {
-                Console.WriteLine(new Container().Run(x => x.ToString()));
+                System.Console.WriteLine(await new Container().RunAsync(x => x.ToString()));
             }
         }
 
@@ -32,7 +32,7 @@ namespace StrongInject.Tests.Integration
 
             [Registration(typeof(A))]
             [Registration(typeof(B))]
-            public partial class Container : IContainer<A>, IContainer<B> { }
+            public partial class Container : IAsyncContainer<A>, IAsyncContainer<B> { }
         }
 
         public partial class Registration2
@@ -44,7 +44,7 @@ namespace StrongInject.Tests.Integration
             public class A : Base, IA { }
 
             [Registration(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
-            public partial class Container : IContainer<BaseBase> { }
+            public partial class Container : IAsyncContainer<BaseBase> { }
         }
 
         public partial class Scope1
@@ -55,7 +55,7 @@ namespace StrongInject.Tests.Integration
 
             [Registration(typeof(A), Scope.SingleInstance)]
             [Registration(typeof(B), Scope.InstancePerResolution, typeof(IB))]
-            public partial class Container : IContainer<A>, IContainer<IB> { }
+            public partial class Container : IAsyncContainer<A>, IAsyncContainer<IB> { }
         }
 
         public partial class Modules1
@@ -66,7 +66,7 @@ namespace StrongInject.Tests.Integration
             public class Module { }
 
             [ModuleRegistration(typeof(Module))]
-            public partial class Container : IContainer<A> { }
+            public partial class Container : IAsyncContainer<A> { }
         }
 
         public partial class FactoryRegistrations1
@@ -74,21 +74,21 @@ namespace StrongInject.Tests.Integration
             public interface IInterface { }
             public class A : IInterface { }
             public class B : IInterface { }
-            public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
+            public record InterfaceArrayFactory(A A, B B) : IAsyncFactory<IInterface[]>
             {
-                public IInterface[] Create() => new IInterface[] { A, B };
+                public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B });
             }
 
             [Registration(typeof(A))]
             [Registration(typeof(B))]
             [FactoryRegistration(typeof(InterfaceArrayFactory))]
-            public partial class Container : IContainer<IInterface[]> { }
+            public partial class Container : IAsyncContainer<IInterface[]> { }
 
             [Fact]
-            public void Test()
+            public async Task Test()
             {
                 var container = new Container();
-                container.Run(x =>
+                await container.RunAsync(x =>
                 {
                     Assert.Equal(2, x.Length);
                     Assert.IsType<A>(x[0]);
@@ -102,28 +102,28 @@ namespace StrongInject.Tests.Integration
             public interface IInterface { }
             public class A : IInterface { }
             public class B : IInterface { }
-            public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
+            public record InterfaceArrayFactory(A A, B B) : IAsyncFactory<IInterface[]>
             {
-                public IInterface[] Create() => new IInterface[] { A, B };
+                public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B });
             }
 
             [Registration(typeof(A))]
             [Registration(typeof(B))]
             [FactoryRegistration(typeof(InterfaceArrayFactory), factoryScope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution)]
-            public partial class Container : IContainer<IInterface[]> { }
+            public partial class Container : IAsyncContainer<IInterface[]> { }
 
             [Fact]
-            public void Test()
+            public async Task Test()
             {
                 var container = new Container();
-                var first = container.Run(x =>
+                var first = await container.RunAsync(x =>
                 {
                     Assert.Equal(2, x.Length);
                     Assert.IsType<A>(x[0]);
                     Assert.IsType<B>(x[1]);
                     return x;
                 });
-                var second = container.Run(x =>
+                var second = await container.RunAsync(x =>
                 {
                     Assert.Equal(2, x.Length);
                     Assert.IsType<A>(x[0]);
@@ -146,25 +146,39 @@ namespace StrongInject.Tests.Integration
                 UseB
             }
 
-            public record InstanceProvider(InterfaceToUse InterfaceToUse) : IInstanceProvider<InterfaceToUse>
+            public record InstanceProvider(InterfaceToUse InterfaceToUse) : IAsyncInstanceProvider<InterfaceToUse>
             {
-                public InterfaceToUse Get() => InterfaceToUse;
+                public ValueTask<InterfaceToUse> GetAsync() => new ValueTask<InterfaceToUse>(InterfaceToUse);
 
-                public void Release(InterfaceToUse instance) {}
+                public ValueTask ReleaseAsync(InterfaceToUse instance) => default;
             }
 
-            public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IFactory<IInterface>
+            public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IAsyncFactory<IInterface>
             {
-                public IInterface Create() => InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B;
+                public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B);
             }
 
             [Registration(typeof(A))]
             [Registration(typeof(B))]
             [FactoryRegistration(typeof(InterfaceFactory))]
-            public partial class Container : IContainer<IInterface>
+            public partial class Container : IAsyncContainer<IInterface>
             {
                 private readonly InstanceProvider _instanceProvider;
                 public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
+            }
+
+            [Fact]
+            public async Task Test()
+            {
+                await new Container(new InstanceProvider(InterfaceToUse.UseA)).RunAsync(x =>
+                {
+                    Assert.IsType<A>(x);
+                });
+
+                await new Container(new InstanceProvider(InterfaceToUse.UseB)).RunAsync(x =>
+                {
+                    Assert.IsType<B>(x);
+                });
             }
         }
 
@@ -179,9 +193,9 @@ namespace StrongInject.Tests.Integration
             {
                 private readonly IDb _db;
 
-                private Dictionary<string, string> _userPasswords;
+                private Dictionary<string, string> _userPasswords = default!;
 
-                private Timer _timer;
+                private Timer _timer = default!;
 
                 public PasswordChecker(IDb db)
                 {
@@ -202,20 +216,30 @@ namespace StrongInject.Tests.Integration
                 }
             }
 
-            public record DbInstanceProvider(IDb Db) : IInstanceProvider<IDb>
+            public class DbInstanceProvider : IAsyncInstanceProvider<IDb>
             {
-                public IDb Get()
+                private readonly IDb _db;
+
+                public DbInstanceProvider(IDb db)
                 {
-                    return Db;
+                    _db = db;
                 }
 
-                public void Release(IDb instance) { }
+                public ValueTask<IDb> GetAsync()
+                {
+                    return new ValueTask<IDb>(_db);
+                }
+
+                public ValueTask ReleaseAsync(IDb instance)
+                {
+                    return default;
+                }
             }
 
             [Registration(typeof(PasswordChecker), Scope.SingleInstance)]
             public partial class Container : IAsyncContainer<PasswordChecker>
             {
-                private readonly DbInstanceProvider _dbInstanceProvider;
+                public DbInstanceProvider _dbInstanceProvider;
 
                 public Container(DbInstanceProvider dbInstanceProvider)
                 {
