@@ -77,7 +77,7 @@ public partial class Container : IContainer<A>, IContainer<B> {}
 
 To use a container, you'll want to use the `Run` extension methods defined in `StrongInject.ContainerExtensions`, so make sure you're `using StrongInject;`
 
-The `Run` method on `IContainer<T>` takes a `Func<T>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in an async lambda, or a void returning lambda.
+The `Run` method on `IContainer<T>` takes a `Func<T>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in a void returning lambda.
 
 ```csharp
 using StrongInject;
@@ -280,7 +280,11 @@ Whilst this is only useful in a few edge cases for synchronous methods, `IRequir
 Every interface use by StrongInject has an asynchronous counterpart.
 Theres `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
 
-You can resolve something asynchronously by calling `StrongInject.AsyncContainerExtensions.RunAsync`. It is an error if a non async container depends on an asynchronous dependency.
+You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` by calling `StrongInject.AsyncContainerExtensions.RunAsync`. RunAsync has overloads allowing you to pass in  sync or async lambda. As such `IAsycContainer<T>` is useful even if resolution is completely synchronous if usage is asynchronous.
+
+It is an error resolving `T` in an `IContainer<T>` depends on an asynchronous dependency.
+
+A type can implement both `IContainer<T1>` and `IAsyncCOntainer<T2>`. They will share single instance depdendencies.
 
 Here is a full fledged example where data will be loaded from the database as part of resolution using `IRequiresAsyncInitialization`:
 
