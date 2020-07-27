@@ -275,7 +275,7 @@ public partial class Container : IContainer<IInterface>
 If your type implements `IRequiresInitialization`, `Initialize` will be called after construction.
 Whilst this is only useful in a few edge cases for synchronous methods, `IRequiresAsyncInitialization` is extremely useful as constructors cannot be async. Therefore I'll leave an example of using this API for the section on async support. 
 
-## Async Support
+### Async Support
 
 Every interface use by StrongInject has an asynchronous counterpart.
 Theres `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
