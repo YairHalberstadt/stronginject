@@ -17,7 +17,8 @@ compile time dependency injection for .Net
     - [Modules](#modules)
     - [Factory Registrations](#factory-registrations)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
-  - [Async initialization](#async-initialization)
+  - [Post Constructor Initialization](#post-constructor-initialization)
+- [Async Support](#async-support)
   - [Disposal](#disposal)
 - [Contributing](#contributing)
 
