@@ -17,7 +17,8 @@ compile time dependency injection for .Net
     - [Modules](#modules)
     - [Factory Registrations](#factory-registrations)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
-  - [Async initialization](#async-initialization)
+  - [Post Constructor Initialization](#post-constructor-initialization)
+- [Async Support](#async-support)
   - [Disposal](#disposal)
 - [Contributing](#contributing)
 
@@ -74,18 +75,18 @@ public partial class Container : IContainer<A>, IContainer<B> {}
 
 ### Using a container.
 
-To use a container, you'll want to use the `RunAsync` extension methods defined in `StrongInject.ContainerExtensions`, so make sure you're `using StrongInject;`
+To use a container, you'll want to use the `Run` extension methods defined in `StrongInject.ContainerExtensions`, so make sure you're `using StrongInject;`
 
-The `RunAsync` method on `IContainer<T>` takes a `Func<T>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in an async lambda, or a void returning lambda.
+The `Run` method on `IContainer<T>` takes a `Func<T>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in an async lambda, or a void returning lambda.
 
 ```csharp
 using StrongInject;
 
 public class Program
 {
-  public static async Task Main()
+  public static void Main()
   {
-    System.Console.WriteLine(await new Container().RunAsync(x => x.ToString()));
+    System.Console.WriteLine(new Container().Run(x => x.ToString()));
   }
 }
 ```
@@ -201,14 +202,13 @@ This will automatically register it as both `IFactory<T>` and `T`. An instance o
 
 ```csharp
 using StrongInject;
-using System.Threading.Tasks;
 
 public interface IInterface {}
 public class A : IInterface {}
 public class B : IInterface {}
 public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
 {
-    public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B };
+    public IInterface[] Create() => new IInterface[] { A, B };
 }
 
 [Registration(typeof(A))]
@@ -237,7 +237,6 @@ Here is a full fledged example of how you could provide configuration for a regi
 
 ```csharp
 using StrongInject;
-using System.Threading.Tasks;
 
 public interface IInterface { }
 public class A : IInterface { }
@@ -251,12 +250,12 @@ public enum InterfaceToUse
 
 public record InstanceProvider(InterfaceToUse InterfaceToUse) : IInstanceProvider<InterfaceToUse>
 {
-    public ValueTask<InterfaceToUse> GetAsync() => new ValueTask<InterfaceToUse>(InterfaceToUse);
+    public InterfaceToUse Get() => InterfaceToUse;
 }
 
 public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IFactory<IInterface>
 {
-    public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B);
+    public IInterface Create() => InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B;
 }
 
 [Registration(typeof(A))]
@@ -269,13 +268,21 @@ public partial class Container : IContainer<IInterface>
 }
 ```
 
-`GetAsync` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to returna singleton or not.
+`Get` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to returna singleton or not.
 
-### Async initialization
+### Post Constructor Initialization
 
-If your type implements `IRequiresInitialization`, `InitializeAsync` will be called after construction.
+If your type implements `IRequiresInitialization`, `Initialize` will be called after construction.
+Whilst this is only useful in a few edge cases for synchronous methods, `IRequiresAsyncInitialization` is extremely useful as constructors cannot be async. Therefore I'll leave an example of using this API for the section on async support. 
 
-Here is a full fledged example where data will be loaded from the database as part of resolution:
+## Async Support
+
+Every interface use by StrongInject has an asynchronous counterpart.
+Theres `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
+
+You can resolve something asynchronously by calling `StrongInject.AsyncContainerExtensions.RunAsync`. It is an error if a non async container depends on an asynchronous dependency.
+
+Here is a full fledged example where data will be loaded from the database as part of resolution using `IRequiresAsyncInitialization`:
 
 ```csharp
 using StrongInject;
@@ -289,7 +296,7 @@ public interface IDb
     Task<Dictionary<string, string>> GetUserPasswordsAsync();
 }
 
-public class PasswordChecker : IRequiresInitialization, IAsyncDisposable
+public class PasswordChecker : IRequiresAsyncInitialization, IAsyncDisposable
 {
     private readonly IDb _db;
 
@@ -316,45 +323,47 @@ public class PasswordChecker : IRequiresInitialization, IAsyncDisposable
     }
 }
 
-public class DbInstanceProvider : IInstanceProvider<IDb>
+public record DbInstanceProvider(IDb Db) : IInstanceProvider<IDb>
 {
-    private readonly IDb _db;
-
-    public DbInstanceProvider(IDb db)
+    public IDb Get()
     {
-        _db = db;
+        return Db;
     }
 
-    public ValueTask<IDb> GetAsync()
-    {
-        return new ValueTask<IDb>(_db);
-    }
-
-    public ValueTask ReleaseAsync(IDb instance)
-    {
-        return default;
-    }
+    public void Release(IDb instance) {}
 }
 
 [Registration(typeof(PasswordChecker), Scope.SingleInstance)]
-public partial class Container : IContainer<PasswordChecker>
+public partial class Container : IAsyncContainer<PasswordChecker>
 {
-    public DbInstanceProvider _dbInstanceProvider;
+    private readonlyDbInstanceProvider _dbInstanceProvider;
 
     public Container(DbInstanceProvider dbInstanceProvider)
     {
         _dbInstanceProvider = dbInstanceProvider;
     }
 }
+
+public static class Program
+{
+  public static async Task Main(string[] args)
+  {
+    await new Container(new DbInstanceProvider(new Db())).RunAsync(x => 
+      Console.WriteLine(x.CheckPassword(args[0], args[1])
+        ? "Password is valid"
+        : "Password is invalid"));
+  }
+}
 ```
 
 ### Disposal
 
-Once a call to `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `RunAsync` will be disposed.
+Once a call to `Run` or `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `Run` or `RunAsync` will be disposed.
 
-If the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
+In `RunAsync` if the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
+In `Run`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.
 
-Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.ReleaseAsync(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `ReleaseAsync` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
+Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.Release(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
 
 ## Contributing
 
