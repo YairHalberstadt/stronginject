@@ -323,11 +323,11 @@ public class PasswordChecker : IRequiresAsyncInitialization, IAsyncDisposable
     }
 }
 
-record DbInstanceProvider(IDb db) : IInstanceProvider<IDb>
+public record DbInstanceProvider(IDb Db) : IInstanceProvider<IDb>
 {
     public IDb Get()
     {
-        return _db;
+        return Db;
     }
 
     public void Release(IDb instance) {}
@@ -336,7 +336,7 @@ record DbInstanceProvider(IDb db) : IInstanceProvider<IDb>
 [Registration(typeof(PasswordChecker), Scope.SingleInstance)]
 public partial class Container : IAsyncContainer<PasswordChecker>
 {
-    public DbInstanceProvider _dbInstanceProvider;
+    private readonlyDbInstanceProvider _dbInstanceProvider;
 
     public Container(DbInstanceProvider dbInstanceProvider)
     {
@@ -348,8 +348,8 @@ public static class Program
 {
   public static async Task Main(string[] args)
   {
-    await new Container().RunAsync(x => 
-      Console.WriteLine(CheckPassword(args[0], args[1])
+    await new Container(new DbInstanceProvider(new Db())).RunAsync(x => 
+      Console.WriteLine(x.CheckPassword(args[0], args[1])
         ? "Password is valid"
         : "Password is invalid"));
   }
