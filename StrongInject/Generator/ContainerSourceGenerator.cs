@@ -69,7 +69,7 @@ namespace StrongInject.Generator
 
             var registrationCalculator = new RegistrationCalculator(context.Compilation, context.ReportDiagnostic, cancellationToken);
             var containerInterface = context.Compilation.GetType(typeof(IContainer<>));
-            var asyncContainerInterface = context.Compilation.GetType(typeof(IAsyncContainer<>));
+            var asyncContainerInterface = context.Compilation.GetTypeByMetadataName("StrongInject.IAsyncContainer`1");
             var instanceProviderInterface = context.Compilation.GetType(typeof(IInstanceProvider<>));
             var asyncInstanceProviderInterface = context.Compilation.GetType(typeof(IAsyncInstanceProvider<>));
 
@@ -218,8 +218,8 @@ namespace StrongInject.Generator
                                     methodSource.Append(variableName);
                                     methodSource.Append(");");
                                     break;
-                                case InstanceProvider { instanceProviderField: var field, castTo: var cast }:
-                                    if (isAsync)
+                                case InstanceProvider { instanceProviderField: var field, castTo: var cast, isAsync: var isAsyncInstanceProvider }:
+                                    if (isAsyncInstanceProvider)
                                     {
                                         methodSource.Append("await ");
                                     }
@@ -228,7 +228,7 @@ namespace StrongInject.Generator
                                     methodSource.Append(")this.");
                                     methodSource.Append(field.Name);
                                     methodSource.Append(").");
-                                    methodSource.Append(isAsync
+                                    methodSource.Append(isAsyncInstanceProvider
                                         ? nameof(IAsyncInstanceProvider<object>.ReleaseAsync)
                                         : nameof(IInstanceProvider<object>.Release));
                                     methodSource.Append("(");

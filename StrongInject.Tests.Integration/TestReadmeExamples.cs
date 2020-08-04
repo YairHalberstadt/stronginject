@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Xunit;
 
+#nullable disable
 namespace StrongInject.Tests.Integration
 {
     /// <summary>
