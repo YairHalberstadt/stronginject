@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace StrongInject.Generator
@@ -137,6 +139,54 @@ namespace StrongInject.Generator
 
                 visited.Add(source);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Only call if <see cref="HasCircularOrMissingDependencies"/> returns true,
+        /// as this does no validation, and could throw or stack overflow otherwise.
+        /// </summary>
+        internal static IEnumerable<InstanceSource> GetPartialOrderingOfSingleInstanceDependencies(IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, HashSet<InstanceSource> used)
+        {
+            var results = Enumerable.Empty<InstanceSource>();
+            var visited = new HashSet<InstanceSource>(ReferenceEqualityComparer.Instance);
+
+            foreach (var (type, source) in registrations)
+            {
+                if (!used.Contains(source))
+                    continue;
+                List<InstanceSource>? thisResults = null;
+                Visit(source, ref thisResults);
+                results = thisResults?.Concat(results) ?? results;
+            }
+
+            return results;
+
+            void Visit(InstanceSource source, ref List<InstanceSource>? results)
+            {
+                if (visited.Contains(source))
+                    return;
+
+                if (source.scope == Scope.SingleInstance)
+                {
+                    (results ??= new()).Add(source);
+                }
+
+                if (source is Registration { constructor: { Parameters: var parameters } })
+                {
+                    foreach (var param in parameters)
+                    {
+                        var paramSource = registrations[param.Type];
+                        Visit(paramSource, ref results);
+                    }
+                }
+                else if (source is FactoryRegistration { factoryType: var factoryType })
+                {
+                    var factorySource = registrations[factoryType];
+                    Visit(factorySource, ref results);
+                }
+
+                visited.Add(source);
             }
         }
 

@@ -88,5 +88,23 @@ namespace StrongInject.Tests.Integration
             Assert.False(a.b.d.AsyncDisposed);
             Assert.True(a.c.d.AsyncDisposed);
         }
+
+        [Fact]
+        public async Task TestSingleInstancyAndDependenciesDisposedOnContainerDisposal()
+        {
+            var container = new Container2();
+            var a = await container.RunAsync(x => x);
+            Assert.True(a.Disposed);
+            Assert.False(a.b.Disposed);
+            Assert.True(a.c.AsyncDisposed);
+            Assert.False(a.c.Disposed);
+            Assert.False(a.b.d.AsyncDisposed);
+            Assert.True(a.c.d.AsyncDisposed);
+
+            await container.DisposeAsync();
+
+            Assert.True(a.b.Disposed);
+            Assert.True(a.b.d.AsyncDisposed);
+        }
     }
 }
