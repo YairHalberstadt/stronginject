@@ -20,6 +20,7 @@ compile time dependency injection for .Net
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
   - [Disposal](#disposal)
+  - [Thread Safety](#thread-safety)
 - [Contributing](#contributing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
