@@ -123,7 +123,7 @@ namespace StrongInject.Generator
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    containerScope ??= CreateContainerScope(instanceProviderInterface, asyncInstanceProviderInterface, module, registrations, context.ReportDiagnostic, cancellationToken);
+                    containerScope ??= CreateContainerScope(instanceProviderInterface, asyncInstanceProviderInterface, module, registrations, context.Compilation, context.ReportDiagnostic, cancellationToken);
 
                     var target = constructedContainerInterface.TypeArguments[0];
 
@@ -386,7 +386,7 @@ namespace StrongInject.Generator
                                         }
 
                                         break;
-                                    case DelegateSource(var delegateType, var returnType, var parameters):
+                                    case DelegateSource(var delegateType, var returnType, var parameters, var isAsync):
                                         {
                                             disposeActionsName = "disposeActions" + instanceSourcesScope.Depth + variableName;
                                             methodSource.Append("var ");
@@ -397,7 +397,7 @@ namespace StrongInject.Generator
                                             methodSource.Append(delegateType.FullName());
                                             methodSource.Append(" ");
                                             methodSource.Append(variableName);
-                                            methodSource.Append("=(");
+                                            methodSource.Append(isAsync ? "=async(" : "=(");
                                             foreach (var (parameter, index) in parameters.WithIndex())
                                             {
                                                 if (index != 0)
@@ -604,7 +604,7 @@ if (disposed != 0) return;");
             return stringBuilder.ToString();
         }
 
-        private static InstanceSourcesScope CreateContainerScope(INamedTypeSymbol? instanceProviderInterface, INamedTypeSymbol? asyncInstanceProviderInterface, INamedTypeSymbol module, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Action<Diagnostic> reportDiagnostic, CancellationToken cancellationToken)
+        private static InstanceSourcesScope CreateContainerScope(INamedTypeSymbol? instanceProviderInterface, INamedTypeSymbol? asyncInstanceProviderInterface, INamedTypeSymbol module, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Compilation compilation, Action<Diagnostic> reportDiagnostic, CancellationToken cancellationToken)
         {
             var instanceSources = registrations.ToDictionary(x => x.Key, x => x.Value);
             var instanceProviders = new Dictionary<ITypeSymbol, InstanceProvider>();
@@ -630,7 +630,7 @@ if (disposed != 0) return;");
                     instanceSources[providedType] = instanceProvider;
                 }
             }
-            return new(instanceSources);
+            return new(instanceSources, compilation);
         }
 
         private static Diagnostic DuplicateInstanceProviders(IFieldSymbol fieldForLocation, IFieldSymbol firstField, IFieldSymbol secondField, ITypeSymbol providedType, CancellationToken cancellationToken)

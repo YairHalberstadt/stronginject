@@ -4489,5 +4489,255 @@ partial class Container
     }
 }");
         }
+
+        [Fact]
+        public void DelegateReturningTaskCanResolveDependenciesAsynchronously()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public delegate Task<A> Del(int i);
+[Registration(typeof(A))]
+public partial class Container : IContainer<Del>
+{
+}
+
+public class A : IRequiresAsyncInitialization
+{
+    public A(int a){}
+    public ValueTask InitializeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Del>.Run<TResult, TParam>(global::System.Func<global::Del, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::Del _0 = async (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::Del)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void DelegateReturningValueTaskCanResolveDependenciesAsynchronously()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public delegate ValueTask<A> Del(int i);
+[Registration(typeof(A))]
+public partial class Container : IContainer<Del>
+{
+}
+
+public class A : IRequiresAsyncInitialization
+{
+    public A(int a){}
+    public ValueTask InitializeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Del>.Run<TResult, TParam>(global::System.Func<global::Del, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::Del _0 = async (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::Del)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void SingleInstanceDependencyCanDependOnDelegate()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public delegate ValueTask<A> Del(int i);
+[Registration(typeof(A))]
+[Registration(typeof(B), Scope.SingleInstance)]
+public partial class Container : IContainer<B>
+{
+}
+
+public class A : IRequiresAsyncInitialization
+{
+    public A(int a){}
+    public ValueTask InitializeAsync() => default;
+}
+public class B
+{
+    public B(Del d){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::B _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::B GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var disposeActions1_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::Del _1 = async (param0_0) =>
+            {
+                var _0 = new global::A(param0_0);
+                await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+                disposeActions1_1.Add(() =>
+                {
+                }
+
+                );
+                return _0;
+            }
+
+            ;
+            var _0 = new global::B(_1);
+            this._singleInstanceField0 = _0;
+            this._disposeAction0 = () =>
+            {
+                foreach (var disposeAction in disposeActions1_1)
+                    disposeAction();
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        TResult result;
+        try
+        {
+            result = func((global::B)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+}");
+        }
     }
 }

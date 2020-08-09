@@ -47,7 +47,7 @@ namespace StrongInject.Generator
 
                     switch (instanceSource)
                     {
-                        case DelegateSource(var delegateType, var returnType, var delegateParameters) delegateSource:
+                        case DelegateSource(var delegateType, var returnType, var delegateParameters, var isAsync) delegateSource:
                             {
                                 foreach (var paramsWithType in delegateParameters.GroupBy(x => x.Type))
                                 {
@@ -83,7 +83,7 @@ namespace StrongInject.Generator
                                     returnType,
                                     instanceSourcesScope,
                                     usedParams: usedByDelegateParams,
-                                    isScopeAsync: false);
+                                    isScopeAsync: isAsync);
 
                                 foreach (var delegateParam in delegateParameters)
                                 {
@@ -126,7 +126,7 @@ namespace StrongInject.Generator
                             break;
                     }
 
-                    if (instanceSource.isAsync && !isScopeAsync)
+                    if (instanceSource is not DelegateSource && instanceSource.isAsync && !isScopeAsync)
                     {
                         reportDiagnostic(RequiresAsyncResolution(location, target, node));
                         result = true;
@@ -292,44 +292,40 @@ namespace StrongInject.Generator
         internal static bool RequiresAsync(InstanceSource source, InstanceSourcesScope containerScope)
         {
             var visited = new HashSet<InstanceSource>();
-            return Visit(source, containerScope);
+            return Visit(source);
 
-            bool Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope)
+            bool Visit(InstanceSource source)
             {
                 if (visited.Contains(source))
                     return false;
+
+                if (source is DelegateSource)
+                {
+                    return false;
+                }
 
                 if (source.isAsync)
                 {
                     return true;
                 }
 
-                var innerScope = instanceSourcesScope.Enter(source);
-
                 if (source is Registration { constructor: { Parameters: var parameters } })
                 {
                     foreach (var param in parameters)
                     {
-                        var paramSource = innerScope[param.Type];
-                        if (Visit(paramSource, innerScope))
+                        var paramSource = containerScope[param.Type];
+                        if (Visit(paramSource))
                             return true;
                     }
                 }
                 else if (source is FactoryRegistration { factoryType: var factoryType })
                 {
-                    var factorySource = innerScope[factoryType];
-                    if (Visit(factorySource, innerScope))
-                        return true;
-                }
-                else if (source is DelegateSource { returnType: var returnType })
-                {
-                    var returnTypeSource = innerScope[returnType];
-                    if (Visit(returnTypeSource, innerScope))
+                    var factorySource = containerScope[factoryType];
+                    if (Visit(factorySource))
                         return true;
                 }
 
-                if (ReferenceEquals(instanceSourcesScope, containerScope) || ReferenceEquals(innerScope, containerScope))
-                    visited.Add(source);
+                visited.Add(source);
 
                 return false;
             }

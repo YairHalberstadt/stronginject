@@ -26,7 +26,8 @@ namespace StrongInject.Generator
     internal record DelegateSource(
         ITypeSymbol delegateType,
         ITypeSymbol returnType,
-        ImmutableArray<IParameterSymbol> parameters) : InstanceSource(Scope.InstancePerResolution, isAsync: false)
+        ImmutableArray<IParameterSymbol> parameters,
+        bool isAsync) : InstanceSource(Scope.InstancePerResolution, isAsync: isAsync)
     { }
     internal record DelegateParameter(IParameterSymbol parameter, string name) : InstanceSource(Scope.InstancePerResolution, isAsync: false) { }
 }
