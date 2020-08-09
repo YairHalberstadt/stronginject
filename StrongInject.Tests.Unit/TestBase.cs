@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -33,6 +34,7 @@ namespace StrongInject.Generator.Tests.Unit
                     MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(ValueTask).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(ConcurrentBag<>).Assembly.Location),
                     MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location)!, "netstandard.dll")),
                     MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location)!, "System.Runtime.dll")),
                 }),

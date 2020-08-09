@@ -101,7 +101,7 @@ namespace StrongInject.Generator
 
             void GenerateResolveMethods(INamedTypeSymbol module, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations)
             {
-                Dictionary<ITypeSymbol, InstanceSource>? instanceSources = null;
+                InstanceSourcesScope? containerScope = null;
                 Dictionary<InstanceSource, (string name, bool isAsync, string disposeFieldName, string lockName)>? singleInstanceMethods = null;
                 StringBuilder? containerMembersSource = null;
 
@@ -112,18 +112,18 @@ namespace StrongInject.Generator
                     .Select(x => (containerInterface: x, isAsync: x.OriginalDefinition.Equals(asyncContainerInterface, SymbolEqualityComparer.Default)))
                     .ToList();
 
-                var anySync = false;
-                var anyAsync = false;
+                var implementsSyncContainer = false;
+                var implementsAsyncContainer = false;
                 foreach (var (_, isAsync) in containerInterfaces)
                 {
-                    (isAsync ? ref anyAsync : ref anySync) = true;
+                    (isAsync ? ref implementsAsyncContainer : ref implementsSyncContainer) = true;
                 }
 
                 foreach (var (constructedContainerInterface, isAsync) in containerInterfaces)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    instanceSources ??= GatherInstanceSources(instanceProviderInterface, asyncInstanceProviderInterface, module, registrations, context.ReportDiagnostic, cancellationToken);
+                    containerScope ??= CreateContainerScope(instanceProviderInterface, asyncInstanceProviderInterface, module, registrations, context.ReportDiagnostic, cancellationToken);
 
                     var target = constructedContainerInterface.TypeArguments[0];
 
@@ -161,7 +161,7 @@ namespace StrongInject.Generator
                     if (DependencyChecker.HasCircularOrMissingDependencies(
                             target,
                             isAsync,
-                            instanceSources,
+                            containerScope,
                             context.ReportDiagnostic,
                             // Ideally we would use the location of the interface in the base list, however getting that location is complex and not critical for now.
                             // See http://sourceroslyn.io/#Microsoft.CodeAnalysis.CSharp/Symbols/Source/SourceMemberContainerSymbol_ImplementationChecks.cs,333
@@ -174,7 +174,7 @@ namespace StrongInject.Generator
                     {
                         methodSource.Append("if(Disposed)");
                         ThrowObjectDisposedException(methodSource);
-                        var resultVariableName = CreateVariable(instanceSources[target], methodSource, isSingleInstanceCreation: false, out var orderOfCreation, anyAsync);
+                        var resultVariableName = CreateVariable(containerScope[target], methodSource, containerScope, isSingleInstanceCreation: false, out var orderOfCreation, isAsync);
                         methodSource.Append(methodSymbol.TypeParameters[0].Name);
                         methodSource.Append(" result;try{result=");
                         if (isAsync)
@@ -195,11 +195,11 @@ namespace StrongInject.Generator
 
                     (containerMembersSource ??= new()).Append(methodSource);
 
-                    void GenerateDisposeCode(StringBuilder methodSource, List<(string variableName, InstanceSource source)> orderOfCreation, bool isAsync, InstanceSource? singleInstanceTarget)
+                    void GenerateDisposeCode(StringBuilder methodSource, List<(string variableName, string? disposeActionsName, InstanceSource source)> orderOfCreation, bool isAsync, InstanceSource? singleInstanceTarget)
                     {
                         for (int i = orderOfCreation.Count - 1; i >= 0; i--)
                         {
-                            var (variableName, source) = orderOfCreation[i];
+                            var (variableName, disposeActionName, source) = orderOfCreation[i];
                             switch (source)
                             {
                                 case { scope: Scope.SingleInstance } when !source.Equals(singleInstanceTarget):
@@ -264,21 +264,38 @@ namespace StrongInject.Generator
                                             cancellationToken));
                                     }
                                     break;
+                                case DelegateParameter:
+                                    break;
+                                case DelegateSource:
+                                    methodSource.Append("foreach (var disposeAction in ");
+                                    methodSource.Append(disposeActionName);
+                                    methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
+                                    break;
                             }
                         }
                     }
 
-                    string CreateVariable(InstanceSource target, StringBuilder methodSource, bool isSingleInstanceCreation, out List<(string variableName, InstanceSource source)> orderOfCreation, bool anyAsync)
+                    string CreateVariable(
+                        InstanceSource target,
+                        StringBuilder methodSource,
+                        InstanceSourcesScope instanceSourcesScope,
+                        bool isSingleInstanceCreation,
+                        out List<(string variableName, string? disposeActionsName, InstanceSource source)> orderOfCreation,
+                        bool disposeAsynchronously)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         orderOfCreation = new();
                         var orderOfCreationTemp = orderOfCreation;
                         var variables = new Dictionary<InstanceSource, string>(InstanceSourceComparer.Instance);
                         var outerTarget = target;
-                        return CreateVariableInternal(target);
-                        string CreateVariableInternal(InstanceSource target)
+                        return CreateVariableInternal(target, instanceSourcesScope);
+                        string CreateVariableInternal(InstanceSource target, InstanceSourcesScope instanceSourcesScope)
                         {
-                            if (target.scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out var variableName))
+                            instanceSourcesScope = instanceSourcesScope.Enter(target);
+                            if (target is DelegateParameter { name: var variableName })
+                                return variableName;
+                            string? disposeActionsName = null;
+                            if (target.scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out variableName))
                             {
                                 variableName = "_" + variables.Count;
                                 variables.Add(target, variableName);
@@ -300,7 +317,7 @@ namespace StrongInject.Generator
                                     case { scope: Scope.SingleInstance } registration
                                         when !(isSingleInstanceCreation && ReferenceEquals(outerTarget, target)):
                                         {
-                                            var (name, isAsync) = GetSingleInstanceMethod(registration);
+                                            var (name, isAsync) = GetSingleInstanceMethod(registration, instanceSourcesScope);
                                             methodSource.Append("var ");
                                             methodSource.Append(variableName);
                                             methodSource.Append(isAsync ? "=await " : "=");
@@ -309,7 +326,7 @@ namespace StrongInject.Generator
                                         }
                                         break;
                                     case FactoryRegistration(var factoryType, var factoryOf, var scope, var isAsync) registration:
-                                        var factory = CreateVariableInternal(instanceSources[factoryType]);
+                                        var factory = CreateVariableInternal(containerScope[factoryType], instanceSourcesScope);
                                         methodSource.Append("var ");
                                         methodSource.Append(variableName);
                                         methodSource.Append(isAsync ? "=await((" : "=((");
@@ -336,17 +353,17 @@ namespace StrongInject.Generator
                                                 variableSource.Append(",");
                                             }
                                             IParameterSymbol? parameter = constructor.Parameters[i];
-                                            var source = instanceSources[parameter.Type];
-                                            var variable = CreateVariableInternal(source);
-                                            if (source is InstanceProvider or FactoryRegistration)
-                                            {
-                                                variableSource.Append(variable);
-                                            }
-                                            else if (source is Registration { registeredAs: var castTarget })
+                                            var source = instanceSourcesScope[parameter.Type];
+                                            var variable = CreateVariableInternal(source, instanceSourcesScope);
+                                            if (source is Registration { registeredAs: var castTarget })
                                             {
                                                 variableSource.Append("(");
                                                 variableSource.Append(castTarget.FullName());
                                                 variableSource.Append(")");
+                                                variableSource.Append(variable);
+                                            }
+                                            else
+                                            {
                                                 variableSource.Append(variable);
                                             }
                                         }
@@ -369,14 +386,45 @@ namespace StrongInject.Generator
                                         }
 
                                         break;
+                                    case DelegateSource(var delegateType, var returnType, var parameters):
+                                        {
+                                            disposeActionsName = "disposeActions" + instanceSourcesScope.Depth + variableName;
+                                            methodSource.Append("var ");
+                                            methodSource.Append(disposeActionsName);
+                                            methodSource.Append(disposeAsynchronously
+                                                ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
+                                                : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
+                                            methodSource.Append(delegateType.FullName());
+                                            methodSource.Append(" ");
+                                            methodSource.Append(variableName);
+                                            methodSource.Append("=(");
+                                            foreach (var (parameter, index) in parameters.WithIndex())
+                                            {
+                                                if (index != 0)
+                                                    methodSource.Append(",");
+                                                methodSource.Append(((DelegateParameter)instanceSourcesScope[parameter.Type]).name);
+                                            }
+                                            methodSource.Append(")=>{");
+                                            var variable = CreateVariable(instanceSourcesScope[returnType], methodSource, instanceSourcesScope, isSingleInstanceCreation: false, out var delegateOrderOfCreation, disposeAsynchronously);
+                                            methodSource.Append(disposeActionsName);
+                                            methodSource.Append(".Add(");
+                                            if (disposeAsynchronously)
+                                                methodSource.Append("async");
+                                            methodSource.Append("() => {");
+                                            GenerateDisposeCode(methodSource, delegateOrderOfCreation, disposeAsynchronously, null);
+                                            methodSource.Append("});return ");
+                                            methodSource.Append(variable);
+                                            methodSource.Append(";};");
+                                            break;
+                                        }
                                 }
 
                             }
-                            orderOfCreationTemp.Add((variableName, target));
+                            orderOfCreationTemp.Add((variableName, disposeActionsName, target));
                             return variableName;
                         }
 
-                        (string name, bool isAsync) GetSingleInstanceMethod(InstanceSource instanceSource)
+                        (string name, bool isAsync) GetSingleInstanceMethod(InstanceSource instanceSource, InstanceSourcesScope instanceSourcesScope)
                         {
                             singleInstanceMethods ??= new(InstanceSourceComparer.Instance);
                             if (!singleInstanceMethods.TryGetValue(instanceSource, out var singleInstanceMethod))
@@ -391,14 +439,14 @@ namespace StrongInject.Generator
                                 var index = singleInstanceMethods.Count;
                                 var singleInstanceFieldName = "_singleInstanceField" + index;
                                 var name = "GetSingleInstanceField" + index;
-                                var isAsync = DependencyChecker.RequiresAsync(instanceSource, instanceSources);
+                                var isAsync = DependencyChecker.RequiresAsync(instanceSource, containerScope);
                                 var disposeFieldName = "_disposeAction" + index;
                                 var lockName = "_lock" + index;
                                 singleInstanceMethod = (name, isAsync, disposeFieldName, lockName);
                                 singleInstanceMethods.Add(instanceSource, singleInstanceMethod);
                                 (containerMembersSource ??= new()).Append("private " + type.FullName() + " " + singleInstanceFieldName + ";");
                                 containerMembersSource.Append("private global::System.Threading.SemaphoreSlim _lock" + index + "=new global::System.Threading.SemaphoreSlim(1);");
-                                containerMembersSource.Append((anyAsync 
+                                containerMembersSource.Append((implementsAsyncContainer 
                                     ? "private global::System.Func<global::System.Threading.Tasks.ValueTask>"
                                     : "private global::System.Action") + " _disposeAction" + index + ";");
                                 var methodSource = new StringBuilder();
@@ -421,7 +469,7 @@ namespace StrongInject.Generator
                                 methodSource.Append(isAsync ? ".WaitAsync();" : ".Wait();");
                                 methodSource.Append("try{if(this.Disposed)");
                                 ThrowObjectDisposedException(methodSource);
-                                var variableName = CreateVariable(instanceSource, methodSource, isSingleInstanceCreation: true, out var orderOfCreation, anyAsync);
+                                var variableName = CreateVariable(instanceSource, methodSource, containerScope, isSingleInstanceCreation: true, out var orderOfCreation, implementsAsyncContainer);
                                 methodSource.Append("this.");
                                 methodSource.Append(singleInstanceFieldName);
                                 methodSource.Append("=");
@@ -430,10 +478,10 @@ namespace StrongInject.Generator
                                 methodSource.Append("this.");
                                 methodSource.Append(disposeFieldName);
                                 methodSource.Append("=");
-                                if (anyAsync)
+                                if (implementsAsyncContainer)
                                     methodSource.Append("async");
                                 methodSource.Append("() => {");
-                                GenerateDisposeCode(methodSource, orderOfCreation, anyAsync, instanceSource);
+                                GenerateDisposeCode(methodSource, orderOfCreation, implementsAsyncContainer, instanceSource);
                                 methodSource.Append("};");
                                 methodSource.Append("}finally{this.");
                                 methodSource.Append(lockName);
@@ -476,7 +524,7 @@ namespace StrongInject.Generator
                         file.Append(@"{");
                     }
 
-                    GenerateDisposeMethods(anySync, anyAsync, file, instanceSources, singleInstanceMethods);
+                    GenerateDisposeMethods(implementsSyncContainer, implementsAsyncContainer, file, containerScope, singleInstanceMethods);
 
                     file.Append(containerMembersSource);
 
@@ -493,12 +541,12 @@ namespace StrongInject.Generator
             }
         }
 
-        private static void GenerateDisposeMethods(bool anySync, bool anyAsync, StringBuilder file, IReadOnlyDictionary<ITypeSymbol, InstanceSource>? sources, IReadOnlyDictionary<InstanceSource, (string name, bool isAsync, string disposeFieldName, string lockName)>? singleInstanceMethods)
+        private static void GenerateDisposeMethods(bool anySync, bool anyAsync, StringBuilder file, InstanceSourcesScope? containerScope, IReadOnlyDictionary<InstanceSource, (string name, bool isAsync, string disposeFieldName, string lockName)>? singleInstanceMethods)
         {
             file.Append(@"private int _disposed = 0; private bool Disposed => _disposed != 0;");
             var singleInstanceMethodsDisposalOrderings = singleInstanceMethods is null
                 ? Enumerable.Empty<(string name, bool isAsync, string disposeFieldName, string lockName)>()
-                : DependencyChecker.GetPartialOrderingOfSingleInstanceDependencies(sources!, singleInstanceMethods.Keys.ToHashSet()).Select(x => singleInstanceMethods[x]);
+                : DependencyChecker.GetPartialOrderingOfSingleInstanceDependencies(containerScope!, singleInstanceMethods.Keys.ToHashSet()).Select(x => singleInstanceMethods[x]);
 
             if (anyAsync)
             {
@@ -556,7 +604,7 @@ if (disposed != 0) return;");
             return stringBuilder.ToString();
         }
 
-        private static Dictionary<ITypeSymbol, InstanceSource> GatherInstanceSources(INamedTypeSymbol? instanceProviderInterface, INamedTypeSymbol? asyncInstanceProviderInterface, INamedTypeSymbol module, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Action<Diagnostic> reportDiagnostic, CancellationToken cancellationToken)
+        private static InstanceSourcesScope CreateContainerScope(INamedTypeSymbol? instanceProviderInterface, INamedTypeSymbol? asyncInstanceProviderInterface, INamedTypeSymbol module, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Action<Diagnostic> reportDiagnostic, CancellationToken cancellationToken)
         {
             var instanceSources = registrations.ToDictionary(x => x.Key, x => x.Value);
             var instanceProviders = new Dictionary<ITypeSymbol, InstanceProvider>();
@@ -582,7 +630,7 @@ if (disposed != 0) return;");
                     instanceSources[providedType] = instanceProvider;
                 }
             }
-            return instanceSources;
+            return new(instanceSources);
         }
 
         private static Diagnostic DuplicateInstanceProviders(IFieldSymbol fieldForLocation, IFieldSymbol firstField, IFieldSymbol secondField, ITypeSymbol providedType, CancellationToken cancellationToken)
@@ -635,6 +683,8 @@ if (disposed != 0) return;");
                     (Registration rX, Registration rY) => rX.scope == rY.scope && rX.type.Equals(rY.type, SymbolEqualityComparer.Default),
                     (FactoryRegistration fX, FactoryRegistration fY) => fX.scope == fY.scope && fX.factoryType.Equals(fY.factoryType, SymbolEqualityComparer.Default),
                     (InstanceProvider iX, InstanceProvider iY) => iX.providedType.Equals(iY.providedType, SymbolEqualityComparer.Default),
+                    (DelegateSource dX, DelegateSource dY) => dX.delegateType.Equals(dY.delegateType, SymbolEqualityComparer.Default),
+                    (DelegateParameter dX, DelegateParameter dY) => dX.parameter.Equals(dY.parameter, SymbolEqualityComparer.Default),
                     _ => false,
                 };
             }
@@ -645,9 +695,11 @@ if (disposed != 0) return;");
                 {
                     null => 0,
                     { scope: Scope.InstancePerDependency } => new Random().Next(),
-                    Registration r => r.scope.GetHashCode() * 17 + r.type.GetHashCode(),
-                    InstanceProvider i => i.instanceProviderField.GetHashCode(),
+                    Registration r => 5 + r.scope.GetHashCode() * 17 + r.type.GetHashCode(),
+                    InstanceProvider i => 7 + i.instanceProviderField.GetHashCode(),
                     FactoryRegistration f => 13 + f.scope.GetHashCode() * 17 + f.factoryType.GetHashCode(),
+                    DelegateSource d => 17 + d.delegateType.GetHashCode(),
+                    DelegateParameter dp => 19 + dp.parameter.GetHashCode(),
                     _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };
             }

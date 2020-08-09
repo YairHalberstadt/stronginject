@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace StrongInject.Generator
 {
@@ -17,8 +18,15 @@ namespace StrongInject.Generator
         IFieldSymbol instanceProviderField,
         INamedTypeSymbol castTo,
         bool isAsync) : InstanceSource(Scope.InstancePerResolution, isAsync) { }
-    internal record FactoryRegistration(ITypeSymbol factoryType,
+    internal record FactoryRegistration(
+        ITypeSymbol factoryType,
         ITypeSymbol factoryOf,
         Scope scope,
         bool isAsync) : InstanceSource(scope, isAsync) { }
+    internal record DelegateSource(
+        ITypeSymbol delegateType,
+        ITypeSymbol returnType,
+        ImmutableArray<IParameterSymbol> parameters) : InstanceSource(Scope.InstancePerResolution, isAsync: false)
+    { }
+    internal record DelegateParameter(IParameterSymbol parameter, string name) : InstanceSource(Scope.InstancePerResolution, isAsync: false) { }
 }

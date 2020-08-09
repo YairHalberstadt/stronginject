@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
-using StrongInject;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -1871,6 +1870,16 @@ partial class Container
         var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
         if (disposed != 0)
             return;
+        await this._lock3.WaitAsync();
+        try
+        {
+            await (this._disposeAction3?.Invoke() ?? default);
+        }
+        finally
+        {
+            this._lock3.Release();
+        }
+
         await this._lock0.WaitAsync();
         try
         {
@@ -1899,16 +1908,6 @@ partial class Container
         finally
         {
             this._lock2.Release();
-        }
-
-        await this._lock3.WaitAsync();
-        try
-        {
-            await (this._disposeAction3?.Invoke() ?? default);
-        }
-        finally
-        {
-            this._lock3.Release();
         }
     }
 
@@ -3281,6 +3280,1083 @@ partial class Container
         }
 
         return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveFuncWithoutParameters()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IAsyncContainer<Func<A>>
+{
+}
+
+public class A 
+{
+    public A(B b){}
+}
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.RunAsync<TResult, TParam>(global::System.Func<global::System.Func<global::A>, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+        global::System.Func<global::A> _0 = () =>
+        {
+            var _1 = new global::B();
+            var _0 = new global::A((global::B)_1);
+            disposeActions1_0.Add(async () =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = await func((global::System.Func<global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                await disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveFuncWithParametersWhereParameterTypeIsRegistered()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<Func<B, A>>
+{
+}
+
+public class A 
+{
+    public A(B b){}
+}
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::B, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::B, global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveFuncWithParametersWhereParameterTypeIsNotRegistered()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<Func<B, A>>
+{
+}
+
+public class A 
+{
+    public A(B b){}
+}
+public class B {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::B, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::B, global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveFuncUsedAsParameter()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A 
+{
+    public A(Func<int, string, B> b){}
+}
+public class B { public B(int i, string s, int i1){} }
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::System.String, global::B> _1 = (param0_0, param0_1) =>
+        {
+            var _0 = new global::B(param0_0, param0_1, param0_0);
+            disposeActions1_1.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        var _0 = new global::A(_1);
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_1)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveFuncUsedInsideFuncResolution()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<Func<int, A>>
+{
+}
+
+public class A 
+{
+    public A(int a, Func<string, B> func){}
+}
+public class B { public B(int i, string s){} }
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::System.Int32, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::A> _0 = (param0_0) =>
+        {
+            var disposeActions2_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::System.String, global::B> _1 = (param1_0) =>
+            {
+                var _0 = new global::B(param0_0, param1_0);
+                disposeActions2_1.Add(() =>
+                {
+                }
+
+                );
+                return _0;
+            }
+
+            ;
+            var _0 = new global::A(param0_0, _1);
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_1)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::System.Int32, global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveFuncOfFuncOfFunc()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<Func<bool, Func<string, Func<int, A>>>>
+{
+}
+
+public class A 
+{
+    public A(int a, string b, bool c){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0 = (param0_0) =>
+        {
+            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _0 = (param1_0) =>
+            {
+                var disposeActions3_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+                global::System.Func<global::System.Int32, global::A> _0 = (param2_0) =>
+                {
+                    var _0 = new global::A(param2_0, param1_0, param0_0);
+                    disposeActions3_0.Add(() =>
+                    {
+                    }
+
+                    );
+                    return _0;
+                }
+
+                ;
+                disposeActions2_0.Add(() =>
+                {
+                    foreach (var disposeAction in disposeActions3_0)
+                        disposeAction();
+                }
+
+                );
+                return _0;
+            }
+
+            ;
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_0)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void DisposesOfFuncDependenciesButNotParameters()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(C))]
+public partial class Container : IContainer<Func<B, A>>
+{
+}
+
+public class A 
+{
+    public A(B b, C c){}
+}
+public class B : IDisposable
+{
+    public void Dispose(){}
+}
+public class C : IDisposable
+{
+    public void Dispose(){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::B, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _1 = new global::C();
+            var _0 = new global::A(param0_0, (global::C)_1);
+            disposeActions1_0.Add(() =>
+            {
+                ((global::System.IDisposable)_1).Dispose();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::B, global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void WarningOnUnusedParameters1()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<Func<int, string, A>>
+{
+}
+
+public class A 
+{
+    public A(string s1, string s2){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, string, A>': Parameter 'int' of delegate 'System.Func<int, string, A>' is not used in resolution of 'A'.
+                // Container
+                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::System.String, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::System.Int32, global::System.String, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::System.String, global::A> _0 = (param0_0, param0_1) =>
+        {
+            var _0 = new global::A(param0_1, param0_1);
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::System.Int32, global::System.String, global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void WarningOnUnusedParameters2()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<Func<int, Func<int, A>>>
+{
+}
+
+public class A 
+{
+    public A(int a1, int a2){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, System.Func<int, A>>': Parameter 'int' of delegate 'System.Func<int, System.Func<int, A>>' is not used in resolution of 'System.Func<int, A>'.
+                // Container
+                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0 = (param0_0) =>
+        {
+            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::System.Int32, global::A> _0 = (param1_0) =>
+            {
+                var _0 = new global::A(param1_0, param1_0);
+                disposeActions2_0.Add(() =>
+                {
+                }
+
+                );
+                return _0;
+            }
+
+            ;
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_0)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void WarningOnSingleInstanceReturnType()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A), Scope.SingleInstance)]
+[Registration(typeof(B))]
+public partial class Container : IContainer<Func<B, A>>
+{
+}
+
+public class A 
+{
+    public A(B b){}
+}
+
+public class B
+{
+    public B(){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,22): Warning SI1103: Warning while resolving dependencies for 'System.Func<B, A>': Return type 'A' of delegate 'System.Func<B, A>' has a single instance scope and so will always have the same value.
+                // Container
+                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22),
+                // (7,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<B, A>': Parameter 'B' of delegate 'System.Func<B, A>' is not used in resolution of 'A'.
+                // Container
+                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _1 = new global::B();
+            var _0 = new global::A((global::B)_1);
+            this._singleInstanceField0 = _0;
+            this._disposeAction0 = () =>
+            {
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::B, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _0 = GetSingleInstanceField0();
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::B, global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void WarningOnDirectDelegateParameterReturnType()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+public partial class Container : IContainer<Func<A, A>>
+{
+}
+
+public class A 
+{
+    public A(){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (5,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<A, A>': Return type 'A' of delegate 'System.Func<A, A>' is provided as a parameter to the delegate and so will be returned unchanged.
+                // Container
+                new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::A, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::A, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::A, global::A> _0 = (param0_0) =>
+        {
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return param0_0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::A, global::A>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void WarningOnIndirectDelegateParameterReturnType()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+public partial class Container : IContainer<Func<A, Func<A>>>
+{
+}
+
+public class A 
+{
+    public A(){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (5,22): Warning SI1102: Warning while resolving dependencies for 'System.Func<A, System.Func<A>>': Return type 'A' of delegate 'System.Func<A>' is provided as a parameter to another delegate and so will always have the same value.
+                // Container
+                new DiagnosticResult("SI1102", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::A, global::System.Func<global::A>>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::A, global::System.Func<global::A>>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::A, global::System.Func<global::A>> _0 = (param0_0) =>
+        {
+            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::A> _0 = () =>
+            {
+                disposeActions2_0.Add(() =>
+                {
+                }
+
+                );
+                return param0_0;
+            }
+
+            ;
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_0)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::A, global::System.Func<global::A>>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorOnMultipleParametersWithSameType()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<Func<int, int, A>>
+{
+}
+
+public class A 
+{
+    public A(int a){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0104: Error while resolving dependencies for 'System.Func<int, int, A>': delegate 'System.Func<int, int, A>' has multiple parameters of type 'int'.
+                // Container
+                new DiagnosticResult("SI0104", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22),
+                // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, int, A>': Parameter 'int' of delegate 'System.Func<int, int, A>' is not used in resolution of 'A'.
+                // Container
+                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::System.Int32, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::System.Int32, global::System.Int32, global::A>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorOnRecursiveFuncCall()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A 
+{
+    public A(Func<A> a){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
+                // Container
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfSyncFuncRequiresAsyncResolution()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<Func<A>>
+{
+}
+
+public class A : IRequiresAsyncInitialization
+{
+    public A(){}
+    public ValueTask InitializeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,22): Error SI0103: Error while resolving dependencies for 'System.Func<A>': 'A' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.RunAsync<TResult, TParam>(global::System.Func<global::System.Func<global::A>, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
     }
 }");
         }

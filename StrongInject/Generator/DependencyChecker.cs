@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -9,16 +8,22 @@ namespace StrongInject.Generator
 {
     internal static class DependencyChecker
     {
-        public static bool HasCircularOrMissingDependencies(ITypeSymbol target, bool isAsync, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, Action<Diagnostic> reportDiagnostic, Location location)
+        public static bool HasCircularOrMissingDependencies(ITypeSymbol target, bool isAsync, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
         {
-            var visited = new HashSet<ITypeSymbol>();
             var currentlyVisiting = new HashSet<ITypeSymbol>();
-            return Visit(target);
+            var visited = new HashSet<ITypeSymbol>();
+            return Visit(
+                target,
+                containerScope,
+                usedParams: null,
+                isScopeAsync: isAsync);
 
             // returns true if it has errors
-            bool Visit(ITypeSymbol node)
+            bool Visit(ITypeSymbol node, InstanceSourcesScope instanceSourcesScope, HashSet<IParameterSymbol>? usedParams, bool isScopeAsync)
             {
-                if (visited.Contains(node))
+                var outerIsContainerScope = ReferenceEquals(instanceSourcesScope, containerScope);
+                var innerIsContainerScope = outerIsContainerScope;
+                if (outerIsContainerScope && visited.Contains(node))
                     return false;
 
                 if (!currentlyVisiting.Add(node))
@@ -28,30 +33,106 @@ namespace StrongInject.Generator
                 }
 
                 var result = false;
-                if (!registrations.TryGetValue(node, out var instanceSource))
+                if (!instanceSourcesScope.TryGetSource(node, out var instanceSource))
                 {
                     reportDiagnostic(NoSourceForType(location, target, node));
                     result = true;
                 }
-                else if (instanceSource.isAsync && !isAsync)
+                else
                 {
-                    reportDiagnostic(RequiresAsyncResolution(location, target, node));
-                    result = true;
-                }
-                else if (instanceSource is Registration { constructor: { Parameters: var parameters } })
-                {
-                    foreach (var param in parameters)
+                    instanceSourcesScope = instanceSourcesScope.Enter(instanceSource);
+                    innerIsContainerScope = ReferenceEquals(instanceSourcesScope, containerScope);
+                    if (innerIsContainerScope && visited.Contains(node))
+                        return false;
+
+                    switch (instanceSource)
                     {
-                        result |= Visit(param.Type);
+                        case DelegateSource(var delegateType, var returnType, var delegateParameters) delegateSource:
+                            {
+                                foreach (var paramsWithType in delegateParameters.GroupBy(x => x.Type))
+                                {
+                                    if (paramsWithType.Count() > 1)
+                                    {
+                                        reportDiagnostic(DelegateHasMultipleParametersOfTheSameType(location, target, node, paramsWithType.Key));
+                                        result = true;
+                                    }
+                                }
+
+                                if (instanceSourcesScope.TryGetSource(returnType, out var returnTypeSource))
+                                {
+                                    if (returnTypeSource is DelegateParameter { parameter: var param })
+                                    {
+                                        if (delegateParameters.Contains(param))
+                                        {
+                                            reportDiagnostic(DelegateReturnTypeProvidedBySameDelegate(location, target, node, returnType));
+                                        }
+                                        else
+                                        {
+                                            reportDiagnostic(DelegateReturnTypeProvidedByAnotherDelegate(location, target, node, returnType));
+                                        }
+                                    }
+                                    else if (returnTypeSource.scope == Scope.SingleInstance)
+                                    {
+                                        reportDiagnostic(DelegateReturnTypeIsSingleInstance(location, target, node, returnType));
+                                    }
+                                }
+
+                                var usedByDelegateParams = usedParams ?? new();
+
+                                result |= Visit(
+                                    returnType,
+                                    instanceSourcesScope,
+                                    usedParams: usedByDelegateParams,
+                                    isScopeAsync: false);
+
+                                foreach (var delegateParam in delegateParameters)
+                                {
+                                    if (!usedByDelegateParams.Contains(delegateParam))
+                                    {
+                                        reportDiagnostic(DelegateParameterNotUsed(location, target, node, delegateParam.Type, returnType));
+                                    }
+                                }
+
+                                break;
+                            }
+                        case Registration { constructor: { Parameters: var parameters } }:
+                            {
+                                foreach (var param in parameters)
+                                {
+                                    result |= Visit(
+                                        param.Type,
+                                        instanceSourcesScope,
+                                        usedParams,
+                                        isScopeAsync);
+                                }
+
+                                break;
+                            }
+
+                        case FactoryRegistration { factoryType: var factoryType }:
+                            result = Visit(
+                                factoryType,
+                                instanceSourcesScope,
+                                usedParams,
+                                isScopeAsync);
+                            break;
+                        case DelegateParameter { parameter: var parameter }:
+                            usedParams!.Add(parameter);
+                            break;
                     }
-                }
-                else if (instanceSource is FactoryRegistration { factoryType: var factoryType })
-                {
-                    result = Visit(factoryType);
+
+                    if (instanceSource.isAsync && !isScopeAsync)
+                    {
+                        reportDiagnostic(RequiresAsyncResolution(location, target, node));
+                        result = true;
+                    }
                 }
 
                 currentlyVisiting.Remove(node);
-                visited.Add(node);
+                if (outerIsContainerScope || innerIsContainerScope)
+                {
+                    visited.Add(node);
+                }
                 return result;
             }
         }
@@ -101,17 +182,97 @@ namespace StrongInject.Generator
                     type);
         }
 
+        private static Diagnostic DelegateHasMultipleParametersOfTheSameType(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol parameterType)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI0104",
+                        "Delegate has multiple parameters of same type",
+                        "Error while resolving dependencies for '{0}': delegate '{1}' has multiple parameters of type '{2}'.",
+                        "StrongInject",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    delegateType,
+                    parameterType);
+        }
+
+        private static Diagnostic DelegateParameterNotUsed(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol parameterType, ITypeSymbol delegateReturnType)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI1101",
+                        "Parameter of delegate is not used in resolution",
+                        "Warning while resolving dependencies for '{0}': Parameter '{1}' of delegate '{2}' is not used in resolution of '{3}'.",
+                        "StrongInject",
+                        DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    parameterType,
+                    delegateType,
+                    delegateReturnType);
+        }
+
+        private static Diagnostic DelegateReturnTypeProvidedByAnotherDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI1102",
+                        "Return type of delegate is provided as a parameter to another delegate and so will always have the same value",
+                        "Warning while resolving dependencies for '{0}': Return type '{1}' of delegate '{2}' is provided as a parameter to another delegate and so will always have the same value.",
+                        "StrongInject",
+                        DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    delegateReturnType,
+                    delegateType);
+        }
+
+        private static Diagnostic DelegateReturnTypeIsSingleInstance(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI1103",
+                        "Return type of delegate has a single instance scope and so will always have the same value",
+                        "Warning while resolving dependencies for '{0}': Return type '{1}' of delegate '{2}' has a single instance scope and so will always have the same value.",
+                        "StrongInject",
+                        DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    delegateReturnType,
+                    delegateType);
+        }
+
+        private static Diagnostic DelegateReturnTypeProvidedBySameDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI1104",
+                        "Return type of delegate is provided as a parameter to the delegate and so will be returned unchanged",
+                        "Warning while resolving dependencies for '{0}': Return type '{1}' of delegate '{2}' is provided as a parameter to the delegate and so will be returned unchanged.",
+                        "StrongInject",
+                        DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    delegateReturnType,
+                    delegateType);
+        }
+
         /// <summary>
         /// Only call if <see cref="HasCircularOrMissingDependencies"/> returns true,
         /// as this does no validation, and could throw or stack overflow otherwise.
         /// </summary>
-        internal static bool RequiresAsync(InstanceSource source, IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations)
+        internal static bool RequiresAsync(InstanceSource source, InstanceSourcesScope containerScope)
         {
-            var visited = new HashSet<InstanceSource>(ReferenceEqualityComparer.Instance);
+            var visited = new HashSet<InstanceSource>();
+            return Visit(source, containerScope);
 
-            return Visit(source);
-
-            bool Visit(InstanceSource source)
+            bool Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope)
             {
                 if (visited.Contains(source))
                     return false;
@@ -121,23 +282,33 @@ namespace StrongInject.Generator
                     return true;
                 }
 
+                var innerScope = instanceSourcesScope.Enter(source);
+
                 if (source is Registration { constructor: { Parameters: var parameters } })
                 {
                     foreach (var param in parameters)
                     {
-                        var paramSource = registrations[param.Type];
-                        if (Visit(paramSource))
+                        var paramSource = innerScope[param.Type];
+                        if (Visit(paramSource, innerScope))
                             return true;
                     }
                 }
                 else if (source is FactoryRegistration { factoryType: var factoryType })
                 {
-                    var factorySource = registrations[factoryType];
-                    if (Visit(factorySource))
+                    var factorySource = innerScope[factoryType];
+                    if (Visit(factorySource, innerScope))
+                        return true;
+                }
+                else if (source is DelegateSource { returnType: var returnType })
+                {
+                    var returnTypeSource = innerScope[returnType];
+                    if (Visit(returnTypeSource, innerScope))
                         return true;
                 }
 
-                visited.Add(source);
+                if (ReferenceEquals(instanceSourcesScope, containerScope) || ReferenceEquals(innerScope, containerScope))
+                    visited.Add(source);
+
                 return false;
             }
         }
@@ -146,47 +317,61 @@ namespace StrongInject.Generator
         /// Only call if <see cref="HasCircularOrMissingDependencies"/> returns true,
         /// as this does no validation, and could throw or stack overflow otherwise.
         /// </summary>
-        internal static IEnumerable<InstanceSource> GetPartialOrderingOfSingleInstanceDependencies(IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations, HashSet<InstanceSource> used)
+        internal static IEnumerable<InstanceSource> GetPartialOrderingOfSingleInstanceDependencies(InstanceSourcesScope containerScope, HashSet<InstanceSource> used)
         {
+            var visited = new HashSet<InstanceSource>();
             var results = Enumerable.Empty<InstanceSource>();
-            var visited = new HashSet<InstanceSource>(ReferenceEqualityComparer.Instance);
+            var added = new HashSet<InstanceSource>();
 
-            foreach (var (type, source) in registrations)
+            foreach (var source in used)
             {
-                if (!used.Contains(source))
-                    continue;
                 List<InstanceSource>? thisResults = null;
-                Visit(source, ref thisResults);
+                Visit(source, containerScope, ref thisResults);
                 results = thisResults?.Concat(results) ?? results;
             }
 
             return results;
 
-            void Visit(InstanceSource source, ref List<InstanceSource>? results)
+            void Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope, ref List<InstanceSource>? results)
             {
+                if (source.scope == Scope.SingleInstance)
+                {
+                    if (added.Add(source))
+                    {
+                        (results ??= new()).Add(source);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
                 if (visited.Contains(source))
                     return;
 
-                if (source.scope == Scope.SingleInstance)
-                {
-                    (results ??= new()).Add(source);
-                }
+                var innerScope = instanceSourcesScope.Enter(source);
 
                 if (source is Registration { constructor: { Parameters: var parameters } })
                 {
                     foreach (var param in parameters)
                     {
-                        var paramSource = registrations[param.Type];
-                        Visit(paramSource, ref results);
+                        var paramSource = innerScope[param.Type];
+                        Visit(paramSource, innerScope, ref results);
                     }
                 }
                 else if (source is FactoryRegistration { factoryType: var factoryType })
                 {
-                    var factorySource = registrations[factoryType];
-                    Visit(factorySource, ref results);
+                    var factorySource = innerScope[factoryType];
+                    Visit(factorySource, innerScope, ref results);
+                }
+                else if (source is DelegateSource { returnType: var returnType })
+                {
+                    var returnTypeSource = innerScope[returnType];
+                    Visit(returnTypeSource, innerScope, ref results);
                 }
 
-                visited.Add(source);
+                if (ReferenceEquals(instanceSourcesScope, containerScope) || ReferenceEquals(innerScope, containerScope))
+                    visited.Add(source);
             }
         }
 
