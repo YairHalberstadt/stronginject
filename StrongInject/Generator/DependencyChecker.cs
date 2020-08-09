@@ -87,6 +87,11 @@ namespace StrongInject.Generator
 
                                 foreach (var delegateParam in delegateParameters)
                                 {
+                                    if (delegateParam.RefKind != RefKind.None)
+                                    {
+                                        reportDiagnostic(DelegateParameterIsPassedByRef(location, target, node, delegateParam));
+                                        result = true;
+                                    }
                                     if (!usedByDelegateParams.Contains(delegateParam))
                                     {
                                         reportDiagnostic(DelegateParameterNotUsed(location, target, node, delegateParam.Type, returnType));
@@ -196,6 +201,23 @@ namespace StrongInject.Generator
                     target,
                     delegateType,
                     parameterType);
+        }
+
+        private static Diagnostic DelegateParameterIsPassedByRef(Location location, ITypeSymbol target, ITypeSymbol delegateType, IParameterSymbol parameter)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI0105",
+                        "Delegate has multiple parameters of same type",
+                        "Error while resolving dependencies for '{0}': parameter '{1}' of delegate '{2}' is passed as '{3}'.",
+                        "StrongInject",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    parameter,
+                    delegateType,
+                    parameter.RefKind);
         }
 
         private static Diagnostic DelegateParameterNotUsed(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol parameterType, ITypeSymbol delegateReturnType)
