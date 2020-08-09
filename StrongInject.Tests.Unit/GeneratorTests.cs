@@ -4739,5 +4739,187 @@ partial class Container
     }
 }");
         }
+
+        [Fact]
+        public void PreferInstanceProviderToProvideDelegate()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<Func<A>>
+{
+    private IInstanceProvider<Func<A>> _instanceProvider;
+}
+
+public class A
+{
+    public A(){}
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify(
+                // (8,40): Warning CS0649: Field 'Container._instanceProvider' is never assigned to, and will always have its default value null
+                // _instanceProvider
+                new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 40));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.RunAsync<TResult, TParam>(global::System.Func<global::System.Func<global::A>, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = ((global::StrongInject.IInstanceProvider<global::System.Func<global::A>>)this._instanceProvider).Get();
+        TResult result;
+        try
+        {
+            result = await func((global::System.Func<global::A>)_0, param);
+        }
+        finally
+        {
+            ((global::StrongInject.IInstanceProvider<global::System.Func<global::A>>)this._instanceProvider).Release(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void PreferFactoryToProvideDelegate()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+[FactoryRegistration(typeof(B))]
+public partial class Container : IAsyncContainer<Func<A>>
+{
+}
+
+public class A
+{
+}
+public class B : IFactory<Func<A>>
+{
+    public Func<A> Create() => null;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.RunAsync<TResult, TParam>(global::System.Func<global::System.Func<global::A>, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = ((global::StrongInject.IFactory<global::System.Func<global::A>>)_1).Create();
+        TResult result;
+        try
+        {
+            result = await func((global::System.Func<global::A>)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void PreferDelegateParameterToProvideDelegate()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<Func<Func<A>, Func<A>>>
+{
+}
+
+public class A
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<System.Func<A>, System.Func<A>>': Return type 'System.Func<A>' of delegate 'System.Func<System.Func<A>, System.Func<A>>' is provided as a parameter to the delegate and so will be returned unchanged.
+                // Container
+                new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>>.RunAsync<TResult, TParam>(global::System.Func<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+        global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0 = (param0_0) =>
+        {
+            disposeActions1_0.Add(async () =>
+            {
+            }
+
+            );
+            return param0_0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = await func((global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                await disposeAction();
+        }
+
+        return result;
+    }
+}");
+        }
     }
 }
