@@ -20,6 +20,7 @@ compile time dependency injection for .Net
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
   - [Disposal](#disposal)
+  - [Thread Safety](#thread-safety)
 - [Contributing](#contributing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -368,6 +369,19 @@ In `RunAsync` if the types implement `IAsyncDisposable` it will be preferred ove
 In `Run`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.
 
 Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.Release(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
+
+Single Instance dependencies and their dependencies are disposed when the container is disposed. If the container implements `IAsyncDisposable` it must be disposed asynchronously even if it also implements `IDisposable`.
+
+Note that dependencies may not be disposed in the following circumstances:
+1. Resolution throws
+2. Disposal of other dependencies throws.
+
+### Thread Safety
+
+StrongInject provides the following thread safety guarantees:
+1. Resolution is thread safe, so long as it doesn't call back into the container recursively (e.g. a factory calling `container.RunAsync`).
+2. If the container is disposed during resolution, then either dependencies will be created by the resolution, and will then be disposed, or resolution will throw and no dependencies will be created. Dependencies will not be created and then not disposed.
+3. A SingleInstance dependency will never be created more than once.
 
 ## Contributing
 
