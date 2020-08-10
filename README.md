@@ -17,6 +17,7 @@ compile time dependency injection for .Net
     - [Modules](#modules)
     - [Factory Registrations](#factory-registrations)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+  - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
   - [Disposal](#disposal)
@@ -270,6 +271,81 @@ public partial class Container : IContainer<IInterface>
 ```
 
 `Get` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to returna singleton or not.
+
+### Delegate Support
+
+StrongInject can automatically resolve non-void reurning delegates even if they're not registered. It tries to resolve the return type. The delegate parameters can be used in the resolution, and will override any existing resolutions.
+
+There are two reasons you might want to use delegate resolution:
+
+1. To return a new instance of the return type on every call:
+
+```csharp
+using System;
+using StrongInject;
+
+public class A
+{
+  public A(Func<B> fB) => Console.WriteLine(fB() != fB()); //prints true
+}
+
+public class B{}
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public class Container : IContainer<A> {}
+```
+
+2. To provide parameters which are not available at resolution time:
+
+```csharp
+using System;
+using StrongInject;
+
+public class Server
+{
+  private Handler _frobbingHandler;
+  private Handler _nonFrobbingHandler;
+  public Server(Func<bool, Handler> handlerFunc) => (_frobbingHandler, _nonFrobbingHandler) = (handlerFunc(true), handlerFunc(false));
+  
+  public bool HandleRequest(Request request, bool shouldFrob) => shouldFrob ? _frobbingHandler.HandleRequest(request) : _nonFrobbingHandler.HandleRequest(request);
+}
+
+public class Handler
+{
+  public Handler(bool shouldFrob) => ...
+}
+
+[Registration(typeof(Server))]
+[Registration(typeof(Handler))]
+public class Container : IContainer<Server> {}
+```
+
+If the return type can only be resolved asynchronously (see [below](#async-support)), the delegate must return `Task<T>` or `ValueTask<T>`. e.g.
+
+```csharp
+using System;
+using StrongInject;
+using System.Threading.Tasks;
+
+public class Server
+{
+  private Func<bool, Task<Handler>> _handlerFunc;
+  public Server(Func<bool, Task<Handler>> handlerFunc) => _handlerFunc = handlerFunc;
+  
+  public async Task<bool> HandleRequest(Request request, bool shouldFrob) => (await _handlerFunc(shouldFrob)).HandleRequest(request);
+}
+
+public class Handler : IRequiresAsyncInitialization
+{
+  public Handler(bool shouldFrob) => ...
+  public async ValueTask ResolveAsync() => ...
+}
+
+[Registration(typeof(Server))]
+[Registration(typeof(Handler))]
+public class Container : IContainer<Server> {}
+```
 
 ### Post Constructor Initialization
 

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace StrongInject.Tests.Integration
 {
-    public partial class TestDisposalAfterUsageScope
+    public partial class TestDisposalAfterUsage
     {
         public record A(B b, C c) : IDisposable
         {
@@ -51,7 +51,7 @@ namespace StrongInject.Tests.Integration
         [Registration(typeof(C), Scope.InstancePerResolution)]
         [Registration(typeof(B))]
         [Registration(typeof(A))]
-        public partial class Container1 : IAsyncContainer<A>
+        public partial class Container1 : IAsyncContainer<A>, IAsyncContainer<Func<A>>
         {
         }
 
@@ -59,13 +59,40 @@ namespace StrongInject.Tests.Integration
         public async Task TestCalledForInstancePerDependencyAndResolution()
         {
             var container = new Container1();
-            var a = await container.RunAsync(x => x);
+            var a = await container.RunAsync<A, A>(x => x);
             Assert.True(a.Disposed);
             Assert.True(a.b.Disposed);
             Assert.True(a.c.AsyncDisposed);
             Assert.False(a.c.Disposed);
             Assert.True(a.b.d.AsyncDisposed);
             Assert.True(a.c.d.AsyncDisposed);
+        }
+
+        [Fact]
+        public async Task TestCalledForInstancePerDependencyAndResolutionOnAllFuncs()
+        {
+            var container = new Container1();
+            var (a1, a2) = await container.RunAsync<Func<A>, (A, A)>(aF => {
+                var a1 = aF();
+                var a2 = aF();
+                Assert.False(a1.Disposed);
+                Assert.False(a2.Disposed);
+                return (a1, a2);
+            });
+
+            Assert.True(a1.Disposed);
+            Assert.True(a1.b.Disposed);
+            Assert.True(a1.c.AsyncDisposed);
+            Assert.False(a1.c.Disposed);
+            Assert.True(a1.b.d.AsyncDisposed);
+            Assert.True(a1.c.d.AsyncDisposed);
+
+            Assert.True(a2.Disposed);
+            Assert.True(a2.b.Disposed);
+            Assert.True(a2.c.AsyncDisposed);
+            Assert.False(a2.c.Disposed);
+            Assert.True(a2.b.d.AsyncDisposed);
+            Assert.True(a2.c.d.AsyncDisposed);
         }
 
         [Registration(typeof(D))]
