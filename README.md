@@ -336,7 +336,7 @@ public class Server
   public async Task<bool> HandleRequest(Request request, bool shouldFrob) => (await _handlerFunc(shouldFrob)).HandleRequest(request);
 }
 
-public class Handler : IRequiresAsyncResolution
+public class Handler : IRequiresAsyncInitialization
 {
   public Handler(bool shouldFrob) => ...
   public async ValueTask ResolveAsync() => ...
