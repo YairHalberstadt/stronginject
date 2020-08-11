@@ -49,7 +49,7 @@ namespace StrongInject.Generator.Tests.Unit
         protected Compilation RunGenerator(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles, params MetadataReference[] metadataReferences)
         {
             var compilation = CreateCompilation(source, metadataReferences);
-            CreateDriver(compilation, new ContainerSourceGenerator()).RunFullGeneration(compilation, out var updatedCompilation, out diagnostics);
+            CreateDriver(compilation, new SourceGenerator()).RunFullGeneration(compilation, out var updatedCompilation, out diagnostics);
             var generatedTrees = updatedCompilation.SyntaxTrees.Where(x => !compilation.SyntaxTrees.Any(y => y.Equals(x))).ToImmutableArray();
             foreach (var generated in generatedTrees)
             {
@@ -62,7 +62,7 @@ namespace StrongInject.Generator.Tests.Unit
 
         protected static Compilation RunGenerator(Compilation compilation, out ImmutableArray<Diagnostic> diagnostics)
         {
-            CreateDriver(compilation, new ContainerSourceGenerator()).RunFullGeneration(compilation, out var updatedCompilation, out diagnostics);
+            CreateDriver(compilation, new SourceGenerator()).RunFullGeneration(compilation, out var updatedCompilation, out diagnostics);
             return updatedCompilation;
         }
 
