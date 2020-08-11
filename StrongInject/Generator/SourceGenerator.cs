@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -115,43 +114,6 @@ namespace StrongInject.Generator
 
         public void Initialize(InitializationContext context)
         {
-        }
-
-        private class InstanceSourceComparer : IEqualityComparer<InstanceSource>
-        {
-            private InstanceSourceComparer() { }
-
-            public static InstanceSourceComparer Instance { get; } = new InstanceSourceComparer();
-
-            public bool Equals(InstanceSource x, InstanceSource y)
-            {
-                return (x, y) switch
-                {
-                    (null, null) => true,
-                    ({ scope: Scope.InstancePerDependency }, _) => false,
-                    (Registration rX, Registration rY) => rX.scope == rY.scope && rX.type.Equals(rY.type, SymbolEqualityComparer.Default),
-                    (FactoryRegistration fX, FactoryRegistration fY) => fX.scope == fY.scope && fX.factoryType.Equals(fY.factoryType, SymbolEqualityComparer.Default),
-                    (InstanceProvider iX, InstanceProvider iY) => iX.providedType.Equals(iY.providedType, SymbolEqualityComparer.Default),
-                    (DelegateSource dX, DelegateSource dY) => dX.delegateType.Equals(dY.delegateType, SymbolEqualityComparer.Default),
-                    (DelegateParameter dX, DelegateParameter dY) => dX.parameter.Equals(dY.parameter, SymbolEqualityComparer.Default),
-                    _ => false,
-                };
-            }
-
-            public int GetHashCode(InstanceSource obj)
-            {
-                return obj switch
-                {
-                    null => 0,
-                    { scope: Scope.InstancePerDependency } => new Random().Next(),
-                    Registration r => 5 + r.scope.GetHashCode() * 17 + r.type.GetHashCode(),
-                    InstanceProvider i => 7 + i.instanceProviderField.GetHashCode(),
-                    FactoryRegistration f => 13 + f.scope.GetHashCode() * 17 + f.factoryType.GetHashCode(),
-                    DelegateSource d => 17 + d.delegateType.GetHashCode(),
-                    DelegateParameter dp => 19 + dp.parameter.GetHashCode(),
-                    _ => throw new InvalidOperationException("This location is thought to be unreachable"),
-                };
-            }
         }
     }
 }
