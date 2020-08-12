@@ -2,6 +2,9 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 # stronginject
+
+[![Join the chat at https://gitter.im/stronginject/help](https://badges.gitter.im/stronginject/help.svg)](https://gitter.im/stronginject/help?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 compile time dependency injection for .Net
 
 ## Table Of Contents
