@@ -23,6 +23,7 @@ compile time dependency injection for .Net
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
 - [Contributing](#contributing)
+- [Need Help?](#need-help)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
