@@ -100,6 +100,8 @@ public class Program
 
 ### Registration
 
+#### Basics
+
 As you saw above, you can register a type with a container using the `RegistrationAttribute`:
 
 ```csharp
