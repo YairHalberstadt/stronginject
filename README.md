@@ -38,7 +38,10 @@ compile time dependency injection for .Net
 
 ## Requirements
 
+Source generators are currently in preview and so you will require a preview version of VS and dotnet.
+
 [Visual Studio preview version](https://visualstudio.microsoft.com/vs/preview/)
+
 [.NET 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0)
 
 ## Nuget
