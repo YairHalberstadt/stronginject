@@ -14,6 +14,7 @@ compile time dependency injection for .Net
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
   - [Registration](#registration)
+    - [Basics](#basics)
     - [Scope](#scope)
     - [Modules](#modules)
     - [Factory Registrations](#factory-registrations)
