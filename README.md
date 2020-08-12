@@ -466,3 +466,8 @@ This is currently in preview, meaning we can (and will) make API breaking change
 Similiarly please do open issues if you spot any bugs.
 
 Please feel free to work on any open issue and open a PR. Ideally open an issue before working on something, so that the effort doesn't go to waste if it's not suitable.
+
+## Need Help?
+
+I tend to hang around on gitter so feel free to chat at https://gitter.im/stronginject/community#share
+You can also [open an issue](https://github.com/YairHalberstadt/stronginject/issues/new/choose), ask on stackoverflow, or tag [me](https://twitter.com/HalberstadtYair) on twitter.
