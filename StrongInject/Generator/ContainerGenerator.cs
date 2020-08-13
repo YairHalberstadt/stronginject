@@ -12,20 +12,17 @@ namespace StrongInject.Generator
     internal class ContainerGenerator
     {
         public static string GenerateContainerImplementations(
-            Compilation compilation,
             INamedTypeSymbol container,
             IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations,
             WellKnownTypes wellKnownTypes,
             Action<Diagnostic> reportDiagnostic,
             CancellationToken cancellationToken) => new ContainerGenerator(
-                compilation,
                 container,
                 registrations,
                 wellKnownTypes,
                 reportDiagnostic,
                 cancellationToken).GenerateContainerImplementations();
 
-        private readonly Compilation _compilation;
         private readonly INamedTypeSymbol _container;
         private readonly WellKnownTypes _wellKnownTypes;
         private readonly Action<Diagnostic> _reportDiagnostic;
@@ -39,19 +36,17 @@ namespace StrongInject.Generator
         private readonly bool _implementsAsyncContainer;
 
         private ContainerGenerator(
-            Compilation compilation,
             INamedTypeSymbol container,
             IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations,
             WellKnownTypes wellKnownTypes,
             Action<Diagnostic> reportDiagnostic,
             CancellationToken cancellationToken)
         {
-            _compilation = compilation;
             _container = container;
             _wellKnownTypes = wellKnownTypes;
             _reportDiagnostic = reportDiagnostic;
             _cancellationToken = cancellationToken;
-            _containerScope ??= CreateContainerScope(registrations);
+            _containerScope ??= new(registrations, wellKnownTypes);
 
             _containerInterfaces = _container.AllInterfaces
                 .Where(x
@@ -189,6 +184,7 @@ namespace StrongInject.Generator
                 {
                     Registration { type: var t } => t,
                     FactoryRegistration { factoryOf: var t } => t,
+                    FactoryMethod { returnType: var t } => t,
                     _ => throw new InvalidOperationException(),
                 };
 
@@ -286,8 +282,8 @@ namespace StrongInject.Generator
                             methodSource.Append(variableName);
                             methodSource.Append(isAsync ? "=await((" : "=((");
                             methodSource.Append(castTo.FullName());
-                            methodSource.Append(")this.");
-                            methodSource.Append(field.Name);
+                            methodSource.Append(")");
+                            GenerateMemberAccess(methodSource, field);
                             methodSource.Append(").");
                             methodSource.Append(isAsync
                                 ? nameof(IAsyncInstanceProvider<object>.GetAsync)
@@ -320,52 +316,54 @@ namespace StrongInject.Generator
                             methodSource.Append("();");
                             break;
                         case Registration(var type, _, var scope, var requiresInitialization, var constructor, var isAsync) registration:
-                            var variableSource = new StringBuilder();
-                            variableSource.Append("var ");
-                            variableSource.Append(variableName);
-                            variableSource.Append("=new ");
-                            variableSource.Append(type.FullName());
-                            variableSource.Append("(");
-                            for (int i = 0; i < constructor.Parameters.Length; i++)
                             {
-                                if (i != 0)
+                                var variableSource = new StringBuilder();
+                                variableSource.Append("var ");
+                                variableSource.Append(variableName);
+                                variableSource.Append("=new ");
+                                variableSource.Append(type.FullName());
+                                variableSource.Append("(");
+                                for (int i = 0; i < constructor.Parameters.Length; i++)
                                 {
-                                    variableSource.Append(",");
+                                    if (i != 0)
+                                    {
+                                        variableSource.Append(",");
+                                    }
+                                    IParameterSymbol? parameter = constructor.Parameters[i];
+                                    var source = instanceSourcesScope[parameter.Type];
+                                    var variable = CreateVariableInternal(source, instanceSourcesScope);
+                                    if (source is Registration { registeredAs: var castTarget })
+                                    {
+                                        variableSource.Append("(");
+                                        variableSource.Append(castTarget.FullName());
+                                        variableSource.Append(")");
+                                        variableSource.Append(variable);
+                                    }
+                                    else
+                                    {
+                                        variableSource.Append(variable);
+                                    }
                                 }
-                                IParameterSymbol? parameter = constructor.Parameters[i];
-                                var source = instanceSourcesScope[parameter.Type];
-                                var variable = CreateVariableInternal(source, instanceSourcesScope);
-                                if (source is Registration { registeredAs: var castTarget })
-                                {
-                                    variableSource.Append("(");
-                                    variableSource.Append(castTarget.FullName());
-                                    variableSource.Append(")");
-                                    variableSource.Append(variable);
-                                }
-                                else
-                                {
-                                    variableSource.Append(variable);
-                                }
-                            }
-                            variableSource.Append(");");
-                            methodSource.Append(variableSource);
+                                variableSource.Append(");");
+                                methodSource.Append(variableSource);
 
-                            if (requiresInitialization)
-                            {
-                                methodSource.Append(isAsync ? "await ((" : "((");
-                                methodSource.Append(isAsync
-                                    ? _wellKnownTypes.iRequiresAsyncInitialization.FullName()
-                                    : _wellKnownTypes.iRequiresInitialization.FullName());
-                                methodSource.Append(")");
-                                methodSource.Append(variableName);
-                                methodSource.Append(").");
-                                methodSource.Append(isAsync
-                                    ? nameof(IRequiresAsyncInitialization.InitializeAsync)
-                                    : nameof(IRequiresInitialization.Initialize));
-                                methodSource.Append("();");
-                            }
+                                if (requiresInitialization)
+                                {
+                                    methodSource.Append(isAsync ? "await ((" : "((");
+                                    methodSource.Append(isAsync
+                                        ? _wellKnownTypes.iRequiresAsyncInitialization.FullName()
+                                        : _wellKnownTypes.iRequiresInitialization.FullName());
+                                    methodSource.Append(")");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append(").");
+                                    methodSource.Append(isAsync
+                                        ? nameof(IRequiresAsyncInitialization.InitializeAsync)
+                                        : nameof(IRequiresInitialization.Initialize));
+                                    methodSource.Append("();");
+                                }
 
-                            break;
+                                break;
+                            }
                         case DelegateSource(var delegateType, var returnType, var parameters, var isAsync):
                             {
                                 disposeActionsName = "disposeActions" + instanceSourcesScope.Depth + variableName;
@@ -403,12 +401,61 @@ namespace StrongInject.Generator
                                 methodSource.Append(";};");
                                 break;
                             }
+                        case FactoryMethod(var method, var returnType, var _, var isAsync) registration:
+                            {
+                                var variableSource = new StringBuilder();
+                                variableSource.Append("var ");
+                                variableSource.Append(variableName);
+                                variableSource.Append(isAsync ? "=await " : "=");
+                                GenerateMemberAccess(variableSource, method);
+                                variableSource.Append("(");
+                                for (int i = 0; i < method.Parameters.Length; i++)
+                                {
+                                    if (i != 0)
+                                    {
+                                        variableSource.Append(",");
+                                    }
+                                    IParameterSymbol? parameter = method.Parameters[i];
+                                    var source = instanceSourcesScope[parameter.Type];
+                                    var variable = CreateVariableInternal(source, instanceSourcesScope);
+                                    if (source is Registration { registeredAs: var castTarget })
+                                    {
+                                        variableSource.Append("(");
+                                        variableSource.Append(castTarget.FullName());
+                                        variableSource.Append(")");
+                                        variableSource.Append(variable);
+                                    }
+                                    else
+                                    {
+                                        variableSource.Append(variable);
+                                    }
+                                }
+                                variableSource.Append(");");
+                                methodSource.Append(variableSource);
+
+                                break;
+                            }
                     }
 
                 }
                 orderOfCreationTemp.Add((variableName, disposeActionsName, target));
                 return variableName;
             }
+        }
+
+        private static void GenerateMemberAccess(StringBuilder methodSource, ISymbol member)
+        {
+            if (member.IsStatic)
+            {
+                methodSource.Append(member.ContainingType.FullName());
+            }
+            else
+            {
+                methodSource.Append("this");
+            }
+
+            methodSource.Append(".");
+            methodSource.Append(member.Name);
         }
 
         private void GenerateDisposeCode(
@@ -425,6 +472,7 @@ namespace StrongInject.Generator
                     case { scope: Scope.SingleInstance } when !source.Equals(singleInstanceTarget):
                         break;
                     case FactoryRegistration:
+                    case FactoryMethod:
                         if (isAsync)
                         {
                             methodSource.Append("await ");
@@ -445,8 +493,8 @@ namespace StrongInject.Generator
                         }
                         methodSource.Append("((");
                         methodSource.Append(cast.FullName());
-                        methodSource.Append(")this.");
-                        methodSource.Append(field.Name);
+                        methodSource.Append(")");
+                        GenerateMemberAccess(methodSource, field);
                         methodSource.Append(").");
                         methodSource.Append(isAsyncInstanceProvider
                             ? nameof(IAsyncInstanceProvider<object>.ReleaseAsync)
@@ -550,51 +598,6 @@ if (disposed != 0) return;");
             methodSource.Append("));");
         }
 
-        private InstanceSourcesScope CreateContainerScope(IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations)
-        {
-            var instanceSources = registrations.ToDictionary(x => x.Key, x => x.Value);
-            var instanceProviders = new Dictionary<ITypeSymbol, InstanceProvider>();
-            foreach (var field in _container.GetMembers()
-                .OfType<IFieldSymbol>()
-                .Where(x => !x.IsStatic))
-            {
-                foreach (var constructedInstanceProviderInterface in field.Type.AllInterfacesAndSelf().Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.iInstanceProvider, SymbolEqualityComparer.Default)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default)))
-                {
-                    var providedType = constructedInstanceProviderInterface.TypeArguments[0];
-                    if (instanceProviders.TryGetValue(providedType, out var existing))
-                    {
-                        var exisingField = existing.instanceProviderField;
-                        _reportDiagnostic(DuplicateInstanceProviders(existing.instanceProviderField, existing.instanceProviderField, field, providedType, _cancellationToken));
-                        _reportDiagnostic(DuplicateInstanceProviders(field, existing.instanceProviderField, field, providedType, _cancellationToken));
-                        continue;
-                    }
-                    var isAsync = constructedInstanceProviderInterface.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default);
-                    var instanceProvider = new InstanceProvider(providedType, field, constructedInstanceProviderInterface, isAsync);
-                    instanceProviders[providedType] = instanceProvider;
-                    instanceSources[providedType] = instanceProvider;
-                }
-            }
-            return new(instanceSources, _compilation);
-        }
-
-        private static Diagnostic DuplicateInstanceProviders(IFieldSymbol fieldForLocation, IFieldSymbol firstField, IFieldSymbol secondField, ITypeSymbol providedType, CancellationToken cancellationToken)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0301",
-                    "Duplicate instance providers for type",
-                    "Both fields '{0}' and '{1}' are instance providers for '{2}'",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                fieldForLocation.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                firstField,
-                secondField,
-                providedType);
-        }
-
         private static Diagnostic WarnIAsyncDisposableInSynchronousResolution(ITypeSymbol type, INamedTypeSymbol container, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(
@@ -626,6 +629,7 @@ if (disposed != 0) return;");
                     (InstanceProvider iX, InstanceProvider iY) => iX.providedType.Equals(iY.providedType, SymbolEqualityComparer.Default),
                     (DelegateSource dX, DelegateSource dY) => dX.delegateType.Equals(dY.delegateType, SymbolEqualityComparer.Default),
                     (DelegateParameter dX, DelegateParameter dY) => dX.parameter.Equals(dY.parameter, SymbolEqualityComparer.Default),
+                    (FactoryMethod mX, FactoryMethod mY) => mX.method.Equals(mY.method, SymbolEqualityComparer.Default),
                     _ => false,
                 };
             }
@@ -641,6 +645,7 @@ if (disposed != 0) return;");
                     FactoryRegistration f => 13 + f.scope.GetHashCode() * 17 + f.factoryType.GetHashCode(),
                     DelegateSource d => 17 + d.delegateType.GetHashCode(),
                     DelegateParameter dp => 19 + dp.parameter.GetHashCode(),
+                    FactoryMethod m => 23 + m.method.GetHashCode(),
                     _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };
             }

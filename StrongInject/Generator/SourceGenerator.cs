@@ -46,7 +46,7 @@ namespace StrongInject.Generator
                 return;
             }
 
-            var registrationCalculator = new RegistrationCalculator(compilation, reportDiagnostic, cancellationToken);
+            var registrationCalculator = new RegistrationCalculator(compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
 
             foreach (var syntaxTree in context.Compilation.SyntaxTrees)
             {
@@ -69,20 +69,19 @@ namespace StrongInject.Generator
                             x.AttributeClass is { } attribute &&
                             (attribute.Equals(wellKnownTypes.registrationAttribute, SymbolEqualityComparer.Default)
                             || attribute.Equals(wellKnownTypes.moduleRegistrationAttribute, SymbolEqualityComparer.Default)
-                            || attribute.Equals(wellKnownTypes.factoryRegistrationAttribute, SymbolEqualityComparer.Default))));
+                            || attribute.Equals(wellKnownTypes.factoryRegistrationAttribute, SymbolEqualityComparer.Default)))
+                        || x.type.GetMembers().Any(x => x.GetAttributes().Any(x =>
+                            x.AttributeClass is { } attribute && attribute.Equals(wellKnownTypes.factoryAttribute, SymbolEqualityComparer.Default))));
 
                 foreach (var module in modules)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     // do this even if not a container to report diagnostics
-                    var registrations = registrationCalculator.GetRegistrations(module.type);
-
                     if (module.isContainer)
                     {
                         var file = ContainerGenerator.GenerateContainerImplementations(
-                            compilation,
                             module.type,
-                            registrations,
+                            registrationCalculator.GetContainerRegistrations(module.type),
                             wellKnownTypes,
                             reportDiagnostic,
                             cancellationToken);
@@ -91,6 +90,11 @@ namespace StrongInject.Generator
                         context.AddSource(
                             GenerateNameHint(module.type),
                             source);
+                    }
+                    else
+                    {
+                        // Do this to report diagnostics
+                        _ = registrationCalculator.GetModuleRegistrations(module.type);
                     }
                 };
             }

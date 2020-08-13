@@ -9,6 +9,8 @@ namespace StrongInject.Generator
         INamedTypeSymbol iAsyncContainer,
         INamedTypeSymbol iInstanceProvider,
         INamedTypeSymbol iAsyncInstanceProvider,
+        INamedTypeSymbol iFactory,
+        INamedTypeSymbol iAsyncFactory,
         INamedTypeSymbol iRequiresInitialization,
         INamedTypeSymbol iRequiresAsyncInitialization,
         INamedTypeSymbol iDisposable,
@@ -16,7 +18,9 @@ namespace StrongInject.Generator
         INamedTypeSymbol registrationAttribute,
         INamedTypeSymbol moduleRegistrationAttribute,
         INamedTypeSymbol factoryRegistrationAttribute,
+        INamedTypeSymbol factoryAttribute,
         INamedTypeSymbol valueTask1,
+        INamedTypeSymbol task1,
         INamedTypeSymbol objectDisposedException,
         INamedTypeSymbol helpers)
     {
@@ -26,6 +30,8 @@ namespace StrongInject.Generator
             var iAsyncContainer = compilation.GetTypeOrReport("StrongInject.IAsyncContainer`1", reportDiagnostic);
             var iInstanceProvider = compilation.GetTypeOrReport(typeof(IInstanceProvider<>), reportDiagnostic);
             var iAsyncInstanceProvider = compilation.GetTypeOrReport(typeof(IAsyncInstanceProvider<>), reportDiagnostic);
+            var iFactory = compilation.GetTypeOrReport(typeof(IFactory<>), reportDiagnostic);
+            var iAsyncFactory = compilation.GetTypeOrReport(typeof(IAsyncFactory<>), reportDiagnostic);
             var iRequiresInitialization = compilation.GetTypeOrReport(typeof(IRequiresInitialization), reportDiagnostic);
             var iRequiresAsyncInitialization = compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), reportDiagnostic);
             var iDisposable = compilation.GetTypeOrReport(typeof(IDisposable), reportDiagnostic);
@@ -33,7 +39,9 @@ namespace StrongInject.Generator
             var registrationAttribute = compilation.GetTypeOrReport(typeof(RegistrationAttribute), reportDiagnostic);
             var moduleRegistrationAttribute = compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), reportDiagnostic);
             var factoryRegistrationAttribute = compilation.GetTypeOrReport(typeof(FactoryRegistrationAttribute), reportDiagnostic);
+            var factoryAttribute = compilation.GetTypeOrReport(typeof(FactoryAttribute), reportDiagnostic);
             var valueTask1 = compilation.GetTypeOrReport(typeof(ValueTask<>), reportDiagnostic);
+            var task1 = compilation.GetTypeOrReport(typeof(Task<>), reportDiagnostic);
             var objectDisposedException = compilation.GetTypeOrReport(typeof(ObjectDisposedException), reportDiagnostic);
             var helpers = compilation.GetTypeOrReport(typeof(Helpers), reportDiagnostic);
 
@@ -41,6 +49,8 @@ namespace StrongInject.Generator
                 || iAsyncContainer is null
                 || iInstanceProvider is null
                 || iAsyncInstanceProvider is null
+                || iFactory is null
+                || iAsyncFactory is null
                 || iRequiresInitialization is null
                 || iRequiresAsyncInitialization is null
                 || iDisposable is null
@@ -48,7 +58,9 @@ namespace StrongInject.Generator
                 || registrationAttribute is null
                 || moduleRegistrationAttribute is null
                 || factoryRegistrationAttribute is null
+                || factoryAttribute is null
                 || valueTask1 is null
+                || task1 is null
                 || objectDisposedException is null
                 || helpers is null)
             {
@@ -61,6 +73,8 @@ namespace StrongInject.Generator
                 iAsyncContainer: iAsyncContainer,
                 iInstanceProvider: iInstanceProvider,
                 iAsyncInstanceProvider: iAsyncInstanceProvider,
+                iFactory: iFactory,
+                iAsyncFactory: iAsyncFactory,
                 iRequiresInitialization: iRequiresInitialization,
                 iRequiresAsyncInitialization: iRequiresAsyncInitialization,
                 iDisposable: iDisposable,
@@ -68,7 +82,9 @@ namespace StrongInject.Generator
                 registrationAttribute: registrationAttribute,
                 moduleRegistrationAttribute: moduleRegistrationAttribute,
                 factoryRegistrationAttribute: factoryRegistrationAttribute,
+                factoryAttribute: factoryAttribute,
                 valueTask1: valueTask1,
+                task1: task1,
                 objectDisposedException: objectDisposedException,
                 helpers: helpers);
 
