@@ -257,7 +257,7 @@ namespace StrongInject.Generator
             InstanceSourcesScope instanceSourcesScope,
             bool isSingleInstanceCreation,
             bool disposeAsynchronously,
-            out List<(string variableName, string? disposeActionsName, InstanceSource source)> orderOfCreation)
+            out List<(string variableName, string? disposeActionsName, string? factoryVariable, InstanceSource source)> orderOfCreation)
         {
             _cancellationToken.ThrowIfCancellationRequested();
             orderOfCreation = new();
@@ -271,6 +271,7 @@ namespace StrongInject.Generator
                 if (target is DelegateParameter { name: var variableName })
                     return variableName;
                 string? disposeActionsName = null;
+                string? factoryVariable = null;
                 if (target.scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out variableName))
                 {
                     variableName = "_" + variables.Count;
@@ -302,13 +303,13 @@ namespace StrongInject.Generator
                             }
                             break;
                         case FactoryRegistration(var factoryType, var factoryOf, var scope, var isAsync) registration:
-                            var factory = CreateVariableInternal(_containerScope[factoryType], instanceSourcesScope);
+                            factoryVariable = CreateVariableInternal(_containerScope[factoryType], instanceSourcesScope);
                             methodSource.Append("var ");
                             methodSource.Append(variableName);
                             methodSource.Append(isAsync ? "=await((" : "=((");
                             methodSource.Append(factoryType.FullName());
                             methodSource.Append(")");
-                            methodSource.Append(factory);
+                            methodSource.Append(factoryVariable);
                             methodSource.Append(").");
                             methodSource.Append(isAsync
                                 ? nameof(IAsyncFactory<object>.CreateAsync)
@@ -436,9 +437,9 @@ namespace StrongInject.Generator
                                 break;
                             }
                     }
-
+                    orderOfCreationTemp.Add((variableName, disposeActionsName, factoryVariable, target));
                 }
-                orderOfCreationTemp.Add((variableName, disposeActionsName, target));
+
                 return variableName;
             }
         }
@@ -460,18 +461,34 @@ namespace StrongInject.Generator
 
         private void GenerateDisposeCode(
             StringBuilder methodSource,
-            List<(string variableName, string? disposeActionsName, InstanceSource source)> orderOfCreation,
+            List<(string variableName, string? disposeActionsName, string? factoryName, InstanceSource source)> orderOfCreation,
             bool isAsync,
             InstanceSource? singleInstanceTarget)
         {
             for (int i = orderOfCreation.Count - 1; i >= 0; i--)
             {
-                var (variableName, disposeActionName, source) = orderOfCreation[i];
+                var (variableName, disposeActionName, factoryVariable, source) = orderOfCreation[i];
                 switch (source)
                 {
                     case { scope: Scope.SingleInstance } when !source.Equals(singleInstanceTarget):
                         break;
-                    case FactoryRegistration:
+                    case FactoryRegistration { factoryType: var cast, isAsync: var isAsyncFactory }:
+                        if (isAsyncFactory)
+                        {
+                            methodSource.Append("await ");
+                        }
+                        methodSource.Append("((");
+                        methodSource.Append(cast.FullName());
+                        methodSource.Append(")");
+                        methodSource.Append(factoryVariable);
+                        methodSource.Append(").");
+                        methodSource.Append(isAsyncFactory
+                            ? nameof(IAsyncFactory<object>.ReleaseAsync)
+                            : nameof(IFactory<object>.Release));
+                        methodSource.Append("(");
+                        methodSource.Append(variableName);
+                        methodSource.Append(");");
+                        break;
                     case FactoryMethod:
                         if (isAsync)
                         {

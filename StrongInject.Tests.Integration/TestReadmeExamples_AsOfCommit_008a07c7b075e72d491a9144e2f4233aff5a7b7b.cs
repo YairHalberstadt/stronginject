@@ -77,6 +77,11 @@ namespace StrongInject.Tests.Integration
             public record InterfaceArrayFactory(A A, B B) : IAsyncFactory<IInterface[]>
             {
                 public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B });
+
+                public ValueTask ReleaseAsync(IInterface[] instance)
+                {
+                    return Helpers.DisposeAsync(instance);
+                }
             }
 
             [Registration(typeof(A))]
@@ -105,6 +110,11 @@ namespace StrongInject.Tests.Integration
             public record InterfaceArrayFactory(A A, B B) : IAsyncFactory<IInterface[]>
             {
                 public ValueTask<IInterface[]> CreateAsync() => new ValueTask<IInterface[]>(new IInterface[] { A, B });
+
+                public ValueTask ReleaseAsync(IInterface[] instance)
+                {
+                    return Helpers.DisposeAsync(instance);
+                }
             }
 
             [Registration(typeof(A))]
@@ -156,6 +166,11 @@ namespace StrongInject.Tests.Integration
             public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IAsyncFactory<IInterface>
             {
                 public ValueTask<IInterface> CreateAsync() => new ValueTask<IInterface>(InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B);
+
+                public ValueTask ReleaseAsync(IInterface instance)
+                {
+                    return Helpers.DisposeAsync(instance);
+                }
             }
 
             [Registration(typeof(A))]

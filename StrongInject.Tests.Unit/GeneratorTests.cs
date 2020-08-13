@@ -299,11 +299,10 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
         }
 
         return result;
@@ -608,13 +607,13 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_9);
-            await global::StrongInject.Helpers.DisposeAsync(_11);
-            await global::StrongInject.Helpers.DisposeAsync(_8);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_10).ReleaseAsync(_9);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_11);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_8);
+            await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
         }
 
         return result;
@@ -1061,6 +1060,7 @@ public class D : IAsyncFactory<DFactoryTarget>
 public class DFactoryTarget {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -1140,7 +1140,7 @@ partial class Container
             this._singleInstanceField3 = _0;
             this._disposeAction3 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -1170,7 +1170,7 @@ partial class Container
             this._singleInstanceField2 = _0;
             this._disposeAction2 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_2);
+                await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_3).ReleaseAsync(_2);
             }
 
             ;
@@ -1197,7 +1197,7 @@ partial class Container
             this._singleInstanceField1 = _0;
             this._disposeAction1 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -1250,7 +1250,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
         }
 
         return result;
@@ -2047,7 +2047,7 @@ partial class Container
             this._singleInstanceField2 = _0;
             this._disposeAction2 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -2078,7 +2078,7 @@ partial class Container
             this._disposeAction1 = async () =>
             {
                 ((global::System.IDisposable)_0).Dispose();
-                await global::StrongInject.Helpers.DisposeAsync(_2);
+                await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_3).ReleaseAsync(_2);
             }
 
             ;
@@ -2105,7 +2105,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -2170,7 +2170,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
             await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this.instanceProvider).ReleaseAsync(_9);
             ((global::System.IDisposable)_4).Dispose();
             await ((global::System.IAsyncDisposable)_5).DisposeAsync();
@@ -2869,7 +2869,7 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
+            ((global::StrongInject.IFactory<global::System.Int32>)_1).Release(_0);
         }
 
         return result;
@@ -5055,7 +5055,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
+            ((global::StrongInject.IFactory<global::System.Func<global::A>>)_1).Release(_0);
         }
 
         return result;
