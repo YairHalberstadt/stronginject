@@ -30,4 +30,10 @@ namespace StrongInject.Generator
         bool isAsync) : InstanceSource(Scope.InstancePerResolution, isAsync: isAsync)
     { }
     internal record DelegateParameter(IParameterSymbol parameter, string name) : InstanceSource(Scope.InstancePerResolution, isAsync: false) { }
+    internal record FactoryMethod(
+        IMethodSymbol method,
+        ITypeSymbol returnType,
+        Scope scope,
+        bool isAsync) : InstanceSource(scope, isAsync)
+    { }
 }

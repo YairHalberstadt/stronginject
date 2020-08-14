@@ -9,17 +9,15 @@ namespace StrongInject.Generator
         private readonly IReadOnlyDictionary<ITypeSymbol, InstanceSource> _instanceSource;
         private readonly Dictionary<ITypeSymbol, DelegateParameter>? _delegateParameters;
         private readonly InstanceSourcesScope _containerScope;
-        private readonly INamedTypeSymbol? _task1Type;
-        private readonly INamedTypeSymbol? _valueTask1Type;
+        private readonly WellKnownTypes _wellKnownTypes;
 
         public int Depth { get; }
 
-        public InstanceSourcesScope(IReadOnlyDictionary<ITypeSymbol, InstanceSource> instanceSource, Compilation compilation)
+        public InstanceSourcesScope(IReadOnlyDictionary<ITypeSymbol, InstanceSource> instanceSource, WellKnownTypes wellKnownTypes)
         {
             _instanceSource = instanceSource;
             _containerScope = this;
-            _task1Type = compilation.GetType(typeof(Task<>));
-            _valueTask1Type = compilation.GetType(typeof(ValueTask<>));
+            _wellKnownTypes = wellKnownTypes;
             Depth = 0;
         }
 
@@ -28,8 +26,7 @@ namespace StrongInject.Generator
             _instanceSource = containerScope._instanceSource;
             _delegateParameters = delegateParameters;
             _containerScope = containerScope;
-            _task1Type = containerScope._task1Type;
-            _valueTask1Type = containerScope._valueTask1Type;
+            _wellKnownTypes = containerScope._wellKnownTypes;
             Depth = depth;
         }
 
@@ -44,12 +41,18 @@ namespace StrongInject.Generator
             {
                 return true;
             }
-            if (target is INamedTypeSymbol { DelegateInvokeMethod: { ReturnType: { } returnType, Parameters: var parameters } } delegateType)
+            if (target is INamedTypeSymbol 
+            { 
+                DelegateInvokeMethod: 
+                { 
+                    ReturnType: { SpecialType: not SpecialType.System_Void } returnType,
+                    Parameters: var parameters 
+                }
+            } delegateType)
             {
-                if (returnType.OriginalDefinition.Equals(_task1Type, SymbolEqualityComparer.Default)
-                    || returnType.OriginalDefinition.Equals(_valueTask1Type, SymbolEqualityComparer.Default))
+                if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
                 {
-                    instanceSource = new DelegateSource(delegateType, ((INamedTypeSymbol)returnType).TypeArguments[0], parameters, isAsync: true);
+                    instanceSource = new DelegateSource(delegateType, taskOfType, parameters, isAsync: true);
                 }
                 else
                 {

@@ -208,7 +208,7 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                         "SI0105",
-                        "Delegate has multiple parameters of same type",
+                        "Parameter of delegate is passed as ref",
                         "Error while resolving dependencies for '{0}': parameter '{1}' of delegate '{2}' is passed as '{3}'.",
                         "StrongInject",
                         DiagnosticSeverity.Error,

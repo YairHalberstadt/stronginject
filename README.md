@@ -17,7 +17,7 @@ compile time dependency injection for .Net
     - [Basics](#basics)
     - [Scope](#scope)
     - [Modules](#modules)
-    - [Factory Registrations](#factory-registrations)
+    - [Factories](#factories)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
   - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
@@ -201,14 +201,11 @@ There are two ways to solve this:
 1. Register the type directly. This will override the registrations in imported modules.
 2. Exclude the registration from one of the modules when you import it: `[ModuleRegistration(typeof(Module), exclusionList: new [] { typeof(A) })]`
 
-#### Factory Registrations
+#### Factories
 
 Sometimes a type requires more complex construction than just calling the constructor. For example you might want to hard code some parameters, or call a factory method. Some types don't have the correct constructors to be registered directly.
 
-For such cases the `IFactory<T>` interface exists.
-
-You can register a type implementing `IFactory<T>` as a Factory Registration.
-This will automatically register it as both `IFactory<T>` and `T`. An instance of `T` will be constructed by calling `IFactory<T>.CreateAsync()`.
+In such cases you can write a method returning the type you want to construct and mark it with the `[Factory]` attribute.
 
 ```csharp
 using StrongInject;
@@ -216,9 +213,66 @@ using StrongInject;
 public interface IInterface {}
 public class A : IInterface {}
 public class B : IInterface {}
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<IInterface[]>
+{
+    [Factory] private IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
+}
+```
+
+You can set the scope of the factory method (how often it's called), by passing in the scope parameter: `[Factory(Scope.SingleInstance)]`.
+
+If the factory method is defined on the container type, it can be private or public, instance or static. However if you want to export the factory method as part of a module it must be public and static.
+
+```csharp
+using StrongInject;
+
+public interface IInterface {}
+public class A : IInterface {}
+public class B : IInterface {}
+
+public class Module
+{
+    [Factory] public static IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
+}
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IContainer<IInterface[]>
+{
+}
+```
+
+If the factory method returns `Task<T>` or `ValueTask<T>` it will be considered an async registration for `T` (see [below](#async-support)).
+
+In some cases you want to maintain some state in your factory, or control disposal. For such cases the `IFactory<T>` interface exists.
+
+You can register a type implementing `IFactory<T>` as a Factory Registration.
+This will automatically register it as both `IFactory<T>` and `T`. An instance of `T` will be constructed by calling `IFactory<T>.Create()`.
+
+```csharp
+using StrongInject;
+using System.Buffers;
+
+public interface IInterface {}
+public class A : IInterface {}
+public class B : IInterface {}
 public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
 {
-    public IInterface[] Create() => new IInterface[] { A, B };
+    public IInterface[] Create()
+    {
+        var array = ArrayPool<IInterface>.Shared.Rent(2);
+        array[0] = A;
+        array[1] = B;
+        return array;
+    }
+    public void Release(IInterface[] instance)
+    {
+        ArrayPool<IInterface>.Shared.Return(instance);
+    }
 }
 
 [Registration(typeof(A))]
@@ -278,7 +332,7 @@ public partial class Container : IContainer<IInterface>
 }
 ```
 
-`Get` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to returna singleton or not.
+`Get` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to return a singleton or not.
 
 ### Delegate Support
 
@@ -369,7 +423,7 @@ You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` b
 
 It is an error resolving `T` in an `IContainer<T>` depends on an asynchronous dependency.
 
-A type can implement both `IContainer<T1>` and `IAsyncCOntainer<T2>`. They will share single instance depdendencies.
+A type can implement both `IContainer<T1>` and `IAsyncContainer<T2>`. They will share single instance depdendencies.
 
 Here is a full fledged example where data will be loaded from the database as part of resolution using `IRequiresAsyncInitialization`:
 

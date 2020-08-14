@@ -299,11 +299,10 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
         }
 
         return result;
@@ -608,13 +607,13 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_9);
-            await global::StrongInject.Helpers.DisposeAsync(_11);
-            await global::StrongInject.Helpers.DisposeAsync(_8);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_10).ReleaseAsync(_9);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_11);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_8);
+            await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
         }
 
         return result;
@@ -1061,6 +1060,10 @@ public class D : IAsyncFactory<DFactoryTarget>
 public class DFactoryTarget {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+                // Registration(typeof(C), Scope.InstancePerResolution, typeof(C))
+                new DiagnosticResult("SI1001", @"Registration(typeof(C), Scope.InstancePerResolution, typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -1140,7 +1143,7 @@ partial class Container
             this._singleInstanceField3 = _0;
             this._disposeAction3 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -1170,7 +1173,7 @@ partial class Container
             this._singleInstanceField2 = _0;
             this._disposeAction2 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_2);
+                await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_3).ReleaseAsync(_2);
             }
 
             ;
@@ -1197,7 +1200,7 @@ partial class Container
             this._singleInstanceField1 = _0;
             this._disposeAction1 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -1250,7 +1253,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
         }
 
         return result;
@@ -1397,6 +1400,12 @@ partial class Container
                 // (1,1): Error SI0201: Missing Type 'StrongInject.IAsyncInstanceProvider`1[T]'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.IFactory`1[T]'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.IAsyncFactory`1[T]'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.IRequiresInitialization'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
@@ -1410,6 +1419,9 @@ partial class Container
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.FactoryRegistrationAttribute'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.FactoryAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.Helpers'. Are you missing an assembly reference?
@@ -1562,7 +1574,7 @@ partial class Container
         }
 
         [Fact]
-        public void IgnoresStaticInstanceProviderFields()
+        public void CanUseStaticInstanceProviderFields()
         {
             string userSource = @"
 using StrongInject;
@@ -1590,30 +1602,119 @@ public interface IAsyncInstanceProvider : IAsyncInstanceProvider<C>, IAsyncInsta
 {
 }
 ";
-            var comp = RunGenerator(userSource, out var generatorDiagnostics, out _, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
-                // (5,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
-                // (5,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
-                // (5,22): Error SI0102: Error while resolving dependencies for 'D': We have no source for instance of type 'D'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
-                // (5,22): Error SI0102: Error while resolving dependencies for 'int[]': We have no source for instance of type 'int[]'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify(
                 // (8,44): Warning CS0649: Field 'Container._instanceProvider2' is never assigned to, and will always have its default value null
                 // _instanceProvider2
                 new DiagnosticResult("CS0649", @"_instanceProvider2", DiagnosticSeverity.Warning).WithLocation(8, 44),
-                // (9,50): Warning CS0169: The field 'Container._instanceProvider3' is never used
+                // (9,50): Warning CS0649: Field 'Container._instanceProvider3' is never assigned to, and will always have its default value null
                 // _instanceProvider3
-                new DiagnosticResult("CS0169", @"_instanceProvider3", DiagnosticSeverity.Warning).WithLocation(9, 50));
+                new DiagnosticResult("CS0649", @"_instanceProvider3", DiagnosticSeverity.Warning).WithLocation(9, 50));
+
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::A>)global::Container._instanceProvider1).GetAsync();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::A>)global::Container._instanceProvider1).ReleaseAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::B>)global::Container._instanceProvider1).GetAsync();
+        TResult result;
+        try
+        {
+            result = await func((global::B)_0, param);
+        }
+        finally
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::B>)global::Container._instanceProvider1).ReleaseAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::C>)global::Container._instanceProvider2).GetAsync();
+        TResult result;
+        try
+        {
+            result = await func((global::C)_0, param);
+        }
+        finally
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::C>)global::Container._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::D>.RunAsync<TResult, TParam>(global::System.Func<global::D, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::D>)global::Container._instanceProvider2).GetAsync();
+        TResult result;
+        try
+        {
+            result = await func((global::D)_0, param);
+        }
+        finally
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::D>)global::Container._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Int32[]>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32[], TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)global::Container._instanceProvider3).GetAsync();
+        TResult result;
+        try
+        {
+            result = await func((global::System.Int32[])_0, param);
+        }
+        finally
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)global::Container._instanceProvider3).ReleaseAsync(_0);
+        }
+
+        return result;
+    }
+}");
         }
 
         [Fact]
@@ -1723,25 +1824,25 @@ public class InstanceProvider2 : IAsyncInstanceProvider<string>, IAsyncInstanceP
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (7,30): Error SI0301: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider2' are instance providers for 'bool'
+                // (7,30): Error SI0015: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider2' are instance providers for 'bool'
                 // _instanceProvider1
-                new DiagnosticResult("SI0301", @"_instanceProvider1", DiagnosticSeverity.Error).WithLocation(7, 30),
-                // (7,30): Error SI0301: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider3' are instance providers for 'int'
+                new DiagnosticResult("SI0015", @"_instanceProvider1", DiagnosticSeverity.Error).WithLocation(7, 30),
+                // (7,30): Error SI0015: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider3' are instance providers for 'int'
                 // _instanceProvider1
-                new DiagnosticResult("SI0301", @"_instanceProvider1", DiagnosticSeverity.Error).WithLocation(7, 30),
-                // (8,32): Error SI0301: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider2' are instance providers for 'bool'
+                new DiagnosticResult("SI0015", @"_instanceProvider1", DiagnosticSeverity.Error).WithLocation(7, 30),
+                // (8,32): Error SI0015: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider2' are instance providers for 'bool'
                 // _instanceProvider2
-                new DiagnosticResult("SI0301", @"_instanceProvider2", DiagnosticSeverity.Error).WithLocation(8, 32),
-                // (9,41): Error SI0301: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider3' are instance providers for 'int'
+                new DiagnosticResult("SI0015", @"_instanceProvider2", DiagnosticSeverity.Error).WithLocation(8, 32),
+                // (9,41): Error SI0015: Both fields 'Container._instanceProvider1' and 'Container._instanceProvider3' are instance providers for 'int'
                 // _instanceProvider3
-                new DiagnosticResult("SI0301", @"_instanceProvider3", DiagnosticSeverity.Error).WithLocation(9, 41));
+                new DiagnosticResult("SI0015", @"_instanceProvider3", DiagnosticSeverity.Error).WithLocation(9, 41));
             comp.GetDiagnostics().Verify(
                 // (8,32): Warning CS0649: Field 'Container._instanceProvider2' is never assigned to, and will always have its default value null
                 // _instanceProvider2
                 new DiagnosticResult("CS0649", @"_instanceProvider2", DiagnosticSeverity.Warning).WithLocation(8, 32),
-                // (9,41): Warning CS0169: The field 'Container._instanceProvider3' is never used
+                // (9,41): Warning CS0649: Field 'Container._instanceProvider3' is never assigned to, and will always have its default value null
                 // _instanceProvider3
-                new DiagnosticResult("CS0169", @"_instanceProvider3", DiagnosticSeverity.Warning).WithLocation(9, 41));
+                new DiagnosticResult("CS0649", @"_instanceProvider3", DiagnosticSeverity.Warning).WithLocation(9, 41));
 
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -1760,7 +1861,7 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this._instanceProvider1).GetAsync();
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this._instanceProvider3).GetAsync();
         TResult result;
         try
         {
@@ -1768,7 +1869,7 @@ partial class Container
         }
         finally
         {
-            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this._instanceProvider1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this._instanceProvider3).ReleaseAsync(_0);
         }
 
         return result;
@@ -1796,7 +1897,7 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Boolean>)this._instanceProvider1).GetAsync();
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Boolean>)this._instanceProvider2).GetAsync();
         TResult result;
         try
         {
@@ -1804,7 +1905,7 @@ partial class Container
         }
         finally
         {
-            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Boolean>)this._instanceProvider1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Boolean>)this._instanceProvider2).ReleaseAsync(_0);
         }
 
         return result;
@@ -1949,7 +2050,7 @@ partial class Container
             this._singleInstanceField2 = _0;
             this._disposeAction2 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -1980,7 +2081,7 @@ partial class Container
             this._disposeAction1 = async () =>
             {
                 ((global::System.IDisposable)_0).Dispose();
-                await global::StrongInject.Helpers.DisposeAsync(_2);
+                await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_3).ReleaseAsync(_2);
             }
 
             ;
@@ -2007,7 +2108,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
+                await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_1).ReleaseAsync(_0);
             }
 
             ;
@@ -2072,7 +2173,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
             await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this.instanceProvider).ReleaseAsync(_9);
             ((global::System.IDisposable)_4).Dispose();
             await ((global::System.IAsyncDisposable)_5).DisposeAsync();
@@ -2308,6 +2409,101 @@ partial class Container
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfConstructorParameterPassedByRef()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A
+{
+    public A(ref B b){}
+}
+public class B{}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
+                // Registration(typeof(A))
+                new DiagnosticResult("SI0019", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
+                // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfFactoryConstructorParameterPassedByRef()
+        {
+            string userSource = @"
+using StrongInject;
+
+[FactoryRegistration(typeof(A))]
+[Registration(typeof(B))]
+public partial class Container : IContainer<int>
+{
+}
+
+public class A : IFactory<int>
+{
+    public A(ref B b){}
+    public int Create() => 42;
+}
+public class B{}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
+                // FactoryRegistration(typeof(A))
+                new DiagnosticResult("SI0019", @"FactoryRegistration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
+                // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
     {
         throw new global::System.NotImplementedException();
     }
@@ -2676,7 +2872,7 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
+            ((global::StrongInject.IFactory<global::System.Int32>)_1).Release(_0);
         }
 
         return result;
@@ -4862,7 +5058,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
+            ((global::StrongInject.IFactory<global::System.Func<global::A>>)_1).Release(_0);
         }
 
         return result;
@@ -4933,6 +5129,878 @@ partial class Container
         }
 
         return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void CannotResolveVoidReturningDelegate()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+public partial class Container : IContainer<Action<int>>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (5,22): Error SI0102: Error while resolving dependencies for 'Action<int>': We have no source for instance of type 'Action<int>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Action<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Action<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void CanImportFactoryMethodFromModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Factory]
+    public static A M(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = global::Module.M((global::B)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void FactoryMethodCanBeSingleInstance()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Factory(Scope.SingleInstance)]
+    public static A M(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        await this._lock0.WaitAsync();
+        try
+        {
+            await (this._disposeAction0?.Invoke() ?? default);
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
+    private global::A GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _1 = new global::B();
+            var _0 = global::Module.M((global::B)_1);
+            this._singleInstanceField0 = _0;
+            this._disposeAction0 = async () =>
+            {
+                await global::StrongInject.Helpers.DisposeAsync(_0);
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void NonPublicFactoryMethodIgnored()
+        {
+            string userSource = @"
+using StrongInject;
+
+class Module
+{
+    [Factory]
+    public static A M(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,6): Warning SI1003: Factory method 'Module.M(B)' is not publicly accessible, and containing module 'Module' is not a container, so it will be ignored.
+                // Factory
+                new DiagnosticResult("SI1003", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
+                // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void NonStaticFactoryMethodIgnored()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Factory]
+    public A M(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,6): Warning SI1002: Factory method 'Module.M(B)' is not static, and containing module 'Module' is not a container, so will be ignored.
+                // Factory
+                new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
+                // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void CanUseNonPublicStaticFactoryMethodDefinedInContainer()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    A M(B b) => null;
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = this.M((global::B)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void FactoryMethodDefinedInContainerOverridesExistingRegistration()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B))]
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    A M(B b) => null;
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = this.M((global::B)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfPublicStaticFactoryMethodDefinedInContainerOverridesExistingRegistration()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B))]
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    public static A M(B b) => null;
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (8,6): Error SI0004: Module already contains registration for 'A'.
+                // Factory
+                new DiagnosticResult("SI0004", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfMultipleFactoryMethodsDefinedByContainerForSameType()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B))]
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    A M(B b) => null;
+    [Factory]
+    A M1() => null;
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (8,6): Error SI0016: Both methods 'Container.M1()' and 'Container.M(B)' are factories for 'A'
+                // Factory
+                new DiagnosticResult("SI0016", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6),
+                // (10,6): Error SI0016: Both methods 'Container.M1()' and 'Container.M(B)' are factories for 'A'
+                // Factory
+                new DiagnosticResult("SI0016", @"Factory", DiagnosticSeverity.Error).WithLocation(10, 6));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.M1();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfInstanceProviderAndFactoryMethodDefinedByContainerForSameType()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B))]
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    A M(B b) => null;
+    public IInstanceProvider<A> _instanceProvider;
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (8,6): Error SI0017: Both factory method 'Container.M(B)' and instance provider field 'Container._instanceProvider' are sources for 'A'
+                // Factory
+                new DiagnosticResult("SI0017", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6),
+                // (10,33): Error SI0017: Both factory method 'Container.M(B)' and instance provider field 'Container._instanceProvider' are sources for 'A'
+                // _instanceProvider
+                new DiagnosticResult("SI0017", @"_instanceProvider", DiagnosticSeverity.Error).WithLocation(10, 33));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = ((global::StrongInject.IInstanceProvider<global::A>)this._instanceProvider).Get();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            ((global::StrongInject.IInstanceProvider<global::A>)this._instanceProvider).Release(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfFactoryMethodReturnsVoid()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B))]
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    void M(B b){}
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (8,6): Error SI0014: Factory method 'Container.M(B)' returns void.
+                // Factory
+                new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfPublicStaticFactoryMethodInContainerReturnsVoid()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(B))]
+[Registration(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    public static void M(B b){}
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (8,6): Error SI0014: Factory method 'Container.M(B)' returns void.
+                // Factory
+                new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfFactoryMethodFromModuleOverridesExisingRegistration()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Registration(typeof(A))]
+public class Module
+{
+    [Factory]
+    public static A M(B b) => null;
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,6): Error SI0004: Module already contains registration for 'A'.
+                // Factory
+                new DiagnosticResult("SI0004", @"Factory", DiagnosticSeverity.Error).WithLocation(7, 6));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
+        }
+
+        [Fact]
+        public void ErrorIfFactoryMethodTakesParameterByRef()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Factory]
+    public static A M(ref B b) => null;
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,23): Error SI0018: parameter 'ref B' of factory method 'Module.M(ref B)' is passed as 'Ref'.
+                // ref B b
+                new DiagnosticResult("SI0018", @"ref B b", DiagnosticSeverity.Error).WithLocation(7, 23));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
+        }
+
+        [Fact]
+        public void CanResolveAsyncFactoryMethod()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public class Module
+{
+    [Factory]
+    public static Task<A> M(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = await global::Module.M((global::B)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfAsyncFactoryMethodUsedInSyncContainer()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public class Module
+{
+    [Factory]
+    public static Task<A> M(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (13,22): Error SI0103: Error while resolving dependencies for 'A': 'A' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(13, 22));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfFactoryMethodIsGeneric()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Factory]
+    public static A M<T>(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,6): Error SI0014: Factory method 'Module.M<T>(B)' is generic.
+                // Factory
+                new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6),
+                // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
     }
 }");
         }

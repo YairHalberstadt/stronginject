@@ -90,6 +90,12 @@ namespace StrongInject.Generator
             };
         }
 
+        public static bool IsPublic(this IMethodSymbol method)
+        {
+            return method.DeclaredAccessibility == Accessibility.Public
+                && (method.ContainingType?.IsPublic() ?? true);
+        }
+
         public static string FullName(this ITypeSymbol type)
         {
             return type.ToDisplayString(new SymbolDisplayFormat(
@@ -117,5 +123,17 @@ namespace StrongInject.Generator
 
         public static Location GetLocation(this AttributeData attributeData, CancellationToken cancellationToken)
             => attributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None;
+
+        public static bool IsWellKnownTaskType(this ITypeSymbol type, WellKnownTypes wellKnownTypes, out ITypeSymbol taskOfType)
+        {
+            if (type.OriginalDefinition.Equals(wellKnownTypes.task1, SymbolEqualityComparer.Default)
+                || type.OriginalDefinition.Equals(wellKnownTypes.valueTask1, SymbolEqualityComparer.Default))
+            {
+                taskOfType = ((INamedTypeSymbol)type).TypeArguments[0];
+                return true;
+            }
+            taskOfType = null!;
+            return false;
+        }
     }
 }
