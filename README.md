@@ -210,7 +210,7 @@ public class B : IInterface {}
 [Registration(typeof(B))]
 public partial class Container : IContainer<IInterface[]>
 {
-    [Factory] private IInterface[] CreateInterfaces(A a, B b) => new IInterface[] { a, b };
+    [Factory] private IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
 }
 ```
 
@@ -227,7 +227,7 @@ public class B : IInterface {}
 
 public class Module
 {
-    [Factory] public static IInterface[] CreateInterfaces(A a, B b) => new IInterface[] { a, b };
+    [Factory] public static IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
 }
 
 [Registration(typeof(A))]
