@@ -1060,7 +1060,10 @@ public class D : IAsyncFactory<DFactoryTarget>
 public class DFactoryTarget {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
-            generatorDiagnostics.Verify();
+            generatorDiagnostics.Verify(
+                // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+                // Registration(typeof(C), Scope.InstancePerResolution, typeof(C))
+                new DiagnosticResult("SI1001", @"Registration(typeof(C), Scope.InstancePerResolution, typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -5947,6 +5950,55 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfFactoryMethodIsGeneric()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Factory]
+    public static A M<T>(B b) => null;
+}
+
+[Registration(typeof(B))]
+[ModuleRegistration(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,6): Error SI0014: Factory method 'Module.M<T>(B)' is generic.
+                // Factory
+                new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6),
+                // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         throw new global::System.NotImplementedException();
     }

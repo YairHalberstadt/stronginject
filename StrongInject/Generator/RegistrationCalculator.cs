@@ -464,6 +464,14 @@ namespace StrongInject.Generator
 
                 if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
                 {
+                    if (method.TypeParameters.Length > 0)
+                    {
+                        _reportDiagnostic(FactoryMethodIsGeneric(
+                            method,
+                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                        return null;
+                    }
+
                     foreach (var param in method.Parameters)
                     {
                         if (param.RefKind != RefKind.None)
@@ -891,6 +899,20 @@ namespace StrongInject.Generator
                     parameter,
                     constructor,
                     parameter.RefKind);
+        }
+
+        private static Diagnostic FactoryMethodIsGeneric(IMethodSymbol methodSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0014",
+                    "Factory Method is generic",
+                    "Factory method '{0}' is generic.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                methodSymbol);
         }
 
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
