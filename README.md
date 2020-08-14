@@ -24,6 +24,7 @@ compile time dependency injection for .Net
   - [Async Support](#async-support)
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
+- [Product Roadmap](#product-roadmap)
 - [Contributing](#contributing)
 - [Need Help?](#need-help)
 
