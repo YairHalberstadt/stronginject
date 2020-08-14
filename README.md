@@ -1,7 +1,8 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
-# stronginject
+[![Join the chat at https://gitter.im/stronginject/community](https://badges.gitter.im/stronginject/community.svg)](https://gitter.im/stronginject/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# StrongInject
 compile time dependency injection for .Net
 
 ## Table Of Contents
@@ -13,6 +14,7 @@ compile time dependency injection for .Net
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
   - [Registration](#registration)
+    - [Basics](#basics)
     - [Scope](#scope)
     - [Modules](#modules)
     - [Factories](#factories)
@@ -23,6 +25,7 @@ compile time dependency injection for .Net
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
 - [Contributing](#contributing)
+- [Need Help?](#need-help)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -36,7 +39,10 @@ compile time dependency injection for .Net
 
 ## Requirements
 
+Source generators are currently in preview and so you will require a preview version of VS and dotnet.
+
 [Visual Studio preview version](https://visualstudio.microsoft.com/vs/preview/)
+
 [.NET 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0)
 
 ## Nuget
@@ -94,6 +100,8 @@ public class Program
 ```
 
 ### Registration
+
+#### Basics
 
 As you saw above, you can register a type with a container using the `RegistrationAttribute`:
 
@@ -520,3 +528,9 @@ This is currently in preview, meaning we can (and will) make API breaking change
 Similiarly please do open issues if you spot any bugs.
 
 Please feel free to work on any open issue and open a PR. Ideally open an issue before working on something, so that the effort doesn't go to waste if it's not suitable.
+
+## Need Help?
+
+I tend to hang around on gitter so feel free to chat at https://gitter.im/stronginject/community#share.
+
+You can also [open an issue](https://github.com/YairHalberstadt/stronginject/issues/new/choose), ask on [stackoverflow](https://stackoverflow.com/questions/ask), or tag [me](https://twitter.com/HalberstadtYair) on twitter.
