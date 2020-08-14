@@ -521,6 +521,10 @@ StrongInject provides the following thread safety guarantees:
 2. If the container is disposed during resolution, then either dependencies will be created by the resolution, and will then be disposed, or resolution will throw and no dependencies will be created. Dependencies will not be created and then not disposed.
 3. A SingleInstance dependency will never be created more than once.
 
+## Product Roadmap
+
+https://github.com/YairHalberstadt/stronginject/projects/1
+
 ## Contributing
 
 This is currently in preview, meaning we can (and will) make API breaking changes. Now is the best time to file suggestions if you feel like the API could be approved.
