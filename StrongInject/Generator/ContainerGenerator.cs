@@ -34,6 +34,7 @@ namespace StrongInject.Generator
         private readonly List<(INamedTypeSymbol containerInterface, bool isAsync)> _containerInterfaces;
         private readonly bool _implementsSyncContainer;
         private readonly bool _implementsAsyncContainer;
+        private readonly Location _containerDeclarationLocation;
 
         private ContainerGenerator(
             INamedTypeSymbol container,
@@ -59,6 +60,10 @@ namespace StrongInject.Generator
             {
                 (isAsync ? ref _implementsAsyncContainer : ref _implementsSyncContainer) = true;
             }
+
+            // Ideally we would use the location of the interface in the base list, however getting that location is complex and not critical for now.
+            // See http://sourceroslyn.io/#Microsoft.CodeAnalysis.CSharp/Symbols/Source/SourceMemberContainerSymbol_ImplementationChecks.cs,333
+            _containerDeclarationLocation = ((ClassDeclarationSyntax)_container.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation();
         }
 
         private string GenerateContainerImplementations()
@@ -124,9 +129,7 @@ namespace StrongInject.Generator
                         isAsync,
                         _containerScope,
                         _reportDiagnostic,
-                        // Ideally we would use the location of the interface in the base list, however getting that location is complex and not critical for now.
-                        // See http://sourceroslyn.io/#Microsoft.CodeAnalysis.CSharp/Symbols/Source/SourceMemberContainerSymbol_ImplementationChecks.cs,333
-                        ((ClassDeclarationSyntax)_container.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation()))
+                        _containerDeclarationLocation))
                 {
                     // error reported. Implement with throwing implementation to remove NotImplemented error CS0535
                     const string throwNotImplementedException = "throw new global::System.NotImplementedException();}";
@@ -136,15 +139,21 @@ namespace StrongInject.Generator
                 }
                 else
                 {
-                    runMethodSource.Append("if(Disposed)");
-                    ThrowObjectDisposedException(runMethodSource);
+                    var variableCreationSource = new StringBuilder();
+                    variableCreationSource.Append("if(Disposed)");
+                    ThrowObjectDisposedException(variableCreationSource);
                     var resultVariableName = CreateVariable(
                         _containerScope[target],
-                        runMethodSource,
+                        variableCreationSource,
                         _containerScope,
                         isSingleInstanceCreation: false,
                         disposeAsynchronously: isAsync,
                         orderOfCreation: out var orderOfCreation);
+
+                    var disposalSource = new StringBuilder();
+                    GenerateDisposeCode(disposalSource, orderOfCreation, isAsync, singleInstanceTarget: null);
+
+                    runMethodSource.Append(variableCreationSource);
                     runMethodSource.Append(runMethodSymbol.TypeParameters[0].Name);
                     runMethodSource.Append(" result;try{result=");
                     if (isAsync)
@@ -159,29 +168,19 @@ namespace StrongInject.Generator
                     runMethodSource.Append(")");
                     runMethodSource.Append(resultVariableName);
                     runMethodSource.Append(", param);}finally{");
-                    GenerateDisposeCode(runMethodSource, orderOfCreation, isAsync, singleInstanceTarget: null);
+                    runMethodSource.Append(disposalSource);
                     runMethodSource.Append("}return result;}");
-
-                    resolveMethodSource.Append("if(Disposed)");
-                    ThrowObjectDisposedException(resolveMethodSource);
-                    resultVariableName = CreateVariable(
-                        _containerScope[target],
-                        resolveMethodSource,
-                        _containerScope,
-                        isSingleInstanceCreation: false,
-                        disposeAsynchronously: isAsync,
-                        orderOfCreation: out orderOfCreation);
 
                     var ownedType = (isAsync
                         ? _wellKnownTypes.asyncOwned
                         : _wellKnownTypes.owned).Construct(target);
-
+                    resolveMethodSource.Append(variableCreationSource);
                     resolveMethodSource.Append("return new ");
                     resolveMethodSource.Append(ownedType.FullName());
                     resolveMethodSource.Append("(");
                     resolveMethodSource.Append(resultVariableName);
                     resolveMethodSource.Append(isAsync ? ",async()=>{" : ",()=>{");
-                    GenerateDisposeCode(resolveMethodSource, orderOfCreation, isAsync, singleInstanceTarget: null);
+                    resolveMethodSource.Append(disposalSource);
                     resolveMethodSource.Append("});}");
                 }
 
@@ -587,8 +586,7 @@ namespace StrongInject.Generator
                         {
                             _reportDiagnostic(WarnIAsyncDisposableInSynchronousResolution(
                                 type,
-                                _container,
-                                _cancellationToken));
+                                _containerDeclarationLocation));
                         }
                         break;
                     case DelegateParameter:
@@ -658,7 +656,7 @@ if (disposed != 0) return;");
             methodSource.Append("));");
         }
 
-        private static Diagnostic WarnIAsyncDisposableInSynchronousResolution(ITypeSymbol type, INamedTypeSymbol container, CancellationToken cancellationToken)
+        private static Diagnostic WarnIAsyncDisposableInSynchronousResolution(ITypeSymbol type, Location location)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
@@ -668,7 +666,7 @@ if (disposed != 0) return;");
                     "StrongInject",
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),
-                container.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                location,
                 type);
         }
 

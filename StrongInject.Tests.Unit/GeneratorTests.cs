@@ -7343,5 +7343,73 @@ partial class Container
     }
 }");
         }
+
+        [Fact]
+        public void WarnOnInstanceRequiringAsyncDisposalInSyncResolution()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A : IAsyncDisposable
+{
+    public ValueTask DisposeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,22): Warning SI1301: Cannot call asynchronous dispose for 'A' in implementation of synchronous container
+                // Container
+                new DiagnosticResult("SI1301", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
+    }
+}");
+        }
     }
 }
