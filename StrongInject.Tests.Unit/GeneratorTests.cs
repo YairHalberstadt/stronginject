@@ -74,6 +74,21 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::C();
+        var _3 = new global::D((global::C)_2);
+        var _1 = new global::B((global::C)_2, (global::D)_3);
+        var _0 = new global::A((global::B)_1, (global::C)_2);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -140,6 +155,21 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::C();
+        var _3 = new global::D((global::C)_2);
+        var _1 = new global::B((global::IC)_2, (global::D)_3);
+        var _0 = new global::A((global::B)_1, (global::IC)_2);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
     }
@@ -217,6 +247,24 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::C();
+        await ((global::StrongInject.IRequiresAsyncInitialization)_2).InitializeAsync();
+        var _3 = new global::D((global::C)_2);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_3).InitializeAsync();
+        var _1 = new global::B((global::C)_2, (global::D)_3);
+        var _0 = new global::A((global::B)_1, (global::C)_2);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -307,6 +355,29 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::AFactoryTarget>> global::StrongInject.IAsyncContainer<global::AFactoryTarget>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _4 = new global::C();
+        var _7 = await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).CreateAsync();
+        var _6 = new global::D(_7);
+        var _5 = await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).CreateAsync();
+        var _3 = new global::B((global::C)_4, _5);
+        var _2 = await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).CreateAsync();
+        var _1 = new global::A(_2, _7);
+        var _0 = await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).CreateAsync();
+        return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
+        }
+
+        );
+    }
 }");
         }
 
@@ -374,6 +445,23 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::C();
+        var _4 = new global::C();
+        var _3 = new global::D((global::C)_4);
+        var _1 = new global::B((global::C)_2, (global::D)_3);
+        var _5 = new global::C();
+        var _0 = new global::A((global::B)_1, (global::C)_5);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -443,6 +531,23 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::C();
+        var _4 = new global::C();
+        var _3 = new global::D((global::C)_4);
+        var _1 = new global::B((global::IC)_2, (global::D)_3);
+        var _5 = new global::C();
+        var _0 = new global::A((global::B)_1, (global::IC)_5);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -521,6 +626,25 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::C();
+        await ((global::StrongInject.IRequiresAsyncInitialization)_2).InitializeAsync();
+        var _3 = new global::D((global::C)_2);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_3).InitializeAsync();
+        var _1 = new global::B((global::C)_2, (global::D)_3);
+        var _4 = new global::B((global::C)_2, (global::D)_3);
+        var _0 = new global::A((global::B)_1, (global::C)_2, (global::B)_4);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -617,6 +741,36 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::AFactoryTarget>> global::StrongInject.IAsyncContainer<global::AFactoryTarget>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _4 = new global::C();
+        var _7 = await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).CreateAsync();
+        var _6 = new global::D(_7);
+        var _5 = await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).CreateAsync();
+        var _3 = new global::B((global::C)_4, _5);
+        var _2 = await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).CreateAsync();
+        var _8 = await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).CreateAsync();
+        var _11 = await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).CreateAsync();
+        var _10 = new global::D(_11);
+        var _9 = await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_10).CreateAsync();
+        var _1 = new global::A(_2, _8, _9);
+        var _0 = await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).CreateAsync();
+        return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_10).ReleaseAsync(_9);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_11);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_8);
+            await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
+            await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
+            await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
+        }
+
+        );
     }
 }");
         }
@@ -760,6 +914,18 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -863,6 +1029,21 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = GetSingleInstanceField0();
+        var _3 = new global::D((global::C)_2);
+        var _1 = new global::B((global::IC)_2, (global::D)_3);
+        var _0 = new global::A((global::B)_1, (global::IC)_2);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -1015,6 +1196,18 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await GetSingleInstanceField0();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -1258,6 +1451,20 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::AFactoryTarget>> global::StrongInject.IAsyncContainer<global::AFactoryTarget>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = await GetSingleInstanceField0();
+        var _0 = await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).CreateAsync();
+        return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+        }
+
+        );
+    }
 }");
         }
 
@@ -1361,6 +1568,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = GetSingleInstanceField0();
+        var _0 = new global::A((global::IC)_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1378,6 +1598,20 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::B>> global::StrongInject.IAsyncContainer<global::B>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = GetSingleInstanceField0();
+        var _2 = new global::D((global::C)_1);
+        var _0 = new global::B((global::C)_1, (global::D)_2);
+        return new global::StrongInject.AsyncOwned<global::B>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -1410,6 +1644,12 @@ partial class Container
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.IRequiresAsyncInitialization'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.Owned`1[T]'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.AsyncOwned`1'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.RegistrationAttribute'. Are you missing an assembly reference?
@@ -1499,6 +1739,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::A>)this._instanceProvider1).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::A>)this._instanceProvider1).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1515,6 +1768,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::B>> global::StrongInject.IAsyncContainer<global::B>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::B>)this._instanceProvider1).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::B>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::B>)this._instanceProvider1).ReleaseAsync(_0);
+        }
+
+        );
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1535,6 +1801,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::C>> global::StrongInject.IAsyncContainer<global::C>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::C>)this._instanceProvider2).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::C>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::C>)this._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::D>.RunAsync<TResult, TParam>(global::System.Func<global::D, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1553,6 +1832,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::D>> global::StrongInject.IAsyncContainer<global::D>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::D>)this._instanceProvider2).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::D>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::D>)this._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Int32[]>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32[], TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1569,6 +1861,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Int32[]>> global::StrongInject.IAsyncContainer<global::System.Int32[]>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)this._instanceProvider3).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::System.Int32[]>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)this._instanceProvider3).ReleaseAsync(_0);
+        }
+
+        );
     }
 }");
         }
@@ -1643,6 +1948,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::A>)global::Container._instanceProvider1).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::A>)global::Container._instanceProvider1).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1659,6 +1977,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::B>> global::StrongInject.IAsyncContainer<global::B>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::B>)global::Container._instanceProvider1).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::B>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::B>)global::Container._instanceProvider1).ReleaseAsync(_0);
+        }
+
+        );
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1679,6 +2010,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::C>> global::StrongInject.IAsyncContainer<global::C>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::C>)global::Container._instanceProvider2).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::C>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::C>)global::Container._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::D>.RunAsync<TResult, TParam>(global::System.Func<global::D, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1697,6 +2041,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::D>> global::StrongInject.IAsyncContainer<global::D>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::D>)global::Container._instanceProvider2).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::D>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::D>)global::Container._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Int32[]>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32[], TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1713,6 +2070,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Int32[]>> global::StrongInject.IAsyncContainer<global::System.Int32[]>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)global::Container._instanceProvider3).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::System.Int32[]>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)global::Container._instanceProvider3).ReleaseAsync(_0);
+        }
+
+        );
     }
 }");
         }
@@ -1791,6 +2161,24 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::C();
+        var _3 = await ((global::StrongInject.IAsyncInstanceProvider<global::D>)this._instanceProvider).GetAsync();
+        var _1 = new global::B((global::C)_2, _3);
+        var _4 = await ((global::StrongInject.IAsyncInstanceProvider<global::IC>)this._instanceProvider).GetAsync();
+        var _0 = new global::A((global::B)_1, _4);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::IC>)this._instanceProvider).ReleaseAsync(_4);
+            await ((global::StrongInject.IAsyncInstanceProvider<global::D>)this._instanceProvider).ReleaseAsync(_3);
+        }
+
+        );
     }
 }");
         }
@@ -1875,6 +2263,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Int32>> global::StrongInject.IAsyncContainer<global::System.Int32>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this._instanceProvider3).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::System.Int32>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this._instanceProvider3).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.String>.RunAsync<TResult, TParam>(global::System.Func<global::System.String, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1893,6 +2294,19 @@ partial class Container
         return result;
     }
 
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.String>> global::StrongInject.IAsyncContainer<global::System.String>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.String>)this._instanceProvider2).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::System.String>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.String>)this._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        );
+    }
+
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         if (Disposed)
@@ -1909,6 +2323,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Boolean>> global::StrongInject.IAsyncContainer<global::System.Boolean>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Boolean>)this._instanceProvider2).GetAsync();
+        return new global::StrongInject.AsyncOwned<global::System.Boolean>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Boolean>)this._instanceProvider2).ReleaseAsync(_0);
+        }
+
+        );
     }
 }");
         }
@@ -2182,6 +2609,32 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::AFactoryTarget>> global::StrongInject.IAsyncContainer<global::AFactoryTarget>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = await GetSingleInstanceField0();
+        var _3 = await GetSingleInstanceField2();
+        var _8 = await GetSingleInstanceField3();
+        var _7 = new global::H((global::I)_8);
+        var _6 = new global::G((global::H)_7);
+        var _5 = new global::F((global::G)_6);
+        var _4 = new global::E((global::F)_5);
+        var _9 = await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this.instanceProvider).GetAsync();
+        var _1 = new global::A(_2, _3, (global::E)_4, _9);
+        var _0 = await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).CreateAsync();
+        return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0, async () =>
+        {
+            await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
+            await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this.instanceProvider).ReleaseAsync(_9);
+            ((global::System.IDisposable)_4).Dispose();
+            await ((global::System.IAsyncDisposable)_5).DisposeAsync();
+            await ((global::System.IAsyncDisposable)_6).DisposeAsync();
+        }
+
+        );
+    }
 }");
         }
 
@@ -2236,6 +2689,18 @@ namespace N.O.P
             }
 
             return result;
+        }
+
+        async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::N.O.P.A>> global::StrongInject.IAsyncContainer<global::N.O.P.A>.ResolveAsync()
+        {
+            if (Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _0 = new global::N.O.P.A();
+            return new global::StrongInject.AsyncOwned<global::N.O.P.A>(_0, async () =>
+            {
+            }
+
+            );
         }
     }
 }");
@@ -2302,6 +2767,18 @@ namespace N.O.P
                     }
 
                     return result;
+                }
+
+                async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::N.O.P.Outer1.Outer2.A>> global::StrongInject.IAsyncContainer<global::N.O.P.Outer1.Outer2.A>.ResolveAsync()
+                {
+                    if (Disposed)
+                        throw new global::System.ObjectDisposedException(nameof(Container));
+                    var _0 = new global::N.O.P.Outer1.Outer2.A();
+                    return new global::StrongInject.AsyncOwned<global::N.O.P.Outer1.Outer2.A>(_0, async () =>
+                    {
+                    }
+
+                    );
                 }
             }
         }
@@ -2371,6 +2848,18 @@ namespace N.O.P
 
                     return result;
                 }
+
+                async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::N.O.P.A>> global::StrongInject.IAsyncContainer<global::N.O.P.A>.ResolveAsync()
+                {
+                    if (Disposed)
+                        throw new global::System.ObjectDisposedException(nameof(Container));
+                    var _0 = new global::N.O.P.A();
+                    return new global::StrongInject.AsyncOwned<global::N.O.P.A>(_0, async () =>
+                    {
+                    }
+
+                    );
+                }
             }
         }
     }
@@ -2409,6 +2898,11 @@ partial class Container
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
     {
         throw new global::System.NotImplementedException();
     }
@@ -2456,6 +2950,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -2507,6 +3006,11 @@ partial class Container
     {
         throw new global::System.NotImplementedException();
     }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
 }");
         }
 
@@ -2547,6 +3051,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -2592,6 +3101,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -2771,6 +3285,19 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = new global::A((global::B)_1);
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -2824,6 +3351,21 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        ((global::StrongInject.IRequiresInitialization)_1).Initialize();
+        var _0 = new global::A((global::B)_1);
+        ((global::StrongInject.IRequiresInitialization)_0).Initialize();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -2876,6 +3418,21 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _2 = new global::B();
+        var _1 = new global::A((global::B)_2);
+        var _0 = ((global::StrongInject.IFactory<global::System.Int32>)_1).Create();
+        return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
+        {
+            ((global::StrongInject.IFactory<global::System.Int32>)_1).Release(_0);
+        }
+
+        );
     }
 }");
         }
@@ -2933,6 +3490,21 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _2 = ((global::StrongInject.IInstanceProvider<global::System.Int32>)this._instanceProvider).Get();
+        var _0 = new global::A((global::B)_1, _2);
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+            ((global::StrongInject.IInstanceProvider<global::System.Int32>)this._instanceProvider).Release(_2);
+        }
+
+        );
     }
 }");
         }
@@ -3021,6 +3593,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = GetSingleInstanceField0();
+        var _0 = new global::A((global::B)_1);
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -3131,6 +3716,19 @@ partial class Container
         return result;
     }
 
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = GetSingleInstanceField0();
+        var _0 = new global::A((global::B)_1);
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
+    }
+
     private global::D _singleInstanceField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
@@ -3178,6 +3776,21 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::C>> global::StrongInject.IAsyncContainer<global::C>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = GetSingleInstanceField0();
+        var _2 = await GetSingleInstanceField1();
+        var _0 = new global::C((global::B)_1, (global::D)_2);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+        return new global::StrongInject.AsyncOwned<global::C>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -3268,6 +3881,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = GetSingleInstanceField0();
+        var _0 = new global::A((global::B)_1);
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -3401,6 +4027,19 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = GetSingleInstanceField0();
+        var _0 = new global::A((global::B)_1);
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -3492,6 +4131,18 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        return new global::StrongInject.Owned<global::C>(_0, () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -3561,6 +4212,33 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Func<global::A>>> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+        global::System.Func<global::A> _0 = () =>
+        {
+            var _1 = new global::B();
+            var _0 = new global::A((global::B)_1);
+            disposeActions1_0.Add(async () =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0, async () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                await disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -3629,6 +4307,32 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::System.Func<global::B, global::A>> global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -3695,6 +4399,32 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::B, global::A>> global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
     }
 }");
         }
@@ -3764,6 +4494,33 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::System.String, global::B> _1 = (param0_0, param0_1) =>
+        {
+            var _0 = new global::B(param0_0, param0_1, param0_0);
+            disposeActions1_1.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        var _0 = new global::A(_1);
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_1)
+                disposeAction();
+        }
+
+        );
     }
 }");
         }
@@ -3847,6 +4604,47 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>> global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::A> _0 = (param0_0) =>
+        {
+            var disposeActions2_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::System.String, global::B> _1 = (param1_0) =>
+            {
+                var _0 = new global::B(param0_0, param1_0);
+                disposeActions2_1.Add(() =>
+                {
+                }
+
+                );
+                return _0;
+            }
+
+            ;
+            var _0 = new global::A(param0_0, _1);
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_1)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
     }
 }");
         }
@@ -3942,6 +4740,60 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>> global::StrongInject.IContainer<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0 = (param0_0) =>
+        {
+            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _0 = (param1_0) =>
+            {
+                var disposeActions3_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+                global::System.Func<global::System.Int32, global::A> _0 = (param2_0) =>
+                {
+                    var _0 = new global::A(param2_0, param1_0, param0_0);
+                    disposeActions3_0.Add(() =>
+                    {
+                    }
+
+                    );
+                    return _0;
+                }
+
+                ;
+                disposeActions2_0.Add(() =>
+                {
+                    foreach (var disposeAction in disposeActions3_0)
+                        disposeAction();
+                }
+
+                );
+                return _0;
+            }
+
+            ;
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_0)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -4019,6 +4871,34 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::System.Func<global::B, global::A>> global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _1 = new global::C();
+            var _0 = new global::A(param0_0, (global::C)_1);
+            disposeActions1_0.Add(() =>
+            {
+                ((global::System.IDisposable)_1).Dispose();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -4087,6 +4967,32 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.String, global::A>> global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::System.String, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::System.String, global::A> _0 = (param0_0, param0_1) =>
+        {
+            var _0 = new global::A(param0_1, param0_1);
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.String, global::A>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
     }
 }");
         }
@@ -4170,6 +5076,46 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>> global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0 = (param0_0) =>
+        {
+            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::System.Int32, global::A> _0 = (param1_0) =>
+            {
+                var _0 = new global::A(param1_0, param1_0);
+                disposeActions2_0.Add(() =>
+                {
+                }
+
+                );
+                return _0;
+            }
+
+            ;
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_0)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
     }
 }");
         }
@@ -4287,6 +5233,32 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::System.Func<global::B, global::A>> global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::B, global::A> _0 = (param0_0) =>
+        {
+            var _0 = GetSingleInstanceField0();
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -4353,6 +5325,31 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::A, global::A>> global::StrongInject.IContainer<global::System.Func<global::A, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::A, global::A> _0 = (param0_0) =>
+        {
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return param0_0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::A, global::A>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
     }
 }");
         }
@@ -4435,6 +5432,45 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::System.Func<global::A, global::System.Func<global::A>>> global::StrongInject.IContainer<global::System.Func<global::A, global::System.Func<global::A>>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::A, global::System.Func<global::A>> _0 = (param0_0) =>
+        {
+            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            global::System.Func<global::A> _0 = () =>
+            {
+                disposeActions2_0.Add(() =>
+                {
+                }
+
+                );
+                return param0_0;
+            }
+
+            ;
+            disposeActions1_0.Add(() =>
+            {
+                foreach (var disposeAction in disposeActions2_0)
+                    disposeAction();
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::A, global::System.Func<global::A>>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -4481,6 +5517,11 @@ partial class Container
     {
         throw new global::System.NotImplementedException();
     }
+
+    global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.Int32, global::A>> global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::System.Int32, global::A>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
 }");
         }
 
@@ -4521,6 +5562,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -4569,6 +5615,11 @@ partial class Container
     {
         throw new global::System.NotImplementedException();
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Func<global::A>>> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.ResolveAsync()
+    {
+        throw new global::System.NotImplementedException();
+    }
 }");
         }
 
@@ -4609,6 +5660,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::Del>.Run<TResult, TParam>(global::System.Func<global::Del, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::Del> global::StrongInject.IContainer<global::Del>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -4655,6 +5711,11 @@ partial class Container
     {
         throw new global::System.NotImplementedException();
     }
+
+    global::StrongInject.Owned<global::Del> global::StrongInject.IContainer<global::Del>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
 }");
         }
 
@@ -4695,6 +5756,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::Del>.Run<TResult, TParam>(global::System.Func<global::Del, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::Del> global::StrongInject.IContainer<global::Del>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -4767,6 +5833,33 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::Del> global::StrongInject.IContainer<global::Del>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::Del _0 = async (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::Del>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -4835,6 +5928,33 @@ partial class Container
         }
 
         return result;
+    }
+
+    global::StrongInject.Owned<global::Del> global::StrongInject.IContainer<global::Del>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::Del _0 = async (param0_0) =>
+        {
+            var _0 = new global::A(param0_0);
+            await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::Del>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
     }
 }");
         }
@@ -4948,6 +6068,18 @@ partial class Container
 
         return result;
     }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        return new global::StrongInject.Owned<global::B>(_0, () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -5004,6 +6136,19 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Func<global::A>>> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = ((global::StrongInject.IInstanceProvider<global::System.Func<global::A>>)this._instanceProvider).Get();
+        return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0, async () =>
+        {
+            ((global::StrongInject.IInstanceProvider<global::System.Func<global::A>>)this._instanceProvider).Release(_0);
+        }
+
+        );
     }
 }");
         }
@@ -5062,6 +6207,20 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Func<global::A>>> global::StrongInject.IAsyncContainer<global::System.Func<global::A>>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = ((global::StrongInject.IFactory<global::System.Func<global::A>>)_1).Create();
+        return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0, async () =>
+        {
+            ((global::StrongInject.IFactory<global::System.Func<global::A>>)_1).Release(_0);
+        }
+
+        );
     }
 }");
         }
@@ -5130,6 +6289,31 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>>> global::StrongInject.IAsyncContainer<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+        global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0 = (param0_0) =>
+        {
+            disposeActions1_0.Add(async () =>
+            {
+            }
+
+            );
+            return param0_0;
+        }
+
+        ;
+        return new global::StrongInject.AsyncOwned<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>>(_0, async () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                await disposeAction();
+        }
+
+        );
+    }
 }");
         }
 
@@ -5163,6 +6347,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::System.Action<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Action<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Action<global::System.Int32>> global::StrongInject.IContainer<global::System.Action<global::System.Int32>>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -5222,6 +6411,20 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = global::Module.M((global::B)_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        );
     }
 }");
         }
@@ -5317,6 +6520,18 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -5366,6 +6581,11 @@ partial class Container
     {
         throw new global::System.NotImplementedException();
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        throw new global::System.NotImplementedException();
+    }
 }");
         }
 
@@ -5412,6 +6632,11 @@ partial class Container
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
     {
         throw new global::System.NotImplementedException();
     }
@@ -5467,6 +6692,20 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = this.M((global::B)_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        );
+    }
 }");
         }
 
@@ -5519,6 +6758,20 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = this.M((global::B)_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        );
     }
 }");
         }
@@ -5573,6 +6826,18 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -5634,6 +6899,19 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.M1();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        );
+    }
 }");
         }
 
@@ -5693,6 +6971,19 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = ((global::StrongInject.IInstanceProvider<global::A>)this._instanceProvider).Get();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            ((global::StrongInject.IInstanceProvider<global::A>)this._instanceProvider).Release(_0);
+        }
+
+        );
+    }
 }");
         }
 
@@ -5747,6 +7038,18 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
+    }
 }");
         }
 
@@ -5800,6 +7103,18 @@ partial class Container
         }
 
         return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
     }
 }");
         }
@@ -5906,6 +7221,20 @@ partial class Container
 
         return result;
     }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = await global::Module.M((global::B)_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        );
+    }
 }");
         }
 
@@ -5950,6 +7279,11 @@ partial class Container
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
     {
         throw new global::System.NotImplementedException();
     }
@@ -6001,6 +7335,79 @@ partial class Container
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
     {
         throw new global::System.NotImplementedException();
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void WarnOnInstanceRequiringAsyncDisposalInSyncResolution()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+using System.Threading.Tasks;
+
+[Registration(typeof(A))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A : IAsyncDisposable
+{
+    public ValueTask DisposeAsync() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (7,22): Warning SI1301: Cannot call asynchronous dispose for 'A' in implementation of synchronous container
+                // Container
+                new DiagnosticResult("SI1301", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        }
+
+        );
     }
 }");
         }

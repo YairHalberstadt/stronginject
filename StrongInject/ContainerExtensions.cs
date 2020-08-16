@@ -23,6 +23,8 @@ namespace StrongInject
                 return default(object);
             }, action);
         }
+
+        public static Owned<T> Resolve<T>(this IContainer<T> container) => container.Resolve();
     }
 
     public static class AsyncContainerExtensions
@@ -59,6 +61,8 @@ namespace StrongInject
                 return new ValueTask<object?>(default(object));
             }, action).AsValueTask();
         }
+
+        public static ValueTask<AsyncOwned<T>> ResolveAsync<T>(this IAsyncContainer<T> container) => container.ResolveAsync();
     }
 }
 
