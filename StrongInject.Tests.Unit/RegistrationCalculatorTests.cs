@@ -20,8 +20,8 @@ namespace StrongInject.Generator.Tests.Unit
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(IA))]
-[Registration(typeof(B), Scope.SingleInstance, typeof(B), typeof(IB))]
+[Register(typeof(A), typeof(IA))]
+[Register(typeof(B), Scope.SingleInstance, typeof(B), typeof(IB))]
 public class Container
 {
 }
@@ -64,20 +64,20 @@ public interface IB {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(IA))]
-[ModuleRegistration(typeof(ModuleA))]
-[ModuleRegistration(typeof(ModuleB), typeof(ID))]
+[Register(typeof(A), typeof(IA))]
+[RegisterModule(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleB), typeof(ID))]
 public class Container
 {
 }
 
-[Registration(typeof(B), typeof(IB))]
+[Register(typeof(B), typeof(IB))]
 public class ModuleA
 {
 }
 
-[Registration(typeof(C), typeof(IC))]
-[Registration(typeof(D), Scope.SingleInstance, typeof(D), typeof(ID))]
+[Register(typeof(C), typeof(IC))]
+[Register(typeof(D), Scope.SingleInstance, typeof(D), typeof(ID))]
 public class ModuleB
 {
 }
@@ -130,13 +130,13 @@ public interface ID {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(IA))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(A), typeof(IA))]
+[RegisterModule(typeof(Module))]
 public class Container
 {
 }
 
-[Registration(typeof(B), typeof(IA))]
+[Register(typeof(B), typeof(IA))]
 public class Module
 {
 }
@@ -178,18 +178,18 @@ public interface IA {}
             string userSource = @"
 using StrongInject;
 
-[ModuleRegistration(typeof(ModuleA))]
-[ModuleRegistration(typeof(ModuleB))]
+[RegisterModule(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleB))]
 public class Container
 {
 }
 
-[Registration(typeof(A), typeof(IA))]
+[Register(typeof(A), typeof(IA))]
 public class ModuleA
 {
 }
 
-[Registration(typeof(B), typeof(IA))]
+[Register(typeof(B), typeof(IA))]
 public class ModuleB
 {
 }
@@ -206,10 +206,10 @@ public class B : IA {}
             diagnostics.Verify(
                 // (4,2): Error SI0002: Modules 'ModuleA' and 'ModuleB' provide differing registrations for 'IA'.
                 // ModuleRegistration(typeof(ModuleA))
-                new DiagnosticResult("SI0002", @"ModuleRegistration(typeof(ModuleA))").WithLocation(4, 2),
+                new DiagnosticResult("SI0002", @"RegisterModule(typeof(ModuleA))").WithLocation(4, 2),
                 // (5,2): Error SI0002: Modules 'ModuleA' and 'ModuleB' provide differing registrations for 'IA'.
                 // ModuleRegistration(typeof(ModuleB))
-                new DiagnosticResult("SI0002", @"ModuleRegistration(typeof(ModuleB))").WithLocation(5, 2));
+                new DiagnosticResult("SI0002", @"RegisterModule(typeof(ModuleB))").WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().HaveCount(1);
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().ContainKey(comp.GetTypeByMetadataName("IA")!);
         }
@@ -220,18 +220,18 @@ public class B : IA {}
             string userSource = @"
 using StrongInject;
 
-[ModuleRegistration(typeof(ModuleA))]
-[ModuleRegistration(typeof(ModuleB), typeof(IA))]
+[RegisterModule(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleB), typeof(IA))]
 public class Container
 {
 }
 
-[Registration(typeof(A), typeof(IA))]
+[Register(typeof(A), typeof(IA))]
 public class ModuleA
 {
 }
 
-[Registration(typeof(B), typeof(IA))]
+[Register(typeof(B), typeof(IA))]
 public class ModuleB
 {
 }
@@ -261,18 +261,18 @@ public class B : IA {}
             string userSource = @"
 using StrongInject;
 
-[ModuleRegistration(typeof(ModuleA), typeof(IA))]
-[ModuleRegistration(typeof(ModuleB))]
+[RegisterModule(typeof(ModuleA), typeof(IA))]
+[RegisterModule(typeof(ModuleB))]
 public class Container
 {
 }
 
-[Registration(typeof(A), typeof(IA))]
+[Register(typeof(A), typeof(IA))]
 public class ModuleA
 {
 }
 
-[Registration(typeof(B), typeof(IA))]
+[Register(typeof(B), typeof(IA))]
 public class ModuleB
 {
 }
@@ -302,8 +302,8 @@ public class B : IA {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(IA))]
-[Registration(typeof(B), typeof(IA))]
+[Register(typeof(A), typeof(IA))]
+[Register(typeof(B), typeof(IA))]
 public class Container
 {
 }
@@ -320,7 +320,7 @@ public class B : IA {}
             diagnostics.Verify(
                 // (5,2): Error SI0004: Module already contains registration for 'IA'.
                 // Registration(typeof(B), typeof(IA))
-                new DiagnosticResult("SI0004", @"Registration(typeof(B), typeof(IA))").WithLocation(5, 2));
+                new DiagnosticResult("SI0004", @"Register(typeof(B), typeof(IA))").WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
@@ -339,8 +339,8 @@ public class B : IA {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), typeof(IA))]
-[FactoryRegistration(typeof(B))]
+[Register(typeof(A), typeof(IA))]
+[RegisterFactory(typeof(B))]
 public class Container
 {
 }
@@ -357,7 +357,7 @@ public class B : IAsyncFactory<IA> { public ValueTask<IA> CreateAsync() => throw
             diagnostics.Verify(
                 // (6,2): Error SI0004: Module already contains registration for 'IA'.
                 // FactoryRegistration(typeof(B))
-                new DiagnosticResult("SI0004", @"FactoryRegistration(typeof(B))", DiagnosticSeverity.Error).WithLocation(6, 2));
+                new DiagnosticResult("SI0004", @"RegisterFactory(typeof(B))", DiagnosticSeverity.Error).WithLocation(6, 2));
 
             var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
@@ -383,9 +383,9 @@ public class B : IAsyncFactory<IA> { public ValueTask<IA> CreateAsync() => throw
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A<>))]
-[Registration(typeof(A<int>), typeof(A<>))]
-[Registration(typeof(B<>.C))]
+[Register(typeof(A<>))]
+[Register(typeof(A<int>), typeof(A<>))]
+[Register(typeof(B<>.C))]
 public class Container
 {
 }
@@ -403,13 +403,13 @@ public class B<T> {
             diagnostics.Verify(
                 // (4,2): Error SI0011: Unbound Generic Type 'A<>' is invalid in a registration.
                 // Registration(typeof(A<>))
-                new DiagnosticResult("SI0011", @"Registration(typeof(A<>))", DiagnosticSeverity.Error).WithLocation(4, 2),
+                new DiagnosticResult("SI0011", @"Register(typeof(A<>))", DiagnosticSeverity.Error).WithLocation(4, 2),
                 // (5,2): Error SI0011: Unbound Generic Type 'A<>' is invalid in a registration.
                 // Registration(typeof(A<int>), typeof(A<>))
-                new DiagnosticResult("SI0011", @"Registration(typeof(A<int>), typeof(A<>))", DiagnosticSeverity.Error).WithLocation(5, 2),
+                new DiagnosticResult("SI0011", @"Register(typeof(A<int>), typeof(A<>))", DiagnosticSeverity.Error).WithLocation(5, 2),
                 // (6,2): Error SI0011: Unbound Generic Type 'B<>.C' is invalid in a registration.
                 // Registration(typeof(B<>.C))
-                new DiagnosticResult("SI0011", @"Registration(typeof(B<>.C))", DiagnosticSeverity.Error).WithLocation(6, 2));
+                new DiagnosticResult("SI0011", @"Register(typeof(B<>.C))", DiagnosticSeverity.Error).WithLocation(6, 2));
 
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
         }
@@ -420,15 +420,15 @@ public class B<T> {
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(Invalid))]
-[Registration(typeof(A<int>), typeof(Invalid))]
-[Registration(typeof(A<int>), registeredAs: new [] { typeof(Invalid) })]
-[Registration(typeof(A<int>), registeredAs: new System.Type[] { typeof(Invalid) })]
-[Registration(typeof(A<Invalid>))]
-[ModuleRegistration(typeof(Invalid))]
-[ModuleRegistration(typeof(A<>), typeof(Invalid))]
-[ModuleRegistration(typeof(A<>), exclusionList: new [] { typeof(Invalid) })]
-[ModuleRegistration(typeof(A<>), exclusionList: new System.Type[] { typeof(Invalid) })]
+[Register(typeof(Invalid))]
+[Register(typeof(A<int>), typeof(Invalid))]
+[Register(typeof(A<int>), registerAs: new [] { typeof(Invalid) })]
+[Register(typeof(A<int>), registerAs: new System.Type[] { typeof(Invalid) })]
+[Register(typeof(A<Invalid>))]
+[RegisterModule(typeof(Invalid))]
+[RegisterModule(typeof(A<>), typeof(Invalid))]
+[RegisterModule(typeof(A<>), exclusionList: new [] { typeof(Invalid) })]
+[RegisterModule(typeof(A<>), exclusionList: new System.Type[] { typeof(Invalid) })]
 public class Container
 {
 }
@@ -438,33 +438,33 @@ public class A<T1, T2> {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             comp.GetDiagnostics().Verify(
-                // (4,22): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                // (4,18): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (5,38): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(4, 18),
+                // (5,34): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(5, 38),
-                // (6,61): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(5, 34),
+                // (6,57): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(6, 61),
-                // (7,72): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(6, 55),
+                // (7,68): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(7, 72),
-                // (8,24): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(7, 66),
+                // (8,20): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(8, 24),
-                // (9,28): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(8, 20),
+                // (9,24): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(9, 28),
-                // (10,41): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(9, 24),
+                // (10,37): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(10, 41),
-                // (11,65): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(10, 37),
+                // (11,61): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(11, 65),
-                // (12,76): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(11, 61),
+                // (12,72): Error CS0246: The type or namespace name 'Invalid' could not be found (are you missing a using directive or an assembly reference?)
                 // Invalid
-                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(12, 76));
+                new DiagnosticResult("CS0246", @"Invalid", DiagnosticSeverity.Error).WithLocation(12, 72));
             List<Diagnostic> diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -479,7 +479,7 @@ public class A<T1, T2> {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))]
+[Register(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))]
 public class Container
 {
 }
@@ -503,16 +503,16 @@ public interface IE {}
             diagnostics.Verify(
                 // (4,2): Error SI0001: 'A' does not implement 'C<string>'.
                 // Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))
-                new DiagnosticResult("SI0001", @"Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2),
+                new DiagnosticResult("SI0001", @"Register(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2),
                 // (4,2): Error SI0001: 'A' does not implement 'D'.
                 // Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))
-                new DiagnosticResult("SI0001", @"Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2),
+                new DiagnosticResult("SI0001", @"Register(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2),
                 // (4,2): Error SI0001: 'A' does not implement 'IC<string>'.
                 // Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))
-                new DiagnosticResult("SI0001", @"Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2),
+                new DiagnosticResult("SI0001", @"Register(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2),
                 // (4,2): Error SI0001: 'A' does not implement 'IE'.
                 // Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))
-                new DiagnosticResult("SI0001", @"Registration(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2));
+                new DiagnosticResult("SI0001", @"Register(typeof(A), typeof(A), typeof(B), typeof(C<int>), typeof(C<string>), typeof(D), typeof(IA), typeof(IB), typeof(IC<int>), typeof(IC<string>), typeof(ID), typeof(IE))").WithLocation(4, 2));
 
             var cIntType = comp.AssertGetTypeByMetadataName("C`1").Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
             var icIntType = comp.AssertGetTypeByMetadataName("IC`1").Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
@@ -570,7 +570,7 @@ public interface IE {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(B))]
+[RegisterFactory(typeof(B))]
 public class Container
 {
 }
@@ -607,8 +607,8 @@ public class B : IAsyncFactory<A> { public ValueTask<A> CreateAsync() => throw n
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(C))]
-[FactoryRegistration(typeof(B))]
+[Register(typeof(C))]
+[RegisterFactory(typeof(B))]
 public class Container
 {
 }
@@ -653,15 +653,15 @@ public class C : IRequiresAsyncInitialization { public ValueTask InitializeAsync
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
-[Registration(typeof(E))]
-[Registration(typeof(F))]
-[Registration(typeof(G))]
-[Registration(typeof(H))]
-[Registration(typeof(I))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
+[Register(typeof(E))]
+[Register(typeof(F))]
+[Register(typeof(G))]
+[Register(typeof(H))]
+[Register(typeof(I))]
 public class Container
 {
 }
@@ -685,13 +685,13 @@ public class I { internal I(int a) {} public I(bool b) {} }
             diagnostics.Verify(
                 // (6,2): Error SI0006: 'C' has multiple non-default public constructors.
                 // Registration(typeof(C))
-                new DiagnosticResult("SI0006", @"Registration(typeof(C))").WithLocation(6, 2),
+                new DiagnosticResult("SI0006", @"Register(typeof(C))").WithLocation(6, 2),
                 // (9,2): Error SI0006: 'F' has multiple non-default public constructors.
                 // Registration(typeof(F))
-                new DiagnosticResult("SI0006", @"Registration(typeof(F))").WithLocation(9, 2),
+                new DiagnosticResult("SI0006", @"Register(typeof(F))").WithLocation(9, 2),
                 // (11,2): Error SI0005: 'H' does not have any public constructors.
                 // Registration(typeof(H))
-                new DiagnosticResult("SI0005", @"Registration(typeof(H))").WithLocation(11, 2));
+                new DiagnosticResult("SI0005", @"Register(typeof(H))").WithLocation(11, 2));
 
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
@@ -743,10 +743,10 @@ public class I { internal I(int a) {} public I(bool b) {} }
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B), typeof(IB), typeof(IB<A>))]
-[Registration(typeof(C<A>))]
-[Registration(typeof(Outer.Inner))]
+[Register(typeof(A))]
+[Register(typeof(B), typeof(IB), typeof(IB<A>))]
+[Register(typeof(C<A>))]
+[Register(typeof(Outer.Inner))]
 public class Container
 {
 }
@@ -770,19 +770,19 @@ internal class Outer
             diagnostics.Verify(
                 // (4,2): Error SI0007: 'A' is not public.
                 // Registration(typeof(A))
-                new DiagnosticResult("SI0007", @"Registration(typeof(A))").WithLocation(4, 2),
+                new DiagnosticResult("SI0007", @"Register(typeof(A))").WithLocation(4, 2),
                 // (5,2): Error SI0007: 'B' is not public.
                 // Registration(typeof(B), typeof(IB), typeof(IB<A>))
-                new DiagnosticResult("SI0007", @"Registration(typeof(B), typeof(IB), typeof(IB<A>))").WithLocation(5, 2),
+                new DiagnosticResult("SI0007", @"Register(typeof(B), typeof(IB), typeof(IB<A>))").WithLocation(5, 2),
                 // (5,2): Error SI0007: 'B' is not public.
                 // Registration(typeof(B), typeof(IB), typeof(IB<A>))
-                new DiagnosticResult("SI0007", @"Registration(typeof(B), typeof(IB), typeof(IB<A>))").WithLocation(5, 2),
+                new DiagnosticResult("SI0007", @"Register(typeof(B), typeof(IB), typeof(IB<A>))").WithLocation(5, 2),
                 // (6,2): Error SI0007: 'C<A>' is not public.
                 // Registration(typeof(C<A>))
-                new DiagnosticResult("SI0007", @"Registration(typeof(C<A>))").WithLocation(6, 2),
+                new DiagnosticResult("SI0007", @"Register(typeof(C<A>))").WithLocation(6, 2),
                 // (7,2): Error SI0007: 'Outer.Inner' is not public.
                 // Registration(typeof(Outer.Inner))
-                new DiagnosticResult("SI0007", @"Registration(typeof(Outer.Inner))").WithLocation(7, 2));
+                new DiagnosticResult("SI0007", @"Register(typeof(Outer.Inner))").WithLocation(7, 2));
 
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
         }
@@ -793,8 +793,8 @@ internal class Outer
             string userSource = @"
 using StrongInject;
 
-[Registration(registeredAs: new[] { typeof(IA) }, type: typeof(A))]
-[Registration(scope: Scope.SingleInstance, registeredAs: new[] { typeof(B), typeof(IB) }, type: typeof(B))]
+[Register(registerAs: new[] { typeof(IA) }, type: typeof(A))]
+[Register(scope: Scope.SingleInstance, registerAs: new[] { typeof(B), typeof(IB) }, type: typeof(B))]
 public class Container
 {
 }
@@ -838,7 +838,7 @@ public interface IB {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public class Container
 {
 }
@@ -874,23 +874,23 @@ public class A : IAsyncFactory<int[]> { public ValueTask<int[]> CreateAsync() =>
             string userSource = @"
 using StrongInject;
 
-[ModuleRegistration(typeof(ModuleA))]
-[ModuleRegistration(typeof(ModuleB))]
+[RegisterModule(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleB))]
 public class Container
 {
 }
 
-[ModuleRegistration(typeof(ModuleC))]
+[RegisterModule(typeof(ModuleC))]
 public class ModuleA
 {
 }
 
-[ModuleRegistration(typeof(ModuleC))]
+[RegisterModule(typeof(ModuleC))]
 public class ModuleB
 {
 }
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class ModuleC
 {
 }
@@ -918,8 +918,8 @@ public class A {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), Scope.SingleInstance, typeof(IA))]
-[Registration(typeof(B), Scope.SingleInstance)]
+[Register(typeof(A), Scope.SingleInstance, typeof(IA))]
+[Register(typeof(B), Scope.SingleInstance)]
 public class Container
 {
 }
@@ -936,10 +936,10 @@ public struct B {}
             diagnostics.Verify(
                 // (4,2): Error SI0008: 'A' is a struct and cannot have a Single Instance scope.
                 // Registration(typeof(A), Scope.SingleInstance, typeof(IA))
-                new DiagnosticResult("SI0008", @"Registration(typeof(A), Scope.SingleInstance, typeof(IA))").WithLocation(4, 2),
+                new DiagnosticResult("SI0008", @"Register(typeof(A), Scope.SingleInstance, typeof(IA))").WithLocation(4, 2),
                 // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
                 // Registration(typeof(B), Scope.SingleInstance)
-                new DiagnosticResult("SI0008", @"Registration(typeof(B), Scope.SingleInstance)").WithLocation(5, 2));
+                new DiagnosticResult("SI0008", @"Register(typeof(B), Scope.SingleInstance)").WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().BeEmpty();
         }
 
@@ -950,7 +950,7 @@ public struct B {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)]
+[RegisterFactory(typeof(A), Scope.SingleInstance, Scope.SingleInstance)]
 public class Container
 {
 }
@@ -966,7 +966,7 @@ public struct B {}
             diagnostics.Verify(
                 // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
                 // FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)
-                new DiagnosticResult("SI0008", @"FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)", DiagnosticSeverity.Error).WithLocation(5, 2));
+                new DiagnosticResult("SI0008", @"RegisterFactory(typeof(A), Scope.SingleInstance, Scope.SingleInstance)", DiagnosticSeverity.Error).WithLocation(5, 2));
             var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
@@ -986,7 +986,7 @@ public struct B {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)]
+[RegisterFactory(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)]
 public class Container
 {
 }
@@ -1002,7 +1002,7 @@ public struct B {}
             diagnostics.Verify(
                 // (5,2): Error SI0008: 'A' is a struct and cannot have a Single Instance scope.
                 // FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)
-                new DiagnosticResult("SI0008", @"FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)", DiagnosticSeverity.Error).WithLocation(5, 2));
+                new DiagnosticResult("SI0008", @"RegisterFactory(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)", DiagnosticSeverity.Error).WithLocation(5, 2));
             Assert.Empty(registrations);
         }
 
@@ -1013,7 +1013,7 @@ public struct B {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(IA<object>))]
+[Register(typeof(A), typeof(IA<object>))]
 public class Container
 {
 }
@@ -1043,7 +1043,7 @@ public class A : IA<string> {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(IA))]
+[Register(typeof(A), typeof(IA))]
 public class Container
 {
 }
@@ -1072,7 +1072,7 @@ public struct A : IA {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), typeof(A?))]
+[Register(typeof(A), typeof(A?))]
 public class Container
 {
 }
@@ -1101,7 +1101,7 @@ public struct A {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B), typeof(A))]
+[Register(typeof(B), typeof(A))]
 public class Container
 {
 }
@@ -1119,7 +1119,7 @@ public class B
             diagnostics.Verify(
                 // (4,2): Error SI0001: 'B' does not have an identity, implicit reference, or boxing conversion to 'A'.
                 // Registration(typeof(B), typeof(A))
-                new DiagnosticResult("SI0001", @"Registration(typeof(B), typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
+                new DiagnosticResult("SI0001", @"Register(typeof(B), typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
             Assert.Empty(registrations);
         }
 
@@ -1129,7 +1129,7 @@ public class B
             string userSource = @"
 using StrongInject;
 
-[ModuleRegistration(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleA))]
 public class ModuleA {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
@@ -1149,10 +1149,10 @@ public class ModuleA {}
             string userSource = @"
 using StrongInject;
 
-[ModuleRegistration(typeof(ModuleB))]
+[RegisterModule(typeof(ModuleB))]
 public class ModuleA {}
 
-[ModuleRegistration(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleA))]
 public class ModuleB {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
@@ -1172,13 +1172,13 @@ public class ModuleB {}
             string userSource = @"
 using StrongInject;
 
-[ModuleRegistration(typeof(ModuleB))]
+[RegisterModule(typeof(ModuleB))]
 public class ModuleA {}
 
-[ModuleRegistration(typeof(ModuleC))]
+[RegisterModule(typeof(ModuleC))]
 public class ModuleB {}
 
-[ModuleRegistration(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleA))]
 public class ModuleC {}
 ";
             Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
@@ -1198,7 +1198,7 @@ public class ModuleC {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Container
 {
 }
@@ -1212,7 +1212,7 @@ public abstract class A { public A(){} }
             diagnostics.Verify(
                 // (4,2): Error SI0010: Cannot register 'A' as it is abstract.
                 // Registration(typeof(A))
-                new DiagnosticResult("SI0010", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
+                new DiagnosticResult("SI0010", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
             Assert.Empty(registrations);
         }
 
@@ -1222,7 +1222,7 @@ public abstract class A { public A(){} }
             string userSource = @"
 using StrongInject;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public class Container
 {
 }
@@ -1237,7 +1237,7 @@ public class A {}
             diagnostics.Verify(
                 // (4,2): Error SI0012: 'A' is registered as a factory but does not implement StrongInject.IAsyncFactory<T>
                 // FactoryRegistration(typeof(A))
-                new DiagnosticResult("SI0012", @"FactoryRegistration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
+                new DiagnosticResult("SI0012", @"RegisterFactory(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2));
             Assert.Empty(registrations);
         }
 
@@ -1248,7 +1248,7 @@ public class A {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Container
 {
 }
@@ -1263,7 +1263,7 @@ public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => new
             diagnostics.Verify(
                 // (5,2): Warning SI1001: 'A' implements 'StrongInject.IAsyncFactory<int>'. Did you mean to use FactoryRegistration instead?
                 // Registration(typeof(A))
-                new DiagnosticResult("SI1001", @"Registration(typeof(A))", DiagnosticSeverity.Warning).WithLocation(5, 2));
+                new DiagnosticResult("SI1001", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
@@ -1281,7 +1281,7 @@ public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => new
             string userSource = @"
 using StrongInject;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public class Container
 {
 }
@@ -1318,7 +1318,7 @@ public class A : IFactory<int> { public int Create() => 0; }
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Container
 {
 }
@@ -1349,7 +1349,7 @@ public class A : IRequiresInitialization { public void Initialize() {} }
             string userSource = @"
 using StrongInject;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public class Container
 {
 }
@@ -1388,7 +1388,7 @@ public class A : IFactory<int>, IRequiresInitialization { public int Create() =>
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public class Container
 {
 }
@@ -1426,7 +1426,7 @@ public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => def
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Container
 {
 }
@@ -1458,7 +1458,7 @@ public class A : IRequiresAsyncInitialization { public ValueTask InitializeAsync
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public class Container
 {
 }
@@ -1497,7 +1497,7 @@ public class A : IAsyncFactory<int>, IRequiresAsyncInitialization { public Value
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Container
 {
 }
@@ -1512,7 +1512,7 @@ public class A : IRequiresInitialization, IRequiresAsyncInitialization { public 
             diagnostics.Verify(
                 // (5,2): Error SI0013: 'A' implements both IRequiresInitialization and IRequiresAsyncInitialization
                 // Registration(typeof(A))
-                new DiagnosticResult("SI0013", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(5, 2));
+                new DiagnosticResult("SI0013", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(5, 2));
             registrations.ToDictionary(x => x.Key, x => x.Value).Should().Equal(new Dictionary<ITypeSymbol, InstanceSource>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =

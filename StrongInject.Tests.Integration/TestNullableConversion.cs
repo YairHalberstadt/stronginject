@@ -13,8 +13,8 @@ namespace StrongInject.Tests.Integration
         }
 
 
-        [Registration(typeof(B), typeof(B?))]
-        [Registration(typeof(A))]
+        [Register(typeof(B), typeof(B?))]
+        [Register(typeof(A))]
         public partial class Container : IAsyncContainer<A>
         {
         }

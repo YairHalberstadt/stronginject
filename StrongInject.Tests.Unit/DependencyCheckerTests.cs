@@ -21,10 +21,10 @@ namespace StrongInject.Generator.Tests.Unit
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public class Container
 {
 }
@@ -57,10 +57,10 @@ public class D
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public class Container
 {
 }
@@ -94,10 +94,10 @@ public class E {}
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public class Container
 {
 }
@@ -138,10 +138,10 @@ public class D
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public class Container
 {
 }
@@ -182,10 +182,10 @@ public class D
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public class Container
 {
 }
@@ -223,9 +223,9 @@ public class D
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
 public class Container
 {
 }
@@ -263,8 +263,8 @@ public class D
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public class Container
 {
 }
@@ -304,8 +304,8 @@ public class D
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public class Container
 {
 }

@@ -63,7 +63,7 @@ using StrongInject;
 
 public class A {}
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<A> {}
 ```
 
@@ -77,8 +77,8 @@ using StrongInject;
 public class A {}
 public class B {}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
@@ -112,14 +112,14 @@ using StrongInject;
 public class A {}
 public class B {}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
 All the dependencies of the container type parameter must be registered or you will get a compile time error.
 
-By default `[Registration(typeof(A))]` will register an type `A` as itself. You can however register a type as any base type or implemented interface:
+By default `[Register(typeof(A))]` will register an type `A` as itself. You can however register a type as any base type or implemented interface:
 
 ```csharp
 using StrongInject;
@@ -130,11 +130,11 @@ public class Base : BaseBase, IBase {}
 public interface IA {}
 public class A : Base, IA {}
 
-[Registration(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
+[Register(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
 public partial class Container : IContainer<BaseBase> {}
 ```
 
-If you do so, you will have to explicitly also register it as itself if that is desired: `[Registration(typeof(A), typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]`
+If you do so, you will have to explicitly also register it as itself if that is desired: `[Register(typeof(A), typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]`
 
 If there is a single public non-parameterless constructor, StrongInject will use that to construct the type. If there is no public non-parameterless constructor StrongInject will use the parameterless constructor if it exists and is public. Else it will report an error.
 
@@ -151,8 +151,8 @@ public class A {}
 public interface IB {}
 public class B : IB {}
 
-[Registration(typeof(A), Scope.SingleInstance)]
-[Registration(typeof(B), Scope.InstancePerResolution, typeof(IB))]
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B), Scope.InstancePerResolution, typeof(IB))]
 public partial class Container : IContainer<A>, IContainer<IB> {}
 ```
 
@@ -188,10 +188,10 @@ using StrongInject;
 
 public class A {}
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Module {}
 
-[ModuleRegistration(typeof(Module))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IContainer<A> {}
 ```
 
@@ -200,7 +200,7 @@ If you import multiple modules, and they both register the same type differently
 There are two ways to solve this:
 
 1. Register the type directly. This will override the registrations in imported modules.
-2. Exclude the registration from one of the modules when you import it: `[ModuleRegistration(typeof(Module), exclusionList: new [] { typeof(A) })]`
+2. Exclude the registration from one of the modules when you import it: `[RegisterModule(typeof(Module), exclusionList: new [] { typeof(A) })]`
 
 #### Factories
 
@@ -215,8 +215,8 @@ public interface IInterface {}
 public class A : IInterface {}
 public class B : IInterface {}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<IInterface[]>
 {
     [Factory] private IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
@@ -239,9 +239,9 @@ public class Module
     [Factory] public static IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
 }
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IContainer<IInterface[]>
 {
 }
@@ -276,9 +276,9 @@ public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
     }
 }
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[FactoryRegistration(typeof(InterfaceArrayFactory))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[RegisterFactory(typeof(InterfaceArrayFactory))]
 public partial class Container : IContainer<IInterface[]> { }
 ```
 
@@ -287,7 +287,7 @@ Whilst a factory doesn't have to be a record, doing so significantly shortens th
 The scope of the factory and the factory target is controlled separately. This allows you to e.g. have a singleton factory, but call `CreateAsync` on every resolution:
 
 ```csharp
-[FactoryRegistration(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
+[RegisterFactory(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
 ```
 
 If a factory implements `IFactory<T>` for multiple `T`s it will be registered as a factory for all of them. 
@@ -323,9 +323,9 @@ public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IFacto
     public IInterface Create() => InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B;
 }
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[FactoryRegistration(typeof(InterfaceFactory))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[RegisterFactory(typeof(InterfaceFactory))]
 public partial class Container : IContainer<IInterface>
 {
     private readonly InstanceProvider _instanceProvider;
@@ -354,8 +354,8 @@ public class A
 
 public class B{}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public class Container : IContainer<A> {}
 ```
 
@@ -379,8 +379,8 @@ public class Handler
   public Handler(bool shouldFrob) => ...
 }
 
-[Registration(typeof(Server))]
-[Registration(typeof(Handler))]
+[Register(typeof(Server))]
+[Register(typeof(Handler))]
 public class Container : IContainer<Server> {}
 ```
 
@@ -405,8 +405,8 @@ public class Handler : IRequiresAsyncInitialization
   public async ValueTask ResolveAsync() => ...
 }
 
-[Registration(typeof(Server))]
-[Registration(typeof(Handler))]
+[Register(typeof(Server))]
+[Register(typeof(Handler))]
 public class Container : IContainer<Server> {}
 ```
 
@@ -477,7 +477,7 @@ public record DbInstanceProvider(IDb Db) : IInstanceProvider<IDb>
     public void Release(IDb instance) {}
 }
 
-[Registration(typeof(PasswordChecker), Scope.SingleInstance)]
+[Register(typeof(PasswordChecker), Scope.SingleInstance)]
 public partial class Container : IAsyncContainer<PasswordChecker>
 {
     private readonlyDbInstanceProvider _dbInstanceProvider;

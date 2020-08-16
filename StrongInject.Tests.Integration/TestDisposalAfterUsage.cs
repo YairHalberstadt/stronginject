@@ -47,10 +47,10 @@ namespace StrongInject.Tests.Integration
             }
         }
 
-        [Registration(typeof(D), Scope.InstancePerDependency)]
-        [Registration(typeof(C), Scope.InstancePerResolution)]
-        [Registration(typeof(B))]
-        [Registration(typeof(A))]
+        [Register(typeof(D), Scope.InstancePerDependency)]
+        [Register(typeof(C), Scope.InstancePerResolution)]
+        [Register(typeof(B))]
+        [Register(typeof(A))]
         public partial class Container1 : IAsyncContainer<A>, IAsyncContainer<Func<A>>
         {
         }
@@ -95,10 +95,10 @@ namespace StrongInject.Tests.Integration
             Assert.True(a2.c.d.AsyncDisposed);
         }
 
-        [Registration(typeof(D))]
-        [Registration(typeof(C))]
-        [Registration(typeof(B), Scope.SingleInstance)]
-        [Registration(typeof(A))]
+        [Register(typeof(D))]
+        [Register(typeof(C))]
+        [Register(typeof(B), Scope.SingleInstance)]
+        [Register(typeof(A))]
         public partial class Container2 : IAsyncContainer<A>
         {
         }

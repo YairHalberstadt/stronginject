@@ -17,10 +17,10 @@ namespace StrongInject.Generator.Tests.Unit
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -98,10 +98,10 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C), typeof(C), typeof(IC))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C), typeof(C), typeof(IC))]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -181,10 +181,10 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -276,11 +276,11 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A))]
-[FactoryRegistration(typeof(B))]
-[FactoryRegistration(typeof(C))]
-[FactoryRegistration(typeof(D))]
-[Registration(typeof(C))]
+[RegisterFactory(typeof(A))]
+[RegisterFactory(typeof(B))]
+[RegisterFactory(typeof(C))]
+[RegisterFactory(typeof(D))]
+[Register(typeof(C))]
 public partial class Container : IAsyncContainer<AFactoryTarget>
 {
 }
@@ -312,8 +312,8 @@ public class DFactoryTarget {}
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
                 // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Registration(typeof(C))
-                new DiagnosticResult("SI1001", @"Registration(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
+                // Register(typeof(C))
+                new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -387,10 +387,10 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), Scope.InstancePerDependency)]
-[Registration(typeof(B))]
-[Registration(typeof(C), Scope.InstancePerDependency)]
-[Registration(typeof(D))]
+[Register(typeof(A), Scope.InstancePerDependency)]
+[Register(typeof(B))]
+[Register(typeof(C), Scope.InstancePerDependency)]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -472,10 +472,10 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C), Scope.InstancePerDependency, typeof(C), typeof(IC))]
-[Registration(typeof(D), Scope.InstancePerDependency)]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C), Scope.InstancePerDependency, typeof(C), typeof(IC))]
+[Register(typeof(D), Scope.InstancePerDependency)]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -559,10 +559,10 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), Scope.InstancePerDependency)]
-[Registration(typeof(B), Scope.InstancePerDependency)]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A), Scope.InstancePerDependency)]
+[Register(typeof(B), Scope.InstancePerDependency)]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -656,11 +656,11 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A))]
-[FactoryRegistration(typeof(B), Scope.InstancePerDependency)]
-[FactoryRegistration(typeof(C), Scope.InstancePerResolution, Scope.InstancePerDependency)]
-[FactoryRegistration(typeof(D), Scope.InstancePerDependency, Scope.InstancePerDependency)]
-[Registration(typeof(C))]
+[RegisterFactory(typeof(A))]
+[RegisterFactory(typeof(B), Scope.InstancePerDependency)]
+[RegisterFactory(typeof(C), Scope.InstancePerResolution, Scope.InstancePerDependency)]
+[RegisterFactory(typeof(D), Scope.InstancePerDependency, Scope.InstancePerDependency)]
+[Register(typeof(C))]
 public partial class Container : IAsyncContainer<AFactoryTarget>
 {
 }
@@ -692,8 +692,8 @@ public class DFactoryTarget {}
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
                 // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Registration(typeof(C))
-                new DiagnosticResult("SI1001", @"Registration(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
+                // Register(typeof(C))
+                new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -781,10 +781,10 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A), Scope.SingleInstance)]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D), Scope.SingleInstance)]
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D), Scope.SingleInstance)]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -935,10 +935,10 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C), Scope.SingleInstance, typeof(C), typeof(IC))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C), Scope.SingleInstance, typeof(C), typeof(IC))]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -1055,10 +1055,10 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A), Scope.SingleInstance)]
-[Registration(typeof(B))]
-[Registration(typeof(C), Scope.SingleInstance)]
-[Registration(typeof(D))]
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B))]
+[Register(typeof(C), Scope.SingleInstance)]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -1219,11 +1219,11 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)]
-[FactoryRegistration(typeof(B), Scope.SingleInstance, Scope.SingleInstance)]
-[FactoryRegistration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance)]
-[FactoryRegistration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution)]
-[Registration(typeof(C), Scope.InstancePerResolution, typeof(C))]
+[RegisterFactory(typeof(A), Scope.SingleInstance, Scope.InstancePerResolution)]
+[RegisterFactory(typeof(B), Scope.SingleInstance, Scope.SingleInstance)]
+[RegisterFactory(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance)]
+[RegisterFactory(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution)]
+[Register(typeof(C), Scope.InstancePerResolution, typeof(C))]
 public partial class Container : IAsyncContainer<AFactoryTarget>
 {
 }
@@ -1255,8 +1255,8 @@ public class DFactoryTarget {}
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
                 // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Registration(typeof(C), Scope.InstancePerResolution, typeof(C))
-                new DiagnosticResult("SI1001", @"Registration(typeof(C), Scope.InstancePerResolution, typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
+                // Register(typeof(C), Scope.InstancePerResolution, typeof(C))
+                new DiagnosticResult("SI1001", @"Register(typeof(C), Scope.InstancePerResolution, typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -1474,10 +1474,10 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C), Scope.SingleInstance, typeof(C), typeof(IC))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C), Scope.SingleInstance, typeof(C), typeof(IC))]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>, IAsyncContainer<B>
 {
 }
@@ -2094,10 +2094,10 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[Registration(typeof(C))]
-[Registration(typeof(D))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(C))]
+[Register(typeof(D))]
 public partial class Container : IAsyncContainer<A>
 {
     public InstanceProvider _instanceProvider;
@@ -2348,16 +2348,16 @@ using StrongInject;
 using System.Threading.Tasks;
 using System;
 
-[FactoryRegistration(typeof(A))]
-[FactoryRegistration(typeof(B), Scope.SingleInstance, Scope.SingleInstance)]
-[FactoryRegistration(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance)]
-[FactoryRegistration(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution)]
-[Registration(typeof(C))]
-[Registration(typeof(E))]
-[Registration(typeof(F))]
-[Registration(typeof(G))]
-[Registration(typeof(H))]
-[Registration(typeof(I), Scope.SingleInstance)]
+[RegisterFactory(typeof(A))]
+[RegisterFactory(typeof(B), Scope.SingleInstance, Scope.SingleInstance)]
+[RegisterFactory(typeof(C), Scope.InstancePerResolution, Scope.SingleInstance)]
+[RegisterFactory(typeof(D), Scope.InstancePerResolution, Scope.InstancePerResolution)]
+[Register(typeof(C))]
+[Register(typeof(E))]
+[Register(typeof(F))]
+[Register(typeof(G))]
+[Register(typeof(H))]
+[Register(typeof(I), Scope.SingleInstance)]
 public partial class Container : IAsyncContainer<AFactoryTarget>
 {
     IAsyncInstanceProvider<int> instanceProvider;
@@ -2396,8 +2396,8 @@ public class I : IDisposable { public I(int i) {} public void Dispose() {} }
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
                 // (10,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Registration(typeof(C))
-                new DiagnosticResult("SI1001", @"Registration(typeof(C))", DiagnosticSeverity.Warning).WithLocation(10, 2));
+                // Register(typeof(C))
+                new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(10, 2));
             comp.GetDiagnostics().Verify(
                 // (18,33): Warning CS0649: Field 'Container.instanceProvider' is never assigned to, and will always have its default value null
                 // instanceProvider
@@ -2646,7 +2646,7 @@ using StrongInject;
 
 namespace N.O.P
 {
-    [Registration(typeof(A))]
+    [Register(typeof(A))]
     public partial class Container : IAsyncContainer<A>
     {
     }
@@ -2718,7 +2718,7 @@ namespace N.O.P
     {
         public partial class Outer2
         {
-            [Registration(typeof(A))]
+            [Register(typeof(A))]
             public partial class Container : IAsyncContainer<A>
             {
             }
@@ -2798,7 +2798,7 @@ namespace N.O.P
     {
         public partial class Outer2<T1, T2>
         {
-            [Registration(typeof(A))]
+            [Register(typeof(A))]
             public partial class Container : IAsyncContainer<A>
             {
             }
@@ -2915,8 +2915,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>
 {
 }
@@ -2930,8 +2930,8 @@ public class B{}
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
                 // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
-                // Registration(typeof(A))
-                new DiagnosticResult("SI0019", @"Registration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
+                // Register(typeof(A))
+                new DiagnosticResult("SI0019", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
                 // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
@@ -2967,8 +2967,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[FactoryRegistration(typeof(A))]
-[Registration(typeof(B))]
+[RegisterFactory(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<int>
 {
 }
@@ -2983,8 +2983,8 @@ public class B{}
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
                 // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
-                // FactoryRegistration(typeof(A))
-                new DiagnosticResult("SI0019", @"FactoryRegistration(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
+                // RegisterFactory(typeof(A))
+                new DiagnosticResult("SI0019", @"RegisterFactory(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
                 // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
@@ -3021,7 +3021,7 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
 }
@@ -3069,8 +3069,8 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>
 {
 }
@@ -3119,7 +3119,7 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public partial class Container : IContainer<int>
 {
 }
@@ -3144,7 +3144,7 @@ public class A : IAsyncFactory<int>
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public partial class Container : IContainer<int>
 {
 }
@@ -3188,7 +3188,7 @@ public partial class Container : IContainer<int>
             string userSource = @"
 using StrongInject;
 
-[FactoryRegistration(typeof(A))]
+[RegisterFactory(typeof(A))]
 public partial class Container : IContainer<int>
 {
     public IAsyncInstanceProvider<B> _instanceProvider;
@@ -3216,8 +3216,8 @@ public class B {}
 using StrongInject;
 using System.Threading.Tasks;
 
-[FactoryRegistration(typeof(C))]
-[Registration(typeof(A))]
+[RegisterFactory(typeof(C))]
+[Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
 }
@@ -3243,8 +3243,8 @@ public class C : IAsyncFactory<B>
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>
 {
 }
@@ -3307,8 +3307,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>
 {
 }
@@ -3375,8 +3375,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[FactoryRegistration(typeof(A))]
-[Registration(typeof(B))]
+[RegisterFactory(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<int>
 {
 }
@@ -3443,8 +3443,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>
 {
     IInstanceProvider<int> _instanceProvider;
@@ -3515,8 +3515,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B), Scope.SingleInstance)]
+[Register(typeof(A))]
+[Register(typeof(B), Scope.SingleInstance)]
 public partial class Container : IContainer<A>
 {
 }
@@ -3617,10 +3617,10 @@ partial class Container
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
-[Registration(typeof(B), Scope.SingleInstance)]
-[Registration(typeof(C))]
-[Registration(typeof(D), Scope.SingleInstance)]
+[Register(typeof(A))]
+[Register(typeof(B), Scope.SingleInstance)]
+[Register(typeof(C))]
+[Register(typeof(D), Scope.SingleInstance)]
 public partial class Container : IContainer<A>, IAsyncContainer<C>
 {
 }
@@ -3802,8 +3802,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B), Scope.SingleInstance)]
+[Register(typeof(A))]
+[Register(typeof(B), Scope.SingleInstance)]
 public partial class Container : IContainer<A>
 {
 }
@@ -3905,9 +3905,9 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B), Scope.SingleInstance)]
-[Registration(typeof(C), Scope.SingleInstance)]
+[Register(typeof(A))]
+[Register(typeof(B), Scope.SingleInstance)]
+[Register(typeof(C), Scope.SingleInstance)]
 public partial class Container : IContainer<A>
 {
 }
@@ -4050,9 +4050,9 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A), Scope.SingleInstance)]
-[Registration(typeof(B), Scope.SingleInstance)]
-[Registration(typeof(C), Scope.SingleInstance)]
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B), Scope.SingleInstance)]
+[Register(typeof(C), Scope.SingleInstance)]
 public partial class Container : IContainer<C>
 {
 }
@@ -4153,8 +4153,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IAsyncContainer<Func<A>>
 {
 }
@@ -4249,8 +4249,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<Func<B, A>>
 {
 }
@@ -4343,7 +4343,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Func<B, A>>
 {
 }
@@ -4436,8 +4436,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>
 {
 }
@@ -4532,8 +4532,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<Func<int, A>>
 {
 }
@@ -4656,7 +4656,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Func<bool, Func<string, Func<int, A>>>>
 {
 }
@@ -4804,8 +4804,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[Registration(typeof(C))]
+[Register(typeof(A))]
+[Register(typeof(C))]
 public partial class Container : IContainer<Func<B, A>>
 {
 }
@@ -4909,7 +4909,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Func<int, string, A>>
 {
 }
@@ -5004,7 +5004,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Func<int, Func<int, A>>>
 {
 }
@@ -5127,8 +5127,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A), Scope.SingleInstance)]
-[Registration(typeof(B))]
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B))]
 public partial class Container : IContainer<Func<B, A>>
 {
 }
@@ -5481,7 +5481,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Func<int, int, A>>
 {
 }
@@ -5532,7 +5532,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
 }
@@ -5581,7 +5581,7 @@ using System;
 using StrongInject;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<Func<A>>
 {
 }
@@ -5630,7 +5630,7 @@ partial class Container
 using StrongInject;
 
 public delegate A Del(ref int i);
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Del>
 {
 }
@@ -5678,7 +5678,7 @@ partial class Container
 using StrongInject;
 
 public delegate A Del(in int i);
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Del>
 {
 }
@@ -5726,7 +5726,7 @@ partial class Container
 using StrongInject;
 
 public delegate A Del(out int i);
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Del>
 {
 }
@@ -5775,7 +5775,7 @@ using StrongInject;
 using System.Threading.Tasks;
 
 public delegate Task<A> Del(int i);
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Del>
 {
 }
@@ -5871,7 +5871,7 @@ using StrongInject;
 using System.Threading.Tasks;
 
 public delegate ValueTask<A> Del(int i);
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<Del>
 {
 }
@@ -5967,8 +5967,8 @@ using StrongInject;
 using System.Threading.Tasks;
 
 public delegate ValueTask<A> Del(int i);
-[Registration(typeof(A))]
-[Registration(typeof(B), Scope.SingleInstance)]
+[Register(typeof(A))]
+[Register(typeof(B), Scope.SingleInstance)]
 public partial class Container : IContainer<B>
 {
 }
@@ -6090,7 +6090,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<Func<A>>
 {
     private IInstanceProvider<Func<A>> _instanceProvider;
@@ -6160,8 +6160,8 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
-[FactoryRegistration(typeof(B))]
+[Register(typeof(A))]
+[RegisterFactory(typeof(B))]
 public partial class Container : IAsyncContainer<Func<A>>
 {
 }
@@ -6232,7 +6232,7 @@ partial class Container
 using System;
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<Func<Func<A>, Func<A>>>
 {
 }
@@ -6370,8 +6370,8 @@ public class Module
     public static A M(B b) => null;
 }
 
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -6441,8 +6441,8 @@ public class Module
     public static A M(B b) => null;
 }
 
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -6547,8 +6547,8 @@ class Module
     public static A M(B b) => null;
 }
 
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -6601,8 +6601,8 @@ public class Module
     public A M(B b) => null;
 }
 
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -6649,7 +6649,7 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B))]
+[Register(typeof(B))]
 public partial class Container : IAsyncContainer<A>
 {
     [Factory]
@@ -6715,8 +6715,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B))]
-[Registration(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<A>
 {
     [Factory]
@@ -6782,8 +6782,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B))]
-[Registration(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<A>
 {
     [Factory]
@@ -6848,8 +6848,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B))]
-[Registration(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<A>
 {
     [Factory]
@@ -6921,8 +6921,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B))]
-[Registration(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<A>
 {
     [Factory]
@@ -6993,8 +6993,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B))]
-[Registration(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<A>
 {
     [Factory]
@@ -7059,8 +7059,8 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(B))]
-[Registration(typeof(A))]
+[Register(typeof(B))]
+[Register(typeof(A))]
 public partial class Container : IAsyncContainer<A>
 {
     [Factory]
@@ -7125,7 +7125,7 @@ partial class Container
             string userSource = @"
 using StrongInject;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Module
 {
     [Factory]
@@ -7179,8 +7179,8 @@ public class Module
     public static Task<A> M(B b) => null;
 }
 
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -7251,8 +7251,8 @@ public class Module
     public static Task<A> M(B b) => null;
 }
 
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IContainer<A>
 {
 }
@@ -7302,8 +7302,8 @@ public class Module
     public static A M<T>(B b) => null;
 }
 
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IAsyncContainer<A>
 {
 }
@@ -7352,7 +7352,7 @@ using StrongInject;
 using System;
 using System.Threading.Tasks;
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
 }

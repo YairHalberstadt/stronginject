@@ -12,11 +12,11 @@ namespace StrongInject.Tests.Integration
         public record D { }
         public record E { }
 
-        [Registration(typeof(E), Scope.SingleInstance)]
-        [Registration(typeof(D), Scope.InstancePerDependency)]
-        [Registration(typeof(C))]
-        [Registration(typeof(B))]
-        [Registration(typeof(A))]
+        [Register(typeof(E), Scope.SingleInstance)]
+        [Register(typeof(D), Scope.InstancePerDependency)]
+        [Register(typeof(C))]
+        [Register(typeof(B))]
+        [Register(typeof(A))]
         public partial class Container : IContainer<Func<A>>
         {
         }

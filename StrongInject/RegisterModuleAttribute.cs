@@ -3,9 +3,9 @@
 namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class ModuleRegistrationAttribute : Attribute
+    public class RegisterModuleAttribute : Attribute
     {
-        public ModuleRegistrationAttribute(Type type, params Type[] exclusionList)
+        public RegisterModuleAttribute(Type type, params Type[] exclusionList)
         {
             Type = type;
             ExclusionList = exclusionList;
