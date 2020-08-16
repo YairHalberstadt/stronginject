@@ -17,9 +17,9 @@ namespace StrongInject.Generator
         INamedTypeSymbol iAsyncDisposable,
         INamedTypeSymbol owned,
         INamedTypeSymbol asyncOwned,
-        INamedTypeSymbol registrationAttribute,
-        INamedTypeSymbol moduleRegistrationAttribute,
-        INamedTypeSymbol factoryRegistrationAttribute,
+        INamedTypeSymbol registerAttribute,
+        INamedTypeSymbol registerModuleAttribute,
+        INamedTypeSymbol registerFactoryAttribute,
         INamedTypeSymbol factoryAttribute,
         INamedTypeSymbol valueTask1,
         INamedTypeSymbol task1,
@@ -40,9 +40,9 @@ namespace StrongInject.Generator
             var iAsyncDisposable = compilation.GetTypeOrReport("System.IAsyncDisposable", reportDiagnostic);
             var owned = compilation.GetTypeOrReport(typeof(Owned<>), reportDiagnostic);
             var asyncOwned = compilation.GetTypeOrReport("StrongInject.AsyncOwned`1", reportDiagnostic);
-            var registrationAttribute = compilation.GetTypeOrReport(typeof(RegistrationAttribute), reportDiagnostic);
-            var moduleRegistrationAttribute = compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), reportDiagnostic);
-            var factoryRegistrationAttribute = compilation.GetTypeOrReport(typeof(FactoryRegistrationAttribute), reportDiagnostic);
+            var registerAttribute = compilation.GetTypeOrReport(typeof(RegisterAttribute), reportDiagnostic);
+            var registerModuleAttribute = compilation.GetTypeOrReport(typeof(RegisterModuleAttribute), reportDiagnostic);
+            var registerFactoryAttribute = compilation.GetTypeOrReport(typeof(RegisterFactoryAttribute), reportDiagnostic);
             var factoryAttribute = compilation.GetTypeOrReport(typeof(FactoryAttribute), reportDiagnostic);
             var valueTask1 = compilation.GetTypeOrReport(typeof(ValueTask<>), reportDiagnostic);
             var task1 = compilation.GetTypeOrReport(typeof(Task<>), reportDiagnostic);
@@ -61,9 +61,9 @@ namespace StrongInject.Generator
                 || iAsyncDisposable is null
                 || owned is null
                 || asyncOwned is null
-                || registrationAttribute is null
-                || moduleRegistrationAttribute is null
-                || factoryRegistrationAttribute is null
+                || registerAttribute is null
+                || registerModuleAttribute is null
+                || registerFactoryAttribute is null
                 || factoryAttribute is null
                 || valueTask1 is null
                 || task1 is null
@@ -87,9 +87,9 @@ namespace StrongInject.Generator
                 iAsyncDisposable: iAsyncDisposable,
                 owned: owned,
                 asyncOwned: asyncOwned,
-                registrationAttribute: registrationAttribute,
-                moduleRegistrationAttribute: moduleRegistrationAttribute,
-                factoryRegistrationAttribute: factoryRegistrationAttribute,
+                registerAttribute: registerAttribute,
+                registerModuleAttribute: registerModuleAttribute,
+                registerFactoryAttribute: registerFactoryAttribute,
                 factoryAttribute: factoryAttribute,
                 valueTask1: valueTask1,
                 task1: task1,

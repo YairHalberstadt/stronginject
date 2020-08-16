@@ -9,9 +9,9 @@ namespace StrongInject.Tests.Integration
         public record B(C c) { }
         public class C { }
 
-        [Registration(typeof(C))]
-        [Registration(typeof(B))]
-        [Registration(typeof(A))]
+        [Register(typeof(C))]
+        [Register(typeof(B))]
+        [Register(typeof(A))]
         public partial class Container : IContainer<Func<C, A>>
         {
         }

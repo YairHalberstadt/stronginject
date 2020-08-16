@@ -10,6 +10,7 @@ namespace StrongInject
         TResult Run<TResult, TParam>(Func<T, TParam, TResult> func, TParam param);
         Owned<T> Resolve();
     }
+
     public interface IAsyncContainer<T> : IAsyncDisposable
     {
         [EditorBrowsable(EditorBrowsableState.Never)]

@@ -10,10 +10,10 @@ namespace StrongInject.Tests.Integration
         public record C(D d) { }
         public record D { }
 
-        [Registration(typeof(D), Scope.SingleInstance)]
-        [Registration(typeof(C))]
-        [Registration(typeof(B))]
-        [Registration(typeof(A))]
+        [Register(typeof(D), Scope.SingleInstance)]
+        [Register(typeof(C))]
+        [Register(typeof(B))]
+        [Register(typeof(A))]
         public partial class Container : IAsyncContainer<A>
         {
         }

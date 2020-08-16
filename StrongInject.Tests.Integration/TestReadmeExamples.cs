@@ -16,7 +16,7 @@ namespace StrongInject.Tests.Integration
         {
             public class A { }
 
-            [Registration(typeof(A))]
+            [Register(typeof(A))]
             public partial class Container : IContainer<A> { }
 
             [Fact]
@@ -31,8 +31,8 @@ namespace StrongInject.Tests.Integration
             public class A { }
             public class B { }
 
-            [Registration(typeof(A))]
-            [Registration(typeof(B))]
+            [Register(typeof(A))]
+            [Register(typeof(B))]
             public partial class Container : IContainer<A>, IContainer<B> { }
         }
 
@@ -44,7 +44,7 @@ namespace StrongInject.Tests.Integration
             public interface IA { }
             public class A : Base, IA { }
 
-            [Registration(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
+            [Register(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
             public partial class Container : IContainer<BaseBase> { }
         }
 
@@ -54,8 +54,8 @@ namespace StrongInject.Tests.Integration
             public interface IB { }
             public class B : IB { }
 
-            [Registration(typeof(A), Scope.SingleInstance)]
-            [Registration(typeof(B), Scope.InstancePerResolution, typeof(IB))]
+            [Register(typeof(A), Scope.SingleInstance)]
+            [Register(typeof(B), Scope.InstancePerResolution, typeof(IB))]
             public partial class Container : IContainer<A>, IContainer<IB> { }
         }
 
@@ -63,10 +63,10 @@ namespace StrongInject.Tests.Integration
         {
             public class A { }
 
-            [Registration(typeof(A))]
+            [Register(typeof(A))]
             public class Module { }
 
-            [ModuleRegistration(typeof(Module))]
+            [RegisterModule(typeof(Module))]
             public partial class Container : IContainer<A> { }
         }
 
@@ -85,9 +85,9 @@ namespace StrongInject.Tests.Integration
                 }
             }
 
-            [Registration(typeof(A))]
-            [Registration(typeof(B))]
-            [FactoryRegistration(typeof(InterfaceArrayFactory))]
+            [Register(typeof(A))]
+            [Register(typeof(B))]
+            [RegisterFactory(typeof(InterfaceArrayFactory))]
             public partial class Container : IContainer<IInterface[]> { }
 
             [Fact]
@@ -118,9 +118,9 @@ namespace StrongInject.Tests.Integration
                 }
             }
 
-            [Registration(typeof(A))]
-            [Registration(typeof(B))]
-            [FactoryRegistration(typeof(InterfaceArrayFactory), factoryScope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution)]
+            [Register(typeof(A))]
+            [Register(typeof(B))]
+            [RegisterFactory(typeof(InterfaceArrayFactory), factoryScope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution)]
             public partial class Container : IContainer<IInterface[]> { }
 
             [Fact]
@@ -174,9 +174,9 @@ namespace StrongInject.Tests.Integration
                 }
             }
 
-            [Registration(typeof(A))]
-            [Registration(typeof(B))]
-            [FactoryRegistration(typeof(InterfaceFactory))]
+            [Register(typeof(A))]
+            [Register(typeof(B))]
+            [RegisterFactory(typeof(InterfaceFactory))]
             public partial class Container : IContainer<IInterface>
             {
                 private readonly InstanceProvider _instanceProvider;
@@ -228,7 +228,7 @@ namespace StrongInject.Tests.Integration
                 public void Release(IDb instance) { }
             }
 
-            [Registration(typeof(PasswordChecker), Scope.SingleInstance)]
+            [Register(typeof(PasswordChecker), Scope.SingleInstance)]
             public partial class Container : IAsyncContainer<PasswordChecker>
             {
                 private readonly DbInstanceProvider _dbInstanceProvider;

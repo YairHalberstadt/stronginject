@@ -63,7 +63,7 @@ using StrongInject;
 
 public class A {}
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public partial class Container : IContainer<A> {}
 ```
 
@@ -77,8 +77,8 @@ using StrongInject;
 public class A {}
 public class B {}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
@@ -132,14 +132,14 @@ using StrongInject;
 public class A {}
 public class B {}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
 All the dependencies of the container type parameter must be registered or you will get a compile time error.
 
-By default `[Registration(typeof(A))]` will register an type `A` as itself. You can however register a type as any base type or implemented interface:
+By default `[Register(typeof(A))]` will register an type `A` as itself. You can however register a type as any base type or implemented interface:
 
 ```csharp
 using StrongInject;
@@ -150,11 +150,11 @@ public class Base : BaseBase, IBase {}
 public interface IA {}
 public class A : Base, IA {}
 
-[Registration(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
+[Register(typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]
 public partial class Container : IContainer<BaseBase> {}
 ```
 
-If you do so, you will have to explicitly also register it as itself if that is desired: `[Registration(typeof(A), typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]`
+If you do so, you will have to explicitly also register it as itself if that is desired: `[Register(typeof(A), typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]`
 
 If there is a single public non-parameterless constructor, StrongInject will use that to construct the type. If there is no public non-parameterless constructor StrongInject will use the parameterless constructor if it exists and is public. Else it will report an error.
 
@@ -171,8 +171,8 @@ public class A {}
 public interface IB {}
 public class B : IB {}
 
-[Registration(typeof(A), Scope.SingleInstance)]
-[Registration(typeof(B), Scope.InstancePerResolution, typeof(IB))]
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B), Scope.InstancePerResolution, typeof(IB))]
 public partial class Container : IContainer<A>, IContainer<IB> {}
 ```
 
@@ -208,10 +208,10 @@ using StrongInject;
 
 public class A {}
 
-[Registration(typeof(A))]
+[Register(typeof(A))]
 public class Module {}
 
-[ModuleRegistration(typeof(Module))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IContainer<A> {}
 ```
 
@@ -220,7 +220,7 @@ If you import multiple modules, and they both register the same type differently
 There are two ways to solve this:
 
 1. Register the type directly. This will override the registrations in imported modules.
-2. Exclude the registration from one of the modules when you import it: `[ModuleRegistration(typeof(Module), exclusionList: new [] { typeof(A) })]`
+2. Exclude the registration from one of the modules when you import it: `[RegisterModule(typeof(Module), exclusionList: new [] { typeof(A) })]`
 
 #### Factories
 
@@ -235,8 +235,8 @@ public interface IInterface {}
 public class A : IInterface {}
 public class B : IInterface {}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<IInterface[]>
 {
     [Factory] private IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
@@ -259,9 +259,9 @@ public class Module
     [Factory] public static IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
 }
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[ModuleRegistration(typeof(Module))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
 public partial class Container : IContainer<IInterface[]>
 {
 }
@@ -296,9 +296,9 @@ public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
     }
 }
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[FactoryRegistration(typeof(InterfaceArrayFactory))]
+[Register(typeof(A))]
+[Register(typeof(B))]
+[RegisterFactory(typeof(InterfaceArrayFactory))]
 public partial class Container : IContainer<IInterface[]> { }
 ```
 
@@ -307,7 +307,7 @@ Whilst a factory doesn't have to be a record, doing so significantly shortens th
 The scope of the factory and the factory target is controlled separately. This allows you to e.g. have a singleton factory, but call `CreateAsync` on every resolution:
 
 ```csharp
-[FactoryRegistration(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
+[RegisterFactory(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
 ```
 
 If a factory implements `IFactory<T>` for multiple `T`s it will be registered as a factory for all of them. 
@@ -316,9 +316,7 @@ If a factory implements `IFactory<T>` for multiple `T`s it will be registered as
 
 What if you need to provide configuration for a registration at runtime? Or alternatively what if you need to integrate with an existing container?
 
-For that you can use the `IInstanceProvider<T>` interface. Any fields of a container which are or implement `IInstanceProvider<T>` will provide/override any existing registrations for `T`.
-
-Here is a full fledged example of how you could provide configuration for a registration at runtime, whilst still getting the full benefit of the IOC container to create your types. Of course many cases will be simpler, and not require usage of both a factory and an instanceProvider.
+We've already mentioned above that you can mark instance methods on a container as factory methods. This allows you to access information only available at runtime during resolution:
 
 ```csharp
 using StrongInject;
@@ -327,29 +325,54 @@ public interface IInterface { }
 public class A : IInterface { }
 public class B : IInterface { }
 
-public enum InterfaceToUse
-{
-    UseA,
-    UseB
-}
-
-public record InstanceProvider(InterfaceToUse InterfaceToUse) : IInstanceProvider<InterfaceToUse>
-{
-    public InterfaceToUse Get() => InterfaceToUse;
-}
-
-public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IFactory<IInterface>
-{
-    public IInterface Create() => InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B;
-}
-
-[Registration(typeof(A))]
-[Registration(typeof(B))]
-[FactoryRegistration(typeof(InterfaceFactory))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<IInterface>
 {
-    private readonly InstanceProvider _instanceProvider;
-    public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
+    private readonly bool _useB;
+    public Container(bool useB) => _useB = useB;
+
+    [Factory]
+    IInterface GetInterfaceInstance(Func<A> a, Func<B> b) => _useB ? b() : a();
+}
+```
+
+In some cases though you need greater control over the disposal of the created instances. The `IInstanceProvider<T>` interface allows you to do that. Any fields of a container which are or implement `IInstanceProvider<T>` will provide/override any existing registrations for `T`.
+
+Here is an example of how you could use an IInstanceProvider to integrate with Autofac:
+
+```csharp
+using StrongInject;
+
+public class A
+{
+    public A(B b){} 
+}
+public class B {}
+
+public class AutofacInstanceProvider<T>(Autofac.IContainer autofacContainer) : IInstanceProvider<T> where T : class
+{
+    private readonly ConcurrentDictionary<T, Autofac.Owned<T>> _ownedDic = new();
+    private readonly Autofac.IContainer _autofacContainer;
+    public AutofacInstanceProvider(Autofac.IContainer autofacContainer) => _autofacContainer = autofacContainer;
+    public T Get()
+    {
+        var owned = _autofacContainer.Resolve<Owned<T>>();
+        _ownedDic[owned.Value] = owned;
+        return owned.Value;
+    };
+    public void Release(T instance)
+    {
+        if (_ownedDic.TryGetValue(instance, out var owned))
+            owned.Dispose();
+    }
+}
+
+[Register(typeof(A))]
+public partial class Container : IContainer<A>
+{
+    private readonly AutofacInstanceProvider<B> _instanceProvider;
+    public Container(AutofacInstanceProvider<B> instanceProvider) => _instanceProvider = instanceProvider;
 }
 ```
 
@@ -374,8 +397,8 @@ public class A
 
 public class B{}
 
-[Registration(typeof(A))]
-[Registration(typeof(B))]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public class Container : IContainer<A> {}
 ```
 
@@ -399,8 +422,8 @@ public class Handler
   public Handler(bool shouldFrob) => ...
 }
 
-[Registration(typeof(Server))]
-[Registration(typeof(Handler))]
+[Register(typeof(Server))]
+[Register(typeof(Handler))]
 public class Container : IContainer<Server> {}
 ```
 
@@ -425,8 +448,8 @@ public class Handler : IRequiresAsyncInitialization
   public async ValueTask ResolveAsync() => ...
 }
 
-[Registration(typeof(Server))]
-[Registration(typeof(Handler))]
+[Register(typeof(Server))]
+[Register(typeof(Handler))]
 public class Container : IContainer<Server> {}
 ```
 
@@ -437,12 +460,12 @@ Whilst this is only useful in a few edge cases for synchronous methods, `IRequir
 
 ### Async Support
 
-Every interface use by StrongInject has an asynchronous counterpart.
-Theres `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
+Every interface used by StrongInject has an asynchronous counterpart.
+There's `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
 
-You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` by calling `StrongInject.AsyncContainerExtensions.RunAsync`. RunAsync has overloads allowing you to pass in  sync or async lambda. As such `IAsycContainer<T>` is useful even if resolution is completely synchronous if usage is asynchronous.
+You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` by calling `StrongInject.AsyncContainerExtensions.RunAsync`. RunAsync has overloads allowing you to pass in sync or async lambdas. As such `IAsyncContainer<T>` is useful even if resolution is completely synchronous if usage is asynchronous.
 
-It is an error resolving `T` in an `IContainer<T>` depends on an asynchronous dependency.
+It is an error resolving `T` in an `IContainer<T>` if it depends on an asynchronous dependency.
 
 A type can implement both `IContainer<T1>` and `IAsyncContainer<T2>`. They will share single instance depdendencies.
 
@@ -487,32 +510,25 @@ public class PasswordChecker : IRequiresAsyncInitialization, IAsyncDisposable
     }
 }
 
-public record DbInstanceProvider(IDb Db) : IInstanceProvider<IDb>
-{
-    public IDb Get()
-    {
-        return Db;
-    }
-
-    public void Release(IDb instance) {}
-}
-
-[Registration(typeof(PasswordChecker), Scope.SingleInstance)]
+[Register(typeof(PasswordChecker), Scope.SingleInstance)]
 public partial class Container : IAsyncContainer<PasswordChecker>
 {
-    private readonlyDbInstanceProvider _dbInstanceProvider;
+    private readonly IDb _db;
 
-    public Container(DbInstanceProvider dbInstanceProvider)
+    public Container(IDb db)
     {
-        _dbInstanceProvider = dbInstanceProvider;
+        _db = db;
     }
+
+    [Factory]
+    IDb GetDb() => _db;
 }
 
 public static class Program
 {
   public static async Task Main(string[] args)
   {
-    await new Container(new DbInstanceProvider(new Db())).RunAsync(x => 
+    await new Container(new Db()).RunAsync(x => 
       Console.WriteLine(x.CheckPassword(args[0], args[1])
         ? "Password is valid"
         : "Password is invalid"));
@@ -524,10 +540,12 @@ public static class Program
 
 Once a call to `Run` or `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `Run` or `RunAsync` will be disposed.
 
-In `RunAsync` if the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
-In `Run`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.
+Similiarly when an `Owned<T>` is disposed, any Instance Per Resolution or Instance Per Dependency instances created as part of resolving `T` will be disposed.
 
-Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.Release(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
+In `RunAsync`/`ResolveAsync` if the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
+In `Run`/`Resolve`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.
+
+Since both `IFactory<T>` and `InstanceProvider<T>` are free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `IFactory<T>.Release(T instance)`/`InstanceProvider<T>.Release(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
 
 Single Instance dependencies and their dependencies are disposed when the container is disposed. If the container implements `IAsyncDisposable` it must be disposed asynchronously even if it also implements `IDisposable`.
 

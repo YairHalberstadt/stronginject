@@ -3,9 +3,9 @@
 namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class FactoryRegistrationAttribute : Attribute
+    public class RegisterFactoryAttribute : Attribute
     {
-        public FactoryRegistrationAttribute(Type factoryType, Scope factoryScope = Scope.InstancePerResolution, Scope factoryTargetScope = Scope.InstancePerResolution)
+        public RegisterFactoryAttribute(Type factoryType, Scope factoryScope = Scope.InstancePerResolution, Scope factoryTargetScope = Scope.InstancePerResolution)
         {
             FactoryType = factoryType;
             FactoryScope = factoryScope;
