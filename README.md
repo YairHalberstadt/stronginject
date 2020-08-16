@@ -84,9 +84,11 @@ public partial class Container : IContainer<A>, IContainer<B> {}
 
 ### Using a container.
 
-To use a container, you'll want to use the `Run` extension methods defined in `StrongInject.ContainerExtensions`, so make sure you're `using StrongInject;`
+There are two ways to use a container - using the `Run` methods or the `Resolve` methods.
 
-The `Run` method on `IContainer<T>` takes a `Func<T>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in a void returning lambda.
+Either way you'll find it easier if you the extension methods defined in `StrongInject.ContainerExtensions` rather than those defined directly on the container, so make sure you're `using StrongInject;`
+
+The `Run` method on `IContainer<T>` takes a `Func<T, TResult>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in a void returning lambda.
 
 ```csharp
 using StrongInject;
@@ -96,6 +98,24 @@ public class Program
   public static void Main()
   {
     System.Console.WriteLine(new Container().Run(x => x.ToString()));
+  }
+}
+```
+
+In some cases this isn't flexible enough, for example if you want to use StrongInject from another IOC container, or you need more fine grained control over the lifetime of `T`.
+
+For these cases you can call the `Resolve` method. This reurns an `Owned<T>` which is essentially a disposable wrapper over `T`. Make sure you call `Owned<T>.Dispose` once you're done using `Owned<T>.Value`.
+
+```csharp
+using StrongInject;
+
+public class Program
+{
+  public static void Main()
+  {
+    using var ownedOfA = new Container().Resolve();
+    var a = ownedOfA.Value;
+    System.Console.WriteLine(a.ToString());
   }
 }
 ```
