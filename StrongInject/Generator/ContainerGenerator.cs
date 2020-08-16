@@ -71,36 +71,53 @@ namespace StrongInject.Generator
 
                 var target = constructedContainerInterface.TypeArguments[0];
 
-                var methodSource = new StringBuilder();
-                var methodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers()[0];
+                var runMethodSource = new StringBuilder();
+                var runMethodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers(isAsync
+                    ? nameof(IAsyncContainer<object>.RunAsync)
+                    : nameof(IContainer<object>.Run))[0];
                 if (isAsync)
                 {
-                    methodSource.Append("async ");
+                    runMethodSource.Append("async ");
                 }
-                methodSource.Append(methodSymbol.ReturnType.FullName());
-                methodSource.Append(" ");
-                methodSource.Append(constructedContainerInterface.FullName());
-                methodSource.Append(".");
-                methodSource.Append(methodSymbol.Name);
-                methodSource.Append("<");
-                for (int i = 0; i < methodSymbol.TypeParameters.Length; i++)
+                runMethodSource.Append(runMethodSymbol.ReturnType.FullName());
+                runMethodSource.Append(" ");
+                runMethodSource.Append(constructedContainerInterface.FullName());
+                runMethodSource.Append(".");
+                runMethodSource.Append(runMethodSymbol.Name);
+                runMethodSource.Append("<");
+                for (int i = 0; i < runMethodSymbol.TypeParameters.Length; i++)
                 {
-                    var typeParam = methodSymbol.TypeParameters[i];
+                    var typeParam = runMethodSymbol.TypeParameters[i];
                     if (i != 0)
-                        methodSource.Append(",");
-                    methodSource.Append(typeParam.Name);
+                        runMethodSource.Append(",");
+                    runMethodSource.Append(typeParam.Name);
                 }
-                methodSource.Append(">(");
-                for (int i = 0; i < methodSymbol.Parameters.Length; i++)
+                runMethodSource.Append(">(");
+                for (int i = 0; i < runMethodSymbol.Parameters.Length; i++)
                 {
-                    var param = methodSymbol.Parameters[i];
+                    var param = runMethodSymbol.Parameters[i];
                     if (i != 0)
-                        methodSource.Append(",");
-                    methodSource.Append(param.Type.FullName());
-                    methodSource.Append(" ");
-                    methodSource.Append(param.Name);
+                        runMethodSource.Append(",");
+                    runMethodSource.Append(param.Type.FullName());
+                    runMethodSource.Append(" ");
+                    runMethodSource.Append(param.Name);
                 }
-                methodSource.Append("){");
+                runMethodSource.Append("){");
+
+                var resolveMethodSource = new StringBuilder();
+                var resolveMethodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers(isAsync
+                    ? nameof(IAsyncContainer<object>.ResolveAsync)
+                    : nameof(IContainer<object>.Resolve))[0];
+                if (isAsync)
+                {
+                    resolveMethodSource.Append("async ");
+                }
+                resolveMethodSource.Append(resolveMethodSymbol.ReturnType.FullName());
+                resolveMethodSource.Append(" ");
+                resolveMethodSource.Append(constructedContainerInterface.FullName());
+                resolveMethodSource.Append(".");
+                resolveMethodSource.Append(resolveMethodSymbol.Name);
+                resolveMethodSource.Append("(){");
 
                 if (DependencyChecker.HasCircularOrMissingDependencies(
                         target,
@@ -112,38 +129,64 @@ namespace StrongInject.Generator
                         ((ClassDeclarationSyntax)_container.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation()))
                 {
                     // error reported. Implement with throwing implementation to remove NotImplemented error CS0535
-                    methodSource.Append("throw new global::System.NotImplementedException();}");
+                    const string throwNotImplementedException = "throw new global::System.NotImplementedException();}";
+                    runMethodSource.Append(throwNotImplementedException);
+                    resolveMethodSource.Append(throwNotImplementedException);
+
                 }
                 else
                 {
-                    methodSource.Append("if(Disposed)");
-                    ThrowObjectDisposedException(methodSource);
+                    runMethodSource.Append("if(Disposed)");
+                    ThrowObjectDisposedException(runMethodSource);
                     var resultVariableName = CreateVariable(
                         _containerScope[target],
-                        methodSource,
+                        runMethodSource,
                         _containerScope,
                         isSingleInstanceCreation: false,
                         disposeAsynchronously: isAsync,
                         orderOfCreation: out var orderOfCreation);
-                    methodSource.Append(methodSymbol.TypeParameters[0].Name);
-                    methodSource.Append(" result;try{result=");
+                    runMethodSource.Append(runMethodSymbol.TypeParameters[0].Name);
+                    runMethodSource.Append(" result;try{result=");
                     if (isAsync)
                     {
-                        methodSource.Append("await func((");
+                        runMethodSource.Append("await func((");
                     }
                     else
                     {
-                        methodSource.Append("func((");
+                        runMethodSource.Append("func((");
                     }
-                    methodSource.Append(target.FullName());
-                    methodSource.Append(")");
-                    methodSource.Append(resultVariableName);
-                    methodSource.Append(", param);}finally{");
-                    GenerateDisposeCode(methodSource, orderOfCreation, isAsync, singleInstanceTarget: null);
-                    methodSource.Append("}return result;}");
+                    runMethodSource.Append(target.FullName());
+                    runMethodSource.Append(")");
+                    runMethodSource.Append(resultVariableName);
+                    runMethodSource.Append(", param);}finally{");
+                    GenerateDisposeCode(runMethodSource, orderOfCreation, isAsync, singleInstanceTarget: null);
+                    runMethodSource.Append("}return result;}");
+
+                    resolveMethodSource.Append("if(Disposed)");
+                    ThrowObjectDisposedException(resolveMethodSource);
+                    resultVariableName = CreateVariable(
+                        _containerScope[target],
+                        resolveMethodSource,
+                        _containerScope,
+                        isSingleInstanceCreation: false,
+                        disposeAsynchronously: isAsync,
+                        orderOfCreation: out orderOfCreation);
+
+                    var ownedType = (isAsync
+                        ? _wellKnownTypes.asyncOwned
+                        : _wellKnownTypes.owned).Construct(target);
+
+                    resolveMethodSource.Append("return new ");
+                    resolveMethodSource.Append(ownedType.FullName());
+                    resolveMethodSource.Append("(");
+                    resolveMethodSource.Append(resultVariableName);
+                    resolveMethodSource.Append(isAsync ? ",async()=>{" : ",()=>{");
+                    GenerateDisposeCode(resolveMethodSource, orderOfCreation, isAsync, singleInstanceTarget: null);
+                    resolveMethodSource.Append("});}");
                 }
 
-                _containerMembersSource.Append(methodSource);
+                _containerMembersSource.Append(runMethodSource);
+                _containerMembersSource.Append(resolveMethodSource);
             }
 
             var file = new StringBuilder("#pragma warning disable CS1998\n");

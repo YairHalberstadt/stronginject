@@ -15,6 +15,8 @@ namespace StrongInject.Generator
         INamedTypeSymbol iRequiresAsyncInitialization,
         INamedTypeSymbol iDisposable,
         INamedTypeSymbol iAsyncDisposable,
+        INamedTypeSymbol owned,
+        INamedTypeSymbol asyncOwned,
         INamedTypeSymbol registrationAttribute,
         INamedTypeSymbol moduleRegistrationAttribute,
         INamedTypeSymbol factoryRegistrationAttribute,
@@ -36,6 +38,8 @@ namespace StrongInject.Generator
             var iRequiresAsyncInitialization = compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), reportDiagnostic);
             var iDisposable = compilation.GetTypeOrReport(typeof(IDisposable), reportDiagnostic);
             var iAsyncDisposable = compilation.GetTypeOrReport("System.IAsyncDisposable", reportDiagnostic);
+            var owned = compilation.GetTypeOrReport(typeof(Owned<>), reportDiagnostic);
+            var asyncOwned = compilation.GetTypeOrReport("StrongInject.AsyncOwned`1", reportDiagnostic);
             var registrationAttribute = compilation.GetTypeOrReport(typeof(RegistrationAttribute), reportDiagnostic);
             var moduleRegistrationAttribute = compilation.GetTypeOrReport(typeof(ModuleRegistrationAttribute), reportDiagnostic);
             var factoryRegistrationAttribute = compilation.GetTypeOrReport(typeof(FactoryRegistrationAttribute), reportDiagnostic);
@@ -55,6 +59,8 @@ namespace StrongInject.Generator
                 || iRequiresAsyncInitialization is null
                 || iDisposable is null
                 || iAsyncDisposable is null
+                || owned is null
+                || asyncOwned is null
                 || registrationAttribute is null
                 || moduleRegistrationAttribute is null
                 || factoryRegistrationAttribute is null
@@ -79,6 +85,8 @@ namespace StrongInject.Generator
                 iRequiresAsyncInitialization: iRequiresAsyncInitialization,
                 iDisposable: iDisposable,
                 iAsyncDisposable: iAsyncDisposable,
+                owned: owned,
+                asyncOwned: asyncOwned,
                 registrationAttribute: registrationAttribute,
                 moduleRegistrationAttribute: moduleRegistrationAttribute,
                 factoryRegistrationAttribute: factoryRegistrationAttribute,
