@@ -296,9 +296,7 @@ If a factory implements `IFactory<T>` for multiple `T`s it will be registered as
 
 What if you need to provide configuration for a registration at runtime? Or alternatively what if you need to integrate with an existing container?
 
-For that you can use the `IInstanceProvider<T>` interface. Any fields of a container which are or implement `IInstanceProvider<T>` will provide/override any existing registrations for `T`.
-
-Here is a full fledged example of how you could provide configuration for a registration at runtime, whilst still getting the full benefit of the IOC container to create your types. Of course many cases will be simpler, and not require usage of both a factory and an instanceProvider.
+We've already mentioned above that you can mark instance methods on a container as factory methods. This allows you to access information only available at runtime during resolution:
 
 ```csharp
 using StrongInject;
@@ -307,29 +305,54 @@ public interface IInterface { }
 public class A : IInterface { }
 public class B : IInterface { }
 
-public enum InterfaceToUse
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<IInterface>
 {
-    UseA,
-    UseB
-}
+    private readonly bool _useB;
+    public Container(bool useB) => _useB = useB;
 
-public record InstanceProvider(InterfaceToUse InterfaceToUse) : IInstanceProvider<InterfaceToUse>
-{
-    public InterfaceToUse Get() => InterfaceToUse;
+    [Factory]
+    IInterface GetInterfaceInstance(Func<A> a, Func<B> b) => _useB ? b() : a();
 }
+```
 
-public record InterfaceFactory(A A, B B, InterfaceToUse InterfaceToUse) : IFactory<IInterface>
+In some cases though you need greater control over the disposal of the created instances. The `IInstanceProvider<T>` interface allows you to do that. Any fields of a container which are or implement `IInstanceProvider<T>` will provide/override any existing registrations for `T`.
+
+Here is an example of how you could use an IInstanceProvider to integrate with Autofac:
+
+```csharp
+using StrongInject;
+
+public class A
 {
-    public IInterface Create() => InterfaceToUse == InterfaceToUse.UseA ? (IInterface)A : B;
+    public A(B b){} 
+}
+public class B {}
+
+public class AutofacInstanceProvider<T>(Autofac.IContainer autofacContainer) : IInstanceProvider<T> where T : class
+{
+    private readonly ConcurrentDictionary<T, Autofac.Owned<T>> _ownedDic = new();
+    private readonly Autofac.IContainer _autofacContainer;
+    public AutofacInstanceProvider(Autofac.IContainer autofacContainer) => _autofacContainer = autofacContainer;
+    public T Get()
+    {
+        var owned = _autofacContainer.Resolve<Owned<T>>();
+        _ownedDic[owned.Value] = owned;
+        return owned.Value;
+    };
+    public void Release(T instance)
+    {
+        if (_ownedDic.TryGetValue(instance, out var owned))
+            owned.Dispose();
+    }
 }
 
 [Register(typeof(A))]
-[Register(typeof(B))]
-[RegisterFactory(typeof(InterfaceFactory))]
-public partial class Container : IContainer<IInterface>
+public partial class Container : IContainer<A>
 {
-    private readonly InstanceProvider _instanceProvider;
-    public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
+    private readonly AutofacInstanceProvider<B> _instanceProvider;
+    public Container(AutofacInstanceProvider<B> instanceProvider) => _instanceProvider = instanceProvider;
 }
 ```
 
@@ -417,12 +440,12 @@ Whilst this is only useful in a few edge cases for synchronous methods, `IRequir
 
 ### Async Support
 
-Every interface use by StrongInject has an asynchronous counterpart.
-Theres `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
+Every interface used by StrongInject has an asynchronous counterpart.
+There's `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
 
-You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` by calling `StrongInject.AsyncContainerExtensions.RunAsync`. RunAsync has overloads allowing you to pass in  sync or async lambda. As such `IAsycContainer<T>` is useful even if resolution is completely synchronous if usage is asynchronous.
+You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` by calling `StrongInject.AsyncContainerExtensions.RunAsync`. RunAsync has overloads allowing you to pass in sync or async lambdas. As such `IAsyncContainer<T>` is useful even if resolution is completely synchronous if usage is asynchronous.
 
-It is an error resolving `T` in an `IContainer<T>` depends on an asynchronous dependency.
+It is an error resolving `T` in an `IContainer<T>` if it depends on an asynchronous dependency.
 
 A type can implement both `IContainer<T1>` and `IAsyncContainer<T2>`. They will share single instance depdendencies.
 
@@ -467,32 +490,25 @@ public class PasswordChecker : IRequiresAsyncInitialization, IAsyncDisposable
     }
 }
 
-public record DbInstanceProvider(IDb Db) : IInstanceProvider<IDb>
-{
-    public IDb Get()
-    {
-        return Db;
-    }
-
-    public void Release(IDb instance) {}
-}
-
 [Register(typeof(PasswordChecker), Scope.SingleInstance)]
 public partial class Container : IAsyncContainer<PasswordChecker>
 {
-    private readonlyDbInstanceProvider _dbInstanceProvider;
+    private readonly IDb _db;
 
-    public Container(DbInstanceProvider dbInstanceProvider)
+    public Container(IDb db)
     {
-        _dbInstanceProvider = dbInstanceProvider;
+        _db = db;
     }
+
+    [Factory]
+    IDb GetDb() => _db;
 }
 
 public static class Program
 {
   public static async Task Main(string[] args)
   {
-    await new Container(new DbInstanceProvider(new Db())).RunAsync(x => 
+    await new Container(new Db()).RunAsync(x => 
       Console.WriteLine(x.CheckPassword(args[0], args[1])
         ? "Password is valid"
         : "Password is invalid"));
@@ -504,10 +520,12 @@ public static class Program
 
 Once a call to `Run` or `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `Run` or `RunAsync` will be disposed.
 
-In `RunAsync` if the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
-In `Run`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.
+Similiarly when an `Owned<T>` is disposed, any Instance Per Resolution or Instance Per Dependency instances created as part of resolving `T` will be disposed.
 
-Since an `InstanceProvider<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `InstanceProvider<T>.Release(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
+In `RunAsync`/`ResolveAsync` if the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
+In `Run`/`Resolve`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.
+
+Since both `IFactory<T>` and `InstanceProvider<T>` are free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `IFactory<T>.Release(T instance)`/`InstanceProvider<T>.Release(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
 
 Single Instance dependencies and their dependencies are disposed when the container is disposed. If the container implements `IAsyncDisposable` it must be disposed asynchronously even if it also implements `IDisposable`.
 
