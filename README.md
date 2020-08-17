@@ -19,6 +19,7 @@ compile time dependency injection for .Net
     - [Modules](#modules)
     - [Factories](#factories)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+    - [How StrongInject picks which registration to use](#how-stronginject-picks-which-registration-to-use)
   - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
@@ -84,9 +85,11 @@ public partial class Container : IContainer<A>, IContainer<B> {}
 
 ### Using a container.
 
-To use a container, you'll want to use the `Run` extension methods defined in `StrongInject.ContainerExtensions`, so make sure you're `using StrongInject;`
+There are two ways to use a container - using the `Run` methods or the `Resolve` methods.
 
-The `Run` method on `IContainer<T>` takes a `Func<T>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in a void returning lambda.
+Either way you'll find it easier if you the extension methods defined in `StrongInject.ContainerExtensions` rather than those defined directly on the container, so make sure you're `using StrongInject;`
+
+The `Run` method on `IContainer<T>` takes a `Func<T, TResult>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in a void returning lambda.
 
 ```csharp
 using StrongInject;
@@ -96,6 +99,24 @@ public class Program
   public static void Main()
   {
     System.Console.WriteLine(new Container().Run(x => x.ToString()));
+  }
+}
+```
+
+In some cases this isn't flexible enough, for example if you want to use StrongInject from another IOC container, or you need more fine grained control over the lifetime of `T`.
+
+For these cases you can call the `Resolve` method. This reurns an `Owned<T>` which is essentially a disposable wrapper over `T`. Make sure you call `Owned<T>.Dispose` once you're done using `Owned<T>.Value`.
+
+```csharp
+using StrongInject;
+
+public class Program
+{
+  public static void Main()
+  {
+    using var ownedOfA = new Container().Resolve();
+    var a = ownedOfA.Value;
+    System.Console.WriteLine(a.ToString());
   }
 }
 ```
@@ -317,7 +338,7 @@ public partial class Container : IContainer<IInterface>
 }
 ```
 
-In some cases though you need greater control over the disposal of the created instances. The `IInstanceProvider<T>` interface allows you to do that. Any fields of a container which are or implement `IInstanceProvider<T>` will provide/override any existing registrations for `T`.
+In some cases though you need greater control over the disposal of the created instances. The `IInstanceProvider<T>` interface allows you to do that. Any fields of a container which are or implement `IInstanceProvider<T>` will provide registrations for `T`.
 
 Here is an example of how you could use an IInstanceProvider to integrate with Autofac:
 
@@ -357,6 +378,22 @@ public partial class Container : IContainer<A>
 ```
 
 `Get` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to return a singleton or not.
+
+#### How StrongInject picks which registration to use
+
+It is possible for there to be multiple registrations for a type. In such a case resolving an instance of the type will result in an error, unless there is a best registration. The rule for picking the best registration is simple - any registration defined by a module is better than registrations defined on other modules that that module imports. 
+
+So for example, imagine there is a `Container`, and two modules, `ModuleA` and `ModuleB`.
+
+If all three define a registration for `SomeInterface`, then the one defined on the container will always be the best.
+
+If just `ModuleA` and `ModuleB` define a registration for `SomeInterface` then things will depend:
+
+- If `Container` imports both modules, resolving `SomeInterface` will always result in an error (even if `ModuleA` imports `ModuleB` or vice versa).
+- If `Container` imports `ModuleA`, and `ModuleA` imports `ModuleB`, then `ModuleA`'s registration will be best.
+- If `Container` imports `ModuleB`, and `ModuleB` imports `ModuleA`, then `ModuleB`'s registration will be best.
+
+To fix errors as a result of multiple registrations for a type, the simplest thing to do is to add a single best registration directly to the container. If the container already has multiple registrations for the type, then move those registrations to a seperate module and import them.
 
 ### Delegate Support
 
