@@ -79,8 +79,8 @@ namespace StrongInject.Generator
                     registrations.CreateOrUpdate(
                         type,
                         instanceSources,
-                        static (_, thisModuleInstanceSources) => thisModuleInstanceSources,
-                        static (_, thisModuleInstanceSources, existing) => existing.MergeWithPreferred(thisModuleInstanceSources));
+                        (_, thisModuleInstanceSources) => thisModuleInstanceSources,
+                        (_, thisModuleInstanceSources, existing) => existing.MergeWithPreferred(thisModuleInstanceSources));
                 }
             }
             else 
@@ -132,8 +132,8 @@ namespace StrongInject.Generator
                     importedModuleRegistrations.CreateOrUpdate(
                         type,
                         instanceSources,
-                        static (_, moduleInstanceSources) => moduleInstanceSources,
-                        static (_, moduleInstanceSources, existing) => existing.Merge(moduleInstanceSources));
+                        (_, moduleInstanceSources) => moduleInstanceSources,
+                        (_, moduleInstanceSources, existing) => existing.Merge(moduleInstanceSources));
                 }
             }
 
