@@ -12,12 +12,12 @@ namespace StrongInject
 
         public static TResult Run<T, TResult>(this IContainer<T> container, Func<T, TResult> func)
         {
-            return container.Run(static (t, func) => func(t), func);
+            return container.Run((t, func) => func(t), func);
         }
 
         public static void Run<T>(this IContainer<T> container, Action<T> action)
         {
-            container.Run(static (t, action) =>
+            container.Run((t, action) =>
             {
                 action(t);
                 return default(object);
@@ -36,17 +36,17 @@ namespace StrongInject
 
         public static ValueTask<TResult> RunAsync<T, TResult>(this IAsyncContainer<T> container, Func<T, ValueTask<TResult>> func)
         {
-            return container.RunAsync(static (t, func) => func(t), func);
+            return container.RunAsync((t, func) => func(t), func);
         }
 
         public static ValueTask<TResult> RunAsync<T, TResult>(this IAsyncContainer<T> container, Func<T, TResult> func)
         {
-            return container.RunAsync(static (t, func) => new ValueTask<TResult>(func(t)), func);
+            return container.RunAsync((t, func) => new ValueTask<TResult>(func(t)), func);
         }
 
         public static ValueTask RunAsync<T>(this IAsyncContainer<T> container, Func<T, ValueTask> action)
         {
-            return container.RunAsync(static async (t, action) =>
+            return container.RunAsync(async (t, action) =>
             {
                 await action(t);
                 return default(object?);
@@ -55,7 +55,7 @@ namespace StrongInject
 
         public static ValueTask RunAsync<T>(this IAsyncContainer<T> container, Action<T> action)
         {
-            return container.RunAsync(static (t, action) =>
+            return container.RunAsync((t, action) =>
             {
                 action(t);
                 return new ValueTask<object?>(default(object));
