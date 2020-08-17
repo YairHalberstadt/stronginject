@@ -13,12 +13,12 @@ namespace StrongInject.Generator
     {
         public static string GenerateContainerImplementations(
             INamedTypeSymbol container,
-            IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations,
+            InstanceSourcesScope containerScope,
             WellKnownTypes wellKnownTypes,
             Action<Diagnostic> reportDiagnostic,
             CancellationToken cancellationToken) => new ContainerGenerator(
                 container,
-                registrations,
+                containerScope,
                 wellKnownTypes,
                 reportDiagnostic,
                 cancellationToken).GenerateContainerImplementations();
@@ -38,7 +38,7 @@ namespace StrongInject.Generator
 
         private ContainerGenerator(
             INamedTypeSymbol container,
-            IReadOnlyDictionary<ITypeSymbol, InstanceSource> registrations,
+            InstanceSourcesScope containerScope,
             WellKnownTypes wellKnownTypes,
             Action<Diagnostic> reportDiagnostic,
             CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ namespace StrongInject.Generator
             _wellKnownTypes = wellKnownTypes;
             _reportDiagnostic = reportDiagnostic;
             _cancellationToken = cancellationToken;
-            _containerScope ??= new(registrations, wellKnownTypes);
+            _containerScope = containerScope;
 
             _containerInterfaces = _container.AllInterfaces
                 .Where(x
@@ -143,7 +143,7 @@ namespace StrongInject.Generator
                     variableCreationSource.Append("if(Disposed)");
                     ThrowObjectDisposedException(variableCreationSource);
                     var resultVariableName = CreateVariable(
-                        _containerScope[target],
+                        _containerScope[target].Best!,
                         variableCreationSource,
                         _containerScope,
                         isSingleInstanceCreation: false,
@@ -345,7 +345,7 @@ namespace StrongInject.Generator
                             }
                             break;
                         case FactoryRegistration(var factoryType, var factoryOf, var scope, var isAsync) registration:
-                            factoryVariable = CreateVariableInternal(_containerScope[factoryType], instanceSourcesScope);
+                            factoryVariable = CreateVariableInternal(_containerScope[factoryType].Best!, instanceSourcesScope);
                             methodSource.Append("var ");
                             methodSource.Append(variableName);
                             methodSource.Append(isAsync ? "=await((" : "=((");
@@ -373,7 +373,7 @@ namespace StrongInject.Generator
                                         variableSource.Append(",");
                                     }
                                     IParameterSymbol? parameter = constructor.Parameters[i];
-                                    var source = instanceSourcesScope[parameter.Type];
+                                    var source = instanceSourcesScope[parameter.Type].Best!;
                                     var variable = CreateVariableInternal(source, instanceSourcesScope);
                                     if (source is Registration { registeredAs: var castTarget })
                                     {
@@ -423,11 +423,11 @@ namespace StrongInject.Generator
                                 {
                                     if (index != 0)
                                         methodSource.Append(",");
-                                    methodSource.Append(((DelegateParameter)instanceSourcesScope[parameter.Type]).name);
+                                    methodSource.Append(((DelegateParameter)instanceSourcesScope[parameter.Type].Best!).name);
                                 }
                                 methodSource.Append(")=>{");
                                 var variable = CreateVariable(
-                                    instanceSourcesScope[returnType],
+                                    instanceSourcesScope[returnType].Best!,
                                     methodSource,
                                     instanceSourcesScope,
                                     isSingleInstanceCreation: false,
@@ -459,7 +459,7 @@ namespace StrongInject.Generator
                                         variableSource.Append(",");
                                     }
                                     IParameterSymbol? parameter = method.Parameters[i];
-                                    var source = instanceSourcesScope[parameter.Type];
+                                    var source = instanceSourcesScope[parameter.Type].Best!;
                                     var variable = CreateVariableInternal(source, instanceSourcesScope);
                                     if (source is Registration { registeredAs: var castTarget })
                                     {
