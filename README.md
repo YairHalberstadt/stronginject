@@ -19,6 +19,7 @@ compile time dependency injection for .Net
     - [Modules](#modules)
     - [Factories](#factories)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
+    - [How StrongInject picks which registration to use](#how-stronginject-picks-which-registration-to-use)
   - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
