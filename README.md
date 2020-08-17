@@ -337,7 +337,7 @@ public partial class Container : IContainer<IInterface>
 }
 ```
 
-In some cases though you need greater control over the disposal of the created instances. The `IInstanceProvider<T>` interface allows you to do that. Any fields of a container which are or implement `IInstanceProvider<T>` will provide/override any existing registrations for `T`.
+In some cases though you need greater control over the disposal of the created instances. The `IInstanceProvider<T>` interface allows you to do that. Any fields of a container which are or implement `IInstanceProvider<T>` will provide registrations for `T`.
 
 Here is an example of how you could use an IInstanceProvider to integrate with Autofac:
 
@@ -377,6 +377,22 @@ public partial class Container : IContainer<A>
 ```
 
 `Get` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to return a singleton or not.
+
+#### How StrongInject picks which registration to use
+
+It is possible for there to be multiple registrations for a type. In such a case resolving an instance of the type will result in an error, unless there is a best registration. The rule for picking the best registration is simple - any registration defined by a module is better than registrations defined on other modules that that module imports. 
+
+So for example, imagine there is a `Container`, and two modules, `ModuleA` and `ModuleB`.
+
+If all three define a registration for `SomeInterface`, then the one defined on the container will always be the best.
+
+If just `ModuleA` and `ModuleB` define a registration for `SomeInterface` then things will depend:
+
+- If `Container` imports both modules, resolving `SomeInterface` will always result in an error (even if `ModuleA` imports `ModuleB` or vice versa).
+- If `Container` imports `ModuleA`, and `ModuleA` imports `ModuleB`, then `ModuleA`'s registration will be best.
+- If `Container` imports `ModuleB`, and `ModuleB` imports `ModuleA`, then `ModuleB`'s registration will be best.
+
+To fix errors as a result of multiple registrations for a type, the simplest thing to do is to add a single best registration directly to the container. If the container already has multiple registrations for the type, then move those registrations to a seperate module and import them.
 
 ### Delegate Support
 
