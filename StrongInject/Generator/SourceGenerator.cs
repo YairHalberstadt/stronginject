@@ -93,8 +93,7 @@ namespace StrongInject.Generator
                     }
                     else
                     {
-                        // Do this to report diagnostics
-                        _ = registrationCalculator.GetModuleRegistrations(module.type);
+                        registrationCalculator.ValidateModuleRegistrations(module.type);
                     }
                 };
             }

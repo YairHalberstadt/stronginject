@@ -22,51 +22,78 @@ namespace StrongInject.Generator
             _cancellationToken = cancellationToken;
         }
 
-        private readonly Dictionary<INamedTypeSymbol, Dictionary<ITypeSymbol, InstanceSource>> _registrations = new();
+        private readonly Dictionary<INamedTypeSymbol, Dictionary<ITypeSymbol, InstanceSources>> _registrations = new();
         private readonly Compilation _compilation;
         private readonly WellKnownTypes _wellKnownTypes;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly CancellationToken _cancellationToken;
 
-        public IReadOnlyDictionary<ITypeSymbol, InstanceSource> GetModuleRegistrations(INamedTypeSymbol module)
+        public InstanceSourcesScope GetContainerRegistrations(INamedTypeSymbol container)
+        {
+            var registrations = CalculateRegistrations(container, dependantModules: null, onlyExported: false);
+            return new(registrations, _wellKnownTypes);
+        }
+
+        public void ValidateModuleRegistrations(INamedTypeSymbol module)
+        {
+            _ = GetModuleRegistrations(module);
+        }
+
+        internal IReadOnlyDictionary<ITypeSymbol, InstanceSources> GetModuleRegistrations(INamedTypeSymbol module)
         {
             var registrations = GetRegistrations(module, dependantModules: null);
             WarnOnNonStaticPublicMethodFactories(module);
             return registrations;
         }
 
-        public IReadOnlyDictionary<ITypeSymbol, InstanceSource> GetContainerRegistrations(INamedTypeSymbol module)
-        {
-            var registrations = GetRegistrations(module, dependantModules: null).ToDictionary(x => x.Key, x => x.Value);
-            AddContainerSpecificSources(module, registrations);
-            return registrations;
-        }
-
-        private IReadOnlyDictionary<ITypeSymbol, InstanceSource> GetRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules)
+        private IReadOnlyDictionary<ITypeSymbol, InstanceSources> GetRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules)
         {
             if (!_registrations.TryGetValue(module, out var registrations))
             {
                 if (!(dependantModules ??= new()).Add(module))
                 {
                     _reportDiagnostic(RecursiveModuleRegistration(module, _cancellationToken));
-                    return ImmutableDictionary<ITypeSymbol, InstanceSource>.Empty;
+                    return ImmutableDictionary<ITypeSymbol, InstanceSources>.Empty;
                 }
 
-                registrations = CalculateRegistrations(module, dependantModules);
+                registrations = CalculateRegistrations(module, dependantModules, onlyExported: true);
                 _registrations[module] = registrations;
             }
             return registrations;
         }
 
-        private Dictionary<ITypeSymbol, InstanceSource> CalculateRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules)
+        private Dictionary<ITypeSymbol, InstanceSources> CalculateRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules, bool onlyExported)
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
             var attributes = module.GetAttributes();
 
-            var thisModuleRegistrations = CalculateThisModuleRegistrations(module, attributes);
+            var registrations = CalculateImportedModuleRegistrations(dependantModules, attributes);
 
-            var importedModulesRegistrations = new List<(AttributeData registerModuleAttribute, Dictionary<ITypeSymbol, InstanceSource> registrations)>();
+            var thisModuleRegistrations = CalculateThisModuleRegistrations(module, attributes, onlyExported);
+
+            if (registrations is not null)
+            {
+                foreach (var (type, instanceSources) in thisModuleRegistrations)
+                {
+                    registrations.CreateOrUpdate(
+                        type,
+                        instanceSources,
+                        static (_, thisModuleInstanceSources) => thisModuleInstanceSources,
+                        static (_, thisModuleInstanceSources, existing) => existing.MergeWithPreferred(thisModuleInstanceSources));
+                }
+            }
+            else 
+            {
+                registrations = thisModuleRegistrations;
+            }
+
+            return registrations;
+        }
+
+        private Dictionary<ITypeSymbol, InstanceSources>? CalculateImportedModuleRegistrations(HashSet<INamedTypeSymbol>? dependantModules, ImmutableArray<AttributeData> attributes)
+        {
+            Dictionary<ITypeSymbol, InstanceSources>? importedModuleRegistrations = null;
             foreach (var registerModuleAttribute in attributes.Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerModuleAttribute, SymbolEqualityComparer.Default) ?? false))
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -94,50 +121,39 @@ namespace StrongInject.Generator
                     ? new HashSet<INamedTypeSymbol>()
                     : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 
-                var registrations = GetRegistrations(moduleType, dependantModules);
+                var moduleRegistrations = GetRegistrations(moduleType, dependantModules);
 
-                var importedModuleRegistrations = new Dictionary<ITypeSymbol, InstanceSource>();
-                foreach (var (type, registration) in registrations)
+                importedModuleRegistrations ??= new();
+                foreach (var (type, instanceSources) in moduleRegistrations)
                 {
                     if (exclusionList.Contains(type))
                         continue;
-                    if (thisModuleRegistrations.ContainsKey(type))
-                        continue;
-                    var use = true;
-                    foreach (var (otherModuleRegistrationAttribute, otherImportedModuleRegistrations) in importedModulesRegistrations)
-                    {
-                        if (otherImportedModuleRegistrations.TryGetValue(type, out var otherRegistration))
-                        {
-                            use = false;
-                            if (!registration.Equals(otherRegistration))
-                            {
-                                _reportDiagnostic(RegisteredByMultipleModules(registerModuleAttribute, moduleType, otherModuleRegistrationAttribute, type, _cancellationToken));
-                                _reportDiagnostic(RegisteredByMultipleModules(otherModuleRegistrationAttribute, moduleType, otherModuleRegistrationAttribute, type, _cancellationToken));
-                            }
-                            break;
-                        }
-                    }
-                    if (!use)
-                        continue;
 
-                    importedModuleRegistrations.Add(type, registration);
+                    importedModuleRegistrations.CreateOrUpdate(
+                        type,
+                        instanceSources,
+                        static (_, moduleInstanceSources) => moduleInstanceSources,
+                        static (_, moduleInstanceSources, existing) => existing.Merge(moduleInstanceSources));
                 }
-                importedModulesRegistrations.Add((registerModuleAttribute, importedModuleRegistrations));
             }
 
-            return thisModuleRegistrations.Concat(importedModulesRegistrations.SelectMany(x => x.registrations)).ToDictionary(x => x.Key, x => x.Value);
+            return importedModuleRegistrations;
         }
 
-        private Dictionary<ITypeSymbol, InstanceSource> CalculateThisModuleRegistrations(INamedTypeSymbol module, ImmutableArray<AttributeData> moduleAttributes)
+        private Dictionary<ITypeSymbol, InstanceSources> CalculateThisModuleRegistrations(INamedTypeSymbol module, ImmutableArray<AttributeData> moduleAttributes, bool onlyExported)
         {
-            var registrations = new Dictionary<ITypeSymbol, InstanceSource>();
+            var registrations = new Dictionary<ITypeSymbol, InstanceSources>();
             AppendSimpleRegistrations(registrations, moduleAttributes);
             AppendFactoryRegistrations(registrations, moduleAttributes);
-            AppendMethodFactories(registrations, module);
+            AppendFactoryMethods(registrations, module, onlyExported);
+            if (!onlyExported)
+            {
+                AppendInstanceProviders(registrations, module);
+            }
             return registrations;
         }
 
-        private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSource> registrations, ImmutableArray<AttributeData> moduleAttributes)
+        private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
         {
             foreach (var registerAttribute in moduleAttributes.Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerAttribute, SymbolEqualityComparer.Default) ?? false))
             {
@@ -216,20 +232,15 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    if (registrations.ContainsKey(target))
-                    {
-                        _reportDiagnostic(DuplicateRegistration(registerAttribute, target, _cancellationToken));
-                        continue;
-                    }
-
-                    registrations.Add(target, new Registration(
+                    var registration = new Registration(
                         type,
                         target,
                         scope,
                         requiresInitialization || requiresAsyncInitialization,
                         constructor,
-                        isAsync: requiresAsyncInitialization));
+                        isAsync: requiresAsyncInitialization);
 
+                    registrations.WithInstanceSource(target, registration);
                 }
             }
         }
@@ -244,7 +255,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSource> registrations, ImmutableArray<AttributeData> moduleAttributes)
+        private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
         {
             foreach (var registerFactoryAttribute in moduleAttributes.Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerFactoryAttribute, SymbolEqualityComparer.Default) ?? false))
             {
@@ -308,27 +319,17 @@ namespace StrongInject.Generator
                 {
                     any = true;
 
-                    if (registrations.ContainsKey(factoryType))
-                    {
-                        _reportDiagnostic(DuplicateRegistration(registerFactoryAttribute, factoryType, _cancellationToken));
-                        continue;
-                    }
-
-                    registrations.Add(factoryType, new Registration(
+                    var registration = new Registration(
                         type,
                         factoryType,
                         factoryScope,
                         requiresInitialization || requiresAsyncInitialization,
                         constructor,
-                        isAsync: requiresAsyncInitialization));
+                        isAsync: requiresAsyncInitialization);
+
+                    registrations.WithInstanceSource(factoryType, registration);
 
                     var factoryOf = factoryType.TypeArguments.First();
-
-                    if (registrations.ContainsKey(factoryOf))
-                    {
-                        _reportDiagnostic(DuplicateRegistration(registerFactoryAttribute, factoryOf, _cancellationToken));
-                        continue;
-                    }
 
                     if (factoryTargetScope == Scope.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
                     {
@@ -338,7 +339,9 @@ namespace StrongInject.Generator
 
                     bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.iAsyncFactory, SymbolEqualityComparer.Default);
 
-                    registrations.Add(factoryOf, new FactoryRegistration(factoryType, factoryOf, factoryTargetScope, isAsync));
+                    var factoryRegistration = new FactoryRegistration(factoryType, factoryOf, factoryTargetScope, isAsync);
+
+                    registrations.WithInstanceSource(factoryOf, factoryRegistration);
                 }
                 if (!any)
                 {
@@ -427,19 +430,15 @@ namespace StrongInject.Generator
             return true;
         }
 
-        private void AppendMethodFactories(Dictionary<ITypeSymbol, InstanceSource> registrations, INamedTypeSymbol module)
+        private void AppendFactoryMethods(Dictionary<ITypeSymbol, InstanceSources> registrations, INamedTypeSymbol module, bool onlyExported)
         {
-            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => x.IsStatic && x.IsPublic()))
+            var methods = module.GetMembers().OfType<IMethodSymbol>();
+            foreach (var method in onlyExported ? methods.Where(x => x.IsStatic && x.IsPublic()) : methods)
             {
                 var instanceSource = CreateInstanceSourceIfFactoryMethod(method, out var attribute);
                 if (instanceSource is not null)
                 {
-                    if (registrations.ContainsKey(instanceSource.returnType))
-                    {
-                        _reportDiagnostic(DuplicateRegistration(attribute, instanceSource.returnType, _cancellationToken));
-                        continue;
-                    }
-                    registrations.Add(instanceSource.returnType, instanceSource);
+                    registrations.WithInstanceSource(instanceSource.returnType, instanceSource);
                 }
             }
         }
@@ -504,6 +503,24 @@ namespace StrongInject.Generator
             return null;
         }
 
+        private void AppendInstanceProviders(Dictionary<ITypeSymbol, InstanceSources> registrations, INamedTypeSymbol module)
+        {
+            foreach (var field in module.GetMembers().OfType<IFieldSymbol>())
+            {
+                var location = field.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
+
+                foreach (var constructedInstanceProviderInterface in field.Type.AllInterfacesAndSelf().Where(x
+                    => x.OriginalDefinition.Equals(_wellKnownTypes.iInstanceProvider, SymbolEqualityComparer.Default)
+                    || x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default)))
+                {
+                    var providedType = constructedInstanceProviderInterface.TypeArguments[0];
+                    var isAsync = constructedInstanceProviderInterface.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default);
+                    var instanceProvider = new InstanceProvider(providedType, field, constructedInstanceProviderInterface, isAsync);
+                    registrations.WithInstanceSource(providedType, instanceProvider);
+                }
+            }
+        }
+
         private void WarnOnNonStaticPublicMethodFactories(INamedTypeSymbol module)
         {
             foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic())))
@@ -526,90 +543,6 @@ namespace StrongInject.Generator
             }
         }
 
-        private void AddContainerSpecificSources(INamedTypeSymbol module, Dictionary<ITypeSymbol, InstanceSource> registrations)
-        {
-            var containerSpecificRegistrations = new Dictionary<ITypeSymbol, (ISymbol symbol, Location location)>();
-
-            AddMethodFactories();
-
-            AddInstanceProviderFields();
-
-            void AddMethodFactories()
-            {
-                foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic())))
-                {
-                    var instanceSource = CreateInstanceSourceIfFactoryMethod(method, out var attribute);
-                    if (instanceSource is not null)
-                    {
-                        var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-                        if (containerSpecificRegistrations.TryGetValue(instanceSource.returnType, out var existing))
-                        {
-                            _reportDiagnostic(DuplicateMethodFactoriesForType(
-                                method,
-                                (IMethodSymbol)existing.symbol,
-                                instanceSource.returnType,
-                                existing.location));
-                            _reportDiagnostic(DuplicateMethodFactoriesForType(
-                                method,
-                                (IMethodSymbol)existing.symbol,
-                                instanceSource.returnType,
-                                location));
-                        }
-                        containerSpecificRegistrations[instanceSource.returnType] = (method, location);
-                        registrations[instanceSource.returnType] = instanceSource;
-                    }
-                }
-            }
-
-            void AddInstanceProviderFields()
-            {
-                foreach (var field in module.GetMembers().OfType<IFieldSymbol>())
-                {
-                    var location = field.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-
-                    foreach (var constructedInstanceProviderInterface in field.Type.AllInterfacesAndSelf().Where(x
-                        => x.OriginalDefinition.Equals(_wellKnownTypes.iInstanceProvider, SymbolEqualityComparer.Default)
-                        || x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default)))
-                    {
-                        var providedType = constructedInstanceProviderInterface.TypeArguments[0];
-                        if (containerSpecificRegistrations.TryGetValue(providedType, out var existing))
-                        {
-                            if (existing.symbol is IMethodSymbol existingMethod)
-                            {
-                                _reportDiagnostic(DuplicateFactoryMethodAndInstanceProviderForType(
-                                    existingMethod,
-                                    field,
-                                    providedType,
-                                    existing.location));
-                                _reportDiagnostic(DuplicateFactoryMethodAndInstanceProviderForType(
-                                    existingMethod,
-                                    field,
-                                    providedType,
-                                    location));
-                            }
-                            else
-                            {
-                                _reportDiagnostic(DuplicateInstanceProviders(
-                                    (IFieldSymbol)existing.symbol,
-                                    field,
-                                    providedType,
-                                    existing.location));
-                                _reportDiagnostic(DuplicateInstanceProviders(
-                                    (IFieldSymbol)existing.symbol,
-                                    field,
-                                    providedType,
-                                    location));
-                            }
-                        }
-                        var isAsync = constructedInstanceProviderInterface.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default);
-                        var instanceProvider = new InstanceProvider(providedType, field, constructedInstanceProviderInterface, isAsync);
-                        containerSpecificRegistrations[providedType] = (field, location);
-                        registrations[providedType] = instanceProvider;
-                    }
-                }
-            }
-        }
-
         private static Diagnostic DoesNotHaveSuitableConversion(AttributeData registerAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(
@@ -625,22 +558,6 @@ namespace StrongInject.Generator
                 registeredAsType);
         }
 
-        private static Diagnostic RegisteredByMultipleModules(AttributeData attributeForLocation, INamedTypeSymbol moduleType, AttributeData otherModuleRegistrationAttribute, ITypeSymbol type, CancellationToken cancellationToken)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0002",
-                    "Modules provide differing registrations for Type",
-                    "Modules '{0}' and '{1}' provide differing registrations for '{2}'.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                attributeForLocation.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                otherModuleRegistrationAttribute.ConstructorArguments[0].Value,
-                moduleType,
-                type);
-        }
-
         private static Diagnostic InvalidType(ITypeSymbol typeSymbol, Location location)
         {
             return Diagnostic.Create(
@@ -653,20 +570,6 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 typeSymbol);
-        }
-
-        private static Diagnostic DuplicateRegistration(AttributeData registerAttribute, ITypeSymbol registeredAsType, CancellationToken cancellationToken)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0004",
-                    "Module already contains registration for type",
-                    "Module already contains registration for '{0}'.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                registeredAsType);
         }
 
         private static Diagnostic NoConstructor(AttributeData registerAttribute, INamedTypeSymbol type, CancellationToken cancellationToken)
@@ -807,66 +710,6 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 methodSymbol);
-        }
-
-        private static Diagnostic DuplicateInstanceProviders(
-            IFieldSymbol firstField,
-            IFieldSymbol secondField,
-            ITypeSymbol providedType,
-            Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0015",
-                    "Duplicate instance providers for type",
-                    "Both fields '{0}' and '{1}' are instance providers for '{2}'",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                location,
-                firstField,
-                secondField,
-                providedType);
-        }
-
-        private static Diagnostic DuplicateMethodFactoriesForType(
-            IMethodSymbol firstMethod,
-            IMethodSymbol secondMethod,
-            ITypeSymbol providedType,
-            Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0016",
-                    "Duplicate instance providers for type",
-                    "Both methods '{0}' and '{1}' are factories for '{2}'",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                location,
-                firstMethod,
-                secondMethod,
-                providedType);
-        }
-
-        private static Diagnostic DuplicateFactoryMethodAndInstanceProviderForType(
-            IMethodSymbol methodSymbol,
-            IFieldSymbol fieldSymbol,
-            ITypeSymbol providedType,
-            Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0017",
-                    "Duplicate instance providers for type",
-                    "Both factory method '{0}' and instance provider field '{1}' are sources for '{2}'",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                location,
-                methodSymbol,
-                fieldSymbol,
-                providedType);
         }
 
         private static Diagnostic FactoryMethodParameterIsPassedByRef(IMethodSymbol method, IParameterSymbol parameter, Location location)

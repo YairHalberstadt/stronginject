@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.CodeAnalysis;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -17,6 +19,22 @@ namespace StrongInject.Generator
                 var x = @this[i];
                 yield return (x, i);
             }
+        }
+
+        public static void CreateOrUpdate<TKey, TValue, TParam>(this Dictionary<TKey, TValue> dic, TKey key, TParam param, Func<TKey, TParam, TValue> create, Func<TKey, TParam, TValue, TValue> update)
+        {
+            dic[key] = dic.TryGetValue(key, out var existing)
+                ? update(key, param, existing)
+                : create(key, param);
+        }
+
+        public static void WithInstanceSource(this Dictionary<ITypeSymbol, InstanceSources> instanceSources, ITypeSymbol type, InstanceSource instanceSource)
+        {
+            instanceSources.CreateOrUpdate(
+                type,
+                instanceSource,
+                static (_, instanceSource) => InstanceSources.Create(instanceSource),
+                static (_, instanceSource, existing) => existing.Add(instanceSource));
         }
     }
 }

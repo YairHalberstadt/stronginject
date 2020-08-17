@@ -33,13 +33,19 @@ namespace StrongInject.Generator
                 }
 
                 var result = false;
-                if (!instanceSourcesScope.TryGetSource(node, out var instanceSource))
+                if (!instanceSourcesScope.TryGetSource(node, out var instanceSources))
                 {
                     reportDiagnostic(NoSourceForType(location, target, node));
                     result = true;
                 }
+                else if (instanceSources.Best is null)
+                {
+                    reportDiagnostic(NoBestSourceForType(location, target, node));
+                    result = true;
+                }
                 else
                 {
+                    var instanceSource = instanceSources.Best;
                     instanceSourcesScope = instanceSourcesScope.Enter(instanceSource);
                     innerIsContainerScope = ReferenceEquals(instanceSourcesScope, containerScope);
                     if (innerIsContainerScope && visited.Contains(node))
@@ -60,20 +66,20 @@ namespace StrongInject.Generator
 
                                 if (instanceSourcesScope.TryGetSource(returnType, out var returnTypeSource))
                                 {
-                                    if (returnTypeSource is DelegateParameter { parameter: var param })
+                                    if (returnTypeSource.Best is DelegateParameter { parameter: var param })
                                     {
                                         if (delegateParameters.Contains(param))
                                         {
-                                            reportDiagnostic(DelegateReturnTypeProvidedBySameDelegate(location, target, node, returnType));
+                                            reportDiagnostic(WarnDelegateReturnTypeProvidedBySameDelegate(location, target, node, returnType));
                                         }
                                         else
                                         {
-                                            reportDiagnostic(DelegateReturnTypeProvidedByAnotherDelegate(location, target, node, returnType));
+                                            reportDiagnostic(WarnDelegateReturnTypeProvidedByAnotherDelegate(location, target, node, returnType));
                                         }
                                     }
-                                    else if (returnTypeSource.scope == Scope.SingleInstance)
+                                    else if (returnTypeSource.Best?.scope is Scope.SingleInstance)
                                     {
-                                        reportDiagnostic(DelegateReturnTypeIsSingleInstance(location, target, node, returnType));
+                                        reportDiagnostic(WarnDelegateReturnTypeIsSingleInstance(location, target, node, returnType));
                                     }
                                 }
 
@@ -94,7 +100,7 @@ namespace StrongInject.Generator
                                     }
                                     if (!usedByDelegateParams.Contains(delegateParam))
                                     {
-                                        reportDiagnostic(DelegateParameterNotUsed(location, target, node, delegateParam.Type, returnType));
+                                        reportDiagnostic(WarnDelegateParameterNotUsed(location, target, node, delegateParam.Type, returnType));
                                     }
                                 }
 
@@ -162,7 +168,7 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                         "SI0102",
-                        "Type contains circular dependency",
+                        "No source for instance of Type",
                         "Error while resolving dependencies for '{0}': We have no source for instance of type '{1}'",
                         "StrongInject",
                         DiagnosticSeverity.Error,
@@ -220,7 +226,23 @@ namespace StrongInject.Generator
                     parameter.RefKind);
         }
 
-        private static Diagnostic DelegateParameterNotUsed(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol parameterType, ITypeSymbol delegateReturnType)
+        private static Diagnostic NoBestSourceForType(Location location, ITypeSymbol target, ITypeSymbol type)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI0106",
+                        "Type contains circular dependency",
+                        "Error while resolving dependencies for '{0}': We have multiple sources for instance of type '{1}' and no best source." +
+                        " Try adding a single registration for '{1}' directly to the container, and moving any existing registrations for '{1}' on the container to an imported module.",
+                        "StrongInject",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    type);
+        }
+
+        private static Diagnostic WarnDelegateParameterNotUsed(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol parameterType, ITypeSymbol delegateReturnType)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
@@ -237,7 +259,7 @@ namespace StrongInject.Generator
                     delegateReturnType);
         }
 
-        private static Diagnostic DelegateReturnTypeProvidedByAnotherDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
+        private static Diagnostic WarnDelegateReturnTypeProvidedByAnotherDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
@@ -253,7 +275,7 @@ namespace StrongInject.Generator
                     delegateType);
         }
 
-        private static Diagnostic DelegateReturnTypeIsSingleInstance(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
+        private static Diagnostic WarnDelegateReturnTypeIsSingleInstance(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
@@ -269,7 +291,7 @@ namespace StrongInject.Generator
                     delegateType);
         }
 
-        private static Diagnostic DelegateReturnTypeProvidedBySameDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
+        private static Diagnostic WarnDelegateReturnTypeProvidedBySameDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
@@ -314,14 +336,14 @@ namespace StrongInject.Generator
                     foreach (var param in parameters)
                     {
                         var paramSource = containerScope[param.Type];
-                        if (Visit(paramSource))
+                        if (Visit(paramSource.Best!))
                             return true;
                     }
                 }
                 else if (source is FactoryRegistration { factoryType: var factoryType })
                 {
                     var factorySource = containerScope[factoryType];
-                    if (Visit(factorySource))
+                    if (Visit(factorySource.Best!))
                         return true;
                 }
 
@@ -374,18 +396,18 @@ namespace StrongInject.Generator
                     foreach (var param in parameters)
                     {
                         var paramSource = innerScope[param.Type];
-                        Visit(paramSource, innerScope, ref results);
+                        Visit(paramSource.Best!, innerScope, ref results);
                     }
                 }
                 else if (source is FactoryRegistration { factoryType: var factoryType })
                 {
                     var factorySource = innerScope[factoryType];
-                    Visit(factorySource, innerScope, ref results);
+                    Visit(factorySource.Best!, innerScope, ref results);
                 }
                 else if (source is DelegateSource { returnType: var returnType })
                 {
                     var returnTypeSource = innerScope[returnType];
-                    Visit(returnTypeSource, innerScope, ref results);
+                    Visit(returnTypeSource.Best!, innerScope, ref results);
                 }
 
                 if (ReferenceEquals(instanceSourcesScope, containerScope) || ReferenceEquals(innerScope, containerScope))

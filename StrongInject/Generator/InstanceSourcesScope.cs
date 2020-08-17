@@ -6,16 +6,16 @@ namespace StrongInject.Generator
 {
     internal class InstanceSourcesScope
     {
-        private readonly IReadOnlyDictionary<ITypeSymbol, InstanceSource> _instanceSource;
+        private readonly IReadOnlyDictionary<ITypeSymbol, InstanceSources> _instanceSources;
         private readonly Dictionary<ITypeSymbol, DelegateParameter>? _delegateParameters;
         private readonly InstanceSourcesScope _containerScope;
         private readonly WellKnownTypes _wellKnownTypes;
 
         public int Depth { get; }
 
-        public InstanceSourcesScope(IReadOnlyDictionary<ITypeSymbol, InstanceSource> instanceSource, WellKnownTypes wellKnownTypes)
+        public InstanceSourcesScope(IReadOnlyDictionary<ITypeSymbol, InstanceSources> instanceSources, WellKnownTypes wellKnownTypes)
         {
-            _instanceSource = instanceSource;
+            _instanceSources = instanceSources;
             _containerScope = this;
             _wellKnownTypes = wellKnownTypes;
             Depth = 0;
@@ -23,21 +23,21 @@ namespace StrongInject.Generator
 
         private InstanceSourcesScope(InstanceSourcesScope containerScope, Dictionary<ITypeSymbol, DelegateParameter> delegateParameters, int depth)
         {
-            _instanceSource = containerScope._instanceSource;
+            _instanceSources = containerScope._instanceSources;
             _delegateParameters = delegateParameters;
             _containerScope = containerScope;
             _wellKnownTypes = containerScope._wellKnownTypes;
             Depth = depth;
         }
 
-        public bool TryGetSource(ITypeSymbol target, out InstanceSource instanceSource)
+        public bool TryGetSource(ITypeSymbol target, out InstanceSources instanceSources)
         {
             if (_delegateParameters is not null && _delegateParameters.TryGetValue(target, out var delegateParameter))
             {
-                instanceSource = delegateParameter;
+                instanceSources = InstanceSources.Create(delegateParameter);
                 return true;
             }
-            if (_instanceSource.TryGetValue(target, out instanceSource))
+            if (_instanceSources.TryGetValue(target, out instanceSources))
             {
                 return true;
             }
@@ -52,19 +52,19 @@ namespace StrongInject.Generator
             {
                 if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
                 {
-                    instanceSource = new DelegateSource(delegateType, taskOfType, parameters, isAsync: true);
+                    instanceSources = InstanceSources.Create(new DelegateSource(delegateType, taskOfType, parameters, isAsync: true));
                 }
                 else
                 {
-                    instanceSource = new DelegateSource(delegateType, returnType, parameters, isAsync: false);
+                    instanceSources = InstanceSources.Create(new DelegateSource(delegateType, returnType, parameters, isAsync: false));
                 }
                 return true;
             }
             return false;
         }
 
-        public InstanceSource this[ITypeSymbol typeSymbol] => TryGetSource(typeSymbol, out var instanceSource)
-            ? instanceSource
+        public InstanceSources this[ITypeSymbol typeSymbol] => TryGetSource(typeSymbol, out var instanceSources)
+            ? instanceSources
             : throw new KeyNotFoundException($"No source is available for type {typeSymbol}");
 
         public InstanceSourcesScope Enter(InstanceSource instanceSource)
