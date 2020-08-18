@@ -96,6 +96,14 @@ namespace StrongInject.Generator
                 && (method.ContainingType?.IsPublic() ?? true);
         }
 
+        public static bool IsPublicMember(this ISymbol member)
+        {
+            if (member is not (IMethodSymbol or IPropertySymbol or IFieldSymbol or IEventSymbol))
+                throw new ArgumentException("argument is not a MemberSymbol", nameof(member));
+            return member.DeclaredAccessibility == Accessibility.Public
+                && (member.ContainingType?.IsPublic() ?? true);
+        }
+
         public static string FullName(this ITypeSymbol type)
         {
             return type.ToDisplayString(new SymbolDisplayFormat(

@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -43,6 +44,7 @@ namespace StrongInject.Generator
         {
             var registrations = GetRegistrations(module, dependantModules: null);
             WarnOnNonStaticPublicMethodFactories(module);
+            WarnOnNonStaticPublicInstanceFieldsOrProperties(module);
             return registrations;
         }
 
@@ -146,6 +148,7 @@ namespace StrongInject.Generator
             AppendSimpleRegistrations(registrations, moduleAttributes);
             AppendFactoryRegistrations(registrations, moduleAttributes);
             AppendFactoryMethods(registrations, module, onlyExported);
+            AppendInstanceFieldAndProperties(registrations, module, onlyExported);
             if (!onlyExported)
             {
                 AppendInstanceProviders(registrations, module);
@@ -503,6 +506,64 @@ namespace StrongInject.Generator
             return null;
         }
 
+        private void AppendInstanceFieldAndProperties(Dictionary<ITypeSymbol, InstanceSources> registrations, INamedTypeSymbol module, bool onlyExported)
+        {
+            var fieldsAndProperties = module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol);
+            foreach (var fieldOrProperty in onlyExported ? fieldsAndProperties.Where(IsPubliclyAccessibleStaticFieldOrProperty) : fieldsAndProperties)
+            {
+                var instanceSource = CreateInstanceSourceIfInstanceFieldOrProperty(fieldOrProperty, out var attribute);
+                if (instanceSource is not null)
+                {
+                    registrations.WithInstanceSource(instanceSource.type, instanceSource);
+                }
+            }
+        }
+
+        private static bool IsPubliclyAccessibleStaticFieldOrProperty(ISymbol symbol)
+        {
+            Debug.Assert(symbol is IFieldSymbol or IPropertySymbol);
+            if (!symbol.IsStatic)
+                return false;
+            if (!symbol.IsPublicMember())
+                return false;
+            if (symbol is IPropertySymbol { GetMethod: { DeclaredAccessibility: not Accessibility.Public } })
+                return false;
+            return true;
+        }
+
+        private InstanceFieldOrProperty? CreateInstanceSourceIfInstanceFieldOrProperty(ISymbol fieldOrProperty, out AttributeData attribute)
+        {
+            attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
+                => x.AttributeClass is { } attribute
+                && attribute.Equals(_wellKnownTypes.instanceAttribute, SymbolEqualityComparer.Default))!;
+            if (attribute is not null)
+            {
+                if (fieldOrProperty is IFieldSymbol { Type: var fieldType })
+                {
+                    return new InstanceFieldOrProperty(fieldOrProperty, fieldType);
+                }
+                if (fieldOrProperty is IPropertySymbol { Type: var propertyType } property)
+                {
+                    if (property.GetMethod is null)
+                    {
+                        _reportDiagnostic(InstancePropertyIsWriteOnly(
+                            property,
+                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                    }
+                    else
+                    {
+                        return new InstanceFieldOrProperty(fieldOrProperty, propertyType);
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException("This location is believed to be unreachable");
+                }
+            }
+
+            return null;
+        }
+
         private void AppendInstanceProviders(Dictionary<ITypeSymbol, InstanceSources> registrations, INamedTypeSymbol module)
         {
             foreach (var field in module.GetMembers().OfType<IFieldSymbol>())
@@ -538,6 +599,28 @@ namespace StrongInject.Generator
                     else
                     {
                         _reportDiagnostic(WarnFactoryMethodNotPubliclyAccessible(module, method, location));
+                    }
+                }
+            }
+        }
+
+        private void WarnOnNonStaticPublicInstanceFieldsOrProperties(INamedTypeSymbol module)
+        {
+            foreach (var fieldOrProperty in module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol && !IsPubliclyAccessibleStaticFieldOrProperty(x)))
+            {
+                var attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
+                    => x.AttributeClass is { } attribute
+                    && attribute.Equals(_wellKnownTypes.instanceAttribute, SymbolEqualityComparer.Default));
+                if (attribute is not null)
+                {
+                    var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
+                    if (!fieldOrProperty.IsStatic)
+                    {
+                        _reportDiagnostic(WarnInstanceFieldOrPropertyNotStatic(module, fieldOrProperty, location));
+                    }
+                    else
+                    {
+                        _reportDiagnostic(WarnInstanceFieldOrPropertyNotPubliclyAccessible(module, fieldOrProperty, location));
                     }
                 }
             }
@@ -758,6 +841,20 @@ namespace StrongInject.Generator
                 methodSymbol);
         }
 
+        private static Diagnostic InstancePropertyIsWriteOnly(IPropertySymbol propertySymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0015",
+                    "Instance property is write only",
+                    "Instance property '{0}' is write only.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                propertySymbol);
+        }
+
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
         {
             return Diagnostic.Create(
@@ -800,6 +897,38 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 method,
+                module);
+        }
+
+        private static Diagnostic WarnInstanceFieldOrPropertyNotStatic(ITypeSymbol module, ISymbol fieldOrProperty, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1004",
+                    "Instance FieldOrProperty is not static, and containing module is not a container, so will be ignored",
+                    "Instance {0} '{1}' is not static, and containing module '{2}' is not a container, so will be ignored.",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true),
+                location,
+                fieldOrProperty is IFieldSymbol ? "field" : "property",
+                fieldOrProperty,
+                module);
+        }
+
+        private static Diagnostic WarnInstanceFieldOrPropertyNotPubliclyAccessible(ITypeSymbol module, ISymbol fieldOrProperty, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1005",
+                    "Instance FieldOrProperty is not publicly accessible, and containing module is not a container, so it will be ignored",
+                    "Instance {0} '{1}' is not publicly accessible, and containing module '{2}' is not a container, so it will be ignored.",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true),
+                location,
+                fieldOrProperty is IFieldSymbol ? "field" : "property",
+                fieldOrProperty,
                 module);
         }
     }

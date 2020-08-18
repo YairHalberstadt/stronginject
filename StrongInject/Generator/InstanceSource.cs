@@ -36,4 +36,5 @@ namespace StrongInject.Generator
         Scope scope,
         bool isAsync) : InstanceSource(scope, isAsync)
     { }
+    internal record InstanceFieldOrProperty(ISymbol fieldOrPropertySymbol, ITypeSymbol type) : InstanceSource(Scope.InstancePerDependency, isAsync: false) { }
 }
