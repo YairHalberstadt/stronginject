@@ -29,7 +29,7 @@ namespace StrongInject.Generator
         private readonly CancellationToken _cancellationToken;
         private readonly InstanceSourcesScope _containerScope;
 
-        private readonly Dictionary<InstanceSource, (string name, bool isAsync, string disposeFieldName, string lockName)> _singleInstanceMethods = new(InstanceSourceComparer.Instance);
+        private readonly Dictionary<InstanceSource, (string name, bool isAsync, string disposeFieldName, string lockName)> _singleInstanceMethods = new(CanShareSameInstanceComparer.Instance);
         private readonly StringBuilder _containerMembersSource = new();
         private readonly List<(INamedTypeSymbol containerInterface, bool isAsync)> _containerInterfaces;
         private readonly bool _implementsSyncContainer;
@@ -304,14 +304,24 @@ namespace StrongInject.Generator
             _cancellationToken.ThrowIfCancellationRequested();
             orderOfCreation = new();
             var orderOfCreationTemp = orderOfCreation;
-            var variables = new Dictionary<InstanceSource, string>(InstanceSourceComparer.Instance);
+            var variables = new Dictionary<InstanceSource, string>(CanShareSameInstanceComparer.Instance);
             var outerTarget = target;
             return CreateVariableInternal(target, instanceSourcesScope);
             string CreateVariableInternal(InstanceSource target, InstanceSourcesScope instanceSourcesScope)
             {
-                instanceSourcesScope = instanceSourcesScope.Enter(target);
                 if (target is DelegateParameter { name: var variableName })
+                {
                     return variableName;
+                }
+
+                if (target is InstanceFieldOrProperty { fieldOrPropertySymbol: var fieldOrPropertySymbol })
+                {
+                    var symbolAccessBuilder = new StringBuilder();
+                    GenerateMemberAccess(symbolAccessBuilder, fieldOrPropertySymbol);
+                    return symbolAccessBuilder.ToString();
+                }
+
+                instanceSourcesScope = instanceSourcesScope.Enter(target);
                 string? disposeActionsName = null;
                 string? factoryVariable = null;
                 if (target.scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out variableName))
@@ -589,12 +599,13 @@ namespace StrongInject.Generator
                                 _containerDeclarationLocation));
                         }
                         break;
-                    case DelegateParameter:
-                        break;
                     case DelegateSource:
                         methodSource.Append("foreach (var disposeAction in ");
                         methodSource.Append(disposeActionName);
                         methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
+                        break;
+                    case DelegateParameter:
+                    case InstanceFieldOrProperty:
                         break;
                 }
             }
@@ -670,11 +681,11 @@ if (disposed != 0) return;");
                 type);
         }
 
-        private class InstanceSourceComparer : IEqualityComparer<InstanceSource>
+        private class CanShareSameInstanceComparer : IEqualityComparer<InstanceSource>
         {
-            private InstanceSourceComparer() { }
+            private CanShareSameInstanceComparer() { }
 
-            public static InstanceSourceComparer Instance { get; } = new InstanceSourceComparer();
+            public static CanShareSameInstanceComparer Instance { get; } = new CanShareSameInstanceComparer();
 
             public bool Equals(InstanceSource x, InstanceSource y)
             {

@@ -71,7 +71,9 @@ namespace StrongInject.Generator
                             || attribute.Equals(wellKnownTypes.registerModuleAttribute, SymbolEqualityComparer.Default)
                             || attribute.Equals(wellKnownTypes.registerFactoryAttribute, SymbolEqualityComparer.Default)))
                         || x.type.GetMembers().Any(x => x.GetAttributes().Any(x =>
-                            x.AttributeClass is { } attribute && attribute.Equals(wellKnownTypes.factoryAttribute, SymbolEqualityComparer.Default))));
+                            x.AttributeClass is { } attribute &&
+                            (attribute.Equals(wellKnownTypes.factoryAttribute, SymbolEqualityComparer.Default)
+                            || attribute.Equals(wellKnownTypes.instanceAttribute, SymbolEqualityComparer.Default)))));
 
                 foreach (var module in modules)
                 {

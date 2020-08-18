@@ -21,6 +21,7 @@ namespace StrongInject.Generator
         INamedTypeSymbol registerModuleAttribute,
         INamedTypeSymbol registerFactoryAttribute,
         INamedTypeSymbol factoryAttribute,
+        INamedTypeSymbol instanceAttribute,
         INamedTypeSymbol valueTask1,
         INamedTypeSymbol task1,
         INamedTypeSymbol objectDisposedException,
@@ -44,6 +45,7 @@ namespace StrongInject.Generator
             var registerModuleAttribute = compilation.GetTypeOrReport(typeof(RegisterModuleAttribute), reportDiagnostic);
             var registerFactoryAttribute = compilation.GetTypeOrReport(typeof(RegisterFactoryAttribute), reportDiagnostic);
             var factoryAttribute = compilation.GetTypeOrReport(typeof(FactoryAttribute), reportDiagnostic);
+            var instanceAttribute = compilation.GetTypeOrReport(typeof(InstanceAttribute), reportDiagnostic);
             var valueTask1 = compilation.GetTypeOrReport(typeof(ValueTask<>), reportDiagnostic);
             var task1 = compilation.GetTypeOrReport(typeof(Task<>), reportDiagnostic);
             var objectDisposedException = compilation.GetTypeOrReport(typeof(ObjectDisposedException), reportDiagnostic);
@@ -65,6 +67,7 @@ namespace StrongInject.Generator
                 || registerModuleAttribute is null
                 || registerFactoryAttribute is null
                 || factoryAttribute is null
+                || instanceAttribute is null
                 || valueTask1 is null
                 || task1 is null
                 || objectDisposedException is null
@@ -91,6 +94,7 @@ namespace StrongInject.Generator
                 registerModuleAttribute: registerModuleAttribute,
                 registerFactoryAttribute: registerFactoryAttribute,
                 factoryAttribute: factoryAttribute,
+                instanceAttribute: instanceAttribute,
                 valueTask1: valueTask1,
                 task1: task1,
                 objectDisposedException: objectDisposedException,
