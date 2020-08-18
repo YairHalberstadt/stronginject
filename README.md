@@ -24,6 +24,7 @@ compile time dependency injection for .Net
   - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
+  - [Resolving all instances of a type](#resolving-all-instances-of-a-type)
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
 - [Product Roadmap](#product-roadmap)
