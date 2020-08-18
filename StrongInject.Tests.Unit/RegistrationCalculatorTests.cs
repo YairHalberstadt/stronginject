@@ -35,7 +35,7 @@ public interface IB {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -95,7 +95,7 @@ public interface ID {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -150,7 +150,7 @@ public interface IA {}
 
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var moduleRegistrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Module"));
-            moduleRegistrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            moduleRegistrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -161,7 +161,7 @@ public interface IA {}
             });
 
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -211,7 +211,7 @@ public class B : IA {}
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (null, new InstanceSource[]{
@@ -259,7 +259,7 @@ public class B : IA {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -300,7 +300,7 @@ public class B : IA {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -333,7 +333,7 @@ public class B : IA {}
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (null, new InstanceSource[]{ 
@@ -376,7 +376,7 @@ public class B : IAsyncFactory<IA> { public ValueTask<IA> CreateAsync() => throw
             diagnostics.Verify();
 
             var factoryOfIA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("IA"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (null, new InstanceSource[]
@@ -435,7 +435,7 @@ public class B<T> {
                 // Registration(typeof(B<>.C))
                 new DiagnosticResult("SI0011", @"Register(typeof(B<>.C))", DiagnosticSeverity.Error).WithLocation(6, 2));
 
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEmpty();
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEmpty();
         }
 
         [Fact]
@@ -494,7 +494,7 @@ public class A<T1, T2> {}
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
 
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEmpty();
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEmpty();
         }
 
         [Fact]
@@ -540,7 +540,7 @@ public interface IE {}
 
             var cIntType = comp.AssertGetTypeByMetadataName("C`1").Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
             var icIntType = comp.AssertGetTypeByMetadataName("IC`1").Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (Registration(
@@ -607,7 +607,7 @@ public class B : IAsyncFactory<A> { public ValueTask<A> CreateAsync() => throw n
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (new FactoryRegistration(
@@ -646,7 +646,7 @@ public class C : IRequiresAsyncInitialization { public ValueTask InitializeAsync
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var factoryOfA = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (new FactoryRegistration(
@@ -717,7 +717,7 @@ public class I { internal I(int a) {} public I(bool b) {} }
                 // Registration(typeof(H))
                 new DiagnosticResult("SI0005", @"Register(typeof(H))").WithLocation(11, 2));
 
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (Registration(
@@ -808,7 +808,7 @@ internal class Outer
                 // Registration(typeof(Outer.Inner))
                 new DiagnosticResult("SI0007", @"Register(typeof(Outer.Inner))").WithLocation(7, 2));
 
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEmpty();
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEmpty();
         }
 
         [Fact]
@@ -832,7 +832,7 @@ public interface IB {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -875,7 +875,7 @@ public class A : IAsyncFactory<int[]> { public ValueTask<int[]> CreateAsync() =>
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var intArray = comp.CreateArrayTypeSymbol(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
             var factoryOfIntArray = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(intArray);
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [intArray] =
                     (new FactoryRegistration(
@@ -925,7 +925,7 @@ public class A {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (Registration(
@@ -964,7 +964,7 @@ public struct B {}
                 // (5,2): Error SI0008: 'B' is a struct and cannot have a Single Instance scope.
                 // Registration(typeof(B), Scope.SingleInstance)
                 new DiagnosticResult("SI0008", @"Register(typeof(B), Scope.SingleInstance)").WithLocation(5, 2));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEmpty();
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEmpty();
         }
 
         [Fact]
@@ -992,7 +992,7 @@ public struct B {}
                 // FactoryRegistration(typeof(A), Scope.SingleInstance, Scope.SingleInstance)
                 new DiagnosticResult("SI0008", @"RegisterFactory(typeof(A), Scope.SingleInstance, Scope.SingleInstance)", DiagnosticSeverity.Error).WithLocation(5, 2));
             var factoryOfB = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("B"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [factoryOfB] =
                     (Registration(
@@ -1050,7 +1050,7 @@ public class A : IA<string> {}
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var iAOfObject = comp.AssertGetTypeByMetadataName("IA`1").Construct(comp.AssertGetTypeByMetadataName(typeof(object).FullName!));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [iAOfObject] =
                     (Registration(
@@ -1079,7 +1079,7 @@ public struct A : IA {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("IA")] =
                     (Registration(
@@ -1108,7 +1108,7 @@ public struct A {}
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             var nullableA = comp.AssertGetTypeByMetadataName(typeof(Nullable<>).FullName!).Construct(comp.AssertGetTypeByMetadataName("A"));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [nullableA] =
                     (Registration(
@@ -1288,7 +1288,7 @@ public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => new
                 // (5,2): Warning SI1001: 'A' implements 'StrongInject.IAsyncFactory<int>'. Did you mean to use FactoryRegistration instead?
                 // Registration(typeof(A))
                 new DiagnosticResult("SI1001", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(5, 2));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (Registration(
@@ -1319,7 +1319,7 @@ public class A : IFactory<int> { public int Create() => 0; }
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
             var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [factoryOfInt] =
                     (Registration(
@@ -1356,7 +1356,7 @@ public class A : IRequiresInitialization { public void Initialize() {} }
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
             var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (Registration(
@@ -1387,7 +1387,7 @@ public class A : IFactory<int>, IRequiresInitialization { public int Create() =>
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
             var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [factoryOfInt] =
                     (Registration(
@@ -1426,7 +1426,7 @@ public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => def
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
             var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [factoryOfInt] =
                     (Registration(
@@ -1463,7 +1463,7 @@ public class A : IRequiresAsyncInitialization { public ValueTask InitializeAsync
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (Registration(
@@ -1496,7 +1496,7 @@ public class A : IAsyncFactory<int>, IRequiresAsyncInitialization { public Value
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => diagnostics.Add(x), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
             diagnostics.Verify();
             var factoryOfInt = comp.AssertGetTypeByMetadataName(typeof(IAsyncFactory<>).FullName!).Construct(comp.AssertGetTypeByMetadataName(typeof(int).FullName!));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [factoryOfInt] =
                     (Registration(
@@ -1537,7 +1537,7 @@ public class A : IRequiresInitialization, IRequiresAsyncInitialization { public 
                 // (5,2): Error SI0013: 'A' implements both IRequiresInitialization and IRequiresAsyncInitialization
                 // Registration(typeof(A))
                 new DiagnosticResult("SI0013", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(5, 2));
-            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.All.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
+            registrations.ToDictionary(x => x.Key, x => (x.Value.Best, x.Value.Without(x.Value.Best))).Should().BeEquivalentTo(new Dictionary<ITypeSymbol, (InstanceSource?, IEnumerable<InstanceSource>)>
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (Registration(

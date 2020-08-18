@@ -295,6 +295,9 @@ public class D
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14),
                 // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'D'
                 // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14),
+                // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'C'
+                // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 14));
         }
 

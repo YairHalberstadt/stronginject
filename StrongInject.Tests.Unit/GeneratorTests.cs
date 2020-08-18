@@ -7932,5 +7932,564 @@ partial class Container
     }
 }");
         }
+
+        [Fact]
+        public void ArrayResolvesAllRegistrationsForType()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A : IA {}
+public class B : IA {}
+public class C : IA {}
+public class IAFactory : IFactory<IA>
+{
+    public IA Create() => null;
+}
+
+[Register(typeof(B), Scope.SingleInstance, typeof(IA))]
+[Register(typeof(C))]
+[RegisterFactory(typeof(IAFactory))]
+public class Module
+{
+    [Factory] public static IA FactoryOfA() => null; 
+}
+
+public interface IA {}
+
+[Register(typeof(A), typeof(IA))]
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<IA[]>
+{
+    [Instance] private IA AInstance = null;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::B _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::B GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _0 = new global::B();
+            this._singleInstanceField0 = _0;
+            this._disposeAction0 = () =>
+            {
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA[]>.Run<TResult, TParam>(global::System.Func<global::IA[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module.FactoryOfA();
+        var _3 = new global::IAFactory();
+        var _2 = ((global::StrongInject.IFactory<global::IA>)_3).Create();
+        var _4 = GetSingleInstanceField0();
+        var _5 = new global::A();
+        var _0 = new global::IA[]{_1, _2, (global::IA)_4, this.AInstance, (global::IA)_5, };
+        TResult result;
+        try
+        {
+            result = func((global::IA[])_0, param);
+        }
+        finally
+        {
+            ((global::StrongInject.IFactory<global::IA>)_3).Release(_2);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA[]> global::StrongInject.IContainer<global::IA[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module.FactoryOfA();
+        var _3 = new global::IAFactory();
+        var _2 = ((global::StrongInject.IFactory<global::IA>)_3).Create();
+        var _4 = GetSingleInstanceField0();
+        var _5 = new global::A();
+        var _0 = new global::IA[]{_1, _2, (global::IA)_4, this.AInstance, (global::IA)_5, };
+        return new global::StrongInject.Owned<global::IA[]>(_0, () =>
+        {
+            ((global::StrongInject.IFactory<global::IA>)_3).Release(_2);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ArrayIgnoresDuplicateRegistrationForType1()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A : IA {}
+public class B : IA {}
+public interface IA {}
+
+[Register(typeof(B), typeof(IA))]
+[Register(typeof(A), typeof(IA))]
+public class Module
+{
+}
+
+[Register(typeof(A), typeof(IA))]
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<IA[]>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA[]>.Run<TResult, TParam>(global::System.Func<global::IA[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _2 = new global::B();
+        var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
+        TResult result;
+        try
+        {
+            result = func((global::IA[])_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA[]> global::StrongInject.IContainer<global::IA[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _2 = new global::B();
+        var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
+        return new global::StrongInject.Owned<global::IA[]>(_0, () =>
+        {
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ArrayIgnoresDuplicateRegistrationForType2()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A : IA {}
+public class B : IA {}
+public interface IA {}
+
+[Register(typeof(B), typeof(IA))]
+[Register(typeof(A), typeof(IA))]
+public class Module1
+{
+}
+
+[Register(typeof(A), typeof(IA))]
+public class Module2
+{
+}
+
+[RegisterModule(typeof(Module1))]
+[RegisterModule(typeof(Module2))]
+public partial class Container : IContainer<IA[]>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA[]>.Run<TResult, TParam>(global::System.Func<global::IA[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _2 = new global::B();
+        var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
+        TResult result;
+        try
+        {
+            result = func((global::IA[])_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA[]> global::StrongInject.IContainer<global::IA[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _2 = new global::B();
+        var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
+        return new global::StrongInject.Owned<global::IA[]>(_0, () =>
+        {
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ArrayIgnoresExludedRegistrations()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A : IA {}
+public class B : IA {}
+public interface IA {}
+
+[Register(typeof(A), typeof(IA))]
+public class Module
+{
+}
+
+[RegisterModule(typeof(Module), typeof(IA))]
+public partial class Container : IContainer<IA[]>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (14,22): Warning SI1105: Warning while resolving dependencies for 'IA[]': Resolving all registration of type 'IA', but there are no such registrations.
+                // Container
+                new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(14, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA[]>.Run<TResult, TParam>(global::System.Func<global::IA[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::IA[]{};
+        TResult result;
+        try
+        {
+            result = func((global::IA[])_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA[]> global::StrongInject.IContainer<global::IA[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::IA[]{};
+        return new global::StrongInject.Owned<global::IA[]>(_0, () =>
+        {
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfArrayDependenciesAreRecursive()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A : IA { public A(IA[] ia){} }
+public class B : IA {}
+public interface IA {}
+
+[Register(typeof(A), typeof(IA))]
+public class Module
+{
+}
+
+[Register(typeof(B), typeof(IA))]
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<IA[]>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (15,22): Error SI0101: Error while resolving dependencies for 'IA[]': 'IA[]' has a circular dependency
+                // Container
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(15, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA[]>.Run<TResult, TParam>(global::System.Func<global::IA[], TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::IA[]> global::StrongInject.IContainer<global::IA[]>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfArrayDependenciesRequireAsyncResolutionInSyncContainer()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public class A : IA, IRequiresAsyncInitialization { public ValueTask InitializeAsync() => default; }
+public class B : IA {}
+public interface IA {}
+
+[Register(typeof(A), typeof(IA))]
+public class Module
+{
+}
+
+[Register(typeof(B), typeof(IA))]
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<IA[]>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (16,22): Error SI0103: Error while resolving dependencies for 'IA[]': 'IA' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA[]>.Run<TResult, TParam>(global::System.Func<global::IA[], TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::IA[]> global::StrongInject.IContainer<global::IA[]>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ArrayDependenciesDontIncludeDelegateParameters()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+public class A : IA {}
+public class B : IA {}
+public interface IA {}
+
+[Register(typeof(A), typeof(IA))]
+public class Module
+{
+}
+
+[Register(typeof(B), typeof(IA))]
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<Func<IA, IA[]>>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (16,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<IA, IA[]>': Parameter 'IA' of delegate 'IA[]' is not used in resolution of 'IA[]'.
+                // Container
+                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(16, 22));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::IA, global::IA[]>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::IA, global::IA[]>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::IA, global::IA[]> _0 = (param0_0) =>
+        {
+            var _1 = new global::B();
+            var _2 = new global::A();
+            var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        TResult result;
+        try
+        {
+            result = func((global::System.Func<global::IA, global::IA[]>)_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::IA, global::IA[]>> global::StrongInject.IContainer<global::System.Func<global::IA, global::IA[]>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        global::System.Func<global::IA, global::IA[]> _0 = (param0_0) =>
+        {
+            var _1 = new global::B();
+            var _2 = new global::A();
+            var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
+            disposeActions1_0.Add(() =>
+            {
+            }
+
+            );
+            return _0;
+        }
+
+        ;
+        return new global::StrongInject.Owned<global::System.Func<global::IA, global::IA[]>>(_0, () =>
+        {
+            foreach (var disposeAction in disposeActions1_0)
+                disposeAction();
+        }
+
+        );
+    }
+}");
+        }
     }
 }
