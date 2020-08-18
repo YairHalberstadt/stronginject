@@ -75,11 +75,18 @@ namespace StrongInject.Generator
             return false;
         }
 
-        public InstanceSource this[ITypeSymbol typeSymbol] => TryGetSource(typeSymbol, out var instanceSource, out var ambiguous)
-            ? instanceSource
-            : ambiguous 
-                ? throw new InvalidOperationException($"No best source for type {typeSymbol}")
-                : throw new KeyNotFoundException($"No source is available for type {typeSymbol}");
+        public InstanceSource this[ITypeSymbol typeSymbol]
+        {
+            get
+            {
+                if (TryGetSource(typeSymbol, out var instanceSource, out var ambiguous))
+                    return instanceSource;
+                if (ambiguous)
+                    throw new InvalidOperationException($"No best source for type {typeSymbol}");
+                throw new KeyNotFoundException($"No source is available for type {typeSymbol}");
+
+            }
+        }
 
         public InstanceSourcesScope Enter(InstanceSource instanceSource)
         {
