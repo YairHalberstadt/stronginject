@@ -68,7 +68,7 @@ namespace StrongInject.Generator
                 instanceSource = new ArraySource(
                     arrayTypeSymbol,
                     elementType,
-                    _instanceSources.TryGetValue(elementType, out var elementSources) ? elementSources : Array.Empty<InstanceSource>());
+                    _instanceSources.TryGetValue(elementType, out var elementSources) ? elementSources : (IReadOnlyCollection<InstanceSource>)Array.Empty<InstanceSource>());
                 return true;
             }
             instanceSource = null!;
