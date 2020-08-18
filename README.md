@@ -17,6 +17,7 @@ compile time dependency injection for .Net
     - [Basics](#basics)
     - [Scope](#scope)
     - [Modules](#modules)
+    - [Instance fields and properties](#instance-fields-and-properties)
     - [Factories](#factories)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
     - [How StrongInject picks which registration to use](#how-stronginject-picks-which-registration-to-use)
@@ -223,6 +224,50 @@ There are two ways to solve this:
 1. Register the type directly. This will override the registrations in imported modules.
 2. Exclude the registration from one of the modules when you import it: `[RegisterModule(typeof(Module), exclusionList: new [] { typeof(A) })]`
 
+#### Instance fields and properties
+
+You can mark a field or a property with the `[Instance]` attribute, to register it as an instance of the field/property type. The field/property will be called for every dependency, but it is bad practice for it to be mutable or expensive, and so this should be irrelevant in practice.
+
+```csharp
+using StrongInject;
+using System.Collections.Generic;
+
+public class A
+{
+    public A(Dictionary<string, object> configuration){}
+}
+
+[Register(typeof(A))]
+public partial class Container : IContainer<A>
+{
+    [Instance] Dictionary<string, object> _configuration;
+    public Container(Dictionary<string, object> configuration) => _configuration = configuration;
+}
+```
+
+If the instance field/property is defined on the container type, it can be private or public, instance or static. However if you want to export the instance as part of a module it must be public and static.
+
+```csharp
+using StrongInject;
+using System;
+
+public class A
+{
+    public A(IEqualityComparer<string> equalityComparer){}
+}
+
+public class StringEqualityComparerModule
+{
+    [Instance] public static IEqualityComparer<string> StringEqualityComparer = StringComparer.CurrentCultureIgnoreCase;
+}
+
+[Register(typeof(A))]
+[RegisterModule(typeof(StringEqualityComparerModule))]
+public partial class Container : IContainer<A>
+{
+}
+```
+
 #### Factories
 
 Sometimes a type requires more complex construction than just calling the constructor. For example you might want to hard code some parameters, or call a factory method. Some types don't have the correct constructors to be registered directly.
@@ -317,7 +362,27 @@ If a factory implements `IFactory<T>` for multiple `T`s it will be registered as
 
 What if you need to provide configuration for a registration at runtime? Or alternatively what if you need to integrate with an existing container?
 
-We've already mentioned above that you can mark instance methods on a container as factory methods. This allows you to access information only available at runtime during resolution:
+We've already mentioned above that you can mark instance fields or properties on a container as `[Instance]`s. This allows you to access information only available at runtime during resolution:
+
+```csharp
+using StrongInject;
+
+public class A
+{
+    public A(Configuration configuration){}
+}
+
+public class Configuration {}
+
+[Register(typeof(A))]
+public partial class Container : IContainer<A>
+{
+    [Instance] Configuration _configuration;
+    public Container(Configuration configuration) => _configuration = configuration;
+}
+```
+
+In some cases the runtime fields you need might be of a type that you would be hesitant to register, such as bool, or string. In such cases you can use factory methods to only access them where appropriate:
 
 ```csharp
 using StrongInject;
