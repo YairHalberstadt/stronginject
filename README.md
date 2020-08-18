@@ -618,6 +618,50 @@ public static class Program
 }
 ```
 
+### Resolving all instances of a type
+
+When resolving an array type, if there are no user provided registrations for the array type, the array will be created by resolving all registrations for the element type, and filling the array with these instances.
+
+For example:
+
+```csharp
+public class A : IInterface {}
+public class B : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(B), typeof(IInterface))]
+public class Container : IContainer<IInterface[]>
+```
+
+This will reolve an array containing an instance of type `A` and an instance of type `B`.
+
+The contents of the array are arbitrary but deterministic.
+
+Not that duplicate registrations will be deduplicated, so in the following case:
+
+```csharp
+public class A : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(A), typeof(IInterface))]
+public class Container : IContainer<IInterface[]>
+```
+
+The array will contain 1 item, but in this case:
+
+```csharp
+public class A : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(A), Scope.SingleInstance, typeof(IInterface))]
+public class Container : IContainer<IInterface[]>
+```
+
+It will contain 2 items.
+
 ### Disposal
 
 Once a call to `Run` or `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `Run` or `RunAsync` will be disposed.
