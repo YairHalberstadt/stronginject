@@ -151,6 +151,19 @@ namespace StrongInject.Generator
                                 isScopeAsync);
                         }
                         break;
+                    case FactoryMethod {method: { Parameters: var parameters } }:
+                        {
+                            foreach (var param in parameters)
+                            {
+                                result |= Visit(
+                                    GetInstanceSourceOrReport(param.Type, instanceSourcesScope),
+                                    instanceSourcesScope,
+                                    usedParams,
+                                    isScopeAsync);
+                            }
+
+                            break;
+                        }
                 }
 
                 if (instanceSource is not DelegateSource && instanceSource.isAsync && !isScopeAsync)
@@ -366,27 +379,47 @@ namespace StrongInject.Generator
                     return true;
                 }
 
-                if (source is Registration { constructor: { Parameters: var parameters } })
+                switch (source)
                 {
-                    foreach (var param in parameters)
-                    {
-                        var paramSource = containerScope[param.Type];
-                        if (Visit(paramSource))
-                            return true;
-                    }
-                }
-                else if (source is FactoryRegistration { factoryType: var factoryType })
-                {
-                    var factorySource = containerScope[factoryType];
-                    if (Visit(factorySource))
-                        return true;
-                }
-                else if (source is ArraySource { items: var items, })
-                {
-                    foreach (var item in items)
-                    {
-                        Visit(item);
-                    }
+                    case Registration { constructor: { Parameters: var parameters } }:
+                        {
+                            foreach (var param in parameters)
+                            {
+                                var paramSource = containerScope[param.Type];
+                                if (Visit(paramSource))
+                                    return true;
+                            }
+
+                            break;
+                        }
+
+                    case FactoryRegistration { factoryType: var factoryType }:
+                        {
+                            var factorySource = containerScope[factoryType];
+                            if (Visit(factorySource))
+                                return true;
+                            break;
+                        }
+
+                    case ArraySource { items: var items, }:
+                        {
+                            foreach (var item in items)
+                            {
+                                Visit(item);
+                            }
+
+                            break;
+                        }
+                    case FactoryMethod { method: { Parameters: var parameters } }:
+                        {
+                            foreach (var param in parameters)
+                            {
+                                var paramSource = containerScope[param.Type];
+                                if (Visit(paramSource))
+                                    return true;
+                            }
+                        }
+                        break;
                 }
 
                 visited.Add(source);
@@ -433,30 +466,49 @@ namespace StrongInject.Generator
 
                 var innerScope = instanceSourcesScope.Enter(source);
 
-                if (source is Registration { constructor: { Parameters: var parameters } })
+                switch (source)
                 {
-                    foreach (var param in parameters)
-                    {
-                        var paramSource = innerScope[param.Type];
-                        Visit(paramSource, innerScope, ref results);
-                    }
-                }
-                else if (source is FactoryRegistration { factoryType: var factoryType })
-                {
-                    var factorySource = innerScope[factoryType];
-                    Visit(factorySource, innerScope, ref results);
-                }
-                else if (source is DelegateSource { returnType: var returnType })
-                {
-                    var returnTypeSource = innerScope[returnType];
-                    Visit(returnTypeSource, innerScope, ref results);
-                }
-                else if (source is ArraySource { items: var items, })
-                {
-                    foreach (var item in items)
-                    {
-                        Visit(item, innerScope, ref results);
-                    }
+                    case Registration { constructor: { Parameters: var parameters } }:
+                        {
+                            foreach (var param in parameters)
+                            {
+                                var paramSource = innerScope[param.Type];
+                                Visit(paramSource, innerScope, ref results);
+                            }
+
+                            break;
+                        }
+                    case FactoryRegistration { factoryType: var factoryType }:
+                        {
+                            var factorySource = innerScope[factoryType];
+                            Visit(factorySource, innerScope, ref results);
+                            break;
+                        }
+                    case DelegateSource { returnType: var returnType }:
+                        {
+                            var returnTypeSource = innerScope[returnType];
+                            Visit(returnTypeSource, innerScope, ref results);
+                            break;
+                        }
+                    case ArraySource { items: var items, }:
+                        {
+                            foreach (var item in items)
+                            {
+                                Visit(item, innerScope, ref results);
+                            }
+
+                            break;
+                        }
+                    case FactoryMethod { method: { Parameters: var parameters } }:
+                        {
+                            foreach (var param in parameters)
+                            {
+                                var paramSource = innerScope[param.Type];
+                                Visit(paramSource, innerScope, ref results);
+                            }
+
+                            break;
+                        }
                 }
 
                 if (ReferenceEquals(instanceSourcesScope, containerScope) || ReferenceEquals(innerScope, containerScope))
