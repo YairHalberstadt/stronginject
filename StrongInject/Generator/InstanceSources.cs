@@ -1,24 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 
 namespace StrongInject.Generator
 {
-    internal class InstanceSources
+    internal class InstanceSources : IReadOnlyCollection<InstanceSource>
     {
-        public InstanceSources(InstanceSource? best, ImmutableHashSet<InstanceSource> others)
+        public InstanceSources(InstanceSource? best, ImmutableSetInInsertionOrder<InstanceSource> others)
         {
             Best = best;
             _others = others;
         }
 
-        private readonly ImmutableHashSet<InstanceSource> _others;
+        private readonly ImmutableSetInInsertionOrder<InstanceSource> _others;
         public InstanceSource? Best { get; }
 
-        public IEnumerable<InstanceSource> All => Best is null ? _others : _others.Prepend(Best);
         public int Count => Best is null ? _others.Count : _others.Count + 1;
 
-        public static InstanceSources Create(InstanceSource best) => new InstanceSources(best, ImmutableHashSet<InstanceSource>.Empty);
+        public static InstanceSources Create(InstanceSource best) => new InstanceSources(best, ImmutableSetInInsertionOrder<InstanceSource>.Empty);
 
         public InstanceSources Add(InstanceSource instanceSource)
         {
@@ -64,5 +63,20 @@ namespace StrongInject.Generator
             }
             return new InstanceSources(instanceSources.Best, others);
         }
+
+        public IEnumerator<InstanceSource> GetEnumerator()
+        {
+            if (Best is not null)
+            {
+                yield return Best;
+            }
+
+            foreach (var other in _others)
+            {
+                yield return other;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

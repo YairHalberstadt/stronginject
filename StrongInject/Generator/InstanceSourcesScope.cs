@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace StrongInject.Generator
 {
@@ -30,16 +30,19 @@ namespace StrongInject.Generator
             Depth = depth;
         }
 
-        public bool TryGetSource(ITypeSymbol target, out InstanceSources instanceSources)
+        public bool TryGetSource(ITypeSymbol target, out InstanceSource instanceSource, out bool ambiguous)
         {
+            ambiguous = false;
             if (_delegateParameters is not null && _delegateParameters.TryGetValue(target, out var delegateParameter))
             {
-                instanceSources = InstanceSources.Create(delegateParameter);
+                instanceSource = delegateParameter;
                 return true;
             }
-            if (_instanceSources.TryGetValue(target, out instanceSources))
+            if (_instanceSources.TryGetValue(target, out var instanceSources))
             {
-                return true;
+                instanceSource = instanceSources.Best!;
+                ambiguous = instanceSource is null;
+                return !ambiguous;
             }
             if (target is INamedTypeSymbol 
             { 
@@ -52,20 +55,38 @@ namespace StrongInject.Generator
             {
                 if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
                 {
-                    instanceSources = InstanceSources.Create(new DelegateSource(delegateType, taskOfType, parameters, isAsync: true));
+                    instanceSource = new DelegateSource(delegateType, taskOfType, parameters, isAsync: true);
                 }
                 else
                 {
-                    instanceSources = InstanceSources.Create(new DelegateSource(delegateType, returnType, parameters, isAsync: false));
+                    instanceSource = new DelegateSource(delegateType, returnType, parameters, isAsync: false);
                 }
                 return true;
             }
+            if (target is IArrayTypeSymbol { Rank: 1, ElementType: var elementType } arrayTypeSymbol )
+            {
+                instanceSource = new ArraySource(
+                    arrayTypeSymbol,
+                    elementType,
+                    _instanceSources.TryGetValue(elementType, out var elementSources) ? elementSources : (IReadOnlyCollection<InstanceSource>)Array.Empty<InstanceSource>());
+                return true;
+            }
+            instanceSource = null!;
             return false;
         }
 
-        public InstanceSources this[ITypeSymbol typeSymbol] => TryGetSource(typeSymbol, out var instanceSources)
-            ? instanceSources
-            : throw new KeyNotFoundException($"No source is available for type {typeSymbol}");
+        public InstanceSource this[ITypeSymbol typeSymbol]
+        {
+            get
+            {
+                if (TryGetSource(typeSymbol, out var instanceSource, out var ambiguous))
+                    return instanceSource;
+                if (ambiguous)
+                    throw new InvalidOperationException($"No best source for type {typeSymbol}");
+                throw new KeyNotFoundException($"No source is available for type {typeSymbol}");
+
+            }
+        }
 
         public InstanceSourcesScope Enter(InstanceSource instanceSource)
         {

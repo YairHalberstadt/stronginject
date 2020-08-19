@@ -96,7 +96,9 @@ namespace StrongInject.Generator
         private Dictionary<ITypeSymbol, InstanceSources>? CalculateImportedModuleRegistrations(HashSet<INamedTypeSymbol>? dependantModules, ImmutableArray<AttributeData> attributes)
         {
             Dictionary<ITypeSymbol, InstanceSources>? importedModuleRegistrations = null;
-            foreach (var registerModuleAttribute in attributes.Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerModuleAttribute, SymbolEqualityComparer.Default) ?? false))
+            foreach (var registerModuleAttribute in attributes
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerModuleAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
                 var moduleConstant = registerModuleAttribute.ConstructorArguments.FirstOrDefault();
@@ -158,7 +160,9 @@ namespace StrongInject.Generator
 
         private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
         {
-            foreach (var registerAttribute in moduleAttributes.Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerAttribute, SymbolEqualityComparer.Default) ?? false))
+            foreach (var registerAttribute in moduleAttributes
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
                 var countConstructorArguments = registerAttribute.ConstructorArguments.Length;
@@ -260,7 +264,9 @@ namespace StrongInject.Generator
 
         private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
         {
-            foreach (var registerFactoryAttribute in moduleAttributes.Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerFactoryAttribute, SymbolEqualityComparer.Default) ?? false))
+            foreach (var registerFactoryAttribute in moduleAttributes
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerFactoryAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
                 var countConstructorArguments = registerFactoryAttribute.ConstructorArguments.Length;

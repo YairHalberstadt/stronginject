@@ -24,6 +24,7 @@ compile time dependency injection for .Net
   - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
+  - [Resolving all instances of a type](#resolving-all-instances-of-a-type)
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
 - [Product Roadmap](#product-roadmap)
@@ -617,6 +618,50 @@ public static class Program
   }
 }
 ```
+
+### Resolving all instances of a type
+
+When resolving an array type, if there are no user provided registrations for the array type, the array will be created by resolving all registrations for the element type, and filling the array with these instances.
+
+For example:
+
+```csharp
+public class A : IInterface {}
+public class B : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(B), typeof(IInterface))]
+public class Container : IContainer<IInterface[]>
+```
+
+This will reolve an array containing an instance of type `A` and an instance of type `B`.
+
+The contents of the array are arbitrary but deterministic. A new array is created for every dependency, so users are free to mutate it.
+
+Not that duplicate registrations will be deduplicated, so in the following case:
+
+```csharp
+public class A : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(A), typeof(IInterface))]
+public class Container : IContainer<IInterface[]>
+```
+
+The array will contain 1 item, but in this case:
+
+```csharp
+public class A : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(A), Scope.SingleInstance, typeof(IInterface))]
+public class Container : IContainer<IInterface[]>
+```
+
+It will contain 2 items.
 
 ### Disposal
 
