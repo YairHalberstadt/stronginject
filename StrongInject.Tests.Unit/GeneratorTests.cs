@@ -8021,12 +8021,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _1 = global::Module.FactoryOfA();
-        var _3 = new global::IAFactory();
-        var _2 = ((global::StrongInject.IFactory<global::IA>)_3).Create();
-        var _4 = GetSingleInstanceField0();
+        var _2 = new global::IAFactory();
+        var _1 = ((global::StrongInject.IFactory<global::IA>)_2).Create();
+        var _3 = GetSingleInstanceField0();
+        var _4 = global::Module.FactoryOfA();
         var _5 = new global::A();
-        var _0 = new global::IA[]{_1, _2, (global::IA)_4, this.AInstance, (global::IA)_5, };
+        var _0 = new global::IA[]{_1, (global::IA)_3, _4, this.AInstance, (global::IA)_5, };
         TResult result;
         try
         {
@@ -8034,8 +8034,8 @@ partial class Container
         }
         finally
         {
-            ((global::StrongInject.IFactory<global::IA>)_3).Release(_2);
-            global::StrongInject.Helpers.Dispose(_1);
+            global::StrongInject.Helpers.Dispose(_4);
+            ((global::StrongInject.IFactory<global::IA>)_2).Release(_1);
         }
 
         return result;
@@ -8045,16 +8045,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _1 = global::Module.FactoryOfA();
-        var _3 = new global::IAFactory();
-        var _2 = ((global::StrongInject.IFactory<global::IA>)_3).Create();
-        var _4 = GetSingleInstanceField0();
+        var _2 = new global::IAFactory();
+        var _1 = ((global::StrongInject.IFactory<global::IA>)_2).Create();
+        var _3 = GetSingleInstanceField0();
+        var _4 = global::Module.FactoryOfA();
         var _5 = new global::A();
-        var _0 = new global::IA[]{_1, _2, (global::IA)_4, this.AInstance, (global::IA)_5, };
+        var _0 = new global::IA[]{_1, (global::IA)_3, _4, this.AInstance, (global::IA)_5, };
         return new global::StrongInject.Owned<global::IA[]>(_0, () =>
         {
-            ((global::StrongInject.IFactory<global::IA>)_3).Release(_2);
-            global::StrongInject.Helpers.Dispose(_1);
+            global::StrongInject.Helpers.Dispose(_4);
+            ((global::StrongInject.IFactory<global::IA>)_2).Release(_1);
         }
 
         );
@@ -8182,8 +8182,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _1 = new global::A();
-        var _2 = new global::B();
+        var _1 = new global::B();
+        var _2 = new global::A();
         var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
         TResult result;
         try
@@ -8201,8 +8201,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _1 = new global::A();
-        var _2 = new global::B();
+        var _1 = new global::B();
+        var _2 = new global::A();
         var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
         return new global::StrongInject.Owned<global::IA[]>(_0, () =>
         {

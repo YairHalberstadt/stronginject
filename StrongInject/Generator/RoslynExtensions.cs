@@ -1,6 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -142,6 +145,101 @@ namespace StrongInject.Generator
             }
             taskOfType = null!;
             return false;
+        }
+
+        public static IEnumerable<AttributeData> Sort(this IEnumerable<AttributeData> attributes)
+        {
+            return attributes.OrderBy(x => x, AttributeComparer.Instance);
+        }
+
+        private class AttributeComparer : IComparer<AttributeData>
+        {
+            private AttributeComparer() { }
+
+            public static AttributeComparer Instance = new();
+            public int Compare(AttributeData x, AttributeData y)
+            {
+                Debug.Assert(
+                    x.AttributeClass is { ContainingNamespace: { Name: "StrongInject" } }
+                    && y.AttributeClass is { ContainingNamespace: { Name: "StrongInject" } });
+
+                var compareClass = string.CompareOrdinal(x.AttributeClass?.Name, y.AttributeClass?.Name);
+                if (compareClass != 0)
+                    return compareClass;
+
+                return CompareArrays(x.ConstructorArguments, y.ConstructorArguments);
+            }
+
+            private static int CompareArrays(ImmutableArray<TypedConstant> arrayX, ImmutableArray<TypedConstant> arrayY)
+            {
+                var compareLength = arrayX.Length.CompareTo(arrayY.Length);
+                if (compareLength != 0)
+                    return compareLength;
+
+                for (var i = 0; i < arrayX.Length; i++)
+                {
+                    var argX = arrayX[i];
+                    var argY = arrayY[i];
+
+                    var compareKinds = argX.Kind.CompareTo(argY.Kind);
+                    if (compareKinds != 0)
+                        return compareKinds;
+
+                    if (argX.Kind != TypedConstantKind.Enum)
+                    {
+                        var compareTypes = string.CompareOrdinal(argX.Type?.Name, argY.Type?.Name);
+                        if (compareTypes != 0)
+                            return compareTypes;
+                    }
+                    else
+                    {
+                        var compareTypes = CompareTypes(argX.Type!, argY.Type!);
+                        if (compareTypes != 0)
+                            return compareTypes;
+                    }
+
+                    var compareIsNull = argX.IsNull.CompareTo(argY.IsNull);
+                    if (compareIsNull != 0)
+                        return compareIsNull;
+
+                    var compareValues = argX.Kind switch
+                    {
+                        TypedConstantKind.Primitive or TypedConstantKind.Enum => argX.Value is string
+                            ? StringComparer.Ordinal.Compare(argX.Value, argY.Value)
+                            : Comparer.Default.Compare(argX.Value, argY.Value),
+                        TypedConstantKind.Error => 0,
+                        TypedConstantKind.Type => CompareTypes((ITypeSymbol)argX.Value!, (ITypeSymbol)argY.Value!),
+                        TypedConstantKind.Array => CompareArrays(argX.Values, argY.Values),
+                        _ => throw new InvalidOperationException("This location is thought to be impossible"),
+                    };
+                    if (compareValues != 0)
+                        return compareValues;
+                }
+
+                return 0;
+            }
+
+            private static int CompareTypes(ITypeSymbol typeX, ITypeSymbol typeY)
+            {
+                var compareTypeNames = string.CompareOrdinal(typeX.Name, typeY.Name);
+                if (compareTypeNames != 0)
+                    return compareTypeNames;
+
+                var namespaceX = typeX.ContainingNamespace;
+                var namespaceY = typeY.ContainingNamespace;
+
+                while (!namespaceX.IsGlobalNamespace && !namespaceY.IsGlobalNamespace)
+                {
+                    var compareNamespaces = string.CompareOrdinal(namespaceX.Name, namespaceY.Name);
+                    if (compareNamespaces != 0)
+                        return compareNamespaces;
+
+                    namespaceX = namespaceX.ContainingNamespace;
+                    namespaceY = namespaceY.ContainingNamespace;
+                }
+
+                return namespaceX.IsGlobalNamespace.CompareTo(namespaceY.IsGlobalNamespace);
+            }
         }
     }
 }

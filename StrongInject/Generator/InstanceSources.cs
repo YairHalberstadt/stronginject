@@ -6,18 +6,18 @@ namespace StrongInject.Generator
 {
     internal class InstanceSources : IReadOnlyCollection<InstanceSource>
     {
-        public InstanceSources(InstanceSource? best, ImmutableHashSet<InstanceSource> others)
+        public InstanceSources(InstanceSource? best, ImmutableSetInInsertionOrder<InstanceSource> others)
         {
             Best = best;
             _others = others;
         }
 
-        private readonly ImmutableHashSet<InstanceSource> _others;
+        private readonly ImmutableSetInInsertionOrder<InstanceSource> _others;
         public InstanceSource? Best { get; }
 
         public int Count => Best is null ? _others.Count : _others.Count + 1;
 
-        public static InstanceSources Create(InstanceSource best) => new InstanceSources(best, ImmutableHashSet<InstanceSource>.Empty);
+        public static InstanceSources Create(InstanceSource best) => new InstanceSources(best, ImmutableSetInInsertionOrder<InstanceSource>.Empty);
 
         public InstanceSources Add(InstanceSource instanceSource)
         {
