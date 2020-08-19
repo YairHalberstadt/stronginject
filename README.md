@@ -637,7 +637,7 @@ public class Container : IContainer<IInterface[]>
 
 This will reolve an array containing an instance of type `A` and an instance of type `B`.
 
-The contents of the array are arbitrary but deterministic.
+The contents of the array are arbitrary but deterministic. A new array is created for every dependency, so users are free to mutate it.
 
 Not that duplicate registrations will be deduplicated, so in the following case:
 
