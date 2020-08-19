@@ -7213,6 +7213,206 @@ partial class Container
         }
 
         [Fact]
+        public void ErrorIfFactoryMethodIsRecursive()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory]
+    A M(A a) => null;
+}
+
+public class A{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
+                // Container
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfFactoryMethodRequiresAsyncResolutionInSyncContainer()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+    [Factory]
+    A M(B b) => null;
+}
+
+public class A{}
+public class B : IRequiresAsyncInitialization
+{
+    public ValueTask InitializeAsync() => default;
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
+                // Container
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void FactoryMethodRequiringAsyncResolutionCanBeSingleInstanc()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Register(typeof(B))]
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory(Scope.SingleInstance)]
+    A M(B b) => null;
+}
+
+public class A{}
+public class B : IRequiresAsyncInitialization
+{
+    public ValueTask InitializeAsync() => default;
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        await this._lock0.WaitAsync();
+        try
+        {
+            await (this._disposeAction0?.Invoke() ?? default);
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
+    private async global::System.Threading.Tasks.ValueTask<global::A> GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        await this._lock0.WaitAsync();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _1 = new global::B();
+            await ((global::StrongInject.IRequiresAsyncInitialization)_1).InitializeAsync();
+            var _0 = this.M((global::B)_1);
+            this._singleInstanceField0 = _0;
+            this._disposeAction0 = async () =>
+            {
+                await global::StrongInject.Helpers.DisposeAsync(_0);
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await GetSingleInstanceField0();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await GetSingleInstanceField0();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
         public void WarnOnInstanceRequiringAsyncDisposalInSyncResolution()
         {
             string userSource = @"
