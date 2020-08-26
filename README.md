@@ -367,7 +367,7 @@ A factory method can be generic. All of the type parameters must be used in the 
 ```csharp
 public class ImmutableArrayModule
 {
-    public static [Factory] ImmutableArray<T> CreateImmutableArray<T>(T[] arr) => arr.ToImmutableArray();
+    [Factory] public static ImmutableArray<T> CreateImmutableArray<T>(T[] arr) => arr.ToImmutableArray();
 }
 ```
 
