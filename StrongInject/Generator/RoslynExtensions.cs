@@ -115,6 +115,14 @@ namespace StrongInject.Generator
                 genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
         }
 
+        public static string NameWithTypeParameters(this ITypeSymbol type)
+        {
+            return type.ToDisplayString(new SymbolDisplayFormat(
+                globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly,
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+        }
+
         public static string FullName(this INamespaceSymbol @namespace)
         {
             return @namespace.ToDisplayString(new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
@@ -239,6 +247,63 @@ namespace StrongInject.Generator
                 }
 
                 return namespaceX.IsGlobalNamespace.CompareTo(namespaceY.IsGlobalNamespace);
+            }
+        }
+
+        public static bool IsNonNullableValueType(this ITypeSymbol typeArgument)
+        {
+            if (!typeArgument.IsValueType)
+            {
+                return false;
+            }
+
+            return !IsNullableTypeOrTypeParameter(typeArgument);
+        }
+
+        public static bool IsNullableTypeOrTypeParameter(this ITypeSymbol? type)
+        {
+            if (type is null)
+            {
+                return false;
+            }
+
+            if (type.TypeKind == TypeKind.TypeParameter)
+            {
+                var constraintTypes = ((ITypeParameterSymbol)type).ConstraintTypes;
+                foreach (var constraintType in constraintTypes)
+                {
+                    if (constraintType.IsNullableTypeOrTypeParameter())
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            return type.IsNullableType();
+        }
+
+        /// <summary>
+        /// Is this System.Nullable`1 type, or its substitution.
+        ///
+        /// To check whether a type is System.Nullable`1 or is a type parameter constrained to System.Nullable`1
+        /// use <see cref="IsNullableTypeOrTypeParameter" /> instead.
+        /// </summary>
+        public static bool IsNullableType(this ITypeSymbol type)
+        {
+            return type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
+        }
+
+        public static bool IsPointerOrFunctionPointer(this ITypeSymbol type)
+        {
+            switch (type.TypeKind)
+            {
+                case TypeKind.Pointer:
+                case TypeKind.FunctionPointer:
+                    return true;
+
+                default:
+                    return false;
             }
         }
     }

@@ -454,13 +454,25 @@ namespace StrongInject.Generator
                                 methodSource.Append(";};");
                                 break;
                             }
-                        case FactoryMethod(var method, var returnType, var _, var isAsync) registration:
+                        case FactoryMethod(var method, var returnType, var _, var _, var isAsync) registration:
                             {
                                 var variableSource = new StringBuilder();
                                 variableSource.Append("var ");
                                 variableSource.Append(variableName);
                                 variableSource.Append(isAsync ? "=await " : "=");
                                 GenerateMemberAccess(variableSource, method);
+                                if (method.TypeArguments.Length > 0)
+                                {
+                                    variableSource.Append("<");
+                                    for (int i = 0; i < method.TypeArguments.Length; i++)
+                                    {
+                                        var typeArgument = method.TypeArguments[i];
+                                        if (i != 0)
+                                            variableSource.Append(",");
+                                        variableSource.Append(typeArgument.FullName());
+                                    }
+                                    variableSource.Append(">");
+                                }
                                 variableSource.Append("(");
                                 for (int i = 0; i < method.Parameters.Length; i++)
                                 {
@@ -692,7 +704,7 @@ if (disposed != 0) return;");
             methodSource.Append("throw new ");
             methodSource.Append(_wellKnownTypes.objectDisposedException.FullName());
             methodSource.Append("(nameof(");
-            methodSource.Append(_container.Name);
+            methodSource.Append(_container.NameWithTypeParameters());
             methodSource.Append("));");
         }
 

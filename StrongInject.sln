@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject", "StrongInjec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Tests.Unit", "StrongInject.Tests.Unit\StrongInject.Tests.Unit.csproj", "{0FD2C8D0-BCBB-4D39-911F-A70EF5630CDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Tests.Integration", "StrongInject.Tests.Integration\StrongInject.Tests.Integration.csproj", "{0F5253A8-007D-4C81-BF8D-C79B6E52D2A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Tests.Integration", "StrongInject.Tests.Integration\StrongInject.Tests.Integration.csproj", "{0F5253A8-007D-4C81-BF8D-C79B6E52D2A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA06BB7A-3289-4F4B-8E2D-4C63AB46BE99}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
