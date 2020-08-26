@@ -19,6 +19,7 @@ compile time dependency injection for .Net
     - [Modules](#modules)
     - [Instance fields and properties](#instance-fields-and-properties)
     - [Factories](#factories)
+    - [Generic Factory Methods](#generic-factory-methods)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
     - [How StrongInject picks which registration to use](#how-stronginject-picks-which-registration-to-use)
   - [Delegate Support](#delegate-support)
