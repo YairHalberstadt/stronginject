@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -7159,7 +7160,7 @@ partial class Container
         }
 
         [Fact]
-        public void ErrorIfFactoryMethodIsGeneric()
+        public void ErrorIfNotAllGenericFactoryMethodTypeParametersUsedInReturnType()
         {
             string userSource = @"
 using StrongInject;
@@ -7180,9 +7181,9 @@ public class A{}
 public class B{}";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (6,6): Error SI0014: Factory method 'Module.M<T>(B)' is generic.
+                // (6,6): Error SI0020: All type parameters must be used in return type of generic factory method 'Module.M<T>(B)'
                 // Factory
-                new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6),
+                new DiagnosticResult("SI0020", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6),
                 // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
@@ -7933,9 +7934,9 @@ public class A {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (6,6): Error SI0015: Instance property 'Module.Instance' is write only.
+                // (6,6): Error SI0021: Instance property 'Module.Instance' is write only.
                 // Instance
-                new DiagnosticResult("SI0015", @"Instance", DiagnosticSeverity.Error).WithLocation(6, 6),
+                new DiagnosticResult("SI0021", @"Instance", DiagnosticSeverity.Error).WithLocation(6, 6),
                 // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
@@ -8685,6 +8686,2826 @@ partial class Container
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveSimpleTypeFromGenericFactoryMethod()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<string>
+{
+    [Factory] T Resolve<T>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.String>.Run<TResult, TParam>(global::System.Func<global::System.String, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String>();
+        TResult result;
+        try
+        {
+            result = func((global::System.String)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.String> global::StrongInject.IContainer<global::System.String>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String>();
+        return new global::StrongInject.Owned<global::System.String>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveNamedTypeFromGenericFactoryMethod1()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public partial class Container : IContainer<List<string>>
+{
+    [Factory] List<T> Resolve<T>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.String>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.List<global::System.String>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String>();
+        TResult result;
+        try
+        {
+            result = func((global::System.Collections.Generic.List<global::System.String>)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String>> global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.String>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String>>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveNamedTypeFromGenericFactoryMethod2()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public partial class Container : IContainer<List<string[]>>
+{
+    [Factory] List<T> Resolve<T>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.String[]>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.List<global::System.String[]>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String[]>();
+        TResult result;
+        try
+        {
+            result = func((global::System.Collections.Generic.List<global::System.String[]>)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>> global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.String[]>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String[]>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveNamedTypeFromGenericFactoryMethod3()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public partial class Container : IContainer<List<string[]>>
+{
+    [Factory] List<T[]> Resolve<T>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.String[]>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.List<global::System.String[]>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String>();
+        TResult result;
+        try
+        {
+            result = func((global::System.Collections.Generic.List<global::System.String[]>)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>> global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.String[]>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.String>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveNamedTypeFromGenericFactoryMethod4()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<(int, object, int, int)>
+{
+    [Factory] (T1, T2, T1, T3) Resolve<T1, T2, T3>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.Int32, global::System.Object, global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32))_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.Int32, global::System.Object, global::System.Int32>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32)>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveArrayTypeFromGenericFactoryMethod()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<(int, object, int, string)[]>
+{
+    [Factory] (T1, T2, T1, T3)[] Resolve<T1, T2, T3>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[])_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]> global::StrongInject.IContainer<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void CanResolveTypeIncludingClassTypeParameterFromGenericFactoryMethod()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container<T> : IContainer<(T, int)>
+{
+    [Factory] (T, T1) Resolve<T1>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container<T>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(T, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(T, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container<T>));
+        var _0 = this.Resolve<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(((T, global::System.Int32))_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(T, global::System.Int32)> global::StrongInject.IContainer<(T, global::System.Int32)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container<T>));
+        var _0 = this.Resolve<global::System.Int32>();
+        return new global::StrongInject.Owned<(T, global::System.Int32)>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfNotAllTypeParametersUsedInReturnType()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<(int, object, int)>
+{
+    [Factory] (T1, T2, T1) Resolve<T1, T2, T3>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0102: Error while resolving dependencies for '(int, object, int)': We have no source for instance of type '(int, object, int)'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (6,6): Error SI0020: All type parameters must be used in return type of generic factory method 'Container.Resolve<T1, T2, T3>()'
+                // Factory
+                new DiagnosticResult("SI0020", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Object, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Object, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Object, global::System.Int32)>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void LooksForRegisteredInstancesOfArgumentsOfConstructedType()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<int>))]
+public partial class Container : IContainer<int>
+{
+    [Factory] T Resolve<T>(A<T> a) => default;
+}
+
+public class A<T>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A<global::System.Int32>();
+        var _0 = this.Resolve<global::System.Int32>((global::A<global::System.Int32>)_1);
+        TResult result;
+        try
+        {
+            result = func((global::System.Int32)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A<global::System.Int32>();
+        var _0 = this.Resolve<global::System.Int32>((global::A<global::System.Int32>)_1);
+        return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorOnRecursiveGenericMethodFactoryDependencies()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<int>
+{
+    [Factory] T Resolve<T>(A<T> a) => default;
+}
+
+public class A<T>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0107: Error while resolving dependencies for 'int': The Dependency tree is deeper than the maximum depth of 200.
+                // Container
+                new DiagnosticResult("SI0107", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void FollowsRecursiveGenericMethodFactoryDependenciesToPossibleResolution()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<A<A<A<A<A<A<A<A<A<int>>>>>>>>>>))]
+public partial class Container : IContainer<int>
+{
+    [Factory] T Resolve<T>(A<T> a) => default;
+}
+
+public class A<T>
+{
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _10 = new global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>();
+        var _9 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>((global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>)_10);
+        var _8 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>(_9);
+        var _7 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>(_8);
+        var _6 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>(_7);
+        var _5 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>(_6);
+        var _4 = this.Resolve<global::A<global::A<global::A<global::A<global::System.Int32>>>>>(_5);
+        var _3 = this.Resolve<global::A<global::A<global::A<global::System.Int32>>>>(_4);
+        var _2 = this.Resolve<global::A<global::A<global::System.Int32>>>(_3);
+        var _1 = this.Resolve<global::A<global::System.Int32>>(_2);
+        var _0 = this.Resolve<global::System.Int32>(_1);
+        TResult result;
+        try
+        {
+            result = func((global::System.Int32)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+            global::StrongInject.Helpers.Dispose(_2);
+            global::StrongInject.Helpers.Dispose(_3);
+            global::StrongInject.Helpers.Dispose(_4);
+            global::StrongInject.Helpers.Dispose(_5);
+            global::StrongInject.Helpers.Dispose(_6);
+            global::StrongInject.Helpers.Dispose(_7);
+            global::StrongInject.Helpers.Dispose(_8);
+            global::StrongInject.Helpers.Dispose(_9);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _10 = new global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>();
+        var _9 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>((global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>)_10);
+        var _8 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>(_9);
+        var _7 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>(_8);
+        var _6 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>(_7);
+        var _5 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>(_6);
+        var _4 = this.Resolve<global::A<global::A<global::A<global::A<global::System.Int32>>>>>(_5);
+        var _3 = this.Resolve<global::A<global::A<global::A<global::System.Int32>>>>(_4);
+        var _2 = this.Resolve<global::A<global::A<global::System.Int32>>>(_3);
+        var _1 = this.Resolve<global::A<global::System.Int32>>(_2);
+        var _0 = this.Resolve<global::System.Int32>(_1);
+        return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+            global::StrongInject.Helpers.Dispose(_2);
+            global::StrongInject.Helpers.Dispose(_3);
+            global::StrongInject.Helpers.Dispose(_4);
+            global::StrongInject.Helpers.Dispose(_5);
+            global::StrongInject.Helpers.Dispose(_6);
+            global::StrongInject.Helpers.Dispose(_7);
+            global::StrongInject.Helpers.Dispose(_8);
+            global::StrongInject.Helpers.Dispose(_9);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfTypeParametersCantMatch()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public partial class Container<T> : IContainer<List<(string, int, object)>>
+{
+    [Factory] List<(T1, T2, T1)> Resolve<T1, T2>() => default;
+}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.List<(string, int, object)>': We have no source for instance of type 'System.Collections.Generic.List<(string, int, object)>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container<T>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.List<(global::System.String, global::System.Int32, global::System.Object)>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.List<(global::System.String, global::System.Int32, global::System.Object)>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.List<(global::System.String, global::System.Int32, global::System.Object)>> global::StrongInject.IContainer<global::System.Collections.Generic.List<(global::System.String, global::System.Int32, global::System.Object)>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void TestNewConstraint()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<D>, IContainer<E>, IContainer<F>, IContainer<int>, IContainer<string>
+{
+    [Factory] T Resolve<T>() where T : new() => default;
+}
+
+public partial class Container2<T1> : IContainer<T1> where T1 : new()
+{
+    [Factory] T Resolve<T>() where T : new() => default;
+}
+
+public partial class Container3<T1> : IContainer<T1>
+{
+    [Factory] T Resolve<T>() where T : new() => default;
+}
+
+public struct A { public A(int i){} }
+public class B {}
+public abstract class C {}
+public class D { public D() {} }
+public class E { internal E() {} }
+public class F { public F(int i) {} }
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'E': We have no source for instance of type 'E'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'E': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'E' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'F': We have no source for instance of type 'F'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'F': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'F' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'string': We have no source for instance of type 'string'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'string': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'string' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+                // Container3
+                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+                // Container3
+                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+            Assert.Equal(3, generated.Length);
+            var ordered = generated.OrderBy(x => x).ToArray();
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container1
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A>();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A>();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::A?>.Run<TResult, TParam>(global::System.Func<global::A?, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A?>();
+        TResult result;
+        try
+        {
+            result = func((global::A? )_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A?> global::StrongInject.IContainer<global::A?>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A?>();
+        return new global::StrongInject.Owned<global::A?>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::B>();
+        TResult result;
+        try
+        {
+            result = func((global::B)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::B>();
+        return new global::StrongInject.Owned<global::B>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::D>.Run<TResult, TParam>(global::System.Func<global::D, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::D>();
+        TResult result;
+        try
+        {
+            result = func((global::D)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::D> global::StrongInject.IContainer<global::D>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::D>();
+        return new global::StrongInject.Owned<global::D>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::E>.Run<TResult, TParam>(global::System.Func<global::E, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::E> global::StrongInject.IContainer<global::E>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::F>.Run<TResult, TParam>(global::System.Func<global::F, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::F> global::StrongInject.IContainer<global::F>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func((global::System.Int32)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::System.Int32>();
+        return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::System.String>.Run<TResult, TParam>(global::System.Func<global::System.String, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.String> global::StrongInject.IContainer<global::System.String>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container2<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        TResult result;
+        try
+        {
+            result = func((T1)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        return new global::StrongInject.Owned<T1>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container3<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void TestStructConstraint()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<System.ValueType>
+{
+    [Factory] T Resolve<T>() where T : struct => default;
+}
+
+public partial class Container2<T1> : IContainer<T1> where T1 : struct
+{
+    [Factory] T Resolve<T>() where T : struct => default;
+}
+
+public partial class Container3<T1> : IContainer<T1>
+{
+    [Factory] T Resolve<T>() where T : struct => default;
+}
+
+public struct A {}
+public class B {}
+public enum C {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'B': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'B' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'System.ValueType': We have no source for instance of type 'System.ValueType'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'System.ValueType': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'System.ValueType' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+                // Container3
+                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+                // Container3
+                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+            Assert.Equal(3, generated.Length);
+            var ordered = generated.OrderBy(x => x).ToArray();
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container1
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A>();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A>();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::A?>.Run<TResult, TParam>(global::System.Func<global::A?, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A?> global::StrongInject.IContainer<global::A?>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::C>();
+        TResult result;
+        try
+        {
+            result = func((global::C)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::C>();
+        return new global::StrongInject.Owned<global::C>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::System.ValueType>.Run<TResult, TParam>(global::System.Func<global::System.ValueType, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.ValueType> global::StrongInject.IContainer<global::System.ValueType>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container2<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        TResult result;
+        try
+        {
+            result = func((T1)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        return new global::StrongInject.Owned<T1>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container3<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void TestReferenceConstraint()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<I>, IContainer<System.ValueType>
+{
+    [Factory] T Resolve<T>() where T : class => default;
+}
+
+public partial class Container2<T1> : IContainer<T1> where T1 : class
+{
+    [Factory] T Resolve<T>() where T : class => default;
+}
+
+public partial class Container3<T1> : IContainer<T1>
+{
+    [Factory] T Resolve<T>() where T : class => default;
+}
+
+public struct A {}
+public class B {}
+public enum C {}
+public interface I {}
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+                // Container3
+                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+                // Container3
+                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+            Assert.Equal(3, generated.Length);
+            var ordered = generated.OrderBy(x => x).ToArray();
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container1
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::A?>.Run<TResult, TParam>(global::System.Func<global::A?, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A?> global::StrongInject.IContainer<global::A?>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::B>();
+        TResult result;
+        try
+        {
+            result = func((global::B)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::B>();
+        return new global::StrongInject.Owned<global::B>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::I>.Run<TResult, TParam>(global::System.Func<global::I, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::I>();
+        TResult result;
+        try
+        {
+            result = func((global::I)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::I> global::StrongInject.IContainer<global::I>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::I>();
+        return new global::StrongInject.Owned<global::I>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::System.ValueType>.Run<TResult, TParam>(global::System.Func<global::System.ValueType, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::System.ValueType>();
+        TResult result;
+        try
+        {
+            result = func((global::System.ValueType)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.ValueType> global::StrongInject.IContainer<global::System.ValueType>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::System.ValueType>();
+        return new global::StrongInject.Owned<global::System.ValueType>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container2<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        TResult result;
+        try
+        {
+            result = func((T1)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        return new global::StrongInject.Owned<T1>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container3<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void TestUnmanagedConstraint()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<D>, IContainer<E>, IContainer<F<int>>, IContainer<G<int>>, IContainer<G<D>>, IContainer<System.ValueType>
+{
+    [Factory] T Resolve<T>() where T : unmanaged => default;
+}
+
+public partial class Container2<T1> : IContainer<T1> where T1 : unmanaged
+{
+    [Factory] T Resolve<T>() where T : unmanaged => default;
+}
+
+public partial class Container3<T1> : IContainer<T1>
+{
+    [Factory] T Resolve<T>() where T : unmanaged => default;
+}
+
+public struct A {}
+public class B {}
+public enum C {}
+public struct D { string _s; }
+public struct E { int _e; }
+public struct F<T> where T : unmanaged { T _t; }
+public struct G<T> where T : struct { T _t; }
+";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify(
+                // (22,26): Warning CS0169: The field 'D._s' is never used
+                // _s
+                new DiagnosticResult("CS0169", @"_s", DiagnosticSeverity.Warning).WithLocation(22, 26),
+                // (23,23): Warning CS0169: The field 'E._e' is never used
+                // _e
+                new DiagnosticResult("CS0169", @"_e", DiagnosticSeverity.Warning).WithLocation(23, 23),
+                // (24,44): Warning CS0169: The field 'F<T>._t' is never used
+                // _t
+                new DiagnosticResult("CS0169", @"_t", DiagnosticSeverity.Warning).WithLocation(24, 44),
+                // (25,41): Warning CS0169: The field 'G<T>._t' is never used
+                // _t
+                new DiagnosticResult("CS0169", @"_t", DiagnosticSeverity.Warning).WithLocation(25, 41));
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'B': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'B' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'D': We have no source for instance of type 'D'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'D': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'D' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'G<D>': We have no source for instance of type 'G<D>'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'G<D>': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'G<D>' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'System.ValueType': We have no source for instance of type 'System.ValueType'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'System.ValueType': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'System.ValueType' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+                // Container3
+                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+                // Container3
+                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+            Assert.Equal(3, generated.Length);
+            var ordered = generated.OrderBy(x => x).ToArray();
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container1
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A>();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::A>();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::A?>.Run<TResult, TParam>(global::System.Func<global::A?, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A?> global::StrongInject.IContainer<global::A?>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::C>();
+        TResult result;
+        try
+        {
+            result = func((global::C)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::C>();
+        return new global::StrongInject.Owned<global::C>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::D>.Run<TResult, TParam>(global::System.Func<global::D, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::D> global::StrongInject.IContainer<global::D>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::E>.Run<TResult, TParam>(global::System.Func<global::E, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::E>();
+        TResult result;
+        try
+        {
+            result = func((global::E)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::E> global::StrongInject.IContainer<global::E>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::E>();
+        return new global::StrongInject.Owned<global::E>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::F<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::F<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::F<global::System.Int32>>();
+        TResult result;
+        try
+        {
+            result = func((global::F<global::System.Int32>)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::F<global::System.Int32>> global::StrongInject.IContainer<global::F<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::F<global::System.Int32>>();
+        return new global::StrongInject.Owned<global::F<global::System.Int32>>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::G<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::G<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::G<global::System.Int32>>();
+        TResult result;
+        try
+        {
+            result = func((global::G<global::System.Int32>)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::G<global::System.Int32>> global::StrongInject.IContainer<global::G<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container1));
+        var _0 = this.Resolve<global::G<global::System.Int32>>();
+        return new global::StrongInject.Owned<global::G<global::System.Int32>>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::G<global::D>>.Run<TResult, TParam>(global::System.Func<global::G<global::D>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::G<global::D>> global::StrongInject.IContainer<global::G<global::D>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::System.ValueType>.Run<TResult, TParam>(global::System.Func<global::System.ValueType, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.ValueType> global::StrongInject.IContainer<global::System.ValueType>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container2<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        TResult result;
+        try
+        {
+            result = func((T1)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
+        var _0 = this.Resolve<T1>();
+        return new global::StrongInject.Owned<T1>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container3<T1>
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<T1>.Run<TResult, TParam>(global::System.Func<T1, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<T1> global::StrongInject.IContainer<T1>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void TestTypeConstraints1()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container1<T1> : IContainer<T1> where T1 : A 
+{
+    [Factory] T Resolve<T>() where T : A => default;
+}
+
+public partial class Container2<T1> : IContainer<T1> where T1 : B 
+{
+    [Factory] T Resolve<T>() where T : A => default;
+}
+
+public partial class Container3<T1, T2> : IContainer<T2> where T1 : A where T2 : T1 
+{
+    [Factory] T Resolve<T>() where T : A => default;
+}
+
+public partial class Container4<T1, T2> : IContainer<T2> where T1 : B where T2 : T1
+{
+    [Factory] T Resolve<T>() where T : A => default;
+}
+
+public partial class Container5<T1> : IContainer<T1> where T1 : C 
+{
+    [Factory] T Resolve<T>() where T : A => default;
+}
+
+public partial class Container6<T1, T2> : IContainer<T2> where T1 : C where T2 : T1 
+{
+    [Factory] T Resolve<T>() where T : A => default;
+}
+
+public partial class Container7 : IContainer<A>, IContainer<B>, IContainer<C>
+{
+    [Factory] T Resolve<T>() where T : A => default;
+}
+
+public class A {}
+public class B : A {}
+public class C {}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (24,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+                // Container5
+                new DiagnosticResult("SI0102", @"Container5", DiagnosticSeverity.Error).WithLocation(24, 22),
+                // (24,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+                // Container5
+                new DiagnosticResult("SI1106", @"Container5", DiagnosticSeverity.Warning).WithLocation(24, 22),
+                // (29,22): Error SI0102: Error while resolving dependencies for 'T2': We have no source for instance of type 'T2'
+                // Container6
+                new DiagnosticResult("SI0102", @"Container6", DiagnosticSeverity.Error).WithLocation(29, 22),
+                // (29,22): Warning SI1106: Warning while resolving dependencies for 'T2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T2' as the required type arguments do not satisfy the generic constraints.
+                // Container6
+                new DiagnosticResult("SI1106", @"Container6", DiagnosticSeverity.Warning).WithLocation(29, 22),
+                // (34,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
+                // Container7
+                new DiagnosticResult("SI0102", @"Container7", DiagnosticSeverity.Error).WithLocation(34, 22),
+                // (34,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
+                // Container7
+                new DiagnosticResult("SI1106", @"Container7", DiagnosticSeverity.Warning).WithLocation(34, 22));
+            Assert.Equal(7, generated.Length);
+        }
+
+        [Fact]
+        public void TestTypeConstraints2()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+public partial class Container : IContainer<Enum>, IContainer<E>, IContainer<E?>, IContainer<S>
+{
+    [Factory] T Resolve<T>() where T : Enum => default;
+}
+
+public enum E {}
+public struct S {}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (5,22): Error SI0102: Error while resolving dependencies for 'E?': We have no source for instance of type 'E?'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
+                // (5,22): Warning SI1106: Warning while resolving dependencies for 'E?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'E?' as the required type arguments do not satisfy the generic constraints.
+                // Container
+                new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22),
+                // (5,22): Error SI0102: Error while resolving dependencies for 'S': We have no source for instance of type 'S'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
+                // (5,22): Warning SI1106: Warning while resolving dependencies for 'S': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S' as the required type arguments do not satisfy the generic constraints.
+                // Container
+                new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Enum>.Run<TResult, TParam>(global::System.Func<global::System.Enum, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.Enum>();
+        TResult result;
+        try
+        {
+            result = func((global::System.Enum)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Enum> global::StrongInject.IContainer<global::System.Enum>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::System.Enum>();
+        return new global::StrongInject.Owned<global::System.Enum>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::E>.Run<TResult, TParam>(global::System.Func<global::E, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::E>();
+        TResult result;
+        try
+        {
+            result = func((global::E)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::E> global::StrongInject.IContainer<global::E>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = this.Resolve<global::E>();
+        return new global::StrongInject.Owned<global::E>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::E?>.Run<TResult, TParam>(global::System.Func<global::E?, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::E?> global::StrongInject.IContainer<global::E?>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::S>.Run<TResult, TParam>(global::System.Func<global::S, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::S> global::StrongInject.IContainer<global::S>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void TestTypeConstraints3()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container1 : IContainer<I>, IContainer<C>, IContainer<C2>, IContainer<S>, IContainer<S?>, IContainer<S2>
+{
+    [Factory] T Resolve<T>() where T : I => default;
+}
+
+public partial class Container2<T1, T2> : IContainer<T2> where T1 : I where T2 : T1
+{
+    [Factory] T Resolve<T>() where T : I => default;
+}
+
+public partial class Container3<T1, T2> : IContainer<T2> where T1 : C where T2 : T1
+{
+    [Factory] T Resolve<T>() where T : I => default;
+}
+
+public interface I {}
+public class C : I {}
+public class C2 {}
+public struct S : I {}
+public struct S2 {}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0102: Error while resolving dependencies for 'C2': We have no source for instance of type 'C2'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'C2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C2' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'S?': We have no source for instance of type 'S?'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'S?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S?' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+                // (4,22): Error SI0102: Error while resolving dependencies for 'S2': We have no source for instance of type 'S2'
+                // Container1
+                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+                // (4,22): Warning SI1106: Warning while resolving dependencies for 'S2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S2' as the required type arguments do not satisfy the generic constraints.
+                // Container1
+                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22));
+        }
+
+        [Fact]
+        public void TestTypeConstraints4()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container<T1> : IContainer<T1>
+{
+    [Factory] T Resolve<T>() where T : T1 => default;
+}
+
+public partial class Container<T1, T2> : IContainer<T2> where T2 : T1
+{
+    [Factory] T Resolve<T>() where T : T1 => default;
+}
+
+public partial class Container<T1, T2, T3> : IContainer<T3> where T2 : T1 where T3 : T2
+{
+    [Factory] T Resolve<T>() where T : T1 => default;
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+        }
+
+        [Fact]
+        public void CanImportGenericFactoryMethod()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<(int, int)>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module.M<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Int32))_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module.M<global::System.Int32>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfGenericFactoryMethodsImportedFromMultipleModules()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+[RegisterModule(typeof(Module2))]
+public partial class Container : IContainer<(int, int)>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (16,22): Error SI0106: Error while resolving dependencies for '(int, int)': We have multiple sources for instance of type '(int, int)' and no best source. Try adding a single registration for '(int, int)' directly to the container, and moving any existing registrations for '(int, int)' on the container to an imported module.
+                // Container
+                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void IgnoresGenericFactoryMethodsWhereConstraintsDontMatch()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() where T : class => default; 
+}
+
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+[RegisterModule(typeof(Module2))]
+public partial class Container : IContainer<(int, int)>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Int32))_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ModuleOverridesRegistrationsItImports()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module2))]
+public partial class Container : IContainer<(int, int)>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Int32))_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ModuleDoesNotOverrideRegistrationsItImportsIfConstraintsDontMatch()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() where T1 : class => default; 
+}
+
+[RegisterModule(typeof(Module2))]
+public partial class Container : IContainer<(int, int)>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module1.M<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Int32))_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module1.M<global::System.Int32>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ModuleDoesNotOverrideModuleItDoesNotImport()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() where T1 : class => default; 
+}
+
+public class Module3
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module2))]
+[RegisterModule(typeof(Module3))]
+public partial class Container : IContainer<(int, int)>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (22,22): Error SI0106: Error while resolving dependencies for '(int, int)': We have multiple sources for instance of type '(int, int)' and no best source. Try adding a single registration for '(int, int)' directly to the container, and moving any existing registrations for '(int, int)' on the container to an imported module.
+                // Container
+                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(22, 22));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void NoErrorIfSameModuleImportedTwice()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() where T1 : class => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module3
+{
+    [Factory] public static (T1, T2) M<T1, T2>() where T1 : class => default; 
+}
+
+[RegisterModule(typeof(Module2))]
+[RegisterModule(typeof(Module3))]
+public partial class Container : IContainer<(int, int)>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module1.M<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Int32))_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = global::Module1.M<global::System.Int32>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void ResolveAllDeduplicatesIfSameModuleImportedTwice()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module3
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module2))]
+[RegisterModule(typeof(Module3))]
+public partial class Container : IContainer<(int, int)[]>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)[]>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32)[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        var _2 = global::Module1.M<global::System.Int32>();
+        var _3 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, };
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Int32)[])_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_3);
+            global::StrongInject.Helpers.Dispose(_2);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        var _2 = global::Module1.M<global::System.Int32>();
+        var _3 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, };
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_3);
+            global::StrongInject.Helpers.Dispose(_2);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void AppendGenericAndNonGenericResolutions()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module1
+{
+    [Factory] public static (T, T) M<T>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module2
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module1))]
+public class Module3
+{
+    [Factory] public static (T1, T2) M<T1, T2>() => default; 
+}
+
+[RegisterModule(typeof(Module2))]
+[RegisterModule(typeof(Module3))]
+public partial class Container : IContainer<(int, int)[]>
+{
+    [Factory] public (int, int) M() => default;
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)[]>.Run<TResult, TParam>(global::System.Func<(global::System.Int32, global::System.Int32)[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = this.M();
+        var _2 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        var _3 = global::Module1.M<global::System.Int32>();
+        var _4 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, _4, };
+        TResult result;
+        try
+        {
+            result = func(((global::System.Int32, global::System.Int32)[])_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_4);
+            global::StrongInject.Helpers.Dispose(_3);
+            global::StrongInject.Helpers.Dispose(_2);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]> global::StrongInject.IContainer<(global::System.Int32, global::System.Int32)[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = this.M();
+        var _2 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        var _3 = global::Module1.M<global::System.Int32>();
+        var _4 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, _4, };
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_4);
+            global::StrongInject.Helpers.Dispose(_3);
+            global::StrongInject.Helpers.Dispose(_2);
+            global::StrongInject.Helpers.Dispose(_1);
         }
 
         );

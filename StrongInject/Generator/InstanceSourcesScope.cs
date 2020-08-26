@@ -10,14 +10,16 @@ namespace StrongInject.Generator
         private readonly Dictionary<ITypeSymbol, DelegateParameter>? _delegateParameters;
         private readonly InstanceSourcesScope _containerScope;
         private readonly WellKnownTypes _wellKnownTypes;
+        private readonly GenericRegistrationsResolver _genericRegistrationsResolver;
 
         public int Depth { get; }
 
-        public InstanceSourcesScope(IReadOnlyDictionary<ITypeSymbol, InstanceSources> instanceSources, WellKnownTypes wellKnownTypes)
+        public InstanceSourcesScope(IReadOnlyDictionary<ITypeSymbol, InstanceSources> instanceSources, WellKnownTypes wellKnownTypes, GenericRegistrationsResolver genericRegistrationsResolver)
         {
             _instanceSources = instanceSources;
             _containerScope = this;
             _wellKnownTypes = wellKnownTypes;
+            _genericRegistrationsResolver = genericRegistrationsResolver;
             Depth = 0;
         }
 
@@ -27,23 +29,38 @@ namespace StrongInject.Generator
             _delegateParameters = delegateParameters;
             _containerScope = containerScope;
             _wellKnownTypes = containerScope._wellKnownTypes;
+            _genericRegistrationsResolver = containerScope._genericRegistrationsResolver;
             Depth = depth;
         }
 
-        public bool TryGetSource(ITypeSymbol target, out InstanceSource instanceSource, out bool ambiguous)
+        public bool TryGetSource(ITypeSymbol target, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
         {
-            ambiguous = false;
+            isAmbiguous = false;
+            sourcesNotMatchingConstraints = Array.Empty<FactoryMethod>();
             if (_delegateParameters is not null && _delegateParameters.TryGetValue(target, out var delegateParameter))
             {
                 instanceSource = delegateParameter;
                 return true;
             }
+
             if (_instanceSources.TryGetValue(target, out var instanceSources))
             {
                 instanceSource = instanceSources.Best!;
-                ambiguous = instanceSource is null;
-                return !ambiguous;
+                isAmbiguous = instanceSource is null;
+                return !isAmbiguous;
             }
+
+            if (_genericRegistrationsResolver.TryResolve(target, out var constructedFactoryMethod, out isAmbiguous, out sourcesNotMatchingConstraints))
+            {
+                instanceSource = constructedFactoryMethod;
+                return true;
+            }
+            else if (isAmbiguous)
+            {
+                instanceSource = null!;
+                return false;
+            }
+
             if (target is INamedTypeSymbol 
             { 
                 DelegateInvokeMethod: 
@@ -63,14 +80,24 @@ namespace StrongInject.Generator
                 }
                 return true;
             }
+
             if (target is IArrayTypeSymbol { Rank: 1, ElementType: var elementType } arrayTypeSymbol )
             {
+                var elementSources = new List<InstanceSource>();
+                if (_instanceSources.TryGetValue(elementType, out var nonGenericElementSources))
+                {
+                    elementSources.AddRange(nonGenericElementSources);
+                };
+
+                elementSources.AddRange(_genericRegistrationsResolver.ResolveAll(elementType));
+
                 instanceSource = new ArraySource(
                     arrayTypeSymbol,
                     elementType,
-                    _instanceSources.TryGetValue(elementType, out var elementSources) ? elementSources : (IReadOnlyCollection<InstanceSource>)Array.Empty<InstanceSource>());
+                    elementSources);
                 return true;
             }
+
             instanceSource = null!;
             return false;
         }
@@ -79,7 +106,7 @@ namespace StrongInject.Generator
         {
             get
             {
-                if (TryGetSource(typeSymbol, out var instanceSource, out var ambiguous))
+                if (TryGetSource(typeSymbol, out var instanceSource, out var ambiguous, out _))
                     return instanceSource;
                 if (ambiguous)
                     throw new InvalidOperationException($"No best source for type {typeSymbol}");

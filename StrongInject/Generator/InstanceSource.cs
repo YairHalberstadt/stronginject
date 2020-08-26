@@ -51,6 +51,7 @@ namespace StrongInject.Generator
         IMethodSymbol method,
         ITypeSymbol returnType,
         Scope scope,
+        bool isOpenGeneric,
         bool isAsync) : InstanceSource(scope, isAsync)
     {
         public override ITypeSymbol OfType => returnType;

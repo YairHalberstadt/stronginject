@@ -743,21 +743,21 @@ public class I { internal I(int a) {} public I(bool b) {} }
                         registeredAs: comp.AssertGetTypeByMetadataName("E"),
                         scope: Scope.InstancePerResolution,
                         requiresInitialization: false,
-                        constructor: comp.AssertGetTypeByMetadataName("E").Constructors.First(x => x.Parameters.Length > 0)), new InstanceSource[] { }),
+                        constructor: comp.AssertGetTypeByMetadataName("E").InstanceConstructors.First(x => x.Parameters.Length > 0)), new InstanceSource[] { }),
                 [comp.AssertGetTypeByMetadataName("G")] =
                     (Registration(
                         type: comp.AssertGetTypeByMetadataName("G"),
                         registeredAs: comp.AssertGetTypeByMetadataName("G"),
                         scope: Scope.InstancePerResolution,
                         requiresInitialization: false,
-                        constructor: comp.AssertGetTypeByMetadataName("G").Constructors[0]), new InstanceSource[] { }),
+                        constructor: comp.AssertGetTypeByMetadataName("G").InstanceConstructors[0]), new InstanceSource[] { }),
                 [comp.AssertGetTypeByMetadataName("I")] =
                     (Registration(
                         type: comp.AssertGetTypeByMetadataName("I"),
                         registeredAs: comp.AssertGetTypeByMetadataName("I"),
                         scope: Scope.InstancePerResolution,
                         requiresInitialization: false,
-                        constructor: comp.AssertGetTypeByMetadataName("I").Constructors.First(x => x.DeclaredAccessibility == Accessibility.Public)), new InstanceSource[] { }),
+                        constructor: comp.AssertGetTypeByMetadataName("I").InstanceConstructors.First(x => x.DeclaredAccessibility == Accessibility.Public)), new InstanceSource[] { }),
             });
         }
 
@@ -1559,7 +1559,7 @@ public class A : IRequiresInitialization, IRequiresAsyncInitialization { public 
         {
             if (constructor is null)
             {
-                constructor = Assert.Single(type.Constructors);
+                constructor = Assert.Single(type.InstanceConstructors);
             }
 
             return new Registration(type, registeredAs, scope, requiresInitialization, constructor, isAsync);

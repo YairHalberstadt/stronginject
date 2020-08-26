@@ -8,6 +8,7 @@ namespace StrongInject.Generator
 {
     internal static class DependencyChecker
     {
+        private const int MAX_DEPENDENCY_TREE_DEPTH = 200;
         public static bool HasCircularOrMissingDependencies(ITypeSymbol target, bool isAsync, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
         {
             var currentlyVisiting = new HashSet<InstanceSource>();
@@ -21,7 +22,7 @@ namespace StrongInject.Generator
 
             InstanceSource? GetInstanceSourceOrReport(ITypeSymbol type, InstanceSourcesScope instanceSourcesScope)
             {
-                if (!instanceSourcesScope.TryGetSource(type, out var instanceSource, out var ambiguous))
+                if (!instanceSourcesScope.TryGetSource(type, out var instanceSource, out var ambiguous, out var sourcesNotMatchingConstraints))
                 {
                     if (ambiguous)
                     {
@@ -30,6 +31,11 @@ namespace StrongInject.Generator
                     else
                     {
                         reportDiagnostic(NoSourceForType(location, target, type));
+
+                        foreach (var sourceNotMatchingConstraints in sourcesNotMatchingConstraints)
+                        {
+                            reportDiagnostic(WarnFactoryMethodNotMatchingConstraint(location, target, type, sourceNotMatchingConstraints));
+                        }
                     }
                     return null;
                 }
@@ -59,6 +65,12 @@ namespace StrongInject.Generator
                 innerIsContainerScope = ReferenceEquals(instanceSourcesScope, containerScope);
                 if (innerIsContainerScope && visited.Contains(instanceSource))
                     return false;
+
+                if (currentlyVisiting.Count > MAX_DEPENDENCY_TREE_DEPTH)
+                {
+                    reportDiagnostic(DependencyTreeTooDeep(location, target));
+                    return true;
+                }
 
                 switch (instanceSource)
                 {
@@ -275,6 +287,21 @@ namespace StrongInject.Generator
                     type);
         }
 
+        private static Diagnostic DependencyTreeTooDeep(Location location, ITypeSymbol target)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI0107",
+                        "The Dependency tree is deeper than the Maximum Depth",
+                        "Error while resolving dependencies for '{0}': The Dependency tree is deeper than the maximum depth of {1}.",
+                        "StrongInject",
+                        DiagnosticSeverity.Error,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    MAX_DEPENDENCY_TREE_DEPTH);
+        }
+
         private static Diagnostic WarnDelegateParameterNotUsed(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol parameterType, ITypeSymbol delegateReturnType)
         {
             return Diagnostic.Create(
@@ -353,6 +380,22 @@ namespace StrongInject.Generator
                     location,
                     target,
                     elementType);
+        }
+
+        private static Diagnostic WarnFactoryMethodNotMatchingConstraint(Location location, ITypeSymbol target, ITypeSymbol type, FactoryMethod factoryMethodNotMatchingConstraints)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI1106",
+                        "Factory Method cannot be used to resolve instance of Type as the required type arguments do not satisfy the generic constraints",
+                        "Warning while resolving dependencies for '{0}': factory method '{1}' cannot be used to resolve instance of type '{2}' as the required type arguments do not satisfy the generic constraints.",
+                        "StrongInject",
+                        DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    factoryMethodNotMatchingConstraints,
+                    type);
         }
 
         /// <summary>
