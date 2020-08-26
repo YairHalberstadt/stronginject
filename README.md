@@ -357,7 +357,20 @@ The scope of the factory and the factory target is controlled separately. This a
 [RegisterFactory(typeof(InterfaceArrayFactory), scope: Scope.SingleInstance, factoryTargetScope: Scope.InstancePerResolution, typeof(IFactory<IInterface[]>))]
 ```
 
-If a factory implements `IFactory<T>` for multiple `T`s it will be registered as a factory for all of them. 
+If a factory implements `IFactory<T>` for multiple `T`s it will be registered as a factory for all of them.
+
+#### Generic Factory Methods
+
+A factory method can be generic. All of the type parameters must be used in the return type. When resolving a type StrongInject will first look for non generic registrations which can resolve that type. If there are none, it will see if it can use any generic factory methods to resolve the type. For example this is how you could allow StrongInject to resolve an ImmutableArray:
+
+```csharp
+public class ImmutableArrayModule
+{
+    public static [Factory] ImmutableArray<T> CreateImmutableArray<T>(T[] arr) => arr.ToImmutableArray();
+}
+```
+
+Generic methods can also have constraints. StrongInject will ignore generic methods during resolution if the constraints do not match.
 
 #### Providing registrations at runtime or integrating with other IOC containers
 
@@ -621,7 +634,7 @@ public static class Program
 
 ### Resolving all instances of a type
 
-When resolving an array type, if there are no user provided registrations for the array type, the array will be created by resolving all registrations for the element type, and filling the array with these instances.
+When resolving an array type, if there are no user provided registrations for the array type, the array will be created by resolving all registrations (including generic registrations) for the element type, and filling the array with these instances.
 
 For example:
 
@@ -635,11 +648,11 @@ public interface IInterface {}
 public class Container : IContainer<IInterface[]>
 ```
 
-This will reolve an array containing an instance of type `A` and an instance of type `B`.
+This will resolve an array containing an instance of type `A` and an instance of type `B`.
 
 The contents of the array are arbitrary but deterministic. A new array is created for every dependency, so users are free to mutate it.
 
-Not that duplicate registrations will be deduplicated, so in the following case:
+Note that duplicate registrations will be deduplicated, so in the following case:
 
 ```csharp
 public class A : IInterface {}
