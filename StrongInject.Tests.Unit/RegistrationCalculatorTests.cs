@@ -387,10 +387,10 @@ public class B : IAsyncFactory<IA> { public ValueTask<IA> CreateAsync() => throw
                             scope: Scope.InstancePerResolution,
                             requiresInitialization: false),
                         new FactoryRegistration(
-                            factoryType: factoryOfIA,
-                            factoryOf: comp.AssertGetTypeByMetadataName("IA"),
-                            scope: Scope.InstancePerResolution,
-                            isAsync: true)
+                            FactoryType: factoryOfIA,
+                            FactoryOf: comp.AssertGetTypeByMetadataName("IA"),
+                            Scope: Scope.InstancePerResolution,
+                            IsAsync: true)
                     }),
                 [factoryOfIA] =
                     (Registration(
@@ -611,10 +611,10 @@ public class B : IAsyncFactory<A> { public ValueTask<A> CreateAsync() => throw n
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (new FactoryRegistration(
-                        factoryType: factoryOfA,
-                        factoryOf: comp.AssertGetTypeByMetadataName("A"),
-                        scope: Scope.InstancePerResolution,
-                        isAsync: true), new InstanceSource[]{}),
+                        FactoryType: factoryOfA,
+                        FactoryOf: comp.AssertGetTypeByMetadataName("A"),
+                        Scope: Scope.InstancePerResolution,
+                        IsAsync: true), new InstanceSource[]{}),
                 [factoryOfA] =
                     (Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
@@ -650,10 +650,10 @@ public class C : IRequiresAsyncInitialization { public ValueTask InitializeAsync
             {
                 [comp.AssertGetTypeByMetadataName("A")] =
                     (new FactoryRegistration(
-                        factoryType: factoryOfA,
-                        factoryOf: comp.AssertGetTypeByMetadataName("A"),
-                        scope: Scope.InstancePerResolution,
-                        isAsync: true), new InstanceSource[]{}),
+                        FactoryType: factoryOfA,
+                        FactoryOf: comp.AssertGetTypeByMetadataName("A"),
+                        Scope: Scope.InstancePerResolution,
+                        IsAsync: true), new InstanceSource[]{}),
                 [factoryOfA] =
                     (Registration(
                         type: comp.AssertGetTypeByMetadataName("B"),
@@ -879,10 +879,10 @@ public class A : IAsyncFactory<int[]> { public ValueTask<int[]> CreateAsync() =>
             {
                 [intArray] =
                     (new FactoryRegistration(
-                        factoryType: factoryOfIntArray,
-                        factoryOf: intArray,
-                        scope: Scope.InstancePerResolution,
-                        isAsync: true), new InstanceSource[]{}),
+                        FactoryType: factoryOfIntArray,
+                        FactoryOf: intArray,
+                        Scope: Scope.InstancePerResolution,
+                        IsAsync: true), new InstanceSource[]{}),
                 [factoryOfIntArray] =
                     (Registration(
                         type: comp.AssertGetTypeByMetadataName("A"),
@@ -1329,10 +1329,10 @@ public class A : IFactory<int> { public int Create() => 0; }
                         requiresInitialization: false), new InstanceSource[]{}),
                 [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
                     (new FactoryRegistration(
-                        factoryType: factoryOfInt,
-                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
-                        scope: Scope.InstancePerResolution,
-                        isAsync: false), new InstanceSource[] { }),
+                        FactoryType: factoryOfInt,
+                        FactoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        Scope: Scope.InstancePerResolution,
+                        IsAsync: false), new InstanceSource[] { }),
             });
         }
 
@@ -1397,10 +1397,10 @@ public class A : IFactory<int>, IRequiresInitialization { public int Create() =>
                         requiresInitialization: true), new InstanceSource[]{}),
                 [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
                     (new FactoryRegistration(
-                        factoryType: factoryOfInt,
-                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
-                        scope: Scope.InstancePerResolution,
-                        isAsync: false), new InstanceSource[] { }),
+                        FactoryType: factoryOfInt,
+                        FactoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        Scope: Scope.InstancePerResolution,
+                        IsAsync: false), new InstanceSource[] { }),
             });
         }
 
@@ -1436,10 +1436,10 @@ public class A : IAsyncFactory<int> { public ValueTask<int> CreateAsync() => def
                         requiresInitialization: false), new InstanceSource[]{}),
                 [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
                     (new FactoryRegistration(
-                        factoryType: factoryOfInt,
-                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
-                        scope: Scope.InstancePerResolution,
-                        isAsync: true), new InstanceSource[]{}),
+                        FactoryType: factoryOfInt,
+                        FactoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        Scope: Scope.InstancePerResolution,
+                        IsAsync: true), new InstanceSource[]{}),
             });
         }
 
@@ -1507,10 +1507,10 @@ public class A : IAsyncFactory<int>, IRequiresAsyncInitialization { public Value
                         isAsync: true), new InstanceSource[]{}),
                 [comp.AssertGetTypeByMetadataName(typeof(int).FullName!)] =
                     (new FactoryRegistration(
-                        factoryType: factoryOfInt,
-                        factoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
-                        scope: Scope.InstancePerResolution,
-                        isAsync: true), new InstanceSource[]{}),
+                        FactoryType: factoryOfInt,
+                        FactoryOf: comp.AssertGetTypeByMetadataName(typeof(int).FullName!),
+                        Scope: Scope.InstancePerResolution,
+                        IsAsync: true), new InstanceSource[]{}),
             });
         }
 

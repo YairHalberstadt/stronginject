@@ -51,9 +51,9 @@ namespace StrongInject.Generator
 
             _containerInterfaces = _container.AllInterfaces
                 .Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.iContainer, SymbolEqualityComparer.Default)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncContainer, SymbolEqualityComparer.Default))
-                .Select(x => (containerInterface: x, isAsync: x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncContainer, SymbolEqualityComparer.Default)))
+                    => x.OriginalDefinition.Equals(_wellKnownTypes.IContainer, SymbolEqualityComparer.Default)
+                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncContainer, SymbolEqualityComparer.Default))
+                .Select(x => (containerInterface: x, isAsync: x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncContainer, SymbolEqualityComparer.Default)))
                 .ToList();
 
             foreach (var (_, isAsync) in _containerInterfaces)
@@ -132,9 +132,9 @@ namespace StrongInject.Generator
                         _containerDeclarationLocation))
                 {
                     // error reported. Implement with throwing implementation to remove NotImplemented error CS0535
-                    const string throwNotImplementedException = "throw new global::System.NotImplementedException();}";
-                    runMethodSource.Append(throwNotImplementedException);
-                    resolveMethodSource.Append(throwNotImplementedException);
+                    const string THROW_NOT_IMPLEMENTED_EXCEPTION = "throw new global::System.NotImplementedException();}";
+                    runMethodSource.Append(THROW_NOT_IMPLEMENTED_EXCEPTION);
+                    resolveMethodSource.Append(THROW_NOT_IMPLEMENTED_EXCEPTION);
 
                 }
                 else
@@ -172,8 +172,8 @@ namespace StrongInject.Generator
                     runMethodSource.Append("}return result;}");
 
                     var ownedType = (isAsync
-                        ? _wellKnownTypes.asyncOwned
-                        : _wellKnownTypes.owned).Construct(target);
+                        ? _wellKnownTypes.AsyncOwned
+                        : _wellKnownTypes.Owned).Construct(target);
                     resolveMethodSource.Append(variableCreationSource);
                     resolveMethodSource.Append("return new ");
                     resolveMethodSource.Append(ownedType.FullName());
@@ -224,9 +224,9 @@ namespace StrongInject.Generator
             {
                 var type = instanceSource switch
                 {
-                    Registration { type: var t } => t,
-                    FactoryRegistration { factoryOf: var t } => t,
-                    FactoryMethod { returnType: var t } => t,
+                    Registration { Type: var t } => t,
+                    FactoryRegistration { FactoryOf: var t } => t,
+                    FactoryMethod { ReturnType: var t } => t,
                     _ => throw new InvalidOperationException(),
                 };
 
@@ -245,7 +245,7 @@ namespace StrongInject.Generator
                     : "private global::System.Action") + " _disposeAction" + index + ";");
                 var methodSource = new StringBuilder();
                 methodSource.Append(isAsync ? "private async " : "private ");
-                methodSource.Append(isAsync ? _wellKnownTypes.valueTask1.Construct(type).FullName() : type.FullName());
+                methodSource.Append(isAsync ? _wellKnownTypes.ValueTask1.Construct(type).FullName() : type.FullName());
                 methodSource.Append(" ");
                 methodSource.Append(name);
                 methodSource.Append("(){");
@@ -309,12 +309,12 @@ namespace StrongInject.Generator
             return CreateVariableInternal(target, instanceSourcesScope);
             string CreateVariableInternal(InstanceSource target, InstanceSourcesScope instanceSourcesScope)
             {
-                if (target is DelegateParameter { name: var variableName })
+                if (target is DelegateParameter { Name: var variableName })
                 {
                     return variableName;
                 }
 
-                if (target is InstanceFieldOrProperty { fieldOrPropertySymbol: var fieldOrPropertySymbol })
+                if (target is InstanceFieldOrProperty { FieldOrPropertySymbol: var fieldOrPropertySymbol })
                 {
                     var symbolAccessBuilder = new StringBuilder();
                     GenerateMemberAccess(symbolAccessBuilder, fieldOrPropertySymbol);
@@ -324,7 +324,7 @@ namespace StrongInject.Generator
                 instanceSourcesScope = instanceSourcesScope.Enter(target);
                 string? disposeActionsName = null;
                 string? factoryVariable = null;
-                if (target.scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out variableName))
+                if (target.Scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out variableName))
                 {
                     variableName = "_" + variables.Count;
                     variables.Add(target, variableName);
@@ -343,7 +343,7 @@ namespace StrongInject.Generator
                                 : nameof(IInstanceProvider<object>.Get));
                             methodSource.Append("();");
                             break;
-                        case { scope: Scope.SingleInstance } registration
+                        case { Scope: Scope.SingleInstance } registration
                             when !(isSingleInstanceCreation && ReferenceEquals(outerTarget, target)):
                             {
                                 var (name, isAsync) = GetSingleInstanceMethod(registration);
@@ -385,7 +385,7 @@ namespace StrongInject.Generator
                                     IParameterSymbol? parameter = constructor.Parameters[i];
                                     var source = instanceSourcesScope[parameter.Type];
                                     var variable = CreateVariableInternal(source, instanceSourcesScope);
-                                    if (source is Registration { registeredAs: var castTarget })
+                                    if (source is Registration { RegisteredAs: var castTarget })
                                     {
                                         variableSource.Append("(");
                                         variableSource.Append(castTarget.FullName());
@@ -404,8 +404,8 @@ namespace StrongInject.Generator
                                 {
                                     methodSource.Append(isAsync ? "await ((" : "((");
                                     methodSource.Append(isAsync
-                                        ? _wellKnownTypes.iRequiresAsyncInitialization.FullName()
-                                        : _wellKnownTypes.iRequiresInitialization.FullName());
+                                        ? _wellKnownTypes.IRequiresAsyncInitialization.FullName()
+                                        : _wellKnownTypes.IRequiresInitialization.FullName());
                                     methodSource.Append(")");
                                     methodSource.Append(variableName);
                                     methodSource.Append(").");
@@ -433,7 +433,7 @@ namespace StrongInject.Generator
                                 {
                                     if (index != 0)
                                         methodSource.Append(",");
-                                    methodSource.Append(((DelegateParameter)instanceSourcesScope[parameter.Type]).name);
+                                    methodSource.Append(((DelegateParameter)instanceSourcesScope[parameter.Type]).Name);
                                 }
                                 methodSource.Append(")=>{");
                                 var variable = CreateVariable(
@@ -483,7 +483,7 @@ namespace StrongInject.Generator
                                     IParameterSymbol? parameter = method.Parameters[i];
                                     var source = instanceSourcesScope[parameter.Type];
                                     var variable = CreateVariableInternal(source, instanceSourcesScope);
-                                    if (source is Registration { registeredAs: var castTarget })
+                                    if (source is Registration { RegisteredAs: var castTarget })
                                     {
                                         variableSource.Append("(");
                                         variableSource.Append(castTarget.FullName());
@@ -511,7 +511,7 @@ namespace StrongInject.Generator
                                 foreach (var source in sources)
                                 {
                                     var variable = CreateVariableInternal(source, instanceSourcesScope);
-                                    if (source is Registration { registeredAs: var castTarget })
+                                    if (source is Registration { RegisteredAs: var castTarget })
                                     {
                                         variableSource.Append("(");
                                         variableSource.Append(castTarget.FullName());
@@ -562,9 +562,9 @@ namespace StrongInject.Generator
                 var (variableName, disposeActionName, factoryVariable, source) = orderOfCreation[i];
                 switch (source)
                 {
-                    case { scope: Scope.SingleInstance } when !source.Equals(singleInstanceTarget):
+                    case { Scope: Scope.SingleInstance } when !source.Equals(singleInstanceTarget):
                         break;
-                    case FactoryRegistration { factoryType: var cast, isAsync: var isAsyncFactory }:
+                    case FactoryRegistration { FactoryType: var cast, IsAsync: var isAsyncFactory }:
                         if (isAsyncFactory)
                         {
                             methodSource.Append("await ");
@@ -586,7 +586,7 @@ namespace StrongInject.Generator
                         {
                             methodSource.Append("await ");
                         }
-                        methodSource.Append(_wellKnownTypes.helpers.FullName());
+                        methodSource.Append(_wellKnownTypes.Helpers.FullName());
                         methodSource.Append(".");
                         methodSource.Append(isAsync
                             ? nameof(Helpers.DisposeAsync)
@@ -595,7 +595,7 @@ namespace StrongInject.Generator
                         methodSource.Append(variableName);
                         methodSource.Append(");");
                         break;
-                    case InstanceProvider { instanceProviderField: var field, castTo: var cast, isAsync: var isAsyncInstanceProvider }:
+                    case InstanceProvider { InstanceProviderField: var field, CastTo: var cast, IsAsync: var isAsyncInstanceProvider }:
                         if (isAsyncInstanceProvider)
                         {
                             methodSource.Append("await ");
@@ -612,21 +612,21 @@ namespace StrongInject.Generator
                         methodSource.Append(variableName);
                         methodSource.Append(");");
                         break;
-                    case Registration { type: var type }:
-                        var isAsyncDisposable = type.AllInterfaces.Contains(_wellKnownTypes.iAsyncDisposable);
+                    case Registration { Type: var type }:
+                        var isAsyncDisposable = type.AllInterfaces.Contains(_wellKnownTypes.IAsyncDisposable);
                         if (isAsync && isAsyncDisposable)
                         {
                             methodSource.Append("await ((");
-                            methodSource.Append(_wellKnownTypes.iAsyncDisposable.FullName());
+                            methodSource.Append(_wellKnownTypes.IAsyncDisposable.FullName());
                             methodSource.Append(")");
                             methodSource.Append(variableName);
                             methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + "(");
                             methodSource.Append(");");
                         }
-                        else if (type.AllInterfaces.Contains(_wellKnownTypes.iDisposable))
+                        else if (type.AllInterfaces.Contains(_wellKnownTypes.IDisposable))
                         {
                             methodSource.Append("((");
-                            methodSource.Append(_wellKnownTypes.iDisposable.FullName());
+                            methodSource.Append(_wellKnownTypes.IDisposable.FullName());
                             methodSource.Append(")");
                             methodSource.Append(variableName);
                             methodSource.Append(")." + nameof(IDisposable.Dispose) + "(");
@@ -702,7 +702,7 @@ if (disposed != 0) return;");
         void ThrowObjectDisposedException(StringBuilder methodSource)
         {
             methodSource.Append("throw new ");
-            methodSource.Append(_wellKnownTypes.objectDisposedException.FullName());
+            methodSource.Append(_wellKnownTypes.ObjectDisposedException.FullName());
             methodSource.Append("(nameof(");
             methodSource.Append(_container.NameWithTypeParameters());
             methodSource.Append("));");
@@ -733,13 +733,13 @@ if (disposed != 0) return;");
                 return (x, y) switch
                 {
                     (null, null) => true,
-                    ({ scope: Scope.InstancePerDependency }, _) => false,
-                    (Registration rX, Registration rY) => rX.scope == rY.scope && rX.type.Equals(rY.type, SymbolEqualityComparer.Default),
-                    (FactoryRegistration fX, FactoryRegistration fY) => fX.scope == fY.scope && fX.factoryType.Equals(fY.factoryType, SymbolEqualityComparer.Default),
-                    (InstanceProvider iX, InstanceProvider iY) => iX.providedType.Equals(iY.providedType, SymbolEqualityComparer.Default),
-                    (DelegateSource dX, DelegateSource dY) => dX.delegateType.Equals(dY.delegateType, SymbolEqualityComparer.Default),
-                    (DelegateParameter dX, DelegateParameter dY) => dX.parameter.Equals(dY.parameter, SymbolEqualityComparer.Default),
-                    (FactoryMethod mX, FactoryMethod mY) => mX.method.Equals(mY.method, SymbolEqualityComparer.Default),
+                    ({ Scope: Scope.InstancePerDependency }, _) => false,
+                    (Registration rX, Registration rY) => rX.Scope == rY.Scope && rX.Type.Equals(rY.Type, SymbolEqualityComparer.Default),
+                    (FactoryRegistration fX, FactoryRegistration fY) => fX.Scope == fY.Scope && fX.FactoryType.Equals(fY.FactoryType, SymbolEqualityComparer.Default),
+                    (InstanceProvider iX, InstanceProvider iY) => iX.ProvidedType.Equals(iY.ProvidedType, SymbolEqualityComparer.Default),
+                    (DelegateSource dX, DelegateSource dY) => dX.DelegateType.Equals(dY.DelegateType, SymbolEqualityComparer.Default),
+                    (DelegateParameter dX, DelegateParameter dY) => dX.Parameter.Equals(dY.Parameter, SymbolEqualityComparer.Default),
+                    (FactoryMethod mX, FactoryMethod mY) => mX.Method.Equals(mY.Method, SymbolEqualityComparer.Default),
                     _ => false,
                 };
             }
@@ -749,13 +749,13 @@ if (disposed != 0) return;");
                 return obj switch
                 {
                     null => 0,
-                    { scope: Scope.InstancePerDependency } => new Random().Next(),
-                    Registration r => 5 + r.scope.GetHashCode() * 17 + r.type.GetHashCode(),
-                    InstanceProvider i => 7 + i.instanceProviderField.GetHashCode(),
-                    FactoryRegistration f => 13 + f.scope.GetHashCode() * 17 + f.factoryType.GetHashCode(),
-                    DelegateSource d => 17 + d.delegateType.GetHashCode(),
-                    DelegateParameter dp => 19 + dp.parameter.GetHashCode(),
-                    FactoryMethod m => 23 + m.method.GetHashCode(),
+                    { Scope: Scope.InstancePerDependency } => new Random().Next(),
+                    Registration r => 5 + r.Scope.GetHashCode() * 17 + r.Type.GetHashCode(),
+                    InstanceProvider i => 7 + i.InstanceProviderField.GetHashCode(),
+                    FactoryRegistration f => 13 + f.Scope.GetHashCode() * 17 + f.FactoryType.GetHashCode(),
+                    DelegateSource d => 17 + d.DelegateType.GetHashCode(),
+                    DelegateParameter dp => 19 + dp.Parameter.GetHashCode(),
+                    FactoryMethod m => 23 + m.Method.GetHashCode(),
                     _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };
             }

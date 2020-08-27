@@ -59,21 +59,21 @@ namespace StrongInject.Generator
                     .Select(x =>
                     {
                         var isContainer = x.AllInterfaces.Any(x
-                            => x.OriginalDefinition.Equals(wellKnownTypes.iContainer, SymbolEqualityComparer.Default)
-                            || x.OriginalDefinition.Equals(wellKnownTypes.iAsyncContainer, SymbolEqualityComparer.Default));
+                            => x.OriginalDefinition.Equals(wellKnownTypes.IContainer, SymbolEqualityComparer.Default)
+                            || x.OriginalDefinition.Equals(wellKnownTypes.IAsyncContainer, SymbolEqualityComparer.Default));
                         return (type: x, isContainer);
                     })
                     .Where(x =>
                         x.isContainer
                         || x.type.GetAttributes().Any(x =>
                             x.AttributeClass is { } attribute &&
-                            (attribute.Equals(wellKnownTypes.registerAttribute, SymbolEqualityComparer.Default)
-                            || attribute.Equals(wellKnownTypes.registerModuleAttribute, SymbolEqualityComparer.Default)
-                            || attribute.Equals(wellKnownTypes.registerFactoryAttribute, SymbolEqualityComparer.Default)))
+                            (attribute.Equals(wellKnownTypes.RegisterAttribute, SymbolEqualityComparer.Default)
+                            || attribute.Equals(wellKnownTypes.RegisterModuleAttribute, SymbolEqualityComparer.Default)
+                            || attribute.Equals(wellKnownTypes.RegisterFactoryAttribute, SymbolEqualityComparer.Default)))
                         || x.type.GetMembers().Any(x => x.GetAttributes().Any(x =>
                             x.AttributeClass is { } attribute &&
-                            (attribute.Equals(wellKnownTypes.factoryAttribute, SymbolEqualityComparer.Default)
-                            || attribute.Equals(wellKnownTypes.instanceAttribute, SymbolEqualityComparer.Default)))));
+                            (attribute.Equals(wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default)
+                            || attribute.Equals(wellKnownTypes.InstanceAttribute, SymbolEqualityComparer.Default)))));
 
                 foreach (var module in modules)
                 {

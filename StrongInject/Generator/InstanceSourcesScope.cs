@@ -72,11 +72,11 @@ namespace StrongInject.Generator
             {
                 if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
                 {
-                    instanceSource = new DelegateSource(delegateType, taskOfType, parameters, isAsync: true);
+                    instanceSource = new DelegateSource(delegateType, taskOfType, parameters, IsAsync: true);
                 }
                 else
                 {
-                    instanceSource = new DelegateSource(delegateType, returnType, parameters, isAsync: false);
+                    instanceSource = new DelegateSource(delegateType, returnType, parameters, IsAsync: false);
                 }
                 return true;
             }
@@ -119,7 +119,7 @@ namespace StrongInject.Generator
         {
             switch (instanceSource)
             {
-                case DelegateSource { parameters: var parameters }:
+                case DelegateSource { Parameters: var parameters }:
                     var delegateParameters = _delegateParameters is null
                         ? new Dictionary<ITypeSymbol, DelegateParameter>()
                         : new Dictionary<ITypeSymbol, DelegateParameter>(_delegateParameters);
@@ -128,7 +128,7 @@ namespace StrongInject.Generator
                         delegateParameters[param.Type] = new DelegateParameter(param, "param" + Depth + "_" + param.Ordinal);
                     }
                     return new InstanceSourcesScope(_containerScope, delegateParameters, Depth + 1);
-                case { scope: Scope.SingleInstance }:
+                case { Scope: Scope.SingleInstance }:
                     return _containerScope;
                 default:
                     return this;

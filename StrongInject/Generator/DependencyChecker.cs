@@ -87,7 +87,7 @@ namespace StrongInject.Generator
 
                             var returnTypeSource = GetInstanceSourceOrReport(returnType, instanceSourcesScope);
 
-                            if (returnTypeSource is DelegateParameter { parameter: var param })
+                            if (returnTypeSource is DelegateParameter { Parameter: var param })
                             {
                                 if (delegateParameters.Contains(param))
                                 {
@@ -98,7 +98,7 @@ namespace StrongInject.Generator
                                     reportDiagnostic(WarnDelegateReturnTypeProvidedByAnotherDelegate(location, target, instanceSource.OfType, returnType));
                                 }
                             }
-                            else if (returnTypeSource?.scope is Scope.SingleInstance)
+                            else if (returnTypeSource?.Scope is Scope.SingleInstance)
                             {
                                 reportDiagnostic(WarnDelegateReturnTypeIsSingleInstance(location, target, instanceSource.OfType, returnType));
                             }
@@ -126,7 +126,7 @@ namespace StrongInject.Generator
 
                             break;
                         }
-                    case Registration { constructor: { Parameters: var parameters } }:
+                    case Registration { Constructor: { Parameters: var parameters } }:
                         {
                             foreach (var param in parameters)
                             {
@@ -139,17 +139,17 @@ namespace StrongInject.Generator
 
                             break;
                         }
-                    case FactoryRegistration { factoryType: var factoryType }:
+                    case FactoryRegistration { FactoryType: var factoryType }:
                         result = Visit(
                             GetInstanceSourceOrReport(factoryType, instanceSourcesScope),
                             instanceSourcesScope,
                             usedParams,
                             isScopeAsync);
                         break;
-                    case DelegateParameter { parameter: var parameter }:
+                    case DelegateParameter { Parameter: var parameter }:
                         usedParams!.Add(parameter);
                         break;
-                    case ArraySource { items: var items, elementType: var elementType }:
+                    case ArraySource { Items: var items, ElementType: var elementType }:
                         if (items.Count == 0)
                         {
                             reportDiagnostic(WarnNoRegistrationsForElementType(location, target, elementType));
@@ -163,7 +163,7 @@ namespace StrongInject.Generator
                                 isScopeAsync);
                         }
                         break;
-                    case FactoryMethod {method: { Parameters: var parameters } }:
+                    case FactoryMethod {Method: { Parameters: var parameters } }:
                         {
                             foreach (var param in parameters)
                             {
@@ -178,7 +178,7 @@ namespace StrongInject.Generator
                         }
                 }
 
-                if (instanceSource is not DelegateSource && instanceSource.isAsync && !isScopeAsync)
+                if (instanceSource is not DelegateSource && instanceSource.IsAsync && !isScopeAsync)
                 {
                     reportDiagnostic(RequiresAsyncResolution(location, target, instanceSource.OfType));
                     result = true;
@@ -417,14 +417,14 @@ namespace StrongInject.Generator
                     return false;
                 }
 
-                if (source.isAsync)
+                if (source.IsAsync)
                 {
                     return true;
                 }
 
                 switch (source)
                 {
-                    case Registration { constructor: { Parameters: var parameters } }:
+                    case Registration { Constructor: { Parameters: var parameters } }:
                         {
                             foreach (var param in parameters)
                             {
@@ -436,7 +436,7 @@ namespace StrongInject.Generator
                             break;
                         }
 
-                    case FactoryRegistration { factoryType: var factoryType }:
+                    case FactoryRegistration { FactoryType: var factoryType }:
                         {
                             var factorySource = containerScope[factoryType];
                             if (Visit(factorySource))
@@ -444,7 +444,7 @@ namespace StrongInject.Generator
                             break;
                         }
 
-                    case ArraySource { items: var items, }:
+                    case ArraySource { Items: var items, }:
                         {
                             foreach (var item in items)
                             {
@@ -453,7 +453,7 @@ namespace StrongInject.Generator
 
                             break;
                         }
-                    case FactoryMethod { method: { Parameters: var parameters } }:
+                    case FactoryMethod { Method: { Parameters: var parameters } }:
                         {
                             foreach (var param in parameters)
                             {
@@ -492,7 +492,7 @@ namespace StrongInject.Generator
 
             void Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope, ref List<InstanceSource>? results)
             {
-                if (source.scope == Scope.SingleInstance)
+                if (source.Scope == Scope.SingleInstance)
                 {
                     if (added.Add(source))
                     {
@@ -511,7 +511,7 @@ namespace StrongInject.Generator
 
                 switch (source)
                 {
-                    case Registration { constructor: { Parameters: var parameters } }:
+                    case Registration { Constructor: { Parameters: var parameters } }:
                         {
                             foreach (var param in parameters)
                             {
@@ -521,19 +521,19 @@ namespace StrongInject.Generator
 
                             break;
                         }
-                    case FactoryRegistration { factoryType: var factoryType }:
+                    case FactoryRegistration { FactoryType: var factoryType }:
                         {
                             var factorySource = innerScope[factoryType];
                             Visit(factorySource, innerScope, ref results);
                             break;
                         }
-                    case DelegateSource { returnType: var returnType }:
+                    case DelegateSource { ReturnType: var returnType }:
                         {
                             var returnTypeSource = innerScope[returnType];
                             Visit(returnTypeSource, innerScope, ref results);
                             break;
                         }
-                    case ArraySource { items: var items, }:
+                    case ArraySource { Items: var items, }:
                         {
                             foreach (var item in items)
                             {
@@ -542,7 +542,7 @@ namespace StrongInject.Generator
 
                             break;
                         }
-                    case FactoryMethod { method: { Parameters: var parameters } }:
+                    case FactoryMethod { Method: { Parameters: var parameters } }:
                         {
                             foreach (var param in parameters)
                             {

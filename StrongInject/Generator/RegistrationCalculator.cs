@@ -100,7 +100,7 @@ namespace StrongInject.Generator
         {
             Dictionary<ITypeSymbol, InstanceSources>? importedModuleRegistrations = null;
             foreach (var registerModuleAttribute in attributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerModuleAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterModuleAttribute, SymbolEqualityComparer.Default) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -166,7 +166,7 @@ namespace StrongInject.Generator
         private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
         {
             foreach (var registerAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterAttribute, SymbolEqualityComparer.Default) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -221,8 +221,8 @@ namespace StrongInject.Generator
                     ? new[] { typeConstant }
                     : registeredAsConstants.Where(x => x.Kind == TypedConstantKind.Type).ToArray();
 
-                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.iRequiresInitialization);
-                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.iRequiresAsyncInitialization);
+                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
+                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
 
                 if (requiresInitialization && requiresAsyncInitialization)
                 {
@@ -250,7 +250,7 @@ namespace StrongInject.Generator
                         scope,
                         requiresInitialization || requiresAsyncInitialization,
                         constructor,
-                        isAsync: requiresAsyncInitialization);
+                        IsAsync: requiresAsyncInitialization);
 
                     registrations.WithInstanceSource(target, registration);
                 }
@@ -260,8 +260,8 @@ namespace StrongInject.Generator
         private void ReportSuspiciousSimpleRegistrations(INamedTypeSymbol type, AttributeData registerAttribute)
         {
             if (type.AllInterfaces.FirstOrDefault(x 
-                => x.OriginalDefinition.Equals(_wellKnownTypes.iFactory, SymbolEqualityComparer.Default)
-                || x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncFactory, SymbolEqualityComparer.Default)) is { } factoryType)
+                => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default)
+                || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default)) is { } factoryType)
             {
                 _reportDiagnostic(WarnSimpleRegistrationImplementingFactory(type, factoryType, registerAttribute.GetLocation(_cancellationToken)));
             }
@@ -270,7 +270,7 @@ namespace StrongInject.Generator
         private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
         {
             foreach (var registerFactoryAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.registerFactoryAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterFactoryAttribute, SymbolEqualityComparer.Default) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -318,8 +318,8 @@ namespace StrongInject.Generator
                     continue;
                 }
 
-                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.iRequiresInitialization);
-                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.iRequiresAsyncInitialization);
+                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
+                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
 
                 if (requiresInitialization && requiresAsyncInitialization)
                 {
@@ -328,8 +328,8 @@ namespace StrongInject.Generator
 
                 bool any = false;
                 foreach (var factoryType in type.AllInterfaces.Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.iFactory, SymbolEqualityComparer.Default)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncFactory, SymbolEqualityComparer.Default)))
+                    => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default)
+                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default)))
                 {
                     any = true;
 
@@ -339,7 +339,7 @@ namespace StrongInject.Generator
                         factoryScope,
                         requiresInitialization || requiresAsyncInitialization,
                         constructor,
-                        isAsync: requiresAsyncInitialization);
+                        IsAsync: requiresAsyncInitialization);
 
                     registrations.WithInstanceSource(factoryType, registration);
 
@@ -351,7 +351,7 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.iAsyncFactory, SymbolEqualityComparer.Default);
+                    bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
 
                     var factoryRegistration = new FactoryRegistration(factoryType, factoryOf, factoryTargetScope, isAsync);
 
@@ -452,13 +452,13 @@ namespace StrongInject.Generator
                 var instanceSource = CreateInstanceSourceIfFactoryMethod(method, out var attribute);
                 if (instanceSource is not null)
                 {
-                    if (instanceSource.isOpenGeneric)
+                    if (instanceSource.IsOpenGeneric)
                     {
                         genericRegistrations.Add(instanceSource);
                     }
                     else
                     {
-                        nonGenericRegistrations.WithInstanceSource(instanceSource.returnType, instanceSource);
+                        nonGenericRegistrations.WithInstanceSource(instanceSource.ReturnType, instanceSource);
                     }
                 }
             }
@@ -468,7 +468,7 @@ namespace StrongInject.Generator
         {
             attribute = method.GetAttributes().FirstOrDefault(x
                 => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.factoryAttribute, SymbolEqualityComparer.Default))!;
+                && attribute.Equals(_wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default))!;
             if (attribute is not null)
             {
                 var countConstructorArguments = attribute.ConstructorArguments.Length;
@@ -511,11 +511,11 @@ namespace StrongInject.Generator
 
                     if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
                     {
-                        return new FactoryMethod(method, taskOfType, scope, isGeneric, isAsync: true);
+                        return new FactoryMethod(method, taskOfType, scope, isGeneric, IsAsync: true);
                     }
                     else
                     {
-                        return new FactoryMethod(method, returnType, scope, isGeneric, isAsync: false);
+                        return new FactoryMethod(method, returnType, scope, isGeneric, IsAsync: false);
                     }
                 }
                 else
@@ -571,7 +571,7 @@ namespace StrongInject.Generator
                 var instanceSource = CreateInstanceSourceIfInstanceFieldOrProperty(fieldOrProperty, out var attribute);
                 if (instanceSource is not null)
                 {
-                    registrations.WithInstanceSource(instanceSource.type, instanceSource);
+                    registrations.WithInstanceSource(instanceSource.Type, instanceSource);
                 }
             }
         }
@@ -592,7 +592,7 @@ namespace StrongInject.Generator
         {
             attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
                 => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.instanceAttribute, SymbolEqualityComparer.Default))!;
+                && attribute.Equals(_wellKnownTypes.InstanceAttribute, SymbolEqualityComparer.Default))!;
             if (attribute is not null)
             {
                 if (fieldOrProperty is IFieldSymbol { Type: var fieldType })
@@ -628,11 +628,11 @@ namespace StrongInject.Generator
                 var location = field.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
 
                 foreach (var constructedInstanceProviderInterface in field.Type.AllInterfacesAndSelf().Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.iInstanceProvider, SymbolEqualityComparer.Default)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default)))
+                    => x.OriginalDefinition.Equals(_wellKnownTypes.IInstanceProvider, SymbolEqualityComparer.Default)
+                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncInstanceProvider, SymbolEqualityComparer.Default)))
                 {
                     var providedType = constructedInstanceProviderInterface.TypeArguments[0];
-                    var isAsync = constructedInstanceProviderInterface.OriginalDefinition.Equals(_wellKnownTypes.iAsyncInstanceProvider, SymbolEqualityComparer.Default);
+                    var isAsync = constructedInstanceProviderInterface.OriginalDefinition.Equals(_wellKnownTypes.IAsyncInstanceProvider, SymbolEqualityComparer.Default);
                     var instanceProvider = new InstanceProvider(providedType, field, constructedInstanceProviderInterface, isAsync);
                     registrations.WithInstanceSource(providedType, instanceProvider);
                 }
@@ -645,7 +645,7 @@ namespace StrongInject.Generator
             {
                 var attribute = method.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.factoryAttribute, SymbolEqualityComparer.Default));
+                    && attribute.Equals(_wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default));
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
@@ -667,7 +667,7 @@ namespace StrongInject.Generator
             {
                 var attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.instanceAttribute, SymbolEqualityComparer.Default));
+                    && attribute.Equals(_wellKnownTypes.InstanceAttribute, SymbolEqualityComparer.Default));
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
