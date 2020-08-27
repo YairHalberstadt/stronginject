@@ -122,8 +122,8 @@ namespace StrongInject.Generator
                             namedTypeBucketsAndFactoryMethods.CreateOrUpdate(
                                 namedType,
                                 bucket,
-                                (_, b) => (new List<Bucket> { b }, null),
-                                (_, b, l) =>
+                                static (_, b) => (new List<Bucket> { b }, null),
+                                static (_, b, l) =>
                                 {
                                     l.buckets!.Add(b);
                                     return l;
@@ -142,13 +142,13 @@ namespace StrongInject.Generator
                                     namedTypeBucketsAndFactoryMethods.CreateOrUpdate(
                                         namedType.OriginalDefinition,
                                         factoryMethod,
-                                        (_, f) =>
+                                        static (_, f) =>
                                         {
                                             var builder = ImmutableArray.CreateBuilder<FactoryMethod>();
                                             builder.Add(f);
                                             return (null, builder);
                                         },
-                                        (_, f, l) =>
+                                        static (_, f, l) =>
                                         {
                                             (l.factoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(f);
                                             return l;
