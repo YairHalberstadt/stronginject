@@ -33,8 +33,8 @@ namespace StrongInject.Generator
             instanceSources.CreateOrUpdate(
                 type,
                 instanceSource,
-                (_, instanceSource) => InstanceSources.Create(instanceSource),
-                (_, instanceSource, existing) => existing.Add(instanceSource));
+                static (_, instanceSource) => InstanceSources.Create(instanceSource),
+                static (_, instanceSource, existing) => existing.Add(instanceSource));
         }
     }
 }

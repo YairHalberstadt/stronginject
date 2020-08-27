@@ -4,64 +4,64 @@ using System.Collections.Immutable;
 
 namespace StrongInject.Generator
 {
-    abstract internal record InstanceSource(Scope scope, bool isAsync)
+    abstract internal record InstanceSource(Scope Scope, bool IsAsync)
     {
         public abstract ITypeSymbol OfType { get; }
     }
 
     internal record Registration(
-        INamedTypeSymbol type,
-        ITypeSymbol registeredAs,
-        Scope scope,
-        bool requiresInitialization,
-        IMethodSymbol constructor,
-        bool isAsync) : InstanceSource(scope, isAsync)
+        INamedTypeSymbol Type,
+        ITypeSymbol RegisteredAs,
+        Scope Scope,
+        bool RequiresInitialization,
+        IMethodSymbol Constructor,
+        bool IsAsync) : InstanceSource(Scope, IsAsync)
     {
-        public override ITypeSymbol OfType => registeredAs; 
+        public override ITypeSymbol OfType => RegisteredAs;
     }
     internal record InstanceProvider(
-        ITypeSymbol providedType,
-        IFieldSymbol instanceProviderField,
-        INamedTypeSymbol castTo,
-        bool isAsync) : InstanceSource(Scope.InstancePerResolution, isAsync)
+        ITypeSymbol ProvidedType,
+        IFieldSymbol InstanceProviderField,
+        INamedTypeSymbol CastTo,
+        bool IsAsync) : InstanceSource(Scope.InstancePerResolution, IsAsync)
     {
-        public override ITypeSymbol OfType => providedType;
+        public override ITypeSymbol OfType => ProvidedType;
     }
     internal record FactoryRegistration(
-        ITypeSymbol factoryType,
-        ITypeSymbol factoryOf,
-        Scope scope,
-        bool isAsync) : InstanceSource(scope, isAsync)
+        ITypeSymbol FactoryType,
+        ITypeSymbol FactoryOf,
+        Scope Scope,
+        bool IsAsync) : InstanceSource(Scope, IsAsync)
     {
-        public override ITypeSymbol OfType => factoryOf;
+        public override ITypeSymbol OfType => FactoryOf;
     }
     internal record DelegateSource(
-        ITypeSymbol delegateType,
-        ITypeSymbol returnType,
-        ImmutableArray<IParameterSymbol> parameters,
-        bool isAsync) : InstanceSource(Scope.InstancePerResolution, isAsync: isAsync)
+        ITypeSymbol DelegateType,
+        ITypeSymbol ReturnType,
+        ImmutableArray<IParameterSymbol> Parameters,
+        bool IsAsync) : InstanceSource(Scope.InstancePerResolution, IsAsync: IsAsync)
     {
-        public override ITypeSymbol OfType => returnType;
+        public override ITypeSymbol OfType => ReturnType;
     }
-    internal record DelegateParameter(IParameterSymbol parameter, string name) : InstanceSource(Scope.InstancePerResolution, isAsync: false)
+    internal record DelegateParameter(IParameterSymbol Parameter, string Name) : InstanceSource(Scope.InstancePerResolution, IsAsync: false)
     {
-        public override ITypeSymbol OfType => parameter.Type;
+        public override ITypeSymbol OfType => Parameter.Type;
     }
     internal record FactoryMethod(
-        IMethodSymbol method,
-        ITypeSymbol returnType,
-        Scope scope,
-        bool isOpenGeneric,
-        bool isAsync) : InstanceSource(scope, isAsync)
+        IMethodSymbol Method,
+        ITypeSymbol ReturnType,
+        Scope Scope,
+        bool IsOpenGeneric,
+        bool IsAsync) : InstanceSource(Scope, IsAsync)
     {
-        public override ITypeSymbol OfType => returnType;
+        public override ITypeSymbol OfType => ReturnType;
     }
-    internal record InstanceFieldOrProperty(ISymbol fieldOrPropertySymbol, ITypeSymbol type) : InstanceSource(Scope.InstancePerDependency, isAsync: false)
+    internal record InstanceFieldOrProperty(ISymbol FieldOrPropertySymbol, ITypeSymbol Type) : InstanceSource(Scope.InstancePerDependency, IsAsync: false)
     {
-        public override ITypeSymbol OfType => type;
+        public override ITypeSymbol OfType => Type;
     }
-    internal record ArraySource(IArrayTypeSymbol arrayType, ITypeSymbol elementType, IReadOnlyCollection<InstanceSource> items) : InstanceSource(Scope.InstancePerDependency, isAsync: false)
+    internal record ArraySource(IArrayTypeSymbol ArrayType, ITypeSymbol ElementType, IReadOnlyCollection<InstanceSource> Items) : InstanceSource(Scope.InstancePerDependency, IsAsync: false)
     {
-        public override ITypeSymbol OfType => arrayType;
+        public override ITypeSymbol OfType => ArrayType;
     }
 }

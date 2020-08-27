@@ -145,8 +145,8 @@ namespace StrongInject.Generator
 
         public static bool IsWellKnownTaskType(this ITypeSymbol type, WellKnownTypes wellKnownTypes, out ITypeSymbol taskOfType)
         {
-            if (type.OriginalDefinition.Equals(wellKnownTypes.task1, SymbolEqualityComparer.Default)
-                || type.OriginalDefinition.Equals(wellKnownTypes.valueTask1, SymbolEqualityComparer.Default))
+            if (type.OriginalDefinition.Equals(wellKnownTypes.Task1, SymbolEqualityComparer.Default)
+                || type.OriginalDefinition.Equals(wellKnownTypes.ValueTask1, SymbolEqualityComparer.Default))
             {
                 taskOfType = ((INamedTypeSymbol)type).TypeArguments[0];
                 return true;

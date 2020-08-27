@@ -122,8 +122,8 @@ namespace StrongInject.Generator
                             namedTypeBucketsAndFactoryMethods.CreateOrUpdate(
                                 namedType,
                                 bucket,
-                                (_, b) => (new List<Bucket> { b }, null),
-                                (_, b, l) =>
+                                static (_, b) => (new List<Bucket> { b }, null),
+                                static (_, b, l) =>
                                 {
                                     l.buckets!.Add(b);
                                     return l;
@@ -135,20 +135,20 @@ namespace StrongInject.Generator
 
                     foreach (var factoryMethod in builder._factoryMethods)
                     {
-                        switch (factoryMethod.returnType)
+                        switch (factoryMethod.ReturnType)
                         {
                             case INamedTypeSymbol namedType:
                                 {
                                     namedTypeBucketsAndFactoryMethods.CreateOrUpdate(
                                         namedType.OriginalDefinition,
                                         factoryMethod,
-                                        (_, f) =>
+                                        static (_, f) =>
                                         {
                                             var builder = ImmutableArray.CreateBuilder<FactoryMethod>();
                                             builder.Add(f);
                                             return (null, builder);
                                         },
-                                        (_, f, l) =>
+                                        static (_, f, l) =>
                                         {
                                             (l.factoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(f);
                                             return l;
@@ -302,14 +302,14 @@ namespace StrongInject.Generator
 
             private bool Matches(ITypeSymbol type, FactoryMethod factoryMethod, out FactoryMethod constructedFactoryMethod, out bool constraintsDoNotMatch)
             {
-                if (!CanConstructFromReturnType(type, factoryMethod.method, out var typeArguments))
+                if (!CanConstructFromReturnType(type, factoryMethod.Method, out var typeArguments))
                 {
                     constructedFactoryMethod = null!;
                     constraintsDoNotMatch = false;
                     return false;
                 }
 
-                var typeParameters = factoryMethod.method.TypeParameters;
+                var typeParameters = factoryMethod.Method.TypeParameters;
                 for (int i = 0; i < typeParameters.Length; i++)
                 {
                     var typeParameter = typeParameters[i];
@@ -346,9 +346,9 @@ namespace StrongInject.Generator
 
                 constructedFactoryMethod = factoryMethod with
                 {
-                    returnType = type,
-                    method = factoryMethod.method.Construct(typeArguments),
-                    isOpenGeneric = false
+                    ReturnType = type,
+                    Method = factoryMethod.Method.Construct(typeArguments),
+                    IsOpenGeneric = false
                 };
                 constraintsDoNotMatch = false;
                 return true;
