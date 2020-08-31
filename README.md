@@ -28,6 +28,7 @@ compile time dependency injection for .Net
   - [Resolving all instances of a type](#resolving-all-instances-of-a-type)
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
+  - [Inbuilt Modules](#inbuilt-modules)
 - [Product Roadmap](#product-roadmap)
 - [Contributing](#contributing)
 - [Need Help?](#need-help)
