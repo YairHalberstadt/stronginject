@@ -701,6 +701,22 @@ StrongInject provides the following thread safety guarantees:
 2. If the container is disposed during resolution, then either dependencies will be created by the resolution, and will then be disposed, or resolution will throw and no dependencies will be created. Dependencies will not be created and then not disposed.
 3. A SingleInstance dependency will never be created more than once.
 
+### Inbuilt Modules
+
+StrongInject provides a number of inbuilt modules which can be used 'out of the box' in the `StrongInject.Modules` namespace for the most commonly required functionality. You still need to import these modules via `RegisterModule`, although you can get all of the less opinionated modules in one go by importing the `StandardModule`.
+
+At the moment the following modules are provided:
+
+1. `LazyModule` (registers `Lazy<T>`)
+1. `CollectionsModule` (registers `IEnumerable<T>`, `IReadOnlyList<T>` and `IReadOnlyCollection<T>`)
+1. `ValueTupleModule` (registers all tuples from sizes 2 till 10)
+1. `SafeImmutableArrayModule` (registers `ImmutableArray<T>`)
+1. `UnsafeImmutableArrayModule` (provides a faster non-copying registration for `ImmutableArray<T>` which cannot be used if a custom registration for `T[]` exists)
+
+At the moment the `StandardModule` imports `lazyModule`, `CollectionsModule` and `ValueTuple` module.
+
+If you would like more modules/registrations added please open an issue.
+
 ## Product Roadmap
 
 https://github.com/YairHalberstadt/stronginject/projects/1
