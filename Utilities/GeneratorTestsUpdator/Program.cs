@@ -38,7 +38,7 @@ namespace GeneratorTestsUpdator
             public TestSourceUpdater()
             {
                 var currentDirectory = Directory.GetCurrentDirectory();
-                _targetFilePath = Directory.GetCurrentDirectory()[..(currentDirectory.LastIndexOf("bin"))] + "../StrongInject.Tests.Unit/GeneratorTests.cs";
+                _targetFilePath = Directory.GetCurrentDirectory()[..(currentDirectory.LastIndexOf("bin"))] + "../../StrongInject.Tests.Unit/GeneratorTests.cs";
                 _source = File.ReadAllText(_targetFilePath);
             }
 
@@ -53,6 +53,7 @@ namespace GeneratorTestsUpdator
                     {
                         var correctCode = match.Groups[1].Value;
                         correctCode = "\"" + correctCode[1..^1].Replace("\"", "\"\"") + "\"";
+                        correctCode = Regex.Replace(correctCode, @"\r\n|\n\r|\n|\r", Environment.NewLine);
                         var methodLocation = _source.IndexOf(testFailed.TestMethod.Method.Name);
                         var sourceFromMethod = _source[methodLocation..];
                         var originalCodeMatch = originalCodeRegex.Match(sourceFromMethod);

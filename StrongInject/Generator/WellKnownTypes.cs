@@ -20,7 +20,9 @@ namespace StrongInject.Generator
         INamedTypeSymbol RegisterAttribute,
         INamedTypeSymbol RegisterModuleAttribute,
         INamedTypeSymbol RegisterFactoryAttribute,
+        INamedTypeSymbol RegisterDecoratorAttribute,
         INamedTypeSymbol FactoryAttribute,
+        INamedTypeSymbol DecoratorFactoryAttribute,
         INamedTypeSymbol InstanceAttribute,
         INamedTypeSymbol ValueTask1,
         INamedTypeSymbol Task1,
@@ -44,7 +46,9 @@ namespace StrongInject.Generator
             var registerAttribute = compilation.GetTypeOrReport(typeof(RegisterAttribute), reportDiagnostic);
             var registerModuleAttribute = compilation.GetTypeOrReport(typeof(RegisterModuleAttribute), reportDiagnostic);
             var registerFactoryAttribute = compilation.GetTypeOrReport(typeof(RegisterFactoryAttribute), reportDiagnostic);
+            var registerDecoratorAttribute = compilation.GetTypeOrReport(typeof(RegisterDecoratorAttribute), reportDiagnostic);
             var factoryAttribute = compilation.GetTypeOrReport(typeof(FactoryAttribute), reportDiagnostic);
+            var decoratorFactoryAttribute = compilation.GetTypeOrReport(typeof(DecoratorFactoryAttribute), reportDiagnostic);
             var instanceAttribute = compilation.GetTypeOrReport(typeof(InstanceAttribute), reportDiagnostic);
             var valueTask1 = compilation.GetTypeOrReport(typeof(ValueTask<>), reportDiagnostic);
             var task1 = compilation.GetTypeOrReport(typeof(Task<>), reportDiagnostic);
@@ -66,7 +70,9 @@ namespace StrongInject.Generator
                 || registerAttribute is null
                 || registerModuleAttribute is null
                 || registerFactoryAttribute is null
+                || registerDecoratorAttribute is null
                 || factoryAttribute is null
+                || decoratorFactoryAttribute is null
                 || instanceAttribute is null
                 || valueTask1 is null
                 || task1 is null
@@ -93,7 +99,9 @@ namespace StrongInject.Generator
                 RegisterAttribute: registerAttribute,
                 RegisterModuleAttribute: registerModuleAttribute,
                 RegisterFactoryAttribute: registerFactoryAttribute,
+                RegisterDecoratorAttribute: registerDecoratorAttribute,
                 FactoryAttribute: factoryAttribute,
+                DecoratorFactoryAttribute: decoratorFactoryAttribute,
                 InstanceAttribute: instanceAttribute,
                 ValueTask1: valueTask1,
                 Task1: task1,

@@ -28,6 +28,24 @@ namespace StrongInject.Generator
                 : create(key, param);
         }
 
+        public static TValue GetOrCreate<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, Func<TKey, TValue> create)
+        {
+            if (!dic.TryGetValue(key, out var value))
+            {
+                dic[key] = value = create(key);
+            }
+            return value;
+        }
+
+        public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dic, TKey key, TValue defaultValue = default)
+        {
+            if (dic.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+            return defaultValue!;
+        }
+
         public static void WithInstanceSource(this Dictionary<ITypeSymbol, InstanceSources> instanceSources, ITypeSymbol type, InstanceSource instanceSource)
         {
             instanceSources.CreateOrUpdate(

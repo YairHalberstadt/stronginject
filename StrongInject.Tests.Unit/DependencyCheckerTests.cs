@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StrongInject;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -47,7 +48,17 @@ public class D
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => Assert.True(false, x.ToString()), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("A"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes, 
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => Assert.True(false, x.ToString()),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.False(hasErrors);
         }
 
@@ -84,7 +95,17 @@ public class E {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("B"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => Assert.True(false, x.ToString()), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("B"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes, 
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => Assert.True(false, x.ToString()),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.False(hasErrors);
         }
 
@@ -124,7 +145,17 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("A"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes,
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => diagnostics.Add(x),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
             diagnostics.Verify(
                 // (8,14): Error SI0101: Error while resolving dependencies for 'A': 'B' has a circular dependency
@@ -168,7 +199,17 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("A"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes,
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => diagnostics.Add(x),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
             diagnostics.Verify(
                 // (8,14): Error SI0101: Error while resolving dependencies for 'A': 'C' has a circular dependency
@@ -209,7 +250,17 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("A"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes,
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => diagnostics.Add(x),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
             diagnostics.Verify(
                 // (8,14): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
@@ -249,7 +300,17 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("A"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes,
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => diagnostics.Add(x),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
             diagnostics.Verify(
                 // (7,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'D'
@@ -287,7 +348,17 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("A"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes,
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => diagnostics.Add(x),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
             diagnostics.Verify(
                 // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'C'
@@ -330,7 +401,17 @@ public class E {}
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(comp.AssertGetTypeByMetadataName("A"), isAsync: true, new(registrations, wellKnownTypes, new GenericRegistrationsResolver.Builder().Build(comp)), x => diagnostics.Add(x), ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
+            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+                comp.AssertGetTypeByMetadataName("A"),
+                isAsync: true,
+                new(
+                    registrations,
+                    wellKnownTypes,
+                    new GenericRegistrationsResolver.Builder().Build(comp),
+                    ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                x => diagnostics.Add(x),
+                ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
             diagnostics.Verify(
                 // (6,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'D'

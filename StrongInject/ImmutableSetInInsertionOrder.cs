@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 
 namespace StrongInject
 {
-    internal class ImmutableSetInInsertionOrder<T> : IImmutableSet<T>
+    internal class ImmutableSetInInsertionOrder<T> : IImmutableSet<T> where T : notnull
     {
         private readonly ImmutableDictionary<T, int> _items;
         private readonly ImmutableSortedDictionary<int, T> _insertionOrder;

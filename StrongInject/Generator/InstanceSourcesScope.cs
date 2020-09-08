@@ -1,39 +1,62 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace StrongInject.Generator
 {
     internal class InstanceSourcesScope
     {
         private readonly IReadOnlyDictionary<ITypeSymbol, InstanceSources> _instanceSources;
-        private readonly Dictionary<ITypeSymbol, DelegateParameter>? _delegateParameters;
-        private readonly InstanceSourcesScope _containerScope;
-        private readonly WellKnownTypes _wellKnownTypes;
         private readonly GenericRegistrationsResolver _genericRegistrationsResolver;
+        private readonly IReadOnlyDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>> _decoratorSources;
+        private readonly GenericDecoratorsResolver _genericDecoratorsResolver;
+        private readonly WellKnownTypes _wellKnownTypes;
+        private readonly InstanceSourcesScope _containerScope;
+        private readonly Dictionary<ITypeSymbol, DelegateParameter>? _delegateParameters;
 
         public int Depth { get; }
 
-        public InstanceSourcesScope(IReadOnlyDictionary<ITypeSymbol, InstanceSources> instanceSources, WellKnownTypes wellKnownTypes, GenericRegistrationsResolver genericRegistrationsResolver)
+        public InstanceSourcesScope(
+            IReadOnlyDictionary<ITypeSymbol, InstanceSources> instanceSources,
+            GenericRegistrationsResolver genericRegistrationsResolver,
+            IReadOnlyDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>> decoratorSources,
+            GenericDecoratorsResolver genericDecoratorsResolver,
+            WellKnownTypes wellKnownTypes)
         {
             _instanceSources = instanceSources;
-            _containerScope = this;
-            _wellKnownTypes = wellKnownTypes;
             _genericRegistrationsResolver = genericRegistrationsResolver;
+            _decoratorSources = decoratorSources;
+            _genericDecoratorsResolver = genericDecoratorsResolver;
+            _wellKnownTypes = wellKnownTypes;
+            _containerScope = this;
             Depth = 0;
         }
 
         private InstanceSourcesScope(InstanceSourcesScope containerScope, Dictionary<ITypeSymbol, DelegateParameter> delegateParameters, int depth)
         {
             _instanceSources = containerScope._instanceSources;
-            _delegateParameters = delegateParameters;
-            _containerScope = containerScope;
-            _wellKnownTypes = containerScope._wellKnownTypes;
             _genericRegistrationsResolver = containerScope._genericRegistrationsResolver;
+            _decoratorSources = containerScope._decoratorSources;
+            _genericDecoratorsResolver = containerScope._genericDecoratorsResolver;
+            _wellKnownTypes = containerScope._wellKnownTypes;
+            _containerScope = containerScope;
+            _delegateParameters = delegateParameters;
             Depth = depth;
         }
 
         public bool TryGetSource(ITypeSymbol target, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
+        {
+            if (!TryGetUnderlyingSource(target, out instanceSource, out isAmbiguous, out sourcesNotMatchingConstraints))
+                return false;
+
+            instanceSource = Decorate(instanceSource);
+
+            return true;
+        }
+
+        private bool TryGetUnderlyingSource(ITypeSymbol target, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
         {
             isAmbiguous = false;
             sourcesNotMatchingConstraints = Array.Empty<FactoryMethod>();
@@ -83,23 +106,44 @@ namespace StrongInject.Generator
 
             if (target is IArrayTypeSymbol { Rank: 1, ElementType: var elementType } arrayTypeSymbol )
             {
-                var elementSources = new List<InstanceSource>();
+                var elementSources = Enumerable.Empty<InstanceSource>();
                 if (_instanceSources.TryGetValue(elementType, out var nonGenericElementSources))
                 {
-                    elementSources.AddRange(nonGenericElementSources);
+                    elementSources = elementSources.Concat(nonGenericElementSources);
                 };
 
-                elementSources.AddRange(_genericRegistrationsResolver.ResolveAll(elementType));
+                elementSources = elementSources.Concat(_genericRegistrationsResolver.ResolveAll(elementType));
+
+                var decoratedSources = elementSources.Select(x => Decorate(x)).ToList();
 
                 instanceSource = new ArraySource(
                     arrayTypeSymbol,
                     elementType,
-                    elementSources);
+                    decoratedSources);
                 return true;
             }
 
             instanceSource = null!;
             return false;
+        }
+
+        private InstanceSource Decorate(InstanceSource instanceSource)
+        {
+            var target = instanceSource.OfType;
+            if (instanceSource.CanDecorate)
+            {
+                foreach (var decorator in _decoratorSources.GetValueOrDefault(target, ImmutableArray<DecoratorSource>.Empty))
+                {
+                    instanceSource = new WrappedDecoratorInstanceSource(decorator, instanceSource);
+                }
+
+                foreach (var decorator in _genericDecoratorsResolver.ResolveDecorators(target))
+                {
+                    instanceSource = new WrappedDecoratorInstanceSource(decorator, instanceSource);
+                }
+            }
+
+            return instanceSource;
         }
 
         public InstanceSource this[ITypeSymbol typeSymbol]
