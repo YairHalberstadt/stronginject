@@ -1,7 +1,5 @@
-﻿using FluentAssertions;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using StrongInject;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -53,10 +51,10 @@ public class D
                 isAsync: true,
                 new(
                     registrations,
-                    wellKnownTypes, 
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => Assert.True(false, x.ToString()),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.False(hasErrors);
@@ -99,11 +97,11 @@ public class E {}
                 comp.AssertGetTypeByMetadataName("B"),
                 isAsync: true,
                 new(
-                    registrations,
-                    wellKnownTypes, 
+                    registrations, 
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => Assert.True(false, x.ToString()),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.False(hasErrors);
@@ -150,10 +148,10 @@ public class D
                 isAsync: true,
                 new(
                     registrations,
-                    wellKnownTypes,
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => diagnostics.Add(x),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
@@ -204,10 +202,10 @@ public class D
                 isAsync: true,
                 new(
                     registrations,
-                    wellKnownTypes,
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => diagnostics.Add(x),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
@@ -255,10 +253,10 @@ public class D
                 isAsync: true,
                 new(
                     registrations,
-                    wellKnownTypes,
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => diagnostics.Add(x),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
@@ -305,10 +303,10 @@ public class D
                 isAsync: true,
                 new(
                     registrations,
-                    wellKnownTypes,
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => diagnostics.Add(x),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
@@ -353,10 +351,10 @@ public class D
                 isAsync: true,
                 new(
                     registrations,
-                    wellKnownTypes,
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => diagnostics.Add(x),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);
@@ -406,10 +404,10 @@ public class E {}
                 isAsync: true,
                 new(
                     registrations,
-                    wellKnownTypes,
                     new GenericRegistrationsResolver.Builder().Build(comp),
                     ImmutableDictionary<ITypeSymbol, ImmutableArray<DecoratorSource>>.Empty,
-                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty)),
+                    new(comp, ImmutableArray<DecoratorFactoryMethod>.Empty),
+                    wellKnownTypes),
                 x => diagnostics.Add(x),
                 ((ClassDeclarationSyntax)comp.AssertGetTypeByMetadataName("Container").DeclaringSyntaxReferences.First().GetSyntax()).Identifier.GetLocation());
             Assert.True(hasErrors);

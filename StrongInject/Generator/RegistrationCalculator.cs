@@ -41,10 +41,10 @@ namespace StrongInject.Generator
             var registrations = CalculateRegistrations(container, dependantModules: null, onlyExported: false);
             return new(
                 registrations.NonGenericRegistrations,
-                _wellKnownTypes,
                 registrations.GenericRegistrations.Build(_compilation),
                 registrations.NonGenericDecorators.GroupBy(x => x.OfType).ToDictionary(x => x.Key, x => x.Distinct().ToImmutableArray()),
-                new GenericDecoratorsResolver(_compilation, registrations.GenericDecorators.Distinct().ToImmutableArray()));
+                new GenericDecoratorsResolver(_compilation, registrations.GenericDecorators.Distinct().ToImmutableArray()),
+                _wellKnownTypes);
         }
 
         public void ValidateModuleRegistrations(INamedTypeSymbol module)
