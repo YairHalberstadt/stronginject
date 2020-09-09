@@ -422,7 +422,7 @@ StrongInject will resolve an instance of `Service`, and then wrap it in an insta
 
 You can't specify the scope of a decorator, as its scope is the same as that of the type it wraps.
 
-The deorator constructor must have exactly one parameter of the decorated type, but can have any other parameters as well so long as they are not of the decorated type.
+The decorator constructor must have exactly one parameter of the decorated type, but can have any other parameters as well so long as they are not of the decorated type.
 
 Instances provided by [delegate parameters](#delegate-support) are never decorated.
 
@@ -537,7 +537,7 @@ Call to Service1.GetFoo took 26 ms
 Call to Service2.UseBar took 42 ms
 ```
 
-You can register multiple decorators for a type, and they will all be applied. As of now there is no way to control how 
+You can register multiple decorators for a type, and they will all be applied. As of now there is no way to control in which order they are applied.
 
 #### Providing registrations at runtime or integrating with other IOC containers
 
