@@ -537,7 +537,7 @@ Call to Service1.GetFoo took 26 ms
 Call to Service2.UseBar took 42 ms
 ```
 
-You can register multiple decorators for a type, and they will all be applied. As of now there is no way to control in which order they are applied.
+You can register multiple decorators for a type, and they will all be applied. As of now there is no way to control in which order they are applied, but the order is deterministic.
 
 #### Providing registrations at runtime or integrating with other IOC containers
 
