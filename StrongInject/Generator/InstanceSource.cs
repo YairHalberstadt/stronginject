@@ -28,7 +28,7 @@ namespace StrongInject.Generator
         bool IsAsync) : InstanceSource(Scope.InstancePerResolution, IsAsync)
     {
         public override ITypeSymbol OfType => ProvidedType;
-        public override bool CanDecorate => false;
+        public override bool CanDecorate => true;
     }
     internal record FactoryRegistration(
         ITypeSymbol FactoryType,
@@ -37,7 +37,7 @@ namespace StrongInject.Generator
         bool IsAsync) : InstanceSource(Scope, IsAsync)
     {
         public override ITypeSymbol OfType => FactoryOf;
-        public override bool CanDecorate => false;
+        public override bool CanDecorate => true;
     }
     internal record DelegateSource(
         ITypeSymbol DelegateType,
@@ -63,10 +63,10 @@ namespace StrongInject.Generator
         public override ITypeSymbol OfType => ReturnType;
         public override bool CanDecorate => true;
     }
-    internal record InstanceFieldOrProperty(ISymbol FieldOrPropertySymbol, ITypeSymbol Type) : InstanceSource(Scope.InstancePerDependency, IsAsync: false)
+    internal record InstanceFieldOrProperty(ISymbol FieldOrPropertySymbol, ITypeSymbol Type) : InstanceSource(Scope.SingleInstance, IsAsync: false)
     {
         public override ITypeSymbol OfType => Type;
-        public override bool CanDecorate => false;
+        public override bool CanDecorate => true;
     }
     internal record ArraySource(IArrayTypeSymbol ArrayType, ITypeSymbol ElementType, IReadOnlyCollection<InstanceSource> Items) : InstanceSource(Scope.InstancePerDependency, IsAsync: false)
     {

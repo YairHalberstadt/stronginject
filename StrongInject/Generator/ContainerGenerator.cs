@@ -227,6 +227,7 @@ namespace StrongInject.Generator
                     Registration { Type: var t } => t,
                     FactoryRegistration { FactoryOf: var t } => t,
                     FactoryMethod { ReturnType: var t } => t,
+                    WrappedDecoratorInstanceSource { OfType: var t } => t,
                     _ => throw new InvalidOperationException(),
                 };
 
@@ -745,6 +746,7 @@ if (disposed != 0) return;");
                     (DelegateParameter dX, DelegateParameter dY) => dX.Parameter.Equals(dY.Parameter, SymbolEqualityComparer.Default),
                     (FactoryMethod mX, FactoryMethod mY) => mX.Method.Equals(mY.Method, SymbolEqualityComparer.Default),
                     (WrappedDecoratorInstanceSource dX, WrappedDecoratorInstanceSource dY) => Equals(dX.Underlying, dY.Underlying),
+                    (InstanceFieldOrProperty fX, InstanceFieldOrProperty fY) => fX.FieldOrPropertySymbol.Equals(fY.FieldOrPropertySymbol, SymbolEqualityComparer.Default),
                     _ => false,
                 };
             }
@@ -762,6 +764,7 @@ if (disposed != 0) return;");
                     DelegateParameter dp => 19 + dp.Parameter.GetHashCode(),
                     FactoryMethod m => 23 + m.Method.GetHashCode(),
                     WrappedDecoratorInstanceSource d => GetHashCode(d.Underlying),
+                    InstanceFieldOrProperty f => 29 + f.FieldOrPropertySymbol.GetHashCode(),
                     _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };
             }

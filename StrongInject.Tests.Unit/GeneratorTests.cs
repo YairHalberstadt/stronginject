@@ -12006,6 +12006,251 @@ partial class Container
         }
 
         [Fact]
+        public void DecoratesInstanceFieldOrProperties()
+        {
+            string userSource = @"
+using StrongInject;
+
+[RegisterDecorator(typeof(Decorator), typeof(IA))]
+public partial class Container : IAsyncContainer<IA>
+{
+    [Instance] IA _ia;
+}
+
+public interface IA {}
+public class Decorator : IA
+{
+    public Decorator(IA a){} 
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify(
+                // (7,19): Warning CS0649: Field 'Container._ia' is never assigned to, and will always have its default value null
+                // _ia
+                new DiagnosticResult("CS0649", @"_ia", DiagnosticSeverity.Warning).WithLocation(7, 19));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        await this._lock0.WaitAsync();
+        try
+        {
+            await (this._disposeAction0?.Invoke() ?? default);
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::IA _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
+    private global::IA GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _0 = new global::Decorator((global::IA)this._ia);
+            this._singleInstanceField0 = _0;
+            this._disposeAction0 = async () =>
+            {
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::IA>.RunAsync<TResult, TParam>(global::System.Func<global::IA, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        TResult result;
+        try
+        {
+            result = await func((global::IA)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::IA>> global::StrongInject.IAsyncContainer<global::IA>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
+        {
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void DecoratesSingleInstanceDependencies()
+        {
+            string userSource = @"
+using StrongInject;
+
+[RegisterDecorator(typeof(Decorator), typeof(IA))]
+public partial class Container : IAsyncContainer<IA>
+{
+    [Factory(Scope.SingleInstance)] IA GetIA() => default;
+}
+
+public interface IA {}
+public class Decorator : IA
+{
+    public Decorator(IA a){} 
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        await this._lock0.WaitAsync();
+        try
+        {
+            await (this._disposeAction0?.Invoke() ?? default);
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        await this._lock1.WaitAsync();
+        try
+        {
+            await (this._disposeAction1?.Invoke() ?? default);
+        }
+        finally
+        {
+            this._lock1.Release();
+        }
+    }
+
+    private global::IA _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
+    private global::IA _singleInstanceField1;
+    private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
+    private global::IA GetSingleInstanceField1()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField1, null))
+            return _singleInstanceField1;
+        this._lock1.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _0 = this.GetIA();
+            this._singleInstanceField1 = _0;
+            this._disposeAction1 = async () =>
+            {
+                await global::StrongInject.Helpers.DisposeAsync(_0);
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock1.Release();
+        }
+
+        return _singleInstanceField1;
+    }
+
+    private global::IA GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _1 = GetSingleInstanceField1();
+            var _0 = new global::Decorator((global::IA)_1);
+            this._singleInstanceField0 = _0;
+            this._disposeAction0 = async () =>
+            {
+            }
+
+            ;
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::IA>.RunAsync<TResult, TParam>(global::System.Func<global::IA, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        TResult result;
+        try
+        {
+            result = await func((global::IA)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::IA>> global::StrongInject.IAsyncContainer<global::IA>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = GetSingleInstanceField0();
+        return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
+        {
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
         public void DeduplicatesMultipleRegistrationsOfSameDecorator()
         {
             string userSource = @"

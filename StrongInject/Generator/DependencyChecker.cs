@@ -568,6 +568,9 @@ namespace StrongInject.Generator
 
             void Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope, ref List<InstanceSource>? results)
             {
+                if (source is InstanceFieldOrProperty)
+                    return;
+
                 if (source.Scope == Scope.SingleInstance)
                 {
                     if (added.Add(source))
