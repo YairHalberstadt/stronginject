@@ -12,7 +12,11 @@ namespace StrongInject.Generator
 {
     internal class RegistrationCalculator
     {
-        private record RegistrationData(IReadOnlyDictionary<ITypeSymbol, InstanceSources> NonGenericRegistrations, GenericRegistrationsResolver.Builder GenericRegistrations) { }
+        private record RegistrationData(
+            IReadOnlyDictionary<ITypeSymbol, InstanceSources> NonGenericRegistrations,
+            GenericRegistrationsResolver.Builder GenericRegistrations,
+            ImmutableArray<DecoratorSource> NonGenericDecorators,
+            ImmutableArray<DecoratorFactoryMethod> GenericDecorators) { }
 
         public RegistrationCalculator(
             Compilation compilation,
@@ -35,7 +39,12 @@ namespace StrongInject.Generator
         public InstanceSourcesScope GetContainerRegistrations(INamedTypeSymbol container)
         {
             var registrations = CalculateRegistrations(container, dependantModules: null, onlyExported: false);
-            return new(registrations.NonGenericRegistrations, _wellKnownTypes, registrations.GenericRegistrations.Build(_compilation));
+            return new(
+                registrations.NonGenericRegistrations,
+                registrations.GenericRegistrations.Build(_compilation),
+                registrations.NonGenericDecorators.GroupBy(x => x.OfType).ToDictionary(x => x.Key, x => x.Distinct().ToImmutableArray()),
+                new GenericDecoratorsResolver(_compilation, registrations.GenericDecorators.Distinct().ToImmutableArray()),
+                _wellKnownTypes);
         }
 
         public void ValidateModuleRegistrations(INamedTypeSymbol module)
@@ -46,8 +55,9 @@ namespace StrongInject.Generator
         internal IReadOnlyDictionary<ITypeSymbol, InstanceSources> GetModuleRegistrations(INamedTypeSymbol module)
         {
             var registrations = GetRegistrations(module, dependantModules: null);
-            WarnOnNonStaticPublicMethodFactories(module);
+            WarnOnNonStaticPublicFactoryMethods(module);
             WarnOnNonStaticPublicInstanceFieldsOrProperties(module);
+            WarnOnNonStaticPublicDecoratorFactoryMethods(module);
             return registrations.NonGenericRegistrations;
         }
 
@@ -58,7 +68,11 @@ namespace StrongInject.Generator
                 if (!(dependantModules ??= new()).Add(module))
                 {
                     _reportDiagnostic(RecursiveModuleRegistration(module, _cancellationToken));
-                    return new RegistrationData(ImmutableDictionary<ITypeSymbol, InstanceSources>.Empty, new());
+                    return new RegistrationData(
+                        ImmutableDictionary<ITypeSymbol, InstanceSources>.Empty,
+                        new(),
+                        ImmutableArray<DecoratorSource>.Empty,
+                        ImmutableArray<DecoratorFactoryMethod>.Empty);
                 }
 
                 registrations = CalculateRegistrations(module, dependantModules, onlyExported: true);
@@ -73,9 +87,11 @@ namespace StrongInject.Generator
 
             var attributes = module.GetAttributes();
             var genericRegistrations = new GenericRegistrationsResolver.Builder();
-            var nonGenericRegistrations = CalculateImportedModuleRegistrations(genericRegistrations, dependantModules, attributes);
+            var nonGenericDecorators = ImmutableArray.CreateBuilder<DecoratorSource>();
+            var genericDecorators = ImmutableArray.CreateBuilder<DecoratorFactoryMethod>();
+            var nonGenericRegistrations = CalculateImportedModuleRegistrations(genericRegistrations, nonGenericDecorators, genericDecorators, dependantModules, attributes);
 
-            var thisModuleNonGenericRegistrations = CalculateThisModuleRegistrations(module, genericRegistrations, attributes, onlyExported);
+            var thisModuleNonGenericRegistrations = CalculateThisModuleRegistrations(module, genericRegistrations, nonGenericDecorators, genericDecorators, attributes, onlyExported);
 
             if (nonGenericRegistrations is not null)
             {
@@ -93,10 +109,15 @@ namespace StrongInject.Generator
                 nonGenericRegistrations = thisModuleNonGenericRegistrations;
             }
 
-            return new(nonGenericRegistrations, genericRegistrations);
+            return new(nonGenericRegistrations, genericRegistrations, nonGenericDecorators.ToImmutable(), genericDecorators.ToImmutable());
         }
 
-        private Dictionary<ITypeSymbol, InstanceSources>? CalculateImportedModuleRegistrations(GenericRegistrationsResolver.Builder genericRegistrations, HashSet<INamedTypeSymbol>? dependantModules, ImmutableArray<AttributeData> attributes)
+        private Dictionary<ITypeSymbol, InstanceSources>? CalculateImportedModuleRegistrations(
+            GenericRegistrationsResolver.Builder genericRegistrations,
+            ImmutableArray<DecoratorSource>.Builder nonGenericDecorators,
+            ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators,
+            HashSet<INamedTypeSymbol>? dependantModules,
+            ImmutableArray<AttributeData> attributes)
         {
             Dictionary<ITypeSymbol, InstanceSources>? importedModuleRegistrations = null;
             foreach (var registerModuleAttribute in attributes
@@ -144,18 +165,23 @@ namespace StrongInject.Generator
                 }
 
                 genericRegistrations.Add(moduleRegistrations.GenericRegistrations);
+                nonGenericDecorators.AddRange(moduleRegistrations.NonGenericDecorators);
+                genericDecorators.AddRange(moduleRegistrations.GenericDecorators);
             }
 
             return importedModuleRegistrations;
         }
 
-        private Dictionary<ITypeSymbol, InstanceSources> CalculateThisModuleRegistrations(INamedTypeSymbol module, GenericRegistrationsResolver.Builder genericRegistrations, ImmutableArray<AttributeData> moduleAttributes, bool onlyExported)
+        private Dictionary<ITypeSymbol, InstanceSources> CalculateThisModuleRegistrations(INamedTypeSymbol module, GenericRegistrationsResolver.Builder genericRegistrations, ImmutableArray<DecoratorSource>.Builder nonGenericDecorators, ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators, ImmutableArray<AttributeData> moduleAttributes, bool onlyExported)
         {
             var registrations = new Dictionary<ITypeSymbol, InstanceSources>();
             AppendSimpleRegistrations(registrations, moduleAttributes);
             AppendFactoryRegistrations(registrations, moduleAttributes);
             AppendFactoryMethods(registrations, genericRegistrations, module, onlyExported);
             AppendInstanceFieldAndProperties(registrations, module, onlyExported);
+            AppendDecoratorRegistrations(nonGenericDecorators, moduleAttributes);
+            AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, onlyExported);
+
             if (!onlyExported)
             {
                 AppendInstanceProviders(registrations, module);
@@ -639,7 +665,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private void WarnOnNonStaticPublicMethodFactories(INamedTypeSymbol module)
+        private void WarnOnNonStaticPublicFactoryMethods(INamedTypeSymbol module)
         {
             foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic())))
             {
@@ -678,6 +704,235 @@ namespace StrongInject.Generator
                     else
                     {
                         _reportDiagnostic(WarnInstanceFieldOrPropertyNotPubliclyAccessible(module, fieldOrProperty, location));
+                    }
+                }
+            }
+        }
+
+        private void WarnOnNonStaticPublicDecoratorFactoryMethods(INamedTypeSymbol module)
+        {
+            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic())))
+            {
+                var attribute = method.GetAttributes().FirstOrDefault(x
+                    => x.AttributeClass is { } attribute
+                    && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute, SymbolEqualityComparer.Default));
+                if (attribute is not null)
+                {
+                    var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
+                    if (!method.IsStatic)
+                    {
+                        _reportDiagnostic(WarnFactoryMethodNotStatic(module, method, location));
+                    }
+                    else
+                    {
+                        _reportDiagnostic(WarnFactoryMethodNotPubliclyAccessible(module, method, location));
+                    }
+                }
+            }
+        }
+
+        private void AppendDecoratorRegistrations(ImmutableArray<DecoratorSource>.Builder nonGenericDecorators, ImmutableArray<AttributeData> moduleAttributes)
+        {
+            foreach (var registerDecoratorAttribute in moduleAttributes
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterDecoratorAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Sort())
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+                var countConstructorArguments = registerDecoratorAttribute.ConstructorArguments.Length;
+                if (countConstructorArguments != 2)
+                {
+                    // Invalid code, ignore;
+                    continue;
+                }
+
+                var typeConstant = registerDecoratorAttribute.ConstructorArguments[0];
+                if (typeConstant.Kind != TypedConstantKind.Type)
+                {
+                    // Invalid code, ignore;
+                    continue;
+                }
+                if (!CheckValidType(registerDecoratorAttribute, typeConstant, out var type))
+                {
+                    continue;
+                }
+                if (type.IsAbstract)
+                {
+                    _reportDiagnostic(TypeIsAbstract(
+                        type!,
+                        registerDecoratorAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
+
+                if (!TryGetConstructor(registerDecoratorAttribute, type, out var constructor))
+                {
+                    continue;
+                }
+
+                var decoratorOfConstant = registerDecoratorAttribute.ConstructorArguments[1];
+                if (decoratorOfConstant.Kind != TypedConstantKind.Type)
+                {
+                    // Invalid code, ignore;
+                    continue;
+                }
+                if (!CheckValidType(registerDecoratorAttribute, decoratorOfConstant, out var decoratedType))
+                {
+                    continue;
+                }
+
+                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
+                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
+
+                if (requiresInitialization && requiresAsyncInitialization)
+                {
+                    _reportDiagnostic(TypeImplementsSyncAndAsyncRequiresInitialization(type, registerDecoratorAttribute.GetLocation(_cancellationToken)));
+                }
+
+                var conversion = _compilation.ClassifyConversion(type, decoratedType);
+                if (conversion is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
+                {
+                    _reportDiagnostic(DoesNotHaveSuitableConversion(registerDecoratorAttribute, type, decoratedType, _cancellationToken));
+                    continue;
+                }
+
+                var decoratedParameters = constructor.Parameters.Where(x => x.Type.Equals(decoratedType, SymbolEqualityComparer.Default)).ToList();
+                if (decoratedParameters.Count == 0)
+                {
+                    _reportDiagnostic(DecoratorDoesNotHaveParameterOfDecoratedType(registerDecoratorAttribute, type, decoratedType, _cancellationToken));
+                    continue;
+                }
+                else if (decoratedParameters.Count > 1)
+                {
+                    _reportDiagnostic(DecoratorHasMultipleParametersOfDecoratedType(registerDecoratorAttribute, type, decoratedType, _cancellationToken));
+                    continue;
+                }
+
+                var registration = new DecoratorRegistration(
+                    type,
+                    decoratedType,
+                    requiresInitialization || requiresAsyncInitialization,
+                    constructor,
+                    decoratedParameters[0].Ordinal,
+                    IsAsync: requiresAsyncInitialization);
+
+                nonGenericDecorators.Add(registration);
+            }
+        }
+
+        private void AppendDecoratorFactoryMethods(ImmutableArray<DecoratorSource>.Builder nonGenericDecorators, ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators, INamedTypeSymbol module, bool onlyExported)
+        {
+            var methods = module.GetMembers().OfType<IMethodSymbol>();
+            foreach (var method in onlyExported ? methods.Where(x => x.IsStatic && x.IsPublic()) : methods)
+            {
+                var decoratorSource = CreateDecoratorSourceIfDecoratorFactoryMethod(method, out var attribute);
+                if (decoratorSource is not null)
+                {
+                    if (decoratorSource.IsOpenGeneric)
+                    {
+                        genericDecorators.Add(decoratorSource);
+                    }
+                    else
+                    {
+                        nonGenericDecorators.Add(decoratorSource);
+                    }
+                }
+            }
+        }
+
+        private DecoratorFactoryMethod? CreateDecoratorSourceIfDecoratorFactoryMethod(IMethodSymbol method, out AttributeData attribute)
+        {
+            attribute = method.GetAttributes().FirstOrDefault(x
+                => x.AttributeClass is { } attribute
+                && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute, SymbolEqualityComparer.Default))!;
+            if (attribute is not null)
+            {
+                if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
+                {
+                    bool isGeneric = method.TypeParameters.Length > 0;
+                    if (isGeneric)
+                    {
+                        if (!AllTypeParametersUsedInReturnType(method))
+                        {
+                            _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
+                                method,
+                                attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+
+                            return null;
+                        }
+                    }
+
+                    foreach (var param in method.Parameters)
+                    {
+                        if (param.RefKind != RefKind.None)
+                        {
+                            _reportDiagnostic(FactoryMethodParameterIsPassedByRef(
+                                method,
+                                param,
+                                param.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                            return null;
+                        }
+                    }
+
+                    var decoratedParameters = method.Parameters.Where(x => x.Type.Equals(returnType, SymbolEqualityComparer.Default)).ToList();
+                    if (decoratedParameters.Count == 0)
+                    {
+                        _reportDiagnostic(DecoratorFactoryMethodDoesNotHaveParameterOfDecoratedType(attribute, method, returnType, _cancellationToken));
+                        return null;
+                    }
+                    else if (decoratedParameters.Count > 1)
+                    {
+                        _reportDiagnostic(DecoratorFactoryMethodHasMultipleParametersOfDecoratedType(attribute, method, returnType, _cancellationToken));
+                        return null;
+                    }
+
+                    if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
+                    {
+                        return new DecoratorFactoryMethod(method, taskOfType, isGeneric, decoratedParameters[0].Ordinal, IsAsync: true);
+                    }
+                    else
+                    {
+                        return new DecoratorFactoryMethod(method, returnType, isGeneric, decoratedParameters[0].Ordinal, IsAsync: false);
+                    }
+                }
+                else
+                {
+                    _reportDiagnostic(FactoryMethodReturnsVoid(
+                        method,
+                        attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                }
+            }
+
+            return null;
+
+            bool AllTypeParametersUsedInReturnType(IMethodSymbol method)
+            {
+                var usedParameters = new bool[method.TypeParameters.Length];
+                Visit(method.ReturnType);
+                return usedParameters.All(x => x);
+                void Visit(ITypeSymbol type)
+                {
+                    switch (type)
+                    {
+                        case ITypeParameterSymbol typeParameterSymbol:
+
+                            if (SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringMethod, method))
+                            {
+                                usedParameters[typeParameterSymbol.Ordinal] = true;
+                            }
+                            break;
+
+                        case IArrayTypeSymbol { ElementType: var elementType }:
+
+                            Visit(elementType);
+                            break;
+
+                        case INamedTypeSymbol { TypeArguments: var typeArguments }:
+
+                            foreach (var typeArgument in typeArguments)
+                            {
+                                Visit(typeArgument);
+                            }
+
+                            break;
                     }
                 }
             }
@@ -910,6 +1165,66 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 propertySymbol);
+        }
+
+        private static Diagnostic DecoratorDoesNotHaveParameterOfDecoratedType(AttributeData registerDecoratorAttribute, INamedTypeSymbol decoratorType, INamedTypeSymbol decoratedType, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0022",
+                    "Decorator Type does not have a constructor parameter of decorated type",
+                    "Decorator '{0}' does not have a constructor parameter of decorated type '{1}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                registerDecoratorAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                decoratorType,
+                decoratedType);
+        }
+
+        private static Diagnostic DecoratorHasMultipleParametersOfDecoratedType(AttributeData registerDecoratorAttribute, INamedTypeSymbol decoratorType, INamedTypeSymbol decoratedType, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0023",
+                    "Decorator Type has multiple constructor parameters of decorated type",
+                    "Decorator '{0}' has multiple constructor parameters of decorated type '{1}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                registerDecoratorAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                decoratorType,
+                decoratedType);
+        }
+
+        private static Diagnostic DecoratorFactoryMethodDoesNotHaveParameterOfDecoratedType(AttributeData decoratorFactoryAttribute, IMethodSymbol method, ITypeSymbol decoratedType, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0024",
+                    "Decorator Factory Method does not have a parameter of decorated type",
+                    "Decorator Factory '{0}' does not have a parameter of decorated type '{1}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                decoratorFactoryAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                method,
+                decoratedType);
+        }
+
+        private static Diagnostic DecoratorFactoryMethodHasMultipleParametersOfDecoratedType(AttributeData decoratorFactoryAttribute, IMethodSymbol method, ITypeSymbol decoratedType, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0025",
+                    "Decorator Factory Method has multiple constructor parameters of decorated type",
+                    "Decorator Factory '{0}' has multiple constructor parameters of decorated type '{1}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                decoratorFactoryAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                method,
+                decoratedType);
         }
 
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)

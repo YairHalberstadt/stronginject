@@ -20,6 +20,7 @@ compile time dependency injection for .Net
     - [Instance fields and properties](#instance-fields-and-properties)
     - [Factories](#factories)
     - [Generic Factory Methods](#generic-factory-methods)
+    - [Decorators](#decorators)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
     - [How StrongInject picks which registration to use](#how-stronginject-picks-which-registration-to-use)
   - [Delegate Support](#delegate-support)
@@ -373,6 +374,170 @@ public class ImmutableArrayModule
 ```
 
 Generic methods can also have constraints. StrongInject will ignore generic methods during resolution if the constraints do not match.
+
+#### Decorators
+
+A decorator is a type which exposes a service by wrapping an underlying instance of the same service. Calls may pass straight through to the underlying service, or may be intercepted and custom behaviour applied. See https://en.wikipedia.org/wiki/Decorator_pattern.
+
+You can register a type as a decorator using the `[RegisterDecorator(type, decoratedType)]` attribute.
+
+Here is an example of how you could time how long a call took using the decorator pattern and stronginject.
+
+```csharp
+using System;
+using System.Diagnostics;
+using StrongInject
+
+public class Foo {}
+public interface IService
+{
+    Foo GetFoo()
+}
+
+public class Service : IService
+{
+    public Foo GetFoo() => new Foo();
+}
+
+public class ServiceTimingDecorator : IService
+{
+    private readonly IService _impl;
+    public ServiceTimingDecorator(IService impl) => _impl = impl;
+    public Foo GetFoo()
+    {
+        var watch = Stopwatch.StartNew();
+        var foo = _impl.GetFoo();
+        watch.Stop;
+        Console.WriteLine($"Getting foo took {watch.ElapsedMilliseconds} ms");
+        return foo;
+    }
+}
+
+[Register(typeof(Service), typeof(IService))]
+[RegisterDecorator(typeof(ServiceTimingDecorator), typeof(IService))]
+public class Container : IContainer<IService> {}
+```
+
+StrongInject will resolve an instance of `Service`, and then wrap it in an instance of `ServiceTimingDecorator`. Whenever anyone asks for an `IService` they will get an instance of `ServiceTimingDecorator`.
+
+You can't specify the scope of a decorator, as its scope is the same as that of the type it wraps.
+
+The decorator constructor must have exactly one parameter of the decorated type, but can have any other parameters as well so long as they are not of the decorated type.
+
+Instances provided by [delegate parameters](#delegate-support) are never decorated.
+
+You can also define decorator factory methods, and even generic decorator factory methods via the [DecoratorFactoryAttribute]:
+
+```csharp
+[Register(typeof(Service), typeof(IService))]
+public class Container : IContainer<IService>
+{
+    [DecoratorFactory] IService CreateDecorator(IService service) => new ServiceTimingDecorator(service);
+}
+```
+
+Generic decorator factory methods gives you a powerful way to intercept resolution. For example you could theoretically use `Castle.DynamicProxy` along with a generic decorator factory to log every service thats created, or time all calls to all services:
+
+```csharp
+using Castle.DynamicProxy;
+using StrongInject;
+using System;
+using System.Diagnostics;
+using System.Threading;
+
+public class Interceptor : IInterceptor
+{
+    public void Intercept(IInvocation invocation)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        invocation.Proceed();
+        stopwatch.Stop();
+        Console.WriteLine($"Call to {invocation.Method.Name} took {stopwatch.ElapsedMilliseconds} ms");
+    }
+}
+
+public class Foo { }
+public class Bar { }
+
+public interface IService1
+{
+    void Frob();
+    Foo GetFoo();
+}
+
+public interface IService2
+{
+    Bar UseBar(Bar bar);
+}
+
+public class Service1 : IService1
+{
+    public void Frob()
+    {
+        Thread.Sleep(10);
+    }
+
+    public Foo GetFoo()
+    {
+        Thread.Sleep(20);
+        return new Foo();
+    }
+}
+
+public class Service2 : IService2
+{
+    public Bar UseBar(Bar bar)
+    {
+        Thread.Sleep(30);
+        return bar;
+    }
+}
+
+[Register(typeof(Service1), typeof(IService1))]
+[Register(typeof(Service2), typeof(IService2))]
+public partial class Container : IContainer<IService1>, IContainer<IService2>
+{
+    private readonly IInterceptor _interceptor = new Interceptor();
+    private readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
+
+    [DecoratorFactory]
+    T Time<T>(T t) where T : class
+    {
+        if (typeof(T).IsInterface)
+        {
+            return _proxyGenerator.CreateInterfaceProxyWithTarget(t, _interceptor);
+        }
+        else
+        {
+            return _proxyGenerator.CreateClassProxyWithTarget(t, _interceptor);
+        }
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        var container = new Container();
+        container.Run<IService1>(x =>
+        {
+            x.Frob();
+            _ = x.GetFoo();
+        });
+        container.Run<IService2>(x => _ = x.UseBar(new Bar()));
+    }
+}
+```
+
+The above program will print something like:
+
+```
+Call to Service1.Frob took 20 ms
+Call to Service1.GetFoo took 26 ms
+Call to Service2.UseBar took 42 ms
+```
+
+You can register multiple decorators for a type, and they will all be applied. As of now there is no way to control in which order they are applied, but the order is deterministic.
 
 #### Providing registrations at runtime or integrating with other IOC containers
 

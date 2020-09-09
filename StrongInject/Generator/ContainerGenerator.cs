@@ -227,6 +227,7 @@ namespace StrongInject.Generator
                     Registration { Type: var t } => t,
                     FactoryRegistration { FactoryOf: var t } => t,
                     FactoryMethod { ReturnType: var t } => t,
+                    WrappedDecoratorInstanceSource { OfType: var t } => t,
                     _ => throw new InvalidOperationException(),
                 };
 
@@ -368,51 +369,13 @@ namespace StrongInject.Generator
                                 : nameof(IFactory<object>.Create));
                             methodSource.Append("();");
                             break;
-                        case Registration(var type, _, var scope, var requiresInitialization, var constructor, var isAsync) registration:
+                        case Registration(var _, _, var _, var requiresInitialization, var constructor, var isAsync) registration:
                             {
-                                var variableSource = new StringBuilder();
-                                variableSource.Append("var ");
-                                variableSource.Append(variableName);
-                                variableSource.Append("=new ");
-                                variableSource.Append(type.FullName());
-                                variableSource.Append("(");
-                                for (int i = 0; i < constructor.Parameters.Length; i++)
-                                {
-                                    if (i != 0)
-                                    {
-                                        variableSource.Append(",");
-                                    }
-                                    IParameterSymbol? parameter = constructor.Parameters[i];
-                                    var source = instanceSourcesScope[parameter.Type];
-                                    var variable = CreateVariableInternal(source, instanceSourcesScope);
-                                    if (source is Registration { RegisteredAs: var castTarget })
-                                    {
-                                        variableSource.Append("(");
-                                        variableSource.Append(castTarget.FullName());
-                                        variableSource.Append(")");
-                                        variableSource.Append(variable);
-                                    }
-                                    else
-                                    {
-                                        variableSource.Append(variable);
-                                    }
-                                }
-                                variableSource.Append(");");
-                                methodSource.Append(variableSource);
+                                GenerateMethodCall(constructor, isAsync, decoratedParameter: null);
 
                                 if (requiresInitialization)
                                 {
-                                    methodSource.Append(isAsync ? "await ((" : "((");
-                                    methodSource.Append(isAsync
-                                        ? _wellKnownTypes.IRequiresAsyncInitialization.FullName()
-                                        : _wellKnownTypes.IRequiresInitialization.FullName());
-                                    methodSource.Append(")");
-                                    methodSource.Append(variableName);
-                                    methodSource.Append(").");
-                                    methodSource.Append(isAsync
-                                        ? nameof(IRequiresAsyncInitialization.InitializeAsync)
-                                        : nameof(IRequiresInitialization.Initialize));
-                                    methodSource.Append("();");
+                                    GenerateInitializeCall(methodSource, variableName, isAsync);
                                 }
 
                                 break;
@@ -454,49 +417,9 @@ namespace StrongInject.Generator
                                 methodSource.Append(";};");
                                 break;
                             }
-                        case FactoryMethod(var method, var returnType, var _, var _, var isAsync) registration:
+                        case FactoryMethod(var method, var _, var _, var _, var isAsync) registration:
                             {
-                                var variableSource = new StringBuilder();
-                                variableSource.Append("var ");
-                                variableSource.Append(variableName);
-                                variableSource.Append(isAsync ? "=await " : "=");
-                                GenerateMemberAccess(variableSource, method);
-                                if (method.TypeArguments.Length > 0)
-                                {
-                                    variableSource.Append("<");
-                                    for (int i = 0; i < method.TypeArguments.Length; i++)
-                                    {
-                                        var typeArgument = method.TypeArguments[i];
-                                        if (i != 0)
-                                            variableSource.Append(",");
-                                        variableSource.Append(typeArgument.FullName());
-                                    }
-                                    variableSource.Append(">");
-                                }
-                                variableSource.Append("(");
-                                for (int i = 0; i < method.Parameters.Length; i++)
-                                {
-                                    if (i != 0)
-                                    {
-                                        variableSource.Append(",");
-                                    }
-                                    IParameterSymbol? parameter = method.Parameters[i];
-                                    var source = instanceSourcesScope[parameter.Type];
-                                    var variable = CreateVariableInternal(source, instanceSourcesScope);
-                                    if (source is Registration { RegisteredAs: var castTarget })
-                                    {
-                                        variableSource.Append("(");
-                                        variableSource.Append(castTarget.FullName());
-                                        variableSource.Append(")");
-                                        variableSource.Append(variable);
-                                    }
-                                    else
-                                    {
-                                        variableSource.Append(variable);
-                                    }
-                                }
-                                variableSource.Append(");");
-                                methodSource.Append(variableSource);
+                                GenerateMethodCall(method, isAsync, decoratedParameter: null);
 
                                 break;
                             }
@@ -528,12 +451,94 @@ namespace StrongInject.Generator
                                 methodSource.Append(variableSource);
                                 break;
                             }
+                        case WrappedDecoratorInstanceSource(var decoratorSource, var instanceSource):
+                            {
+                                switch (decoratorSource)
+                                {
+                                    case DecoratorRegistration(var _, _, var requiresInitialization, var constructor, var decoratedParameter, var isAsync):
+
+                                        GenerateMethodCall(constructor, isAsync, (decoratedParameter, instanceSource));
+
+                                        if (requiresInitialization)
+                                        {
+                                            GenerateInitializeCall(methodSource, variableName, isAsync);
+                                        }
+
+                                        break;
+                                    case DecoratorFactoryMethod(var method, var returnType, var _, var decoratedParameter, var isAsync) registration:
+                                        GenerateMethodCall(method, isAsync, (decoratedParameter, instanceSource));
+                                        break;
+                                }
+                                break;
+                            }
                     }
                     orderOfCreationTemp.Add((variableName, disposeActionsName, factoryVariable, target));
+
+                    void GenerateMethodCall(IMethodSymbol method, bool isAsync, (int ordinal, InstanceSource parameterInstanceSource)? decoratedParameter)
+                    {
+                        var variableSource = new StringBuilder();
+                        variableSource.Append("var ");
+                        variableSource.Append(variableName);
+                        bool isConstructor = method.MethodKind == MethodKind.Constructor;
+                        variableSource.Append(isAsync && !isConstructor ? "=await " : "=");
+                        if (isConstructor)
+                        {
+                            variableSource.Append("new ");
+                            variableSource.Append(method.ContainingType.FullName());
+                        }
+                        else
+                        {
+                            GenerateMemberAccess(variableSource, method);
+                            if (method.TypeArguments.Length > 0)
+                            {
+                                variableSource.Append("<");
+                                for (int i = 0; i < method.TypeArguments.Length; i++)
+                                {
+                                    var typeArgument = method.TypeArguments[i];
+                                    if (i != 0)
+                                        variableSource.Append(",");
+                                    variableSource.Append(typeArgument.FullName());
+                                }
+                                variableSource.Append(">");
+                            }
+                        }
+                        variableSource.Append("(");
+                        for (int i = 0; i < method.Parameters.Length; i++)
+                        {
+                            if (i != 0)
+                            {
+                                variableSource.Append(",");
+                            }
+                            IParameterSymbol? parameter = method.Parameters[i];
+                            var source = i == decoratedParameter?.ordinal ? decoratedParameter.Value.parameterInstanceSource : instanceSourcesScope[parameter.Type];
+                            var variable = CreateVariableInternal(source, instanceSourcesScope);
+                            variableSource.Append("(");
+                            variableSource.Append(source.OfType.FullName());
+                            variableSource.Append(")");
+                            variableSource.Append(variable);
+                        }
+                        variableSource.Append(");");
+                        methodSource.Append(variableSource);
+                    }
                 }
 
                 return variableName;
             }
+        }
+
+        private void GenerateInitializeCall(StringBuilder methodSource, string? variableName, bool isAsync)
+        {
+            methodSource.Append(isAsync ? "await ((" : "((");
+            methodSource.Append(isAsync
+                ? _wellKnownTypes.IRequiresAsyncInitialization.FullName()
+                : _wellKnownTypes.IRequiresInitialization.FullName());
+            methodSource.Append(")");
+            methodSource.Append(variableName);
+            methodSource.Append(").");
+            methodSource.Append(isAsync
+                ? nameof(IRequiresAsyncInitialization.InitializeAsync)
+                : nameof(IRequiresInitialization.Initialize));
+            methodSource.Append("();");
         }
 
         private static void GenerateMemberAccess(StringBuilder methodSource, ISymbol member)
@@ -740,6 +745,8 @@ if (disposed != 0) return;");
                     (DelegateSource dX, DelegateSource dY) => dX.DelegateType.Equals(dY.DelegateType, SymbolEqualityComparer.Default),
                     (DelegateParameter dX, DelegateParameter dY) => dX.Parameter.Equals(dY.Parameter, SymbolEqualityComparer.Default),
                     (FactoryMethod mX, FactoryMethod mY) => mX.Method.Equals(mY.Method, SymbolEqualityComparer.Default),
+                    (WrappedDecoratorInstanceSource dX, WrappedDecoratorInstanceSource dY) => Equals(dX.Underlying, dY.Underlying),
+                    (InstanceFieldOrProperty fX, InstanceFieldOrProperty fY) => fX.FieldOrPropertySymbol.Equals(fY.FieldOrPropertySymbol, SymbolEqualityComparer.Default),
                     _ => false,
                 };
             }
@@ -756,6 +763,8 @@ if (disposed != 0) return;");
                     DelegateSource d => 17 + d.DelegateType.GetHashCode(),
                     DelegateParameter dp => 19 + dp.Parameter.GetHashCode(),
                     FactoryMethod m => 23 + m.Method.GetHashCode(),
+                    WrappedDecoratorInstanceSource d => GetHashCode(d.Underlying),
+                    InstanceFieldOrProperty f => 29 + f.FieldOrPropertySymbol.GetHashCode(),
                     _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };
             }

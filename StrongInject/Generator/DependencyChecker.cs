@@ -176,6 +176,47 @@ namespace StrongInject.Generator
 
                             break;
                         }
+                    case WrappedDecoratorInstanceSource(var decoratorSource, var underlyingInstanceSource):
+                        {
+                            switch (decoratorSource)
+                            {
+                                case DecoratorRegistration { Constructor: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : GetInstanceSourceOrReport(param.Type, instanceSourcesScope);
+
+                                            result |= Visit(
+                                                paramSource,
+                                                instanceSourcesScope,
+                                                usedParams,
+                                                isScopeAsync);
+                                        }
+
+                                        break;
+                                    }
+                                case DecoratorFactoryMethod { Method: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : GetInstanceSourceOrReport(param.Type, instanceSourcesScope);
+
+                                            result |= Visit(
+                                                paramSource,
+                                                instanceSourcesScope,
+                                                usedParams,
+                                                isScopeAsync);
+                                        }
+
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
                 }
 
                 if (instanceSource is not DelegateSource && instanceSource.IsAsync && !isScopeAsync)
@@ -463,6 +504,41 @@ namespace StrongInject.Generator
                             }
                         }
                         break;
+                    case WrappedDecoratorInstanceSource(var decoratorSource, var underlyingInstanceSource):
+                        {
+                            switch (decoratorSource)
+                            {
+                                case DecoratorRegistration { Constructor: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : containerScope[param.Type];
+
+                                            if (Visit(paramSource))
+                                                return true;
+                                        }
+
+                                        break;
+                                    }
+                                case DecoratorFactoryMethod { Method: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : containerScope[param.Type];
+
+                                            if (Visit(paramSource))
+                                                return true;
+                                        }
+
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
                 }
 
                 visited.Add(source);
@@ -492,6 +568,9 @@ namespace StrongInject.Generator
 
             void Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope, ref List<InstanceSource>? results)
             {
+                if (source is InstanceFieldOrProperty)
+                    return;
+
                 if (source.Scope == Scope.SingleInstance)
                 {
                     if (added.Add(source))
@@ -550,6 +629,39 @@ namespace StrongInject.Generator
                                 Visit(paramSource, innerScope, ref results);
                             }
 
+                            break;
+                        }
+                    case WrappedDecoratorInstanceSource(var decoratorSource, var underlyingInstanceSource):
+                        {
+                            switch (decoratorSource)
+                            {
+                                case DecoratorRegistration { Constructor: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : innerScope[param.Type];
+
+                                            Visit(paramSource, innerScope, ref results);
+                                        }
+
+                                        break;
+                                    }
+                                case DecoratorFactoryMethod { Method: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : innerScope[param.Type];
+
+                                            Visit(paramSource, innerScope, ref results);
+                                        }
+
+                                        break;
+                                    }
+                            }
                             break;
                         }
                 }
