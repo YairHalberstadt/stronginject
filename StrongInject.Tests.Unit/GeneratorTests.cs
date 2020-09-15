@@ -173,7 +173,7 @@ partial class Container
         );
     }
 }");
-    }
+        }
 
         [Fact]
         public void InstancePerResolutionDependenciesWithRequiresInitialization()
@@ -3167,7 +3167,7 @@ public class C : IAsyncFactory<B>
             generatorDiagnostics.Verify(
                 // (7,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
                 // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22) );
+                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
             comp.GetDiagnostics().Verify();
         }
 
@@ -7314,7 +7314,7 @@ partial class Container
         }
 
         [Fact]
-        public void FactoryMethodRequiringAsyncResolutionCanBeSingleInstanc()
+        public void FactoryMethodRequiringAsyncResolutionCanBeSingleInstance()
         {
             string userSource = @"
 using StrongInject;
@@ -8233,7 +8233,7 @@ partial class Container
         var _3 = GetSingleInstanceField0();
         var _4 = global::Module.FactoryOfA();
         var _5 = new global::A();
-        var _0 = new global::IA[]{_1, (global::IA)_3, _4, this.AInstance, (global::IA)_5, };
+        var _0 = new global::IA[]{(global::IA)_1, (global::IA)_3, (global::IA)_4, (global::IA)this.AInstance, (global::IA)_5, };
         TResult result;
         try
         {
@@ -8257,7 +8257,7 @@ partial class Container
         var _3 = GetSingleInstanceField0();
         var _4 = global::Module.FactoryOfA();
         var _5 = new global::A();
-        var _0 = new global::IA[]{_1, (global::IA)_3, _4, this.AInstance, (global::IA)_5, };
+        var _0 = new global::IA[]{(global::IA)_1, (global::IA)_3, (global::IA)_4, (global::IA)this.AInstance, (global::IA)_5, };
         return new global::StrongInject.Owned<global::IA[]>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_4);
@@ -11391,7 +11391,7 @@ partial class Container
         var _1 = global::Module2.M<global::System.Int32, global::System.Int32>();
         var _2 = global::Module1.M<global::System.Int32>();
         var _3 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, };
+        var _0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_1, ((global::System.Int32, global::System.Int32))_2, ((global::System.Int32, global::System.Int32))_3, };
         TResult result;
         try
         {
@@ -11414,7 +11414,7 @@ partial class Container
         var _1 = global::Module2.M<global::System.Int32, global::System.Int32>();
         var _2 = global::Module1.M<global::System.Int32>();
         var _3 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, };
+        var _0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_1, ((global::System.Int32, global::System.Int32))_2, ((global::System.Int32, global::System.Int32))_3, };
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_3);
@@ -11480,7 +11480,7 @@ partial class Container
         var _2 = global::Module2.M<global::System.Int32, global::System.Int32>();
         var _3 = global::Module1.M<global::System.Int32>();
         var _4 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, _4, };
+        var _0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_1, ((global::System.Int32, global::System.Int32))_2, ((global::System.Int32, global::System.Int32))_3, ((global::System.Int32, global::System.Int32))_4, };
         TResult result;
         try
         {
@@ -11505,7 +11505,7 @@ partial class Container
         var _2 = global::Module2.M<global::System.Int32, global::System.Int32>();
         var _3 = global::Module1.M<global::System.Int32>();
         var _4 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0 = new (global::System.Int32, global::System.Int32)[]{_1, _2, _3, _4, };
+        var _0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_1, ((global::System.Int32, global::System.Int32))_2, ((global::System.Int32, global::System.Int32))_3, ((global::System.Int32, global::System.Int32))_4, };
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_4);
@@ -11648,6 +11648,8 @@ partial class Container
         }
         finally
         {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await global::StrongInject.Helpers.DisposeAsync(_1);
         }
 
         return result;
@@ -11663,6 +11665,8 @@ partial class Container
         var _0 = this.Decorator2((global::IA)_1, (global::B)_3);
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await global::StrongInject.Helpers.DisposeAsync(_1);
         }
 
         );
@@ -11867,7 +11871,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         var _7 = new global::A();
         var _6 = this.Decorator1<global::IA>((global::IA)_7);
-        var _5 = new global::IA[]{_6, };
+        var _5 = new global::IA[]{(global::IA)_6, };
         var _4 = this.Decorator3<global::IA>((global::IA[])_5);
         var _3 = this.Decorator1<global::IA[]>((global::IA[])_4);
         var _2 = this.ListFactory<global::IA>((global::IA[])_3);
@@ -11882,7 +11886,13 @@ partial class Container
         }
         finally
         {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await global::StrongInject.Helpers.DisposeAsync(_1);
+            await global::StrongInject.Helpers.DisposeAsync(_8);
             await global::StrongInject.Helpers.DisposeAsync(_2);
+            await global::StrongInject.Helpers.DisposeAsync(_3);
+            await global::StrongInject.Helpers.DisposeAsync(_4);
+            await global::StrongInject.Helpers.DisposeAsync(_6);
         }
 
         return result;
@@ -11894,7 +11904,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         var _7 = new global::A();
         var _6 = this.Decorator1<global::IA>((global::IA)_7);
-        var _5 = new global::IA[]{_6, };
+        var _5 = new global::IA[]{(global::IA)_6, };
         var _4 = this.Decorator3<global::IA>((global::IA[])_5);
         var _3 = this.Decorator1<global::IA[]>((global::IA[])_4);
         var _2 = this.ListFactory<global::IA>((global::IA[])_3);
@@ -11904,7 +11914,13 @@ partial class Container
         var _0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>((global::System.Collections.Generic.List<global::IA>)_1);
         return new global::StrongInject.AsyncOwned<global::System.Collections.Generic.List<global::IA>>(_0, async () =>
         {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await global::StrongInject.Helpers.DisposeAsync(_1);
+            await global::StrongInject.Helpers.DisposeAsync(_8);
             await global::StrongInject.Helpers.DisposeAsync(_2);
+            await global::StrongInject.Helpers.DisposeAsync(_3);
+            await global::StrongInject.Helpers.DisposeAsync(_4);
+            await global::StrongInject.Helpers.DisposeAsync(_6);
         }
 
         );
@@ -12312,6 +12328,8 @@ partial class Container
         }
         finally
         {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await global::StrongInject.Helpers.DisposeAsync(_2);
         }
 
         return result;
@@ -12327,6 +12345,8 @@ partial class Container
         var _0 = global::Module1.Decorator<global::IA>((global::IA)_1);
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+            await global::StrongInject.Helpers.DisposeAsync(_2);
         }
 
         );
@@ -12399,6 +12419,245 @@ partial class Container
     async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::IA>> global::StrongInject.IAsyncContainer<global::IA>.ResolveAsync()
     {
         throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void DisposesDecoratorsRegisteredByAttributes()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+using System.Threading.Tasks;
+
+[Register(typeof(A), typeof(IA))]
+[Register(typeof(B), typeof(IB))]
+[RegisterDecorator(typeof(DecoratorA), typeof(IA))]
+[RegisterDecorator(typeof(DecoratorB), typeof(IB))]
+public partial class Container : IAsyncContainer<IA>, IContainer<IB>
+{
+}
+
+public interface IA {}
+public interface IB : IDisposable {}
+public class A : IA {}
+public class B : IB { public void Dispose(){} }
+public class DecoratorA : IA, IAsyncDisposable
+{
+    public DecoratorA(IA a){}
+    public ValueTask DisposeAsync() => default;
+}
+public class DecoratorB : IB
+{
+    public DecoratorB(IB b){}
+    public void Dispose(){}
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    void global::System.IDisposable.Dispose()
+    {
+        throw new global::StrongInject.StrongInjectException(""This container requires async disposal"");
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::IA>.RunAsync<TResult, TParam>(global::System.Func<global::IA, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = new global::DecoratorA((global::IA)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::IA)_0, param);
+        }
+        finally
+        {
+            await ((global::System.IAsyncDisposable)_0).DisposeAsync();
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::IA>> global::StrongInject.IAsyncContainer<global::IA>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = new global::DecoratorA((global::IA)_1);
+        return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
+        {
+            await ((global::System.IAsyncDisposable)_0).DisposeAsync();
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::IB>.Run<TResult, TParam>(global::System.Func<global::IB, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = new global::DecoratorB((global::IB)_1);
+        TResult result;
+        try
+        {
+            result = func((global::IB)_0, param);
+        }
+        finally
+        {
+            ((global::System.IDisposable)_0).Dispose();
+            ((global::System.IDisposable)_1).Dispose();
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IB> global::StrongInject.IContainer<global::IB>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = new global::DecoratorB((global::IB)_1);
+        return new global::StrongInject.Owned<global::IB>(_0, () =>
+        {
+            ((global::System.IDisposable)_0).Dispose();
+            ((global::System.IDisposable)_1).Dispose();
+        }
+
+        );
+    }
+}");
+        }
+
+        [Fact]
+        public void InitializeDecoratorsRegisteredByAttributes()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Register(typeof(A), typeof(IA))]
+[Register(typeof(B), typeof(IB))]
+[RegisterDecorator(typeof(DecoratorA), typeof(IA))]
+[RegisterDecorator(typeof(DecoratorB), typeof(IB))]
+public partial class Container : IAsyncContainer<IA>, IContainer<IB>
+{
+}
+
+public interface IA {}
+public interface IB {}
+public class A : IA {}
+public class B : IB {}
+public class DecoratorA : IA, IRequiresAsyncInitialization
+{
+    public DecoratorA(IA a){}
+    public ValueTask InitializeAsync() => default;
+}
+public class DecoratorB : IB, IRequiresInitialization
+{
+    public DecoratorB(IB b){}
+    public void Initialize(){}
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    void global::System.IDisposable.Dispose()
+    {
+        throw new global::StrongInject.StrongInjectException(""This container requires async disposal"");
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::IA>.RunAsync<TResult, TParam>(global::System.Func<global::IA, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = new global::DecoratorA((global::IA)_1);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+        TResult result;
+        try
+        {
+            result = await func((global::IA)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::IA>> global::StrongInject.IAsyncContainer<global::IA>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = new global::DecoratorA((global::IA)_1);
+        await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
+        return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
+        {
+        }
+
+        );
+    }
+
+    TResult global::StrongInject.IContainer<global::IB>.Run<TResult, TParam>(global::System.Func<global::IB, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = new global::DecoratorB((global::IB)_1);
+        ((global::StrongInject.IRequiresInitialization)_0).Initialize();
+        TResult result;
+        try
+        {
+            result = func((global::IB)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IB> global::StrongInject.IContainer<global::IB>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::B();
+        var _0 = new global::DecoratorB((global::IB)_1);
+        ((global::StrongInject.IRequiresInitialization)_0).Initialize();
+        return new global::StrongInject.Owned<global::IB>(_0, () =>
+        {
+        }
+
+        );
     }
 }");
         }

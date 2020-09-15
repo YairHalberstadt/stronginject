@@ -12,13 +12,12 @@ namespace StrongInject.Generator
 
     internal record Registration(
         INamedTypeSymbol Type,
-        ITypeSymbol RegisteredAs,
         Scope Scope,
         bool RequiresInitialization,
         IMethodSymbol Constructor,
         bool IsAsync) : InstanceSource(Scope, IsAsync)
     {
-        public override ITypeSymbol OfType => RegisteredAs;
+        public override ITypeSymbol OfType => Type;
         public override bool CanDecorate => true;
     }
     internal record InstanceProvider(
@@ -30,14 +29,10 @@ namespace StrongInject.Generator
         public override ITypeSymbol OfType => ProvidedType;
         public override bool CanDecorate => true;
     }
-    internal record FactoryRegistration(
-        ITypeSymbol FactoryType,
-        ITypeSymbol FactoryOf,
-        Scope Scope,
-        bool IsAsync) : InstanceSource(Scope, IsAsync)
+    internal record FactorySource(ITypeSymbol FactoryOf, InstanceSource Underlying, Scope Scope, bool IsAsync) : InstanceSource(Scope, IsAsync)
     {
         public override ITypeSymbol OfType => FactoryOf;
-        public override bool CanDecorate => true;
+        public override bool CanDecorate => Underlying.CanDecorate;
     }
     internal record DelegateSource(
         ITypeSymbol DelegateType,
@@ -77,5 +72,10 @@ namespace StrongInject.Generator
     {
         public override ITypeSymbol OfType => Decorator.OfType;
         public override bool CanDecorate => true;
+    }
+    internal record ForwardedInstanceSource(ITypeSymbol AsType, InstanceSource Underlying) : InstanceSource(Underlying.Scope, IsAsync: false)
+    {
+        public override ITypeSymbol OfType => AsType;
+        public override bool CanDecorate => Underlying.CanDecorate;
     }
 }

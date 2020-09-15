@@ -139,9 +139,9 @@ namespace StrongInject.Generator
 
                             break;
                         }
-                    case FactoryRegistration { FactoryType: var factoryType }:
+                    case FactorySource { Underlying: var underlying }:
                         result = Visit(
-                            GetInstanceSourceOrReport(factoryType, instanceSourcesScope),
+                            underlying,
                             instanceSourcesScope,
                             usedParams,
                             isScopeAsync);
@@ -217,6 +217,15 @@ namespace StrongInject.Generator
                             }
                             break;
                         }
+                    case ForwardedInstanceSource { Underlying: var underlying }:
+                        {
+                            result |= Visit(underlying, instanceSourcesScope, usedParams, isScopeAsync);
+                            break;
+                        }
+                    case InstanceProvider:
+                    case InstanceFieldOrProperty:
+                        break;
+                    default: throw new NotImplementedException(instanceSource.GetType().ToString());
                 }
 
                 if (instanceSource is not DelegateSource && instanceSource.IsAsync && !isScopeAsync)
@@ -477,10 +486,9 @@ namespace StrongInject.Generator
                             break;
                         }
 
-                    case FactoryRegistration { FactoryType: var factoryType }:
+                    case FactorySource { Underlying: var underlying }:
                         {
-                            var factorySource = containerScope[factoryType];
-                            if (Visit(factorySource))
+                            if (Visit(underlying))
                                 return true;
                             break;
                         }
@@ -489,7 +497,9 @@ namespace StrongInject.Generator
                         {
                             foreach (var item in items)
                             {
-                                Visit(item);
+                                if (Visit(item))
+                                    return true;
+                                    
                             }
 
                             break;
@@ -539,6 +549,17 @@ namespace StrongInject.Generator
                             }
                             break;
                         }
+                    case ForwardedInstanceSource { Underlying: var underlying }:
+                        {
+                            if (Visit(underlying))
+                                return true;
+                            break;
+                        }
+                    case InstanceProvider:
+                    case InstanceFieldOrProperty:
+                    case DelegateParameter:
+                        break;
+                    default: throw new NotImplementedException(source.GetType().ToString());
                 }
 
                 visited.Add(source);
@@ -568,10 +589,7 @@ namespace StrongInject.Generator
 
             void Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope, ref List<InstanceSource>? results)
             {
-                if (source is InstanceFieldOrProperty)
-                    return;
-
-                if (source.Scope == Scope.SingleInstance)
+                if (source.Scope == Scope.SingleInstance && source is not (InstanceFieldOrProperty or ForwardedInstanceSource))
                 {
                     if (added.Add(source))
                     {
@@ -600,10 +618,9 @@ namespace StrongInject.Generator
 
                             break;
                         }
-                    case FactoryRegistration { FactoryType: var factoryType }:
+                    case FactorySource { Underlying: var underlying }:
                         {
-                            var factorySource = innerScope[factoryType];
-                            Visit(factorySource, innerScope, ref results);
+                            Visit(underlying, innerScope, ref results);
                             break;
                         }
                     case DelegateSource { ReturnType: var returnType }:
@@ -664,6 +681,16 @@ namespace StrongInject.Generator
                             }
                             break;
                         }
+                    case ForwardedInstanceSource { Underlying: var underlying }:
+                        {
+                            Visit(underlying, innerScope, ref results);
+                            break;
+                        }
+                    case InstanceProvider:
+                    case InstanceFieldOrProperty:
+                    case DelegateParameter:
+                        break;
+                    default: throw new NotImplementedException(source.GetType().ToString());
                 }
 
                 if (ReferenceEquals(instanceSourcesScope, containerScope) || ReferenceEquals(innerScope, containerScope))
