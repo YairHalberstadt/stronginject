@@ -86,9 +86,7 @@ partial class Container
         var _0 = new global::A((global::B)_1, (global::C)_2);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -168,9 +166,7 @@ partial class Container
         var _0 = new global::A((global::B)_1, (global::IC)_2);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -263,9 +259,7 @@ partial class Container
         await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -375,9 +369,7 @@ partial class Container
             await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
             await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
             await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -460,9 +452,7 @@ partial class Container
         var _0 = new global::A((global::B)_1, (global::C)_5);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -546,9 +536,7 @@ partial class Container
         var _0 = new global::A((global::B)_1, (global::IC)_5);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -643,9 +631,7 @@ partial class Container
         await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -769,9 +755,7 @@ partial class Container
             await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_3).ReleaseAsync(_2);
             await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_6).ReleaseAsync(_5);
             await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_4).ReleaseAsync(_7);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -859,9 +843,7 @@ partial class Container
             this._singleInstanceField1 = _0;
             this._disposeAction1 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -887,9 +869,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -923,9 +903,7 @@ partial class Container
         var _0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -1000,9 +978,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1042,9 +1018,7 @@ partial class Container
         var _0 = new global::A((global::B)_1, (global::IC)_2);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -1140,9 +1114,7 @@ partial class Container
             this._singleInstanceField1 = _0;
             this._disposeAction1 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1170,9 +1142,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1206,9 +1176,7 @@ partial class Container
         var _0 = await GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -1338,9 +1306,7 @@ partial class Container
             this._disposeAction3 = async () =>
             {
                 await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_1).ReleaseAsync(_0);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1368,9 +1334,7 @@ partial class Container
             this._disposeAction2 = async () =>
             {
                 await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_3).ReleaseAsync(_2);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1395,9 +1359,7 @@ partial class Container
             this._disposeAction1 = async () =>
             {
                 await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_1).ReleaseAsync(_0);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1422,9 +1384,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1462,9 +1422,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_1).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -1539,9 +1497,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -1577,9 +1533,7 @@ partial class Container
         var _0 = new global::A((global::IC)_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1610,9 +1564,7 @@ partial class Container
         var _0 = new global::B((global::C)_1, (global::D)_2);
         return new global::StrongInject.AsyncOwned<global::B>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -1757,9 +1709,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::A>)this._instanceProvider1).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1788,9 +1738,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::B>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::B>)this._instanceProvider1).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1819,9 +1767,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::C>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::C>)this._instanceProvider2).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::D>.RunAsync<TResult, TParam>(global::System.Func<global::D, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1850,9 +1796,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::D>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::D>)this._instanceProvider2).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Int32[]>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32[], TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1881,9 +1825,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::System.Int32[]>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)this._instanceProvider3).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -1966,9 +1908,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::A>)global::Container._instanceProvider1).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::B>.RunAsync<TResult, TParam>(global::System.Func<global::B, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1997,9 +1937,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::B>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::B>)global::Container._instanceProvider1).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -2028,9 +1966,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::C>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::C>)global::Container._instanceProvider2).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::D>.RunAsync<TResult, TParam>(global::System.Func<global::D, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -2059,9 +1995,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::D>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::D>)global::Container._instanceProvider2).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Int32[]>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32[], TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -2090,9 +2024,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::System.Int32[]>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32[]>)global::Container._instanceProvider3).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -2257,9 +2189,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::System.String>(_0, async () =>
         {
             await ((global::StrongInject.IAsyncInstanceProvider<global::System.String>)this._instanceProvider2).ReleaseAsync(_0);
-        }
-
-        );
+        });
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -2412,9 +2342,7 @@ partial class Container
             this._disposeAction2 = async () =>
             {
                 await ((global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_1).ReleaseAsync(_0);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -2443,9 +2371,7 @@ partial class Container
             {
                 ((global::System.IDisposable)_0).Dispose();
                 await ((global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_3).ReleaseAsync(_2);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -2470,9 +2396,7 @@ partial class Container
             this._disposeAction0 = async () =>
             {
                 await ((global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_1).ReleaseAsync(_0);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -2501,9 +2425,7 @@ partial class Container
             {
                 ((global::System.IDisposable)_0).Dispose();
                 await ((global::StrongInject.IAsyncInstanceProvider<global::System.Int32>)this.instanceProvider).ReleaseAsync(_1);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -2565,9 +2487,7 @@ partial class Container
             ((global::System.IDisposable)_4).Dispose();
             await ((global::System.IAsyncDisposable)_5).DisposeAsync();
             await ((global::System.IAsyncDisposable)_6).DisposeAsync();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -2632,9 +2552,7 @@ namespace N.O.P
             var _0 = new global::N.O.P.A();
             return new global::StrongInject.AsyncOwned<global::N.O.P.A>(_0, async () =>
             {
-            }
-
-            );
+            });
         }
     }
 }");
@@ -2710,9 +2628,7 @@ namespace N.O.P
                     var _0 = new global::N.O.P.Outer1.Outer2.A();
                     return new global::StrongInject.AsyncOwned<global::N.O.P.Outer1.Outer2.A>(_0, async () =>
                     {
-                    }
-
-                    );
+                    });
                 }
             }
         }
@@ -2790,9 +2706,7 @@ namespace N.O.P
                     var _0 = new global::N.O.P.A();
                     return new global::StrongInject.AsyncOwned<global::N.O.P.A>(_0, async () =>
                     {
-                    }
-
-                    );
+                    });
                 }
             }
         }
@@ -3228,9 +3142,7 @@ partial class Container
         var _0 = new global::A((global::B)_1);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -3296,9 +3208,7 @@ partial class Container
         ((global::StrongInject.IRequiresInitialization)_0).Initialize();
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -3364,9 +3274,7 @@ partial class Container
         return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
         {
             ((global::StrongInject.IFactory<global::System.Int32>)_1).Release(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -3436,9 +3344,7 @@ partial class Container
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
             ((global::StrongInject.IInstanceProvider<global::System.Int32>)this._instanceProvider).Release(_2);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -3499,9 +3405,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -3537,9 +3441,7 @@ partial class Container
         var _0 = new global::A((global::B)_1);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -3620,9 +3522,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -3658,9 +3558,7 @@ partial class Container
         var _0 = new global::A((global::B)_1);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 
     private global::D _singleInstanceField1;
@@ -3680,9 +3578,7 @@ partial class Container
             this._singleInstanceField1 = _0;
             this._disposeAction1 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -3722,9 +3618,7 @@ partial class Container
         await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::C>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -3787,9 +3681,7 @@ partial class Container
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)_0).Dispose();
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -3825,9 +3717,7 @@ partial class Container
         var _0 = new global::A((global::B)_1);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -3905,9 +3795,7 @@ partial class Container
             this._disposeAction1 = () =>
             {
                 ((global::System.IDisposable)_0).Dispose();
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -3932,9 +3820,7 @@ partial class Container
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)_0).Dispose();
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -3970,9 +3856,7 @@ partial class Container
         var _0 = new global::A((global::B)_1);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4037,9 +3921,7 @@ partial class Container
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)_0).Dispose();
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -4073,9 +3955,7 @@ partial class Container
         var _0 = GetSingleInstanceField0();
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4126,13 +4006,9 @@ partial class Container
             var _0 = new global::A((global::B)_1);
             disposeActions1_0.Add(async () =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -4158,20 +4034,14 @@ partial class Container
             var _0 = new global::A((global::B)_1);
             disposeActions1_0.Add(async () =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0, async () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 await disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4221,13 +4091,9 @@ partial class Container
             var _0 = new global::A((global::B)param0_0);
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -4252,20 +4118,14 @@ partial class Container
             var _0 = new global::A((global::B)param0_0);
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4314,13 +4174,9 @@ partial class Container
             var _0 = new global::A((global::B)param0_0);
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -4345,20 +4201,14 @@ partial class Container
             var _0 = new global::A((global::B)param0_0);
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4408,13 +4258,9 @@ partial class Container
             var _0 = new global::B((global::System.Int32)param0_0, (global::System.String)param0_1, (global::System.Int32)param0_0);
             disposeActions1_1.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         var _0 = new global::A((global::System.Func<global::System.Int32, global::System.String, global::B>)_1);
         TResult result;
         try
@@ -4440,21 +4286,15 @@ partial class Container
             var _0 = new global::B((global::System.Int32)param0_0, (global::System.String)param0_1, (global::System.Int32)param0_0);
             disposeActions1_1.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         var _0 = new global::A((global::System.Func<global::System.Int32, global::System.String, global::B>)_1);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_1)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4507,25 +4347,17 @@ partial class Container
                 var _0 = new global::B((global::System.Int32)param0_0, (global::System.String)param1_0);
                 disposeActions2_1.Add(() =>
                 {
-                }
-
-                );
+                });
                 return _0;
-            }
-
-            ;
+            };
             var _0 = new global::A((global::System.Int32)param0_0, (global::System.Func<global::System.String, global::B>)_1);
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_1)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -4553,32 +4385,22 @@ partial class Container
                 var _0 = new global::B((global::System.Int32)param0_0, (global::System.String)param1_0);
                 disposeActions2_1.Add(() =>
                 {
-                }
-
-                );
+                });
                 return _0;
-            }
-
-            ;
+            };
             var _0 = new global::A((global::System.Int32)param0_0, (global::System.Func<global::System.String, global::B>)_1);
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_1)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4632,35 +4454,23 @@ partial class Container
                     var _0 = new global::A((global::System.Int32)param2_0, (global::System.String)param1_0, (global::System.Boolean)param0_0);
                     disposeActions3_0.Add(() =>
                     {
-                    }
-
-                    );
+                    });
                     return _0;
-                }
-
-                ;
+                };
                 disposeActions2_0.Add(() =>
                 {
                     foreach (var disposeAction in disposeActions3_0)
                         disposeAction();
-                }
-
-                );
+                });
                 return _0;
-            }
-
-            ;
+            };
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_0)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -4691,42 +4501,28 @@ partial class Container
                     var _0 = new global::A((global::System.Int32)param2_0, (global::System.String)param1_0, (global::System.Boolean)param0_0);
                     disposeActions3_0.Add(() =>
                     {
-                    }
-
-                    );
+                    });
                     return _0;
-                }
-
-                ;
+                };
                 disposeActions2_0.Add(() =>
                 {
                     foreach (var disposeAction in disposeActions3_0)
                         disposeAction();
-                }
-
-                );
+                });
                 return _0;
-            }
-
-            ;
+            };
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_0)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4785,13 +4581,9 @@ partial class Container
             disposeActions1_0.Add(() =>
             {
                 ((global::System.IDisposable)_1).Dispose();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -4818,20 +4610,14 @@ partial class Container
             disposeActions1_0.Add(() =>
             {
                 ((global::System.IDisposable)_1).Dispose();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4882,13 +4668,9 @@ partial class Container
             var _0 = new global::A((global::System.String)param0_1, (global::System.String)param0_1);
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -4913,20 +4695,14 @@ partial class Container
             var _0 = new global::A((global::System.String)param0_1, (global::System.String)param0_1);
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.String, global::A>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -4980,24 +4756,16 @@ partial class Container
                 var _0 = new global::A((global::System.Int32)param1_0, (global::System.Int32)param1_0);
                 disposeActions2_0.Add(() =>
                 {
-                }
-
-                );
+                });
                 return _0;
-            }
-
-            ;
+            };
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_0)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -5025,31 +4793,21 @@ partial class Container
                 var _0 = new global::A((global::System.Int32)param1_0, (global::System.Int32)param1_0);
                 disposeActions2_0.Add(() =>
                 {
-                }
-
-                );
+                });
                 return _0;
-            }
-
-            ;
+            };
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_0)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -5125,9 +4883,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -5147,13 +4903,9 @@ partial class Container
             var _0 = GetSingleInstanceField0();
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -5178,20 +4930,14 @@ partial class Container
             var _0 = GetSingleInstanceField0();
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -5240,13 +4986,9 @@ partial class Container
         {
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return param0_0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -5270,20 +5012,14 @@ partial class Container
         {
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return param0_0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::A, global::A>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -5335,24 +5071,16 @@ partial class Container
             {
                 disposeActions2_0.Add(() =>
                 {
-                }
-
-                );
+                });
                 return param0_0;
-            }
-
-            ;
+            };
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_0)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -5379,31 +5107,21 @@ partial class Container
             {
                 disposeActions2_0.Add(() =>
                 {
-                }
-
-                );
+                });
                 return param0_0;
-            }
-
-            ;
+            };
             disposeActions1_0.Add(() =>
             {
                 foreach (var disposeAction in disposeActions2_0)
                     disposeAction();
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::A, global::System.Func<global::A>>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -5747,13 +5465,9 @@ partial class Container
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -5779,20 +5493,14 @@ partial class Container
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::Del>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -5843,13 +5551,9 @@ partial class Container
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -5875,20 +5579,14 @@ partial class Container
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::Del>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -5961,22 +5659,16 @@ partial class Container
                 await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
                 disposeActions1_1.Add(() =>
                 {
-                }
-
-                );
+                });
                 return _0;
-            }
-
-            ;
+            };
             var _0 = new global::B((global::Del)_1);
             this._singleInstanceField0 = _0;
             this._disposeAction0 = () =>
             {
                 foreach (var disposeAction in disposeActions1_1)
                     disposeAction();
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -6010,9 +5702,7 @@ partial class Container
         var _0 = GetSingleInstanceField0();
         return new global::StrongInject.Owned<global::B>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6080,9 +5770,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0, async () =>
         {
             ((global::StrongInject.IInstanceProvider<global::System.Func<global::A>>)this._instanceProvider).Release(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6152,9 +5840,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0, async () =>
         {
             ((global::StrongInject.IFactory<global::System.Func<global::A>>)_1).Release(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6203,13 +5889,9 @@ partial class Container
         {
             disposeActions1_0.Add(async () =>
             {
-            }
-
-            );
+            });
             return param0_0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -6233,20 +5915,14 @@ partial class Container
         {
             disposeActions1_0.Add(async () =>
             {
-            }
-
-            );
+            });
             return param0_0;
-        }
-
-        ;
+        };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>>(_0, async () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 await disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6356,9 +6032,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6426,9 +6100,7 @@ partial class Container
             this._disposeAction0 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(_0);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -6462,9 +6134,7 @@ partial class Container
         var _0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6636,9 +6306,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6893,9 +6561,7 @@ partial class Container
         var _0 = new global::A();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -6959,9 +6625,7 @@ partial class Container
         var _0 = new global::A();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -7106,9 +6770,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -7376,9 +7038,7 @@ partial class Container
             this._disposeAction0 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(_0);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -7412,9 +7072,7 @@ partial class Container
         var _0 = await GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -7480,9 +7138,7 @@ partial class Container
         var _0 = new global::A();
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -7543,9 +7199,7 @@ partial class Container
         var _0 = new global::A();
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
@@ -7572,9 +7226,7 @@ partial class Container
         var _0 = new global::B();
         return new global::StrongInject.Owned<global::B>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -7636,9 +7288,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         return new global::StrongInject.Owned<global::A>(global::Module.Instance, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -7700,9 +7350,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         return new global::StrongInject.Owned<global::A>(global::Module.Instance, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8076,9 +7724,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         return new global::StrongInject.Owned<global::A>(this.AInstance, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8133,9 +7779,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         return new global::StrongInject.Owned<global::System.IDisposable>(this.DisposableInstance, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8212,9 +7856,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -8262,9 +7904,7 @@ partial class Container
         {
             global::StrongInject.Helpers.Dispose(_4);
             ((global::StrongInject.IFactory<global::IA>)_2).Release(_1);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8335,9 +7975,7 @@ partial class Container
         var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
         return new global::StrongInject.Owned<global::IA[]>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8413,9 +8051,7 @@ partial class Container
         var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
         return new global::StrongInject.Owned<global::IA[]>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8483,9 +8119,7 @@ partial class Container
         var _0 = new global::IA[]{};
         return new global::StrongInject.Owned<global::IA[]>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8648,13 +8282,9 @@ partial class Container
             var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -8681,20 +8311,14 @@ partial class Container
             var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
             disposeActions1_0.Add(() =>
             {
-            }
-
-            );
+            });
             return _0;
-        }
-
-        ;
+        };
         return new global::StrongInject.Owned<global::System.Func<global::IA, global::IA[]>>(_0, () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8752,9 +8376,7 @@ partial class Container
         return new global::StrongInject.Owned<global::System.String>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8813,9 +8435,7 @@ partial class Container
         return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String>>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8874,9 +8494,7 @@ partial class Container
         return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8935,9 +8553,7 @@ partial class Container
         return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -8995,9 +8611,7 @@ partial class Container
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32)>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -9055,9 +8669,7 @@ partial class Container
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -9115,9 +8727,7 @@ partial class Container<T>
         return new global::StrongInject.Owned<(T, global::System.Int32)>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -9227,9 +8837,7 @@ partial class Container
         return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -9376,9 +8984,7 @@ partial class Container
             global::StrongInject.Helpers.Dispose(_7);
             global::StrongInject.Helpers.Dispose(_8);
             global::StrongInject.Helpers.Dispose(_9);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -9527,9 +9133,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::A?>.Run<TResult, TParam>(global::System.Func<global::A?, TParam, TResult> func, TParam param)
@@ -9558,9 +9162,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::A?>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
@@ -9589,9 +9191,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::B>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
@@ -9630,9 +9230,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::D>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::E>.Run<TResult, TParam>(global::System.Func<global::E, TParam, TResult> func, TParam param)
@@ -9681,9 +9279,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::System.String>.Run<TResult, TParam>(global::System.Func<global::System.String, TParam, TResult> func, TParam param)
@@ -9734,9 +9330,7 @@ partial class Container2<T1>
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
             ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -9855,9 +9449,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::A?>.Run<TResult, TParam>(global::System.Func<global::A?, TParam, TResult> func, TParam param)
@@ -9906,9 +9498,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::System.ValueType>.Run<TResult, TParam>(global::System.Func<global::System.ValueType, TParam, TResult> func, TParam param)
@@ -9959,9 +9549,7 @@ partial class Container2<T1>
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
             ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -10101,9 +9689,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::B>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
@@ -10142,9 +9728,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::I>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::System.ValueType>.Run<TResult, TParam>(global::System.Func<global::System.ValueType, TParam, TResult> func, TParam param)
@@ -10173,9 +9757,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::System.ValueType>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
             ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -10216,9 +9798,7 @@ partial class Container2<T1>
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
             ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -10365,9 +9945,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::A?>.Run<TResult, TParam>(global::System.Func<global::A?, TParam, TResult> func, TParam param)
@@ -10416,9 +9994,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::D>.Run<TResult, TParam>(global::System.Func<global::D, TParam, TResult> func, TParam param)
@@ -10457,9 +10033,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::E>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::F<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::F<global::System.Int32>, TParam, TResult> func, TParam param)
@@ -10488,9 +10062,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::F<global::System.Int32>>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::G<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::G<global::System.Int32>, TParam, TResult> func, TParam param)
@@ -10519,9 +10091,7 @@ partial class Container1
         return new global::StrongInject.Owned<global::G<global::System.Int32>>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::G<global::D>>.Run<TResult, TParam>(global::System.Func<global::G<global::D>, TParam, TResult> func, TParam param)
@@ -10582,9 +10152,7 @@ partial class Container2<T1>
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
             ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -10747,9 +10315,7 @@ partial class Container
         return new global::StrongInject.Owned<global::System.Enum>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::E>.Run<TResult, TParam>(global::System.Func<global::E, TParam, TResult> func, TParam param)
@@ -10778,9 +10344,7 @@ partial class Container
         return new global::StrongInject.Owned<global::E>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::E?>.Run<TResult, TParam>(global::System.Func<global::E?, TParam, TResult> func, TParam param)
@@ -10936,9 +10500,7 @@ partial class Container
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11058,9 +10620,7 @@ partial class Container
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11128,9 +10688,7 @@ partial class Container
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11198,9 +10756,7 @@ partial class Container
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11333,9 +10889,7 @@ partial class Container
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11420,9 +10974,7 @@ partial class Container
             global::StrongInject.Helpers.Dispose(_3);
             global::StrongInject.Helpers.Dispose(_2);
             global::StrongInject.Helpers.Dispose(_1);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11512,9 +11064,7 @@ partial class Container
             global::StrongInject.Helpers.Dispose(_3);
             global::StrongInject.Helpers.Dispose(_2);
             global::StrongInject.Helpers.Dispose(_1);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11590,9 +11140,7 @@ partial class Container
         var _0 = new global::Decorator2((global::IA)_1, (global::B)_3);
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11667,9 +11215,7 @@ partial class Container
         {
             await global::StrongInject.Helpers.DisposeAsync(_0);
             await global::StrongInject.Helpers.DisposeAsync(_1);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11741,9 +11287,7 @@ partial class Container
         var _0 = new global::A();
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11815,9 +11359,7 @@ partial class Container
         var _0 = new global::A();
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11921,9 +11463,7 @@ partial class Container
             await global::StrongInject.Helpers.DisposeAsync(_3);
             await global::StrongInject.Helpers.DisposeAsync(_4);
             await global::StrongInject.Helpers.DisposeAsync(_6);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -11973,13 +11513,9 @@ partial class Container
         {
             disposeActions1_0.Add(async () =>
             {
-            }
-
-            );
+            });
             return param0_0;
-        }
-
-        ;
+        };
         TResult result;
         try
         {
@@ -12003,20 +11539,14 @@ partial class Container
         {
             disposeActions1_0.Add(async () =>
             {
-            }
-
-            );
+            });
             return param0_0;
-        }
-
-        ;
+        };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::IA, global::IA>>(_0, async () =>
         {
             foreach (var disposeAction in disposeActions1_0)
                 await disposeAction();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -12082,9 +11612,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -12118,9 +11646,7 @@ partial class Container
         var _0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -12197,9 +11723,7 @@ partial class Container
             this._disposeAction1 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(_0);
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -12223,9 +11747,7 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-            }
-
-            ;
+            };
         }
         finally
         {
@@ -12259,9 +11781,7 @@ partial class Container
         var _0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }
@@ -12347,9 +11867,7 @@ partial class Container
         {
             await global::StrongInject.Helpers.DisposeAsync(_0);
             await global::StrongInject.Helpers.DisposeAsync(_2);
-        }
-
-        );
+        });
     }
 }");
         }
@@ -12502,9 +12020,7 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
             await ((global::System.IAsyncDisposable)_0).DisposeAsync();
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::IB>.Run<TResult, TParam>(global::System.Func<global::IB, TParam, TResult> func, TParam param)
@@ -12537,9 +12053,7 @@ partial class Container
         {
             ((global::System.IDisposable)_0).Dispose();
             ((global::System.IDisposable)_1).Dispose();
-        }
-
-        );
+        });
     }
 }");
         }
@@ -12622,9 +12136,7 @@ partial class Container
         await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-        }
-
-        );
+        });
     }
 
     TResult global::StrongInject.IContainer<global::IB>.Run<TResult, TParam>(global::System.Func<global::IB, TParam, TResult> func, TParam param)
@@ -12655,9 +12167,7 @@ partial class Container
         ((global::StrongInject.IRequiresInitialization)_0).Initialize();
         return new global::StrongInject.Owned<global::IB>(_0, () =>
         {
-        }
-
-        );
+        });
     }
 }");
         }

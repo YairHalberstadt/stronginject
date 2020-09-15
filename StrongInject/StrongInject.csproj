@@ -10,7 +10,6 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<RestoreAdditionalProjectSources>https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json ;$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
 		<VersionPrefix>0.0.1</VersionPrefix>
 		<PackageId>StrongInject</PackageId>
 		<Authors>StrongInject</Authors>
@@ -25,7 +24,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0-2.final" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0-4.20464.1" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.0" PrivateAssets="all" />
 	</ItemGroup>
 
