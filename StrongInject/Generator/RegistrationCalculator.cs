@@ -257,6 +257,13 @@ namespace StrongInject.Generator
 
                 ReportSuspiciousSimpleRegistrations(type, registerAttribute);
 
+                var registration = new Registration(
+                    type,
+                    scope,
+                    requiresInitialization || requiresAsyncInitialization,
+                    constructor,
+                    IsAsync: requiresAsyncInitialization);
+
                 foreach (var registeredAsTypeConstant in registeredAs)
                 {
                     if (!CheckValidType(registerAttribute, registeredAsTypeConstant, out var target))
@@ -270,15 +277,7 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    var registration = new Registration(
-                        type,
-                        target,
-                        scope,
-                        requiresInitialization || requiresAsyncInitialization,
-                        constructor,
-                        IsAsync: requiresAsyncInitialization);
-
-                    registrations.WithInstanceSource(target, registration);
+                    registrations.WithInstanceSource(target, new ForwardedInstanceSource(target, registration));
                 }
             }
         }
@@ -352,22 +351,19 @@ namespace StrongInject.Generator
                     _reportDiagnostic(TypeImplementsSyncAndAsyncRequiresInitialization(type, registerFactoryAttribute.GetLocation(_cancellationToken)));
                 }
 
+                var registration = new Registration(
+                    type,
+                    factoryScope,
+                    requiresInitialization || requiresAsyncInitialization,
+                    constructor,
+                    IsAsync: requiresAsyncInitialization);
+
                 bool any = false;
                 foreach (var factoryType in type.AllInterfaces.Where(x
                     => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default)
                     || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default)))
                 {
                     any = true;
-
-                    var registration = new Registration(
-                        type,
-                        factoryType,
-                        factoryScope,
-                        requiresInitialization || requiresAsyncInitialization,
-                        constructor,
-                        IsAsync: requiresAsyncInitialization);
-
-                    registrations.WithInstanceSource(factoryType, registration);
 
                     var factoryOf = factoryType.TypeArguments.First();
 
@@ -379,7 +375,7 @@ namespace StrongInject.Generator
 
                     bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
 
-                    var factoryRegistration = new FactoryRegistration(factoryType, factoryOf, factoryTargetScope, isAsync);
+                    var factoryRegistration = new FactorySource(factoryOf, new ForwardedInstanceSource(factoryType, registration), factoryTargetScope, isAsync);
 
                     registrations.WithInstanceSource(factoryOf, factoryRegistration);
                 }
