@@ -12,7 +12,7 @@ namespace StrongInject.Generator
     [Generator]
     internal class SourceGenerator : ISourceGenerator
     {
-        public void Execute(SourceGeneratorContext context)
+        public void Execute(GeneratorExecutionContext context)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace StrongInject.Generator
 
         //By not inlining we make sure we can catch assembly loading errors when jitting this method
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ExecuteInternal(SourceGeneratorContext context)
+        private void ExecuteInternal(GeneratorExecutionContext context)
         {
             var cancellationToken = context.CancellationToken;
             var compilation = context.Compilation;
@@ -119,7 +119,7 @@ namespace StrongInject.Generator
             return stringBuilder.ToString();
         }
 
-        public void Initialize(InitializationContext context)
+        public void Initialize(GeneratorInitializationContext context)
         {
         }
     }
