@@ -56,6 +56,16 @@ namespace StrongInject.Generator
             }
         }
 
+        public static IEnumerable<INamedTypeSymbol> GetBaseTypes(this ITypeSymbol? namedType)
+        {
+            var current = namedType?.BaseType;
+            while (current != null)
+            {
+                yield return current;
+                current = current.BaseType;
+            }
+        }
+
         public static IEnumerable<INamedTypeSymbol> GetContainingTypesAndThis(this INamedTypeSymbol? namedType)
         {
             var current = namedType;

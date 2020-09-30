@@ -132,6 +132,15 @@ namespace StrongInject.Generator
             var target = instanceSource.OfType;
             if (instanceSource.CanDecorate)
             {
+                if (instanceSource is FactorySource factorySource)
+                {
+                    instanceSource = factorySource with { Underlying = Decorate(factorySource.Underlying) };
+                }
+                else if (instanceSource is ForwardedInstanceSource forwardedInstanceSource)
+                {
+                    instanceSource = forwardedInstanceSource with { Underlying = Decorate(forwardedInstanceSource.Underlying) };
+                }
+
                 foreach (var decorator in _decoratorSources.GetValueOrDefault(target, ImmutableArray<DecoratorSource>.Empty))
                 {
                     instanceSource = new WrappedDecoratorInstanceSource(decorator, instanceSource);

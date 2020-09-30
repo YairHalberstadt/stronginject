@@ -4,10 +4,9 @@ using System.Collections.Immutable;
 
 namespace StrongInject.Generator
 {
-    abstract internal record InstanceSource(Scope Scope, bool IsAsync)
+    abstract internal record InstanceSource(Scope Scope, bool IsAsync, bool CanDecorate)
     {
         public abstract ITypeSymbol OfType { get; }
-        public abstract bool CanDecorate { get; }
     }
 
     internal record Registration(
@@ -15,67 +14,54 @@ namespace StrongInject.Generator
         Scope Scope,
         bool RequiresInitialization,
         IMethodSymbol Constructor,
-        bool IsAsync) : InstanceSource(Scope, IsAsync)
+        bool IsAsync) : InstanceSource(Scope, IsAsync, CanDecorate: true)
     {
         public override ITypeSymbol OfType => Type;
-        public override bool CanDecorate => true;
     }
-    internal record InstanceProvider(
-        ITypeSymbol ProvidedType,
-        IFieldSymbol InstanceProviderField,
-        INamedTypeSymbol CastTo,
-        bool IsAsync) : InstanceSource(Scope.InstancePerResolution, IsAsync)
-    {
-        public override ITypeSymbol OfType => ProvidedType;
-        public override bool CanDecorate => true;
-    }
-    internal record FactorySource(ITypeSymbol FactoryOf, InstanceSource Underlying, Scope Scope, bool IsAsync) : InstanceSource(Scope, IsAsync)
+    internal record FactorySource(ITypeSymbol FactoryOf, InstanceSource Underlying, Scope Scope, bool IsAsync) : InstanceSource(Scope, IsAsync, Underlying.CanDecorate)
     {
         public override ITypeSymbol OfType => FactoryOf;
-        public override bool CanDecorate => Underlying.CanDecorate;
     }
     internal record DelegateSource(
         ITypeSymbol DelegateType,
         ITypeSymbol ReturnType,
         ImmutableArray<IParameterSymbol> Parameters,
-        bool IsAsync) : InstanceSource(Scope.InstancePerResolution, IsAsync: IsAsync)
+        bool IsAsync) : InstanceSource(Scope.InstancePerResolution, IsAsync: IsAsync, CanDecorate: true)
     {
         public override ITypeSymbol OfType => DelegateType;
-        public override bool CanDecorate => true;
     }
-    internal record DelegateParameter(IParameterSymbol Parameter, string Name) : InstanceSource(Scope.InstancePerResolution, IsAsync: false)
+    internal record DelegateParameter(IParameterSymbol Parameter, string Name) : InstanceSource(Scope.InstancePerResolution, IsAsync: false, CanDecorate: false)
     {
         public override ITypeSymbol OfType => Parameter.Type;
-        public override bool CanDecorate => false;
     }
     internal record FactoryMethod(
         IMethodSymbol Method,
         ITypeSymbol ReturnType,
         Scope Scope,
         bool IsOpenGeneric,
-        bool IsAsync) : InstanceSource(Scope, IsAsync)
+        bool IsAsync) : InstanceSource(Scope, IsAsync, CanDecorate: true)
     {
         public override ITypeSymbol OfType => ReturnType;
-        public override bool CanDecorate => true;
     }
-    internal record InstanceFieldOrProperty(ISymbol FieldOrPropertySymbol, ITypeSymbol Type) : InstanceSource(Scope.SingleInstance, IsAsync: false)
+    internal record InstanceFieldOrProperty(ISymbol FieldOrPropertySymbol, ITypeSymbol Type) : InstanceSource(Scope.SingleInstance, IsAsync: false, CanDecorate: true)
     {
         public override ITypeSymbol OfType => Type;
-        public override bool CanDecorate => true;
     }
-    internal record ArraySource(IArrayTypeSymbol ArrayType, ITypeSymbol ElementType, IReadOnlyCollection<InstanceSource> Items) : InstanceSource(Scope.InstancePerDependency, IsAsync: false)
+    internal record ArraySource(
+        IArrayTypeSymbol ArrayType,
+        ITypeSymbol ElementType,
+        IReadOnlyCollection<InstanceSource> Items) : InstanceSource(Scope.InstancePerDependency, IsAsync: false, CanDecorate: true)
     {
         public override ITypeSymbol OfType => ArrayType;
-        public override bool CanDecorate => true;
     }
-    internal record WrappedDecoratorInstanceSource(DecoratorSource Decorator, InstanceSource Underlying) : InstanceSource(Underlying.Scope, Decorator.IsAsync)
+    internal record WrappedDecoratorInstanceSource(DecoratorSource Decorator, InstanceSource Underlying) : InstanceSource(Underlying.Scope, Decorator.IsAsync, CanDecorate: true)
     {
         public override ITypeSymbol OfType => Decorator.OfType;
-        public override bool CanDecorate => true;
     }
-    internal record ForwardedInstanceSource(ITypeSymbol AsType, InstanceSource Underlying) : InstanceSource(Underlying.Scope, IsAsync: false)
+    internal record ForwardedInstanceSource(ITypeSymbol AsType, InstanceSource Underlying) : InstanceSource(Underlying.Scope, IsAsync: false, Underlying.CanDecorate)
     {
         public override ITypeSymbol OfType => AsType;
-        public override bool CanDecorate => Underlying.CanDecorate;
+        public static ForwardedInstanceSource Create(ITypeSymbol AsType, InstanceSource Underlying)
+            => new ForwardedInstanceSource(AsType, Underlying is ForwardedInstanceSource forwardedUnderlying ? forwardedUnderlying.Underlying : Underlying);
     }
 }

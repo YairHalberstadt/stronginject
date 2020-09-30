@@ -181,11 +181,6 @@ namespace StrongInject.Generator
             AppendInstanceFieldAndProperties(registrations, module, onlyExported);
             AppendDecoratorRegistrations(nonGenericDecorators, moduleAttributes);
             AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, onlyExported);
-
-            if (!onlyExported)
-            {
-                AppendInstanceProviders(registrations, module);
-            }
             return registrations;
         }
 
@@ -277,7 +272,7 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    registrations.WithInstanceSource(target, new ForwardedInstanceSource(target, registration));
+                    registrations.WithInstanceSource(ForwardedInstanceSource.Create(target, registration));
                 }
             }
         }
@@ -375,9 +370,9 @@ namespace StrongInject.Generator
 
                     bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
 
-                    var factoryRegistration = new FactorySource(factoryOf, new ForwardedInstanceSource(factoryType, registration), factoryTargetScope, isAsync);
+                    var factoryRegistration = new FactorySource(factoryOf, ForwardedInstanceSource.Create(factoryType, registration), factoryTargetScope, isAsync);
 
-                    registrations.WithInstanceSource(factoryOf, factoryRegistration);
+                    registrations.WithInstanceSource(factoryRegistration);
                 }
                 if (!any)
                 {
@@ -480,7 +475,7 @@ namespace StrongInject.Generator
                     }
                     else
                     {
-                        nonGenericRegistrations.WithInstanceSource(instanceSource.ReturnType, instanceSource);
+                        nonGenericRegistrations.WithInstanceSource(instanceSource);
                     }
                 }
             }
@@ -590,11 +585,102 @@ namespace StrongInject.Generator
             var fieldsAndProperties = module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol);
             foreach (var fieldOrProperty in onlyExported ? fieldsAndProperties.Where(IsPubliclyAccessibleStaticFieldOrProperty) : fieldsAndProperties)
             {
-                var instanceSource = CreateInstanceSourceIfInstanceFieldOrProperty(fieldOrProperty, out var attribute);
+                InstanceSource? instanceSource = CreateInstanceSourceIfInstanceFieldOrProperty(fieldOrProperty, out var attribute);
                 if (instanceSource is not null)
                 {
-                    registrations.WithInstanceSource(instanceSource.Type, instanceSource);
+                    var constructorArguments = attribute.ConstructorArguments;
+                    if (!constructorArguments.IsDefault && constructorArguments.Length == 1 && constructorArguments[0] is { Kind: TypedConstantKind.Enum, Value: long value})
+                    {
+                        var options = (Options)value;
+                        instanceSource = ApplyOptions(instanceSource, options, registrations);
+                    }
+
+                    registrations.WithInstanceSource(instanceSource);
                 }
+            }
+        }
+
+        private InstanceSource ApplyOptions(InstanceSource instanceSource, Options options, Dictionary<ITypeSymbol, InstanceSources> registrations, HashSet<ITypeSymbol>? currentlyVisiting = null)
+        {
+            var useAsFactory = options.HasFlag(Options.UseAsFactory);
+            if (useAsFactory && currentlyVisiting is null)
+            {
+                currentlyVisiting = new HashSet<ITypeSymbol>() { instanceSource.OfType };
+            }
+
+            if (currentlyVisiting?.Count > 20)
+            {
+                /* prevent infinite recursion in case like:
+                    public class A<T> : IFactory<A<A<T>>> {}
+                */
+                return instanceSource;
+            }
+
+            if (options.HasFlag(Options.DoNotDecorate) && instanceSource.CanDecorate)
+            {
+                instanceSource = instanceSource with { CanDecorate = false };
+            }
+
+            if (options.HasFlag(Options.AsBaseClasses))
+            {
+                foreach (var baseType in instanceSource.OfType.GetBaseTypes())
+                {
+                    if (currentlyVisiting?.Add(baseType) is false)
+                    {
+                        continue;
+                    }
+
+                    registrations.WithInstanceSource(ForwardedInstanceSource.Create(baseType, instanceSource));
+
+                    currentlyVisiting?.Remove(baseType);
+                }
+            }
+
+            if (options.HasFlag(Options.AsImplementedInterfaces))
+            {
+                foreach (var implementedInterface in instanceSource.OfType.AllInterfaces)
+                {
+                    if (currentlyVisiting?.Add(implementedInterface) is false)
+                    {
+                        continue;
+                    }
+
+                    registrations.WithInstanceSource(ApplyUseAsFactoryOption(ForwardedInstanceSource.Create(implementedInterface, instanceSource)));
+
+                    currentlyVisiting?.Remove(implementedInterface);
+                }
+            }
+
+            return ApplyUseAsFactoryOption(instanceSource);
+
+            InstanceSource ApplyUseAsFactoryOption(InstanceSource instanceSource)
+            {
+                if (useAsFactory)
+                {
+                    var type = instanceSource.OfType;
+                    var isAsync = type.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
+                    var isFactory = isAsync || type.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default);
+                    if (isFactory)
+                    {
+                        var scope = (Scope)(((int)options) >> 24);
+                        var factoryTarget = ((INamedTypeSymbol)type).TypeArguments[0];
+                        InstanceSource factorySource = new FactorySource(factoryTarget, instanceSource, scope, isAsync);
+                        if (options.HasFlag(Options.ApplySameOptionsToFactoryTargets))
+                        {
+                            if (!currentlyVisiting!.Add(factoryTarget))
+                            {
+                                return instanceSource;
+                            }
+
+                            factorySource = ApplyOptions(factorySource, options, registrations, currentlyVisiting);
+                            currentlyVisiting.Remove(factoryTarget);
+                        }
+
+                        registrations.WithInstanceSource(factorySource);
+                    }
+                }
+
+                return instanceSource;
             }
         }
 
@@ -641,24 +727,6 @@ namespace StrongInject.Generator
             }
 
             return null;
-        }
-
-        private void AppendInstanceProviders(Dictionary<ITypeSymbol, InstanceSources> registrations, INamedTypeSymbol module)
-        {
-            foreach (var field in module.GetMembers().OfType<IFieldSymbol>())
-            {
-                var location = field.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-
-                foreach (var constructedInstanceProviderInterface in field.Type.AllInterfacesAndSelf().Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.IInstanceProvider, SymbolEqualityComparer.Default)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncInstanceProvider, SymbolEqualityComparer.Default)))
-                {
-                    var providedType = constructedInstanceProviderInterface.TypeArguments[0];
-                    var isAsync = constructedInstanceProviderInterface.OriginalDefinition.Equals(_wellKnownTypes.IAsyncInstanceProvider, SymbolEqualityComparer.Default);
-                    var instanceProvider = new InstanceProvider(providedType, field, constructedInstanceProviderInterface, isAsync);
-                    registrations.WithInstanceSource(providedType, instanceProvider);
-                }
-            }
         }
 
         private void WarnOnNonStaticPublicFactoryMethods(INamedTypeSymbol module)

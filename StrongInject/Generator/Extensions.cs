@@ -46,10 +46,10 @@ namespace StrongInject.Generator
             return defaultValue!;
         }
 
-        public static void WithInstanceSource(this Dictionary<ITypeSymbol, InstanceSources> instanceSources, ITypeSymbol type, InstanceSource instanceSource)
+        public static void WithInstanceSource(this Dictionary<ITypeSymbol, InstanceSources> instanceSources, InstanceSource instanceSource)
         {
             instanceSources.CreateOrUpdate(
-                type,
+                instanceSource.OfType,
                 instanceSource,
                 static (_, instanceSource) => InstanceSources.Create(instanceSource),
                 static (_, instanceSource, existing) => existing.Add(instanceSource));

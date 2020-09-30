@@ -7,8 +7,6 @@ namespace StrongInject.Generator
     internal record WellKnownTypes(
         INamedTypeSymbol IContainer,
         INamedTypeSymbol IAsyncContainer,
-        INamedTypeSymbol IInstanceProvider,
-        INamedTypeSymbol IAsyncInstanceProvider,
         INamedTypeSymbol IFactory,
         INamedTypeSymbol IAsyncFactory,
         INamedTypeSymbol IRequiresInitialization,
@@ -33,8 +31,6 @@ namespace StrongInject.Generator
         {
             var iContainer = compilation.GetTypeOrReport(typeof(IContainer<>), reportDiagnostic);
             var iAsyncContainer = compilation.GetTypeOrReport("StrongInject.IAsyncContainer`1", reportDiagnostic);
-            var iInstanceProvider = compilation.GetTypeOrReport(typeof(IInstanceProvider<>), reportDiagnostic);
-            var iAsyncInstanceProvider = compilation.GetTypeOrReport(typeof(IAsyncInstanceProvider<>), reportDiagnostic);
             var iFactory = compilation.GetTypeOrReport(typeof(IFactory<>), reportDiagnostic);
             var iAsyncFactory = compilation.GetTypeOrReport(typeof(IAsyncFactory<>), reportDiagnostic);
             var iRequiresInitialization = compilation.GetTypeOrReport(typeof(IRequiresInitialization), reportDiagnostic);
@@ -57,8 +53,6 @@ namespace StrongInject.Generator
 
             if (iContainer is null
                 || iAsyncContainer is null
-                || iInstanceProvider is null
-                || iAsyncInstanceProvider is null
                 || iFactory is null
                 || iAsyncFactory is null
                 || iRequiresInitialization is null
@@ -86,8 +80,6 @@ namespace StrongInject.Generator
             wellKnownTypes = new WellKnownTypes(
                 IContainer: iContainer,
                 IAsyncContainer: iAsyncContainer,
-                IInstanceProvider: iInstanceProvider,
-                IAsyncInstanceProvider: iAsyncInstanceProvider,
                 IFactory: iFactory,
                 IAsyncFactory: iAsyncFactory,
                 IRequiresInitialization: iRequiresInitialization,
