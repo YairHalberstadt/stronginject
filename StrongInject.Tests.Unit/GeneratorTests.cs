@@ -12004,6 +12004,52 @@ partial class Container
         }
 
         [Fact]
+        public void InstanceWithAsBaseClassesIsNotRegisteredAsObject()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<object>
+{
+    [Instance(Options.AsBaseClasses)] A _a;
+}
+
+public class A {}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (4,22): Error SI0102: Error while resolving dependencies for 'object': We have no source for instance of type 'object'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+            comp.GetDiagnostics().Verify(
+                // (6,41): Warning CS0169: The field 'Container._a' is never used
+                // _a
+                new DiagnosticResult("CS0169", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 41));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Object>.Run<TResult, TParam>(global::System.Func<global::System.Object, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Object> global::StrongInject.IContainer<global::System.Object>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
         public void InstanceWithUseAsFactoryIsRegisteredAsFactoriesButFactoryTargetIsntUsedAsFactory()
         {
             string userSource = @"

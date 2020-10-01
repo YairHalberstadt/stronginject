@@ -625,6 +625,11 @@ namespace StrongInject.Generator
             {
                 foreach (var baseType in instanceSource.OfType.GetBaseTypes())
                 {
+                    if (baseType.SpecialType == SpecialType.System_Object)
+                    {
+                        continue;
+                    }
+
                     if (currentlyVisiting?.Add(baseType) is false)
                     {
                         continue;
