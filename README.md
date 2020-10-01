@@ -749,7 +749,7 @@ Whilst this is only useful in a few edge cases for synchronous methods, `IRequir
 ### Async Support
 
 Every interface used by StrongInject has an asynchronous counterpart.
-There's `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`.
+There's `IAsyncContainer`, `IAsyncFactory` and `IRequiresAsyncInitialization`.
 
 You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` by calling `StrongInject.AsyncContainerExtensions.RunAsync`. RunAsync has overloads allowing you to pass in sync or async lambdas. As such `IAsyncContainer<T>` is useful even if resolution is completely synchronous if usage is asynchronous.
 
