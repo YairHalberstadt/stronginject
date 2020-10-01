@@ -648,7 +648,7 @@ public partial class Container : IContainer<A>
 
 This registers `AutofacFactory<B>` as all implemented interfaces, namely `IFactory<B>`. Since this is a factory, this also becomes a registration for `B` as well.
 
-`Create` is called once per resolution (equiavalent to Instance Per Resolution scope). This can be adjusted further by using `Options.AsImplementedInterfacesAndUseAsFactory | Options.FactoryTargetScopeShouldBeSingleInstance` for example.
+`Create` is called once per resolution (equiavalent to Instance Per Resolution scope). This can be adjusted further by registering it as `[Instance(Options.AsImplementedInterfacesAndUseAsFactory | Options.FactoryTargetScopeShouldBeSingleInstance)` for example.
 
 #### How StrongInject picks which registration to use
 
