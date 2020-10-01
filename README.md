@@ -272,7 +272,7 @@ public partial class Container : IContainer<A>
 }
 ```
 
-If you want the instance to also be registered as its interfaces or base classes, or to be used as a factory for other types, you can configure all this and more using the `options` parameter. The above example could also have used this:
+If you want the instance to also be registered as its interfaces or base classes, or to be used as a factory for other types, you can configure all this and more using the `options` parameter. The above example could also have been registered like this:
 
 ```csharp
 using StrongInject;
