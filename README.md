@@ -272,6 +272,29 @@ public partial class Container : IContainer<A>
 }
 ```
 
+If you want the instance to also be registered as its interfaces or base classes, or to be used as a factory for other types, you can configure all this and more using the `options` parameter. The above example could also have been registered like this:
+
+```csharp
+using StrongInject;
+using System;
+
+public class A
+{
+    public A(IEqualityComparer<string> equalityComparer){}
+}
+
+public class StringEqualityComparerModule
+{
+    [Instance(Options.AsImplementedInterfaces)] public static StringComparer StringEqualityComparer = StringComparer.CurrentCultureIgnoreCase;
+}
+
+[Register(typeof(A))]
+[RegisterModule(typeof(StringEqualityComparerModule))]
+public partial class Container : IContainer<A>
+{
+}
+```
+
 #### Factories
 
 Sometimes a type requires more complex construction than just calling the constructor. For example you might want to hard code some parameters, or call a factory method. Some types don't have the correct constructors to be registered directly.
@@ -539,6 +562,8 @@ Call to Service2.UseBar took 42 ms
 
 You can register multiple decorators for a type, and they will all be applied. As of now there is no way to control in which order they are applied, but the order is deterministic.
 
+If you register an `[Instance]` and don't want it decorated, you can use `Options.DoNotDecorate`: `[Instance(Options.DoNotDecorate)]`.
+
 #### Providing registrations at runtime or integrating with other IOC containers
 
 What if you need to provide configuration for a registration at runtime? Or alternatively what if you need to integrate with an existing container?
@@ -584,9 +609,7 @@ public partial class Container : IContainer<IInterface>
 }
 ```
 
-In some cases though you need greater control over the disposal of the created instances. The `IInstanceProvider<T>` interface allows you to do that. Any fields of a container which are or implement `IInstanceProvider<T>` will provide registrations for `T`.
-
-Here is an example of how you could use an IInstanceProvider to integrate with Autofac:
+In some cases though you need greater control over the disposal of the created instances. To do so you can make an `Instance` field implementing `IFactory<T>` or `IAsyncFactory<T>` and use `Options.UseAsFactory`. For example here's how you could integrate with Autofac:
 
 ```csharp
 using StrongInject;
@@ -597,12 +620,12 @@ public class A
 }
 public class B {}
 
-public class AutofacInstanceProvider<T>(Autofac.IContainer autofacContainer) : IInstanceProvider<T> where T : class
+public class AutofacFactory<T>(Autofac.IContainer autofacContainer) : IFactory<T> where T : class
 {
     private readonly ConcurrentDictionary<T, Autofac.Owned<T>> _ownedDic = new();
     private readonly Autofac.IContainer _autofacContainer;
-    public AutofacInstanceProvider(Autofac.IContainer autofacContainer) => _autofacContainer = autofacContainer;
-    public T Get()
+    public AutofacFactory(Autofac.IContainer autofacContainer) => _autofacContainer = autofacContainer;
+    public T Create()
     {
         var owned = _autofacContainer.Resolve<Owned<T>>();
         _ownedDic[owned.Value] = owned;
@@ -618,12 +641,14 @@ public class AutofacInstanceProvider<T>(Autofac.IContainer autofacContainer) : I
 [Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
-    private readonly AutofacInstanceProvider<B> _instanceProvider;
-    public Container(AutofacInstanceProvider<B> instanceProvider) => _instanceProvider = instanceProvider;
+    [Instance(Options.AsImplementedInterfacesAndUseAsFactory)] private readonly AutofacFactory<B> _autofacFactory;
+    public Container(AutofacFactory<B> autofacFactory) => _autofacFactory = autofacFactory;
 }
 ```
 
-`Get` is called once per resolution (equiavalent to Instance Per Resolution scope). Of course the implementation is free to return a singleton or not.
+This registers `AutofacFactory<B>` as all implemented interfaces, namely `IFactory<B>`. Since this is a factory, this also becomes a registration for `B` as well.
+
+`Create` is called once per resolution (equiavalent to Instance Per Resolution scope). This can be adjusted further by registering it as `[Instance(Options.AsImplementedInterfacesAndUseAsFactory | Options.FactoryTargetScopeShouldBeSingleInstance)` for example.
 
 #### How StrongInject picks which registration to use
 
@@ -724,7 +749,7 @@ Whilst this is only useful in a few edge cases for synchronous methods, `IRequir
 ### Async Support
 
 Every interface used by StrongInject has an asynchronous counterpart.
-There's `IAsyncContainer`, `IAsyncFactory`, `IRequiresAsyncInitialization`, and `IAsyncInstanceProvider`.
+There's `IAsyncContainer`, `IAsyncFactory` and `IRequiresAsyncInitialization`.
 
 You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` by calling `StrongInject.AsyncContainerExtensions.RunAsync`. RunAsync has overloads allowing you to pass in sync or async lambdas. As such `IAsyncContainer<T>` is useful even if resolution is completely synchronous if usage is asynchronous.
 
@@ -852,7 +877,7 @@ Similiarly when an `Owned<T>` is disposed, any Instance Per Resolution or Instan
 In `RunAsync`/`ResolveAsync` if the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
 In `Run`/`Resolve`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.
 
-Since both `IFactory<T>` and `InstanceProvider<T>` are free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `IFactory<T>.Release(T instance)`/`InstanceProvider<T>.Release(T instance)`. The instanceProvider is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
+Since `IFactory<T>` is free to create a new instance every time or return a singleton, StrongInject cannot call dispose directly. Instead it calls `IFactory<T>.Release(T instance)`. The factory is then free to dispose the class or not. When referencing the .NET Standard 2.1 package `Release` has a default implementation which does nothing. You only need to implement it if you want custom behaviour. If you reference the .NET Standard 2.0 package you will need to implement it either way.
 
 Single Instance dependencies and their dependencies are disposed when the container is disposed. If the container implements `IAsyncDisposable` it must be disposed asynchronously even if it also implements `IDisposable`.
 

@@ -11,18 +11,18 @@
         /// Note every SingleInstance dependency defines a seperate resolution, 
         /// so if 'B' and/or 'C' are SingleInstance they would not share an instance of 'D'.
         /// </summary>
-        InstancePerResolution,
+        InstancePerResolution = 0,
 
         /// <summary>
         /// A new instance is created for every usage.
         /// For example even if type 'B' appears twice in the constructor of 'A',
         /// two different instances will be passed into the constructor.
         /// </summary>
-        InstancePerDependency,
+        InstancePerDependency = 1,
 
         /// <summary>
         /// A single instance will be shared across all dependencies, from any resolution
         /// </summary>
-        SingleInstance,
+        SingleInstance = 2,
     }
 }

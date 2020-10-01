@@ -336,19 +336,6 @@ namespace StrongInject.Generator
                     variables.Add(target, variableName);
                     switch (target)
                     {
-                        case InstanceProvider(_, var field, var castTo, var isAsync) instanceProvider:
-                            methodSource.Append("var ");
-                            methodSource.Append(variableName);
-                            methodSource.Append(isAsync ? "=await((" : "=((");
-                            methodSource.Append(castTo.FullName());
-                            methodSource.Append(")");
-                            GenerateMemberAccess(methodSource, field);
-                            methodSource.Append(").");
-                            methodSource.Append(isAsync
-                                ? nameof(IAsyncInstanceProvider<object>.GetAsync)
-                                : nameof(IInstanceProvider<object>.Get));
-                            methodSource.Append("();");
-                            break;
                         case { Scope: Scope.SingleInstance } registration
                             when !(isSingleInstanceCreation && ReferenceEquals(outerTarget, target)):
                             {
@@ -592,23 +579,6 @@ namespace StrongInject.Generator
                     case FactoryMethod:
                         DisposeExactTypeNotKnown(methodSource, isAsync, variableName);
                         break;
-                    case InstanceProvider { InstanceProviderField: var field, CastTo: var cast, IsAsync: var isAsyncInstanceProvider }:
-                        if (isAsyncInstanceProvider)
-                        {
-                            methodSource.Append("await ");
-                        }
-                        methodSource.Append("((");
-                        methodSource.Append(cast.FullName());
-                        methodSource.Append(")");
-                        GenerateMemberAccess(methodSource, field);
-                        methodSource.Append(").");
-                        methodSource.Append(isAsyncInstanceProvider
-                            ? nameof(IAsyncInstanceProvider<object>.ReleaseAsync)
-                            : nameof(IInstanceProvider<object>.Release));
-                        methodSource.Append("(");
-                        methodSource.Append(variableName);
-                        methodSource.Append(");");
-                        break;
                     case Registration { Type: var type }:
                         DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
                         break;
@@ -769,7 +739,6 @@ if (disposed != 0) return;");
                     ({ Scope: Scope.InstancePerDependency }, _) => false,
                     (Registration rX, Registration rY) => rX.Scope == rY.Scope && rX.Type.Equals(rY.Type, SymbolEqualityComparer.Default),
                     (FactorySource fX, FactorySource fY) => fX.Scope == fY.Scope && Equals(fX.Underlying, fY.Underlying),
-                    (InstanceProvider iX, InstanceProvider iY) => iX.ProvidedType.Equals(iY.ProvidedType, SymbolEqualityComparer.Default),
                     (DelegateSource dX, DelegateSource dY) => dX.DelegateType.Equals(dY.DelegateType, SymbolEqualityComparer.Default),
                     (DelegateParameter dX, DelegateParameter dY) => dX.Parameter.Equals(dY.Parameter, SymbolEqualityComparer.Default),
                     (FactoryMethod mX, FactoryMethod mY) => mX.Method.Equals(mY.Method, SymbolEqualityComparer.Default),
@@ -787,13 +756,12 @@ if (disposed != 0) return;");
                     null => 0,
                     { Scope: Scope.InstancePerDependency } => new Random().Next(),
                     Registration r => 5 + r.Scope.GetHashCode() * 17 + r.Type.GetHashCode(),
-                    InstanceProvider i => 7 + i.InstanceProviderField.GetHashCode(),
-                    FactorySource f => 13 + f.Scope.GetHashCode() * 17 + GetHashCode(f.Underlying),
-                    DelegateSource d => 17 + d.DelegateType.GetHashCode(),
-                    DelegateParameter dp => 19 + dp.Parameter.GetHashCode(),
-                    FactoryMethod m => 23 + m.Method.GetHashCode(),
+                    FactorySource f => 7 + f.Scope.GetHashCode() * 17 + GetHashCode(f.Underlying),
+                    DelegateSource d => 13 + d.DelegateType.GetHashCode(),
+                    DelegateParameter dp => 17 + dp.Parameter.GetHashCode(),
+                    FactoryMethod m => 19 + m.Method.GetHashCode(),
                     WrappedDecoratorInstanceSource d => GetHashCode(d.Underlying),
-                    InstanceFieldOrProperty f => 29 + f.FieldOrPropertySymbol.GetHashCode(),
+                    InstanceFieldOrProperty f => 23 + f.FieldOrPropertySymbol.GetHashCode(),
                     ForwardedInstanceSource f => GetHashCode(f.Underlying),
                     _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };

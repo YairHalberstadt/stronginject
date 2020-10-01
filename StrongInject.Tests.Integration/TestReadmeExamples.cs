@@ -157,9 +157,9 @@ namespace StrongInject.Tests.Integration
                 UseB
             }
 
-            public record InstanceProvider(InterfaceToUse InterfaceToUse) : IInstanceProvider<InterfaceToUse>
+            public record InstanceFactory(InterfaceToUse InterfaceToUse) : IFactory<InterfaceToUse>
             {
-                public InterfaceToUse Get() => InterfaceToUse;
+                public InterfaceToUse Create() => InterfaceToUse;
 
                 public void Release(InterfaceToUse instance) {}
             }
@@ -179,8 +179,8 @@ namespace StrongInject.Tests.Integration
             [RegisterFactory(typeof(InterfaceFactory))]
             public partial class Container : IContainer<IInterface>
             {
-                private readonly InstanceProvider _instanceProvider;
-                public Container(InstanceProvider instanceProvider) => _instanceProvider = instanceProvider;
+                [Instance(Options.AsImplementedInterfacesAndUseAsFactory)] private readonly InstanceFactory _instanceProvider;
+                public Container(InstanceFactory instanceProvider) => _instanceProvider = instanceProvider;
             }
         }
 
@@ -218,9 +218,9 @@ namespace StrongInject.Tests.Integration
                 }
             }
 
-            public record DbInstanceProvider(IDb Db) : IInstanceProvider<IDb>
+            public record DbFactory(IDb Db) : IFactory<IDb>
             {
-                public IDb Get()
+                public IDb Create()
                 {
                     return Db;
                 }
@@ -231,9 +231,9 @@ namespace StrongInject.Tests.Integration
             [Register(typeof(PasswordChecker), Scope.SingleInstance)]
             public partial class Container : IAsyncContainer<PasswordChecker>
             {
-                private readonly DbInstanceProvider _dbInstanceProvider;
+                [Instance(Options.AsImplementedInterfacesAndUseAsFactory)] private readonly DbFactory _dbInstanceProvider;
 
-                public Container(DbInstanceProvider dbInstanceProvider)
+                public Container(DbFactory dbInstanceProvider)
                 {
                     _dbInstanceProvider = dbInstanceProvider;
                 }
@@ -249,7 +249,7 @@ namespace StrongInject.Tests.Integration
 
             public async Task Test()
             {
-                var container = new Container(new DbInstanceProvider(new MockDb()));
+                var container = new Container(new DbFactory(new MockDb()));
                 await container.RunAsync(x =>
                 {
                     Assert.True(x.CheckPassword("user", "password"));

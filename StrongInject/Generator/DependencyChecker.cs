@@ -222,7 +222,6 @@ namespace StrongInject.Generator
                             result |= Visit(underlying, instanceSourcesScope, usedParams, isScopeAsync);
                             break;
                         }
-                    case InstanceProvider:
                     case InstanceFieldOrProperty:
                         break;
                     default: throw new NotImplementedException(instanceSource.GetType().ToString());
@@ -555,7 +554,6 @@ namespace StrongInject.Generator
                                 return true;
                             break;
                         }
-                    case InstanceProvider:
                     case InstanceFieldOrProperty:
                     case DelegateParameter:
                         break;
@@ -686,7 +684,6 @@ namespace StrongInject.Generator
                             Visit(underlying, innerScope, ref results);
                             break;
                         }
-                    case InstanceProvider:
                     case InstanceFieldOrProperty:
                     case DelegateParameter:
                         break;

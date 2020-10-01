@@ -7,7 +7,7 @@ namespace StrongInject
         T Create();
 
         void Release(T instance)
-#if !NETSTANDARD2_0 && !NET472
+#if !NETSTANDARD2_0
             => Helpers.Dispose(instance)
 #endif
             ;
@@ -18,7 +18,7 @@ namespace StrongInject
         ValueTask<T> CreateAsync();
 
         ValueTask ReleaseAsync(T instance)
-#if !NETSTANDARD2_0 && !NET472
+#if !NETSTANDARD2_0
             => Helpers.DisposeAsync(instance)
 #endif
             ;
