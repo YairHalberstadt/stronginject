@@ -135,7 +135,7 @@ namespace StrongInject.Generator
 
                     foreach (var factoryMethod in builder._factoryMethods)
                     {
-                        switch (factoryMethod.ReturnType)
+                        switch (factoryMethod.FactoryOfType)
                         {
                             case INamedTypeSymbol namedType:
                                 {
@@ -302,7 +302,7 @@ namespace StrongInject.Generator
 
             private bool CanConstructFromGenericFactoryMethod(ITypeSymbol toConstruct, FactoryMethod factoryMethod, out FactoryMethod constructedFactoryMethod, out bool constraintsDoNotMatch)
             {
-                if (!CanConstructFromGenericMethodReturnType(_compilation, toConstruct, factoryMethod.Method, out var constructedMethod, out constraintsDoNotMatch))
+                if (!CanConstructFromGenericMethodReturnType(_compilation, toConstruct, factoryMethod.FactoryOfType, factoryMethod.Method, out var constructedMethod, out constraintsDoNotMatch))
                 {
                     constructedFactoryMethod = null!;
                     return false;
@@ -310,7 +310,7 @@ namespace StrongInject.Generator
 
                 constructedFactoryMethod = factoryMethod with
                 {
-                    ReturnType = toConstruct,
+                    FactoryOfType = toConstruct,
                     Method = constructedMethod,
                     IsOpenGeneric = false
                 };

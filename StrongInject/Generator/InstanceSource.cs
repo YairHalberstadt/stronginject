@@ -36,12 +36,12 @@ namespace StrongInject.Generator
     }
     internal record FactoryMethod(
         IMethodSymbol Method,
-        ITypeSymbol ReturnType,
+        ITypeSymbol FactoryOfType,
         Scope Scope,
         bool IsOpenGeneric,
         bool IsAsync) : InstanceSource(Scope, IsAsync, CanDecorate: true)
     {
-        public override ITypeSymbol OfType => ReturnType;
+        public override ITypeSymbol OfType => FactoryOfType;
     }
     internal record InstanceFieldOrProperty(ISymbol FieldOrPropertySymbol, ITypeSymbol Type) : InstanceSource(Scope.SingleInstance, IsAsync: false, CanDecorate: true)
     {
@@ -58,10 +58,21 @@ namespace StrongInject.Generator
     {
         public override ITypeSymbol OfType => Decorator.OfType;
     }
-    internal record ForwardedInstanceSource(ITypeSymbol AsType, InstanceSource Underlying) : InstanceSource(Underlying.Scope, IsAsync: false, Underlying.CanDecorate)
+    internal record ForwardedInstanceSource : InstanceSource
     {
+        private ForwardedInstanceSource(ITypeSymbol asType, InstanceSource underlying) : base(underlying.Scope, IsAsync: false, underlying.CanDecorate)
+            => (AsType, Underlying) = (asType, underlying);
+
+        public void Deconstruct(out ITypeSymbol AsType, out InstanceSource Underlying) => (AsType, Underlying) = (this.AsType, this.Underlying);
+
+        public ITypeSymbol AsType { get; init; }
+        public InstanceSource Underlying { get; init; }
+
         public override ITypeSymbol OfType => AsType;
-        public static ForwardedInstanceSource Create(ITypeSymbol AsType, InstanceSource Underlying)
-            => new ForwardedInstanceSource(AsType, Underlying is ForwardedInstanceSource forwardedUnderlying ? forwardedUnderlying.Underlying : Underlying);
+
+        public static InstanceSource Create(ITypeSymbol asType, InstanceSource underlying)
+            => SymbolEqualityComparer.Default.Equals(underlying.OfType, asType)
+                ? underlying
+                : new ForwardedInstanceSource(asType, underlying is ForwardedInstanceSource forwardedUnderlying ? forwardedUnderlying.Underlying : underlying);
     }
 }

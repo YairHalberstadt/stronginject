@@ -941,26 +941,22 @@ namespace StrongInject.Generator
                         }
                     }
 
-                    var decoratedParameters = method.Parameters.Where(x => x.Type.Equals(returnType, SymbolEqualityComparer.Default)).ToList();
+                    var isAsync = returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType);
+                    var decoratorOfType = isAsync ? taskOfType : returnType;
+
+                    var decoratedParameters = method.Parameters.Where(x => x.Type.Equals(decoratorOfType, SymbolEqualityComparer.Default)).ToList();
                     if (decoratedParameters.Count == 0)
                     {
-                        _reportDiagnostic(DecoratorFactoryMethodDoesNotHaveParameterOfDecoratedType(attribute, method, returnType, _cancellationToken));
+                        _reportDiagnostic(DecoratorFactoryMethodDoesNotHaveParameterOfDecoratedType(attribute, method, decoratorOfType, _cancellationToken));
                         return null;
                     }
                     else if (decoratedParameters.Count > 1)
                     {
-                        _reportDiagnostic(DecoratorFactoryMethodHasMultipleParametersOfDecoratedType(attribute, method, returnType, _cancellationToken));
+                        _reportDiagnostic(DecoratorFactoryMethodHasMultipleParametersOfDecoratedType(attribute, method, decoratorOfType, _cancellationToken));
                         return null;
                     }
 
-                    if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
-                    {
-                        return new DecoratorFactoryMethod(method, taskOfType, isGeneric, decoratedParameters[0].Ordinal, IsAsync: true);
-                    }
-                    else
-                    {
-                        return new DecoratorFactoryMethod(method, returnType, isGeneric, decoratedParameters[0].Ordinal, IsAsync: false);
-                    }
+                    return new DecoratorFactoryMethod(method, decoratorOfType, isGeneric, decoratedParameters[0].Ordinal, isAsync);
                 }
                 else
                 {
