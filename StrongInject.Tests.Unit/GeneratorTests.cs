@@ -6661,7 +6661,7 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0 = await this.M();
+        var _0 = await this.M<global::A>();
         TResult result;
         try
         {
@@ -6679,7 +6679,7 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0 = await this.M();
+        var _0 = await this.M<global::A>();
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0);
