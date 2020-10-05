@@ -226,7 +226,7 @@ namespace StrongInject.Generator
                 {
                     Registration { Type: var t } => t,
                     FactorySource { FactoryOf: var t } => t,
-                    FactoryMethod { ReturnType: var t } => t,
+                    FactoryMethod { FactoryOfType: var t } => t,
                     WrappedDecoratorInstanceSource { OfType: var t } => t,
                     _ => throw new InvalidOperationException(),
                 };

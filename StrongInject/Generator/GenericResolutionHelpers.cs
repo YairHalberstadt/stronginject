@@ -5,9 +5,9 @@ namespace StrongInject.Generator
 {
     internal static class GenericResolutionHelpers
     {
-        public static bool CanConstructFromGenericMethodReturnType(Compilation compilation, ITypeSymbol toConstruct, IMethodSymbol method, out IMethodSymbol constructedMethod, out bool constraintsDoNotMatch)
+        public static bool CanConstructFromGenericMethodReturnType(Compilation compilation, ITypeSymbol toConstruct, ITypeSymbol toConstructFrom, IMethodSymbol method, out IMethodSymbol constructedMethod, out bool constraintsDoNotMatch)
         {
-            if (!CanConstructFromReturnType(toConstruct, method, out var typeArguments))
+            if (!CanConstructFromReturnType(toConstruct, toConstructFrom, method, out var typeArguments))
             {
                 constructedMethod = null!;
                 constraintsDoNotMatch = false;
@@ -54,19 +54,19 @@ namespace StrongInject.Generator
             return true;
         }
 
-        private static bool CanConstructFromReturnType(ITypeSymbol toConstruct, IMethodSymbol method, out ITypeSymbol[] typeArguments)
+        private static bool CanConstructFromReturnType(ITypeSymbol toConstruct, ITypeSymbol toConstructFrom, IMethodSymbol method, out ITypeSymbol[] typeArguments)
         {
             typeArguments = null!;
-            return CanConstructFrom(toConstruct, method.ReturnType, method, ref typeArguments);
-            static bool CanConstructFrom(ITypeSymbol toConstruct, ITypeSymbol from, IMethodSymbol method, ref ITypeSymbol[] typeArguments)
+            return CanConstructFrom(toConstruct, toConstructFrom, method, ref typeArguments);
+            static bool CanConstructFrom(ITypeSymbol toConstruct, ITypeSymbol toConstructFrom, IMethodSymbol method, ref ITypeSymbol[] typeArguments)
             {
-                switch (from)
+                switch (toConstructFrom)
                 {
                     case ITypeParameterSymbol typeParameterSymbol:
 
                         if (!SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringMethod, method))
                         {
-                            return SymbolEqualityComparer.Default.Equals(toConstruct, from);
+                            return SymbolEqualityComparer.Default.Equals(toConstruct, toConstructFrom);
                         }
 
                         var currentTypeArgumentForOrdinal = typeArguments?[typeParameterSymbol.Ordinal] ?? null;

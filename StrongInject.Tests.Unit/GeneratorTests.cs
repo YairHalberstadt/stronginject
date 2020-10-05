@@ -6569,6 +6569,126 @@ partial class Container
         }
 
         [Fact]
+        public void TestAsyncFactory()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory] ValueTask<A> M() => default;
+}
+
+public class A{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await this.M();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await this.M();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void TestAsyncGenericFactory()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+public partial class Container : IAsyncContainer<A>
+{
+    [Factory] ValueTask<T> M<T>() => default;
+}
+
+public class A{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await this.M<global::A>();
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = await this.M<global::A>();
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
         public void WarnOnInstanceRequiringAsyncDisposalInSyncResolution()
         {
             string userSource = @"
@@ -10909,8 +11029,7 @@ partial class Container
         var _4 = this.Decorator3<global::IA>((global::IA[])_5);
         var _3 = this.Decorator1<global::IA[]>((global::IA[])_4);
         var _2 = this.ListFactory<global::IA>((global::IA[])_3);
-        var _11 = new global::B();
-        var _10 = this.Decorator1<global::B>((global::B)_11);
+        var _10 = new global::B();
         var _9 = this.Decorator1<global::B>((global::B)_10);
         var _1 = this.Decorator2<global::IA>((global::System.Collections.Generic.List<global::IA>)_2, (global::B)_9);
         var _0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>((global::System.Collections.Generic.List<global::IA>)_1);
@@ -10924,7 +11043,6 @@ partial class Container
             await global::StrongInject.Helpers.DisposeAsync(_0);
             await global::StrongInject.Helpers.DisposeAsync(_1);
             await global::StrongInject.Helpers.DisposeAsync(_9);
-            await global::StrongInject.Helpers.DisposeAsync(_10);
             await global::StrongInject.Helpers.DisposeAsync(_2);
             await global::StrongInject.Helpers.DisposeAsync(_3);
             await global::StrongInject.Helpers.DisposeAsync(_4);
@@ -10946,8 +11064,7 @@ partial class Container
         var _4 = this.Decorator3<global::IA>((global::IA[])_5);
         var _3 = this.Decorator1<global::IA[]>((global::IA[])_4);
         var _2 = this.ListFactory<global::IA>((global::IA[])_3);
-        var _11 = new global::B();
-        var _10 = this.Decorator1<global::B>((global::B)_11);
+        var _10 = new global::B();
         var _9 = this.Decorator1<global::B>((global::B)_10);
         var _1 = this.Decorator2<global::IA>((global::System.Collections.Generic.List<global::IA>)_2, (global::B)_9);
         var _0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>((global::System.Collections.Generic.List<global::IA>)_1);
@@ -10956,7 +11073,6 @@ partial class Container
             await global::StrongInject.Helpers.DisposeAsync(_0);
             await global::StrongInject.Helpers.DisposeAsync(_1);
             await global::StrongInject.Helpers.DisposeAsync(_9);
-            await global::StrongInject.Helpers.DisposeAsync(_10);
             await global::StrongInject.Helpers.DisposeAsync(_2);
             await global::StrongInject.Helpers.DisposeAsync(_3);
             await global::StrongInject.Helpers.DisposeAsync(_4);
@@ -11670,6 +11786,135 @@ partial class Container
         ((global::StrongInject.IRequiresInitialization)_0).Initialize();
         return new global::StrongInject.Owned<global::IB>(_0, () =>
         {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void TestAsyncDecorators()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Register(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [DecoratorFactory]
+    public ValueTask<A> Decorator(A a) => default;
+}
+
+public class A{}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = await this.Decorator((global::A)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = await this.Decorator((global::A)_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void TestAsyncGenericDecorators()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Register(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+    [DecoratorFactory]
+    public async ValueTask<T> Decorator<T>(T t) where T : INeedsInitialization { await t.Initialize(); return t; }
+}
+
+public interface INeedsInitialization { ValueTask Initialize(); }
+public class A : INeedsInitialization { public ValueTask Initialize() => default; }";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = await this.Decorator<global::A>((global::A)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::A)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = new global::A();
+        var _0 = await this.Decorator<global::A>((global::A)_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0);
         });
     }
 }");

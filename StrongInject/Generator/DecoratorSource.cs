@@ -20,11 +20,11 @@ namespace StrongInject.Generator
 
     internal record DecoratorFactoryMethod(
         IMethodSymbol Method,
-        ITypeSymbol ReturnType,
+        ITypeSymbol DecoratedType,
         bool IsOpenGeneric,
         int decoratedParameter,
         bool IsAsync) : DecoratorSource(decoratedParameter, IsAsync)
     {
-        public override ITypeSymbol OfType => ReturnType;
+        public override ITypeSymbol OfType => DecoratedType;
     }
 }

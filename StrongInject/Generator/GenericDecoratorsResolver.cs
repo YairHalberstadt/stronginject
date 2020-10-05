@@ -20,7 +20,7 @@ namespace StrongInject.Generator
 
             foreach(var decoratorFactoryMethod in decoratorFactoryMethods)
             {
-                var list = decoratorFactoryMethod.ReturnType switch
+                var list = decoratorFactoryMethod.DecoratedType switch
                 {
                     INamedTypeSymbol namedTypeSymbol => _namedTypeDecoratorFactories.GetOrCreate(namedTypeSymbol.OriginalDefinition, _ => new()),
                     IArrayTypeSymbol arrayTypeSymbol => _arrayDecoratorFactories,
@@ -69,7 +69,7 @@ namespace StrongInject.Generator
 
         private bool CanConstructFromGenericFactoryMethod(ITypeSymbol toConstruct, DecoratorFactoryMethod factoryMethod, out DecoratorFactoryMethod constructedFactoryMethod)
         {
-            if (!CanConstructFromGenericMethodReturnType(_compilation, toConstruct, factoryMethod.Method, out var constructedMethod, out _))
+            if (!CanConstructFromGenericMethodReturnType(_compilation, toConstruct, factoryMethod.DecoratedType, factoryMethod.Method, out var constructedMethod, out _))
             {
                 constructedFactoryMethod = null!;
                 return false;
@@ -77,7 +77,7 @@ namespace StrongInject.Generator
 
             constructedFactoryMethod = factoryMethod with
             {
-                ReturnType = toConstruct,
+                DecoratedType = toConstruct,
                 Method = constructedMethod,
                 IsOpenGeneric = false
             };
