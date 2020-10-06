@@ -1,3 +1,23 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [StrongInject](#stronginject)
+  - [Aims](#aims)
+    - [Compile time checked dependency injection](#compile-time-checked-dependency-injection)
+    - [Fast](#fast)
+    - [Encourage best practices](#encourage-best-practices)
+    - [No reflection or runtime code generation](#no-reflection-or-runtime-code-generation)
+    - [Async support](#async-support)
+  - [Concepts](#concepts)
+    - [Containers](#containers)
+    - [[[Registration]]](#registration)
+    - [[[Resolution]]](#resolution)
+    - [Disposal](#disposal)
+  - [Getting Started](#getting-started)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # StrongInject
 
 StrongInject is a compile time IOC framework for C#, utilizing the new roslyn [Source Generators](https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/) feature.

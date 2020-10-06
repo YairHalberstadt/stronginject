@@ -1,3 +1,24 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Registration](#registration)
+  - [Forms of Registration](#forms-of-registration)
+    - [Module Registration](#module-registration)
+    - [Type Registration](#type-registration)
+    - [Instance Registration](#instance-registration)
+    - [Factory Type Registration](#factory-type-registration)
+    - [Factory Method Registration](#factory-method-registration)
+    - [Decorators](#decorators)
+      - [Decorator Type Registration](#decorator-type-registration)
+      - [Decorator Factory Method Registration](#decorator-factory-method-registration)
+  - [Other registration concepts](#other-registration-concepts)
+    - [Scopes](#scopes)
+    - [Options](#options)
+    - [Best Registration](#best-registration)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Registration
 
 A container is esentially a factory that knows how to provide an instance of a type on demand, and then dispose of it once it's no longer needed.
