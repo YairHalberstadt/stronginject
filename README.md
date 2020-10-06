@@ -4,7 +4,14 @@
 # StrongInject
 compile time dependency injection for .Net
 
-<!-- START doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
+[![Join the chat at https://gitter.im/stronginject/community](https://badges.gitter.im/stronginject/community.svg)](https://gitter.im/stronginject/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/StrongInject)](https://www.nuget.org/packages/StrongInject)
+# StrongInject
+compile time dependency injection for .Net
+
 ## Table Of Contents
 
 - [Aims](#aims)
@@ -33,7 +40,8 @@ compile time dependency injection for .Net
 - [Product Roadmap](#product-roadmap)
 - [Contributing](#contributing)
 - [Need Help?](#need-help)
-<!-- END doctoc -->
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Aims
 
