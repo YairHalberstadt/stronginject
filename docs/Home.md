@@ -8,7 +8,7 @@ StrongInject is a compile time IOC framework for C#, utilizing the new roslyn [S
 
 A container is esentially a factory that knows how to create an instance of a type on demand, and then dispose of it once it's no longer needed.
 
-### [Registration](./Registration.md)
+### [[Registration]]
 
 Registration is how you let your container know what it can use, and how, to try and create that instance.
 
