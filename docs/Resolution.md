@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Resolution](#resolution)
+  - [Resolution Algorithm](#resolution-algorithm)
+    - [Delegate Parameters](#delegate-parameters)
+    - [Non Generic Registrations](#non-generic-registrations)
+    - [Generic Registrations](#generic-registrations)
+    - [Delegate Types](#delegate-types)
+    - [Array Types](#array-types)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Resolution
 
 Resolution is how the container create/provides an instance of a type. This can be when you ask for the instance directly, or it may be needed as a dependency for another resolution.
