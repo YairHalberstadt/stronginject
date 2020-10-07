@@ -4,11 +4,12 @@
 
 - [Resolution](#resolution)
   - [Resolution Algorithm](#resolution-algorithm)
-    - [Delegate Parameters](#delegate-parameters)
-    - [Non Generic Registrations](#non-generic-registrations)
-    - [Generic Registrations](#generic-registrations)
-    - [Delegate Types](#delegate-types)
-    - [Array Types](#array-types)
+    - [Order Providers Are Checked](#order-providers-are-checked)
+      - [Delegate Parameters](#delegate-parameters)
+      - [Non Generic Registrations](#non-generic-registrations)
+      - [Generic Registrations](#generic-registrations)
+      - [Delegate Types](#delegate-types)
+      - [Array Types](#array-types)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
