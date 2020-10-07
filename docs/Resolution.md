@@ -44,27 +44,29 @@ public class C {}
 5. StrongInject will try to resolve `C`, and finds that we've registered the type `C`, so will try to use `C`'s constructor to create an instance of `C`.
 6. `C`'s constructor has no parameters, and so we are done.
 
+### Order Providers Are Checked
+
 When StrongInject needs to resolve an instance of a type, it will check the following potential providers one by one, and stop once it finds any that are capable of providing the instance.
 
-### Delegate Parameters
+#### Delegate Parameters
 
 StrongInject can automatically resolve delegates. When resolving the return type of the delegate, StrongInject will make use of any of the delegate parameters for use as dependencies of the return type.
 For a delegate resolved inside a delegate, inner delegate parameters override outer delegate parameters of the same type.
 Each delegate parameter can only be used to resolve an instance of the exact same type as the parameter. It cannot be used to resolve as the parameters base classes, or interface implementations.
 
-### Non Generic Registrations
+#### Non Generic Registrations
 
 To find out more about using registration see the [[documentation|Registration]]. Most registrations are non generic, and StrongInject checks to see if there are any such registrations for the type. If there is a best registration, this is used. If there are multiple best registrations, then StrongInject produces an error message and stops.
 
-### Generic Registrations
+#### Generic Registrations
 
 To find out more about using registration see the [[documentation|Registration]]. Some registrations can be generic, and if there are no non generic registrations for the type, StrongInject checks to see if any generic registrations can be used to create the type by substituting in the correct type parameters. If there is a best such registration, this is used. If there are multiple best registrations, then StrongInject produces an error message and stops.
 
-### Delegate Types
+#### Delegate Types
 
 If the type is a delegate type, StrongInject will automatically create a delegate which resolves an instance of the delegate return type, using the delegate parameters as dependencies if necessary.
 If the return type is a `TaskT>` or `ValueTask<T>`, then StrongInject will create an async delegate which asynchronously resolves an instance of `T`, using the delegate parameters as dependencies if necessary.
 
-### Array Types
+#### Array Types
 
 If the type is an array, StrongInject will find all non generic and generic registrations which can be used to resolve the element type of the array. It will then resolve all of them and create an array containing all of these instances.
