@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Containers](#containers)
+  - [Run/RunAsync](#runrunasync)
+  - [Resolve/ResolveAsync](#resolveresolveasync)
+  - [Disposal](#disposal)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Containers
 
 A container is esentially a factory that knows how to provide an instance of a type on demand, and then dispose of it once it's no longer needed.
