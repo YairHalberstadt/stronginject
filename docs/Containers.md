@@ -15,7 +15,7 @@ A container is esentially a factory that knows how to provide an instance of a t
 
 You can create a container by inheriting from `IContainer<T>`, or `IAsyncContainer<T>`. The latter is necessary if resolution has to be asynchronous.
 
-You need to make sure that the container is capable of [[resolving|Resolution]] `T` by providing suitable [[registrations|Registration]]. Otherwise you will get a compile time error.
+You need to make sure that the container is capable of [resolving](https://github.com/YairHalberstadt/stronginject/wiki/Resolution) `T` by providing suitable [registrations](https://github.com/YairHalberstadt/stronginject/wiki/Registration). Otherwise you will get a compile time error.
 
 There are two possible ways to use the container:
 
