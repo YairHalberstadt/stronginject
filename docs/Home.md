@@ -46,16 +46,16 @@ StrongInject fully supports async initialization and disposal, a feature sorely 
 
 ## Concepts
 
-### [[Containers]]
+### [Containers](https://github.com/YairHalberstadt/stronginject/wiki/Containers)
 
 A container is esentially a factory that knows how to provide an instance of a type on demand, and then dispose of it once it's no longer needed.
 
-### [[Registration]]
+### [Registration](https://github.com/YairHalberstadt/stronginject/wiki/Registration)
 
 Registration is how you let your container know what it can use, and how, to try and create that instance.
 
 
-### [[Resolution]]
+### [Resolution](https://github.com/YairHalberstadt/stronginject/wiki/Resolution)
 
 Resolution is how the container create/provides an instance of a type. This can be when you ask for the instance directly, or it may be needed as a dependency for another resolution.
 
@@ -77,11 +77,11 @@ Once an instance is no longer needed, StrongInject takes care of disposing it fo
     public class A { public A(B b){} }
     public class B {}
     ```
-    To find out more about registration see the [[documentation|Registration]].
+    To find out more about registration see the [documentation](https://github.com/YairHalberstadt/stronginject/wiki/Registration).
 3. Use the container:
     ```csharp
     var myContainer = new MyContainer();
     myContainer.Run(a => Console.WriteLine($"We've resolved an instance of A: {a.ToString()}!!"));
     ```
-    To find out more about resolution see the [[documentation|Resolution]].
+    To find out more about resolution see the [documentation](https://github.com/YairHalberstadt/stronginject/wiki/Resolution).
 
