@@ -17,7 +17,7 @@
 
 Resolution is how the container create/provides an instance of a type. This can be when you ask for the instance directly, or it may be needed as a dependency for another resolution.
 
-To find out more about using containers see the [[documentation|Containers]].
+To find out more about using containers see the [documentation](https://github.com/YairHalberstadt/stronginject/wiki/Containers).
 
 ## Resolution Algorithm
 
@@ -57,11 +57,11 @@ Each delegate parameter can only be used to resolve an instance of the exact sam
 
 #### Non Generic Registrations
 
-To find out more about using registration see the [[documentation|Registration]]. Most registrations are non generic, and StrongInject checks to see if there are any such registrations for the type. If there is a best registration, this is used. If there are multiple best registrations, then StrongInject produces an error message and stops.
+To find out more about using registration see the [documentation](https://github.com/YairHalberstadt/stronginject/wiki/Registration). Most registrations are non generic, and StrongInject checks to see if there are any such registrations for the type. If there is a best registration, this is used. If there are multiple best registrations, then StrongInject produces an error message and stops.
 
 #### Generic Registrations
 
-To find out more about using registration see the [[documentation|Registration]]. Some registrations can be generic, and if there are no non generic registrations for the type, StrongInject checks to see if any generic registrations can be used to create the type by substituting in the correct type parameters. If there is a best such registration, this is used. If there are multiple best registrations, then StrongInject produces an error message and stops.
+To find out more about using registration see the [documentation](https://github.com/YairHalberstadt/stronginject/wiki/Registration). Some registrations can be generic, and if there are no non generic registrations for the type, StrongInject checks to see if any generic registrations can be used to create the type by substituting in the correct type parameters. If there is a best such registration, this is used. If there are multiple best registrations, then StrongInject produces an error message and stops.
 
 #### Delegate Types
 
