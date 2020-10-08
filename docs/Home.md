@@ -10,7 +10,7 @@
     - [No reflection or runtime code generation](#no-reflection-or-runtime-code-generation)
     - [Async support](#async-support)
   - [Concepts](#concepts)
-    - [Containers](#containers)
+    - [[[Containers]]](#containers)
     - [[[Registration]]](#registration)
     - [[[Resolution]]](#resolution)
     - [Disposal](#disposal)
