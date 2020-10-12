@@ -62,6 +62,8 @@ We recommend you use floating versions for now, as `StrongInject` is still in pr
 
 ## Usage
 
+The [wiki](https://github.com/YairHalberstadt/stronginject/wiki) is currently a work in progress. It aims to give a more thorough formal overview of everything in StrongInject, whereas this section of the readme gives a briefer overview relying heavily on examples. I would read through this first, then check out the wiki if you have any questions.
+
 ### Declaring a container
 To create a container for a specific type, declare your container partial and inherit from `StrongInject.IContainer<T>`:
 
