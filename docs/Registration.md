@@ -29,7 +29,7 @@ Registration is how you let your container know what it can use, and how, to try
 
 StrongInject currently supports the following forms of Registration:
 
-### Module Registration
+### [Module Registration](https://github.com/YairHalberstadt/stronginject/wiki/ModuleRegistration)
 
 Instead of having to repeat all your registrations for every single container, you can create reusable bags of registrations using a module, and then only register the module with your container to import all the module's registrations.
 
