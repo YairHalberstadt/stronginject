@@ -33,7 +33,7 @@ StrongInject currently supports the following forms of Registration:
 
 Instead of having to repeat all your registrations for every single container, you can create reusable bags of registrations using a module, and then only register the module with your container to import all the module's registrations.
 
-### Type Registration
+### [Type Registration](https://github.com/YairHalberstadt/stronginject/wiki/TypeRegistration)
 
 You can register a type either as itself, or as its base classes/interfaces. StrongInject will look for a suitable constructor to use to instantiate it.
 
