@@ -37,7 +37,7 @@ Instead of having to repeat all your registrations for every single container, y
 
 You can register a type either as itself, or as its base classes/interfaces. StrongInject will look for a suitable constructor to use to instantiate it.
 
-### Instance Registration
+### [Instance Registration](https://github.com/YairHalberstadt/stronginject/wiki/InstanceRegistration)
 
 You can register a field or property as storing an instance of a type.
 
