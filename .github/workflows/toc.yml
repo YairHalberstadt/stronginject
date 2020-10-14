@@ -10,5 +10,5 @@ jobs:
           TOC_TITLE: |
             ## Table Of Contents
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          TARGET_PATHS: README.md, docs/**.md
+          TARGET_PATHS: README.md, docs/**.md, docs/*/**.md
 
