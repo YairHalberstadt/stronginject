@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Factory Type Registration](#factory-type-registration)
+  - [Implementing `IFactory<T>` and `IAsyncFactory<T>`](#implementing-ifactoryt-and-iasyncfactoryt)
+  - [Disposal](#disposal)
+  - [Example](#example)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Factory Type Registration
 
 If a type implements `IFactory<T>` or `IAsyncFactory<T>` you can register it as a provider for `T` using the `[RegisterFactory] attribute. StrongInject will look for a suitable constructor to instantiate the type, as described [here](https://github.com/YairHalberstadt/stronginject/wiki/TypeRegistration#instantiation).

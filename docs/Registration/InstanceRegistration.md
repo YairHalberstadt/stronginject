@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Instance Registration](#instance-registration)
+  - [Usage in modules](#usage-in-modules)
+  - [Configuration](#configuration)
+    - [Decoration](#decoration)
+    - [Disposal](#disposal)
+  - [Example](#example)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Instance Registration
 
 You can mark a field or property with the `[Instance]` attribute:

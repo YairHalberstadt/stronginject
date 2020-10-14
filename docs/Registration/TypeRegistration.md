@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Type Registration](#type-registration)
+  - [Instantiation](#instantiation)
+  - [Disposal](#disposal)
+  - [Example](#example)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Type Registration
 
 You can register a type either as itself, or as its base classes/interfaces. StrongInject will look for a suitable constructor to use to instantiate it.
