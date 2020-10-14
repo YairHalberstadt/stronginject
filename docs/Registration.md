@@ -41,7 +41,7 @@ You can register a type either as itself, or as its base classes/interfaces. Str
 
 You can register a field or property as storing an instance of a type.
 
-### Factory Type Registration
+### [Factory Type Registration](https://github.com/YairHalberstadt/stronginject/wiki/FactoryTypeRegistration)
 
 If a type implements `IFactory<T>` or `IAsyncFactory<T>` you can register it as a factory of `T`.
 
