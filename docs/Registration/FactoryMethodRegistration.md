@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Factory Method Registration](#factory-method-registration)
+  - [Generic Factory Methods](#generic-factory-methods)
+  - [Usage in Modules](#usage-in-modules)
+  - [Example](#example)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Factory Method Registration
 
 A method may be marked as a Factory Method by applying the `[Factory]` attribute:
