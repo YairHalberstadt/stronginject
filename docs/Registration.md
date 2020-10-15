@@ -45,7 +45,7 @@ You can register a field or property as storing an instance of a type.
 
 If a type implements `IFactory<T>` or `IAsyncFactory<T>` you can register it as a factory of `T`.
 
-### Factory Method Registration
+### [Factory Method Registration](https://github.com/YairHalberstadt/stronginject/wiki/FactoryMethodRegistration)
 
 You can register a method returning `T` as a factory for `T`.
 
