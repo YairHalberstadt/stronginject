@@ -31,7 +31,7 @@ How often the field will be accessed is an implementation detail, so the field/p
 
 ## Usage in modules
 
-In order for an instance field or property to be exported by a module it must be `public` and `static`. Instance fields and properties in containers can be `private` and `instance` if desired.
+In order for an instance field or property to be exported by a module it must be `public` and `static`. For it to be inherited it can also be `protected`. Instance fields and properties in containers can be `private` and `instance` if desired.
 
 ## Configuration
 
