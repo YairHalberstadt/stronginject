@@ -57,8 +57,15 @@ namespace GeneratorTestsUpdator
                         var methodLocation = _source.IndexOf(testFailed.TestMethod.Method.Name);
                         var sourceFromMethod = _source[methodLocation..];
                         var originalCodeMatch = originalCodeRegex.Match(sourceFromMethod);
-                        _source = _source[..(methodLocation + originalCodeMatch.Index)] + correctCode + sourceFromMethod[(originalCodeMatch.Index + originalCodeMatch.Length)..];
-                        Console.WriteLine($"Fixed test {testFailed.TestMethod.Method.Name}");
+                        if (!originalCodeMatch.Success)
+                        {
+                            Console.WriteLine($"Cannot fix test {testFailed.TestMethod.Method.Name} as can't find string beginning '#pragma'");
+                        }
+                        else
+                        {
+                            _source = _source[..(methodLocation + originalCodeMatch.Index)] + correctCode + sourceFromMethod[(originalCodeMatch.Index + originalCodeMatch.Length)..];
+                            Console.WriteLine($"Fixed test {testFailed.TestMethod.Method.Name}");
+                        }
                     }
                 }
                 return base.OnMessageWithTypes(message, messageTypes);
