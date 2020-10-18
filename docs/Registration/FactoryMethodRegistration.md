@@ -36,7 +36,7 @@ When resolving an instance of type `T`, StrongInject tries to see if we can cons
 
 ## Usage in Modules
 
-A Factory Method in a module must be `public` and `static` in order to be exported.
+A Factory Method in a module must be `public` and `static` in order to be exported. For it to be inherited it can also be `protected`. Factory Methods in containers can be `private` and `instance` if desired.
 
 ## Example
 

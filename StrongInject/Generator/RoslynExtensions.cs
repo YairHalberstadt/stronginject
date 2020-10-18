@@ -109,6 +109,11 @@ namespace StrongInject.Generator
                 && (method.ContainingType?.IsPublic() ?? true);
         }
 
+        public static bool IsProtected(this ISymbol member)
+        {
+            return member.DeclaredAccessibility is Accessibility.Protected or Accessibility.ProtectedOrInternal;
+        }
+
         public static bool IsPublicMember(this ISymbol member)
         {
             if (member is not (IMethodSymbol or IPropertySymbol or IFieldSymbol or IEventSymbol))

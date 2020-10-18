@@ -210,7 +210,7 @@ A single instance will be shared across all dependencies, from any resolution
 
 #### Modules
 
-You can add registrations to any type, and then import them using the `ModuleRegistrationAttribute`. This allows you to create reusable modules of common registrations.
+You can add registrations to any type, and then import them using the `ModuleRegistrationAttribute`, or by inheriting from the module. This allows you to create reusable modules of common registrations.
 
 ```csharp
 using StrongInject;
@@ -252,7 +252,7 @@ public partial class Container : IContainer<A>
 }
 ```
 
-If the instance field/property is defined on the container type, it can be private or public, instance or static. However if you want to export the instance as part of a module it must be public and static.
+If the instance field/property is defined on the container type, it can be private or public, instance or static. However if you want to export the instance as part of a module it must be public and static. If you inherit from the module, you can also access protected registrations.
 
 ```csharp
 using StrongInject;
@@ -321,7 +321,7 @@ public partial class Container : IContainer<IInterface[]>
 
 You can set the scope of the factory method (how often it's called), by passing in the scope parameter: `[Factory(Scope.SingleInstance)]`.
 
-If the factory method is defined on the container type, it can be private or public, instance or static. However if you want to export the factory method as part of a module it must be public and static.
+If the factory method is defined on the container type, it can be private or public, instance or static. However if you want to export the factory method as part of a module it must be public and static. If you inherit from the module, you can also access protected registrations.
 
 ```csharp
 using StrongInject;

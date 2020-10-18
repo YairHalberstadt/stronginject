@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -17,6 +18,13 @@ namespace StrongInject.Generator
             GenericRegistrationsResolver.Builder GenericRegistrations,
             ImmutableArray<DecoratorSource> NonGenericDecorators,
             ImmutableArray<DecoratorFactoryMethod> GenericDecorators) { }
+
+        private enum RegistrationsToCalculate
+        {
+            Exported,
+            Inherited,
+            All,
+        }
 
         public RegistrationCalculator(
             Compilation compilation,
@@ -38,13 +46,18 @@ namespace StrongInject.Generator
 
         public InstanceSourcesScope GetContainerRegistrations(INamedTypeSymbol container)
         {
-            var registrations = CalculateRegistrations(container, dependantModules: null, onlyExported: false);
+            var registrations = CalculateRegistrations(container, dependantModules: null, RegistrationsToCalculate.All);
             return new(
                 registrations.NonGenericRegistrations,
                 registrations.GenericRegistrations.Build(_compilation),
                 registrations.NonGenericDecorators.GroupBy(x => x.OfType).ToDictionary(x => x.Key, x => x.Distinct().ToImmutableArray()),
                 new GenericDecoratorsResolver(_compilation, registrations.GenericDecorators.Distinct().ToImmutableArray()),
                 _wellKnownTypes);
+        }
+
+        private RegistrationData GetBaseClassRegistrations(INamedTypeSymbol baseClass, HashSet<INamedTypeSymbol>? dependantModules)
+        {
+            return CalculateRegistrations(baseClass, dependantModules, RegistrationsToCalculate.Inherited);
         }
 
         public void ValidateModuleRegistrations(INamedTypeSymbol module)
@@ -55,8 +68,8 @@ namespace StrongInject.Generator
         internal IReadOnlyDictionary<ITypeSymbol, InstanceSources> GetModuleRegistrations(INamedTypeSymbol module)
         {
             var registrations = GetRegistrations(module, dependantModules: null);
-            WarnOnNonStaticPublicFactoryMethods(module);
-            WarnOnNonStaticPublicInstanceFieldsOrProperties(module);
+            WarnOnNonStaticPublicOrProtectedFactoryMethods(module);
+            WarnOnNonStaticPublicOrProtectedInstanceFieldsOrProperties(module);
             WarnOnNonStaticPublicDecoratorFactoryMethods(module);
             return registrations.NonGenericRegistrations;
         }
@@ -75,23 +88,22 @@ namespace StrongInject.Generator
                         ImmutableArray<DecoratorFactoryMethod>.Empty);
                 }
 
-                registrations = CalculateRegistrations(module, dependantModules, onlyExported: true);
+                registrations = CalculateRegistrations(module, dependantModules, RegistrationsToCalculate.Exported);
                 _registrations[module] = registrations;
             }
             return registrations;
         }
 
-        private RegistrationData CalculateRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules, bool onlyExported)
+        private RegistrationData CalculateRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules, RegistrationsToCalculate registrationsToCalculate)
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
-            var attributes = module.GetAttributes();
             var genericRegistrations = new GenericRegistrationsResolver.Builder();
             var nonGenericDecorators = ImmutableArray.CreateBuilder<DecoratorSource>();
             var genericDecorators = ImmutableArray.CreateBuilder<DecoratorFactoryMethod>();
-            var nonGenericRegistrations = CalculateImportedModuleRegistrations(genericRegistrations, nonGenericDecorators, genericDecorators, dependantModules, attributes);
+            var nonGenericRegistrations = CalculateImportedModuleRegistrations(module, genericRegistrations, nonGenericDecorators, genericDecorators, dependantModules);
 
-            var thisModuleNonGenericRegistrations = CalculateThisModuleRegistrations(module, genericRegistrations, nonGenericDecorators, genericDecorators, attributes, onlyExported);
+            var thisModuleNonGenericRegistrations = CalculateThisModuleRegistrations(module, genericRegistrations, nonGenericDecorators, genericDecorators, registrationsToCalculate);
 
             if (nonGenericRegistrations is not null)
             {
@@ -113,14 +125,14 @@ namespace StrongInject.Generator
         }
 
         private Dictionary<ITypeSymbol, InstanceSources>? CalculateImportedModuleRegistrations(
+            INamedTypeSymbol module,
             GenericRegistrationsResolver.Builder genericRegistrations,
             ImmutableArray<DecoratorSource>.Builder nonGenericDecorators,
             ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators,
-            HashSet<INamedTypeSymbol>? dependantModules,
-            ImmutableArray<AttributeData> attributes)
+            HashSet<INamedTypeSymbol>? dependantModules)
         {
             Dictionary<ITypeSymbol, InstanceSources>? importedModuleRegistrations = null;
-            foreach (var registerModuleAttribute in attributes
+            foreach (var registerModuleAttribute in module.GetAttributes()
                 .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterModuleAttribute, SymbolEqualityComparer.Default) ?? false)
                 .Sort())
             {
@@ -151,6 +163,18 @@ namespace StrongInject.Generator
 
                 var moduleRegistrations = GetRegistrations(moduleType, dependantModules);
 
+                AddModuleRegistrations(moduleRegistrations, exclusionList);
+            }
+
+            if (module.BaseType is { SpecialType: not SpecialType.System_Object } baseType)
+            {
+                AddModuleRegistrations(GetBaseClassRegistrations(baseType, dependantModules), ImmutableHashSet<INamedTypeSymbol>.Empty);
+            }
+
+            return importedModuleRegistrations;
+
+            void AddModuleRegistrations(RegistrationData moduleRegistrations, ISet<INamedTypeSymbol> exclusionList)
+            {
                 importedModuleRegistrations ??= new();
                 foreach (var (type, instanceSources) in moduleRegistrations.NonGenericRegistrations)
                 {
@@ -168,19 +192,23 @@ namespace StrongInject.Generator
                 nonGenericDecorators.AddRange(moduleRegistrations.NonGenericDecorators);
                 genericDecorators.AddRange(moduleRegistrations.GenericDecorators);
             }
-
-            return importedModuleRegistrations;
         }
 
-        private Dictionary<ITypeSymbol, InstanceSources> CalculateThisModuleRegistrations(INamedTypeSymbol module, GenericRegistrationsResolver.Builder genericRegistrations, ImmutableArray<DecoratorSource>.Builder nonGenericDecorators, ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators, ImmutableArray<AttributeData> moduleAttributes, bool onlyExported)
+        private Dictionary<ITypeSymbol, InstanceSources> CalculateThisModuleRegistrations(
+            INamedTypeSymbol module,
+            GenericRegistrationsResolver.Builder genericRegistrations,
+            ImmutableArray<DecoratorSource>.Builder nonGenericDecorators,
+            ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators,
+            RegistrationsToCalculate registrationsToCalculate)
         {
+            var attributes = module.GetAttributes();
             var registrations = new Dictionary<ITypeSymbol, InstanceSources>();
-            AppendSimpleRegistrations(registrations, moduleAttributes);
-            AppendFactoryRegistrations(registrations, moduleAttributes);
-            AppendFactoryMethods(registrations, genericRegistrations, module, onlyExported);
-            AppendInstanceFieldAndProperties(registrations, module, onlyExported);
-            AppendDecoratorRegistrations(nonGenericDecorators, moduleAttributes);
-            AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, onlyExported);
+            AppendSimpleRegistrations(registrations, attributes);
+            AppendFactoryRegistrations(registrations, attributes);
+            AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToCalculate);
+            AppendInstanceFieldAndProperties(registrations, module, registrationsToCalculate);
+            AppendDecoratorRegistrations(nonGenericDecorators, attributes);
+            AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, registrationsToCalculate);
             return registrations;
         }
 
@@ -461,10 +489,19 @@ namespace StrongInject.Generator
             return true;
         }
 
-        private void AppendFactoryMethods(Dictionary<ITypeSymbol, InstanceSources> nonGenericRegistrations, GenericRegistrationsResolver.Builder genericRegistrations, INamedTypeSymbol module, bool onlyExported)
+        private void AppendFactoryMethods(
+            Dictionary<ITypeSymbol, InstanceSources> nonGenericRegistrations,
+            GenericRegistrationsResolver.Builder genericRegistrations,
+            INamedTypeSymbol module,
+            RegistrationsToCalculate registrationsToCalculate)
         {
             var methods = module.GetMembers().OfType<IMethodSymbol>();
-            foreach (var method in onlyExported ? methods.Where(x => x.IsStatic && x.IsPublic()) : methods)
+            foreach (var method in registrationsToCalculate switch {
+                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.IsPublic()),
+                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.IsPublic() || x.IsProtected()),
+                RegistrationsToCalculate.All => methods,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+            })
             {
                 var instanceSource = CreateInstanceSourceIfFactoryMethod(method, out var attribute);
                 if (instanceSource is not null)
@@ -580,10 +617,19 @@ namespace StrongInject.Generator
             }
         }
 
-        private void AppendInstanceFieldAndProperties(Dictionary<ITypeSymbol, InstanceSources> registrations, INamedTypeSymbol module, bool onlyExported)
+        private void AppendInstanceFieldAndProperties(
+            Dictionary<ITypeSymbol, InstanceSources> registrations,
+            INamedTypeSymbol module,
+            RegistrationsToCalculate registrationsToCalculate)
         {
             var fieldsAndProperties = module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol);
-            foreach (var fieldOrProperty in onlyExported ? fieldsAndProperties.Where(IsPubliclyAccessibleStaticFieldOrProperty) : fieldsAndProperties)
+            foreach (var fieldOrProperty in registrationsToCalculate switch
+            {
+                RegistrationsToCalculate.Exported => fieldsAndProperties.Where(x => IsPubliclyAccessibleStaticFieldOrProperty(x)),
+                RegistrationsToCalculate.Inherited => fieldsAndProperties.Where(x => IsPubliclyAccessibleStaticFieldOrProperty(x) || IsProtectedFieldOrProperty(x)),
+                RegistrationsToCalculate.All => fieldsAndProperties,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+            })
             {
                 InstanceSource? instanceSource = CreateInstanceSourceIfInstanceFieldOrProperty(fieldOrProperty, out var attribute);
                 if (instanceSource is not null)
@@ -701,6 +747,14 @@ namespace StrongInject.Generator
             return true;
         }
 
+        private static bool IsProtectedFieldOrProperty(ISymbol symbol)
+        {
+            Debug.Assert(symbol is IFieldSymbol or IPropertySymbol);
+            if (symbol.IsProtected() && symbol is not IPropertySymbol { GetMethod: { DeclaredAccessibility: Accessibility.Private } })
+                return true;
+            return false;
+        }
+
         private InstanceFieldOrProperty? CreateInstanceSourceIfInstanceFieldOrProperty(ISymbol fieldOrProperty, out AttributeData attribute)
         {
             attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
@@ -734,9 +788,9 @@ namespace StrongInject.Generator
             return null;
         }
 
-        private void WarnOnNonStaticPublicFactoryMethods(INamedTypeSymbol module)
+        private void WarnOnNonStaticPublicOrProtectedFactoryMethods(INamedTypeSymbol module)
         {
-            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic())))
+            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic() || x.IsProtected())))
             {
                 var attribute = method.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
@@ -744,21 +798,14 @@ namespace StrongInject.Generator
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-                    if (!method.IsStatic)
-                    {
-                        _reportDiagnostic(WarnFactoryMethodNotStatic(module, method, location));
-                    }
-                    else
-                    {
-                        _reportDiagnostic(WarnFactoryMethodNotPubliclyAccessible(module, method, location));
-                    }
+                    _reportDiagnostic(WarnFactoryMethodNotPublicStaticOrProtected(module, method, location));
                 }
             }
         }
 
-        private void WarnOnNonStaticPublicInstanceFieldsOrProperties(INamedTypeSymbol module)
+        private void WarnOnNonStaticPublicOrProtectedInstanceFieldsOrProperties(INamedTypeSymbol module)
         {
-            foreach (var fieldOrProperty in module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol && !IsPubliclyAccessibleStaticFieldOrProperty(x)))
+            foreach (var fieldOrProperty in module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol && !IsPubliclyAccessibleStaticFieldOrProperty(x) && !IsProtectedFieldOrProperty(x)))
             {
                 var attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
@@ -766,21 +813,14 @@ namespace StrongInject.Generator
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-                    if (!fieldOrProperty.IsStatic)
-                    {
-                        _reportDiagnostic(WarnInstanceFieldOrPropertyNotStatic(module, fieldOrProperty, location));
-                    }
-                    else
-                    {
-                        _reportDiagnostic(WarnInstanceFieldOrPropertyNotPubliclyAccessible(module, fieldOrProperty, location));
-                    }
+                    _reportDiagnostic(WarnInstanceFieldOrPropertyNotPublicStaticOrProtected(module, fieldOrProperty, location));
                 }
             }
         }
 
         private void WarnOnNonStaticPublicDecoratorFactoryMethods(INamedTypeSymbol module)
         {
-            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic())))
+            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic() || x.IsProtected())))
             {
                 var attribute = method.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
@@ -788,14 +828,7 @@ namespace StrongInject.Generator
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-                    if (!method.IsStatic)
-                    {
-                        _reportDiagnostic(WarnFactoryMethodNotStatic(module, method, location));
-                    }
-                    else
-                    {
-                        _reportDiagnostic(WarnFactoryMethodNotPubliclyAccessible(module, method, location));
-                    }
+                    _reportDiagnostic(WarnFactoryMethodNotPublicStaticOrProtected(module, method, location));
                 }
             }
         }
@@ -887,10 +920,19 @@ namespace StrongInject.Generator
             }
         }
 
-        private void AppendDecoratorFactoryMethods(ImmutableArray<DecoratorSource>.Builder nonGenericDecorators, ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators, INamedTypeSymbol module, bool onlyExported)
+        private void AppendDecoratorFactoryMethods(
+            ImmutableArray<DecoratorSource>.Builder nonGenericDecorators,
+            ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators,
+            INamedTypeSymbol module,
+            RegistrationsToCalculate registrationsToCalculate)
         {
             var methods = module.GetMembers().OfType<IMethodSymbol>();
-            foreach (var method in onlyExported ? methods.Where(x => x.IsStatic && x.IsPublic()) : methods)
+            foreach (var method in registrationsToCalculate switch {
+                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.IsPublic()),
+                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.IsPublic() || x.IsProtected()),
+                RegistrationsToCalculate.All => methods,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+            })
             {
                 var decoratorSource = CreateDecoratorSourceIfDecoratorFactoryMethod(method, out var attribute);
                 if (decoratorSource is not null)
@@ -1307,13 +1349,13 @@ namespace StrongInject.Generator
                 factoryType);
         }
 
-        private static Diagnostic WarnFactoryMethodNotStatic(ITypeSymbol module, IMethodSymbol method, Location location)
+        private static Diagnostic WarnFactoryMethodNotPublicStaticOrProtected(ITypeSymbol module, IMethodSymbol method, Location location)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI1002",
-                    "Factory Method is not static, and containing module is not a container, so will be ignored",
-                    "Factory method '{0}' is not static, and containing module '{1}' is not a container, so will be ignored.",
+                    "Factory Method is not either public and static, or protected, and containing module is not a container, so will be ignored",
+                    "Factory method '{0}' is not either public and static, or protected, and containing module '{1}' is not a container, so will be ignored.",
                     "StrongInject",
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),
@@ -1322,44 +1364,13 @@ namespace StrongInject.Generator
                 module);
         }
 
-        private static Diagnostic WarnFactoryMethodNotPubliclyAccessible(ITypeSymbol module, IMethodSymbol method, Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI1003",
-                    "Factory Method is not publicly accessible, and containing module is not a container, so it will be ignored",
-                    "Factory method '{0}' is not publicly accessible, and containing module '{1}' is not a container, so it will be ignored.",
-                    "StrongInject",
-                    DiagnosticSeverity.Warning,
-                    isEnabledByDefault: true),
-                location,
-                method,
-                module);
-        }
-
-        private static Diagnostic WarnInstanceFieldOrPropertyNotStatic(ITypeSymbol module, ISymbol fieldOrProperty, Location location)
+        private static Diagnostic WarnInstanceFieldOrPropertyNotPublicStaticOrProtected(ITypeSymbol module, ISymbol fieldOrProperty, Location location)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI1004",
-                    "Instance FieldOrProperty is not static, and containing module is not a container, so will be ignored",
-                    "Instance {0} '{1}' is not static, and containing module '{2}' is not a container, so will be ignored.",
-                    "StrongInject",
-                    DiagnosticSeverity.Warning,
-                    isEnabledByDefault: true),
-                location,
-                fieldOrProperty is IFieldSymbol ? "field" : "property",
-                fieldOrProperty,
-                module);
-        }
-
-        private static Diagnostic WarnInstanceFieldOrPropertyNotPubliclyAccessible(ITypeSymbol module, ISymbol fieldOrProperty, Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI1005",
-                    "Instance FieldOrProperty is not publicly accessible, and containing module is not a container, so it will be ignored",
-                    "Instance {0} '{1}' is not publicly accessible, and containing module '{2}' is not a container, so it will be ignored.",
+                    "Instance FieldOrProperty is not either public and static, or protected, and containing module is not a container, so will be ignored",
+                    "Instance {0} '{1}' is not either public and static, or protected, and containing module '{2}' is not a container, so will be ignored.",
                     "StrongInject",
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),

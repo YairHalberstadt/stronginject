@@ -5651,9 +5651,9 @@ public class A{}
 public class B{}";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (6,6): Warning SI1003: Factory method 'Module.M(B)' is not publicly accessible, and containing module 'Module' is not a container, so it will be ignored.
+                // (6,6): Warning SI1002: Factory method 'Module.M(B)' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
                 // Factory
-                new DiagnosticResult("SI1003", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
+                new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
                 // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
@@ -7093,9 +7093,9 @@ public class A {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (6,6): Warning SI1005: Instance field 'Module.Instance' is not publicly accessible, and containing module 'Module' is not a container, so it will be ignored.
+                // (6,6): Warning SI1004: Instance field 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
                 // Instance
-                new DiagnosticResult("SI1005", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
                 // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
@@ -7146,9 +7146,9 @@ public class A {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (6,6): Warning SI1005: Instance property 'Module.Instance' is not publicly accessible, and containing module 'Module' is not a container, so it will be ignored.
+                // (6,6): Warning SI1004: Instance property 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
                 // Instance
-                new DiagnosticResult("SI1005", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
                 // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
@@ -7252,9 +7252,9 @@ public class A {}
 ";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (6,6): Warning SI1005: Instance property 'Module.Instance' is not publicly accessible, and containing module 'Module' is not a container, so it will be ignored.
+                // (6,6): Warning SI1004: Instance property 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
                 // Instance
-                new DiagnosticResult("SI1005", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
                 // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
@@ -11504,9 +11504,9 @@ public class Module1
 }";
             var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
             generatorDiagnostics.Verify(
-                // (6,6): Warning SI1003: Factory method 'Module1.Decorator(int)' is not publicly accessible, and containing module 'Module1' is not a container, so it will be ignored.
+                // (6,6): Warning SI1002: Factory method 'Module1.Decorator(int)' is not either public and static, or protected, and containing module 'Module1' is not a container, so will be ignored.
                 // DecoratorFactory
-                new DiagnosticResult("SI1003", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(6, 6),
+                new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(6, 6),
                 // (7,6): Warning SI1002: Factory method 'Module1.Decorator<T>(T)' is not static, and containing module 'Module1' is not a container, so will be ignored.
                 // DecoratorFactory
                 new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(7, 6));
@@ -14511,6 +14511,485 @@ partial class Container
         });
     }
 }");
+        }
+
+        [Fact]
+        public void ImportsRegistrationsFromBaseClass()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+
+[Register(typeof(A))]
+public class Module {}
+
+public partial class Container : Module, IContainer<A>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void ImportsRegistrationsFromBaseBaseClass()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+
+[Register(typeof(A))]
+public class Module {}
+
+public class InBetween : Module {}
+
+public partial class Container : InBetween, IContainer<A>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void CanOverrideRegistrationImportedFromBaseClass()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+public class B : A {}
+[Register(typeof(A))]
+public class Module {}
+
+[Register(typeof(B), typeof(A))]
+public partial class Container : Module, IContainer<A>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::B();
+        TResult result;
+        try
+        {
+            result = func((global::A)_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0 = new global::B();
+        return new global::StrongInject.Owned<global::A>(_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorIfRegistrationFromBaseClassConflictsWithThatFromImportedModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+public class B : A {}
+
+[Register(typeof(A))]
+public class ModuleA {}
+
+[Register(typeof(B), typeof(A))]
+public class ModuleB{}
+
+[RegisterModule(typeof(ModuleB))]
+public partial class Container : ModuleA, IContainer<A>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (14,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
+                // Container
+                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(14, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void ImportsProtectedInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+public class B {}
+public class C {}
+
+public class Module
+{
+    [Instance] protected A A = new A();
+    [Instance] protected internal B B => new B();
+    [Factory] protected C CreateC(A a, B b) => new C();
+    [DecoratorFactory] protected C DecorateC(C c) => c;
+}
+
+public partial class Container : Module, IContainer<C>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = this.CreateC((global::A)this.A, (global::B)this.B);
+        var _0 = this.DecorateC((global::C)_1);
+        TResult result;
+        try
+        {
+            result = func((global::C)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = this.CreateC((global::A)this.A, (global::B)this.B);
+        var _0 = this.DecorateC((global::C)_1);
+        return new global::StrongInject.Owned<global::C>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void ImportsPublicStaticInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+public class B {}
+public class C {}
+
+public class Module
+{
+    [Instance] public static A A = new A();
+    [Instance] public static B B => new B();
+    [Factory] public static C CreateC(A a, B b) => new C();
+    [DecoratorFactory] public static C DecorateC(C c) => c;
+}
+
+public partial class Container : Module, IContainer<C>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module.CreateC((global::A)global::Module.A, (global::B)global::Module.B);
+        var _0 = global::Module.DecorateC((global::C)_1);
+        TResult result;
+        try
+        {
+            result = func((global::C)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module.CreateC((global::A)global::Module.A, (global::B)global::Module.B);
+        var _0 = global::Module.DecorateC((global::C)_1);
+        return new global::StrongInject.Owned<global::C>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void ImportsProtectedStaticInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+public class B {}
+public class C {}
+
+public class Module
+{
+    [Instance] protected internal static A A = new A();
+    [Instance] protected static B B => new B();
+    [Factory] protected internal static C CreateC(A a, B b) => new C();
+    [DecoratorFactory] protected static C DecorateC(C c) => c;
+}
+
+public partial class Container : Module, IContainer<C>
+{
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module.CreateC((global::A)global::Module.A, (global::B)global::Module.B);
+        var _0 = global::Module.DecorateC((global::C)_1);
+        TResult result;
+        try
+        {
+            result = func((global::C)_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _1 = global::Module.CreateC((global::A)global::Module.A, (global::B)global::Module.B);
+        var _0 = global::Module.DecorateC((global::C)_1);
+        return new global::StrongInject.Owned<global::C>(_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(_0);
+            global::StrongInject.Helpers.Dispose(_1);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void WarningIfInstanceFieldInstancePropertyFactoryAndDecoratorAreNotPublicStaticOrProtected()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A {}
+
+public class Module
+{
+    [Instance] public A A1 = new A();
+    [Instance] static A A2 => new A();
+    [Factory] private protected A CreateA() => new A();
+    [DecoratorFactory] internal A DecorateA(A a) => a;
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify(
+                // (8,6): Warning SI1004: Instance field 'Module.A1' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+                // Instance
+                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(8, 6),
+                // (9,6): Warning SI1004: Instance property 'Module.A2' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+                // Instance
+                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(9, 6),
+                // (10,6): Warning SI1002: Factory method 'Module.CreateA()' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+                // Factory
+                new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(10, 6),
+                // (11,6): Warning SI1002: Factory method 'Module.DecorateA(A)' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+                // DecoratorFactory
+                new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(11, 6));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
         }
     }
 }
