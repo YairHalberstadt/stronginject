@@ -17,7 +17,7 @@ Instead of having to repeat all your registrations for every single container, y
 
 To create a module, just add any [registrations](https://github.com/YairHalberstadt/stronginject/wiki/Registration) to a type, exactly like you would to a container.
 
-The only difference is that [Instances](), [Factory Methods]() and [Decorator Factory Methods]() on a module must be `public` and `static`.
+The only difference is that [Instances](), [Factory Methods]() and [Decorator Factory Methods]() on a module must be either `public` and `static`, `protected`, or `protected internal`.
 
 ## Registering a module
 
@@ -38,16 +38,20 @@ The first parameter is the type of the module to register.
 
 You can the optionally add a params list of types to exclude from the module.
 
-When you register a module, you import all of the registrations from the module, except for any that provide instances of types specified in the `ExclusionList`.
+When you register a module, you import all of the registrations from the module, except for any that provide instances of types specified in the `ExclusionList`, and any non `public static` members.
 
 Modules can register other modules.
+
+## Inheriting from a module
+
+You can also inherit from a module. This is functionally the same as importing the module, except that you also import `protected` and `protected internal` members.
 
 ## Example
 
 ```csharp
 public class A {}
 public class B { public B(A a){} }
-public class C { public C(B b){} }
+public class C { public C(B b, int i){} }
 
 [Register(typeof(A))]
 public class ModuleA {}
@@ -56,8 +60,17 @@ public class ModuleA {}
 [Register(typeof(B))]
 public class ModuleB {}
 
-[Register(typeof(C))]
+public class ModuleC
+{
+    private int _i;
+    public ModuleC(int i) => _i = i;
+    protected C CreateC(B b) => new C(b, _i);
+}
+
 [RegisterModule(typeof(ModuleA))]
 [RegisterModule(typeof(ModuleB), typeof(A))] // Have to exclude A, as otherwise we will have multiple conflicting registrations for A
-public class Container : IContainer<C>{}
+public class Container : ModuleC, IContainer<C> // By inheriting from ModuleC we import the protected method CreateC
+{
+    public Container(int i) : base(i){}
+}
 ```
