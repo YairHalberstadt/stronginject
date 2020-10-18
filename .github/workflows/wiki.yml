@@ -1,0 +1,19 @@
+name: Wiki
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      # Additional steps to generate documentation in "Documentation" directory
+      - name: Upload Documentation to Wiki
+        uses: SwiftDocOrg/github-wiki-publish-action@rsync
+        with:
+          path: "docs/"
+        env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}

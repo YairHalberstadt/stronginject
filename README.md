@@ -1,10 +1,11 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 [![Join the chat at https://gitter.im/stronginject/community](https://badges.gitter.im/stronginject/community.svg)](https://gitter.im/stronginject/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/StrongInject)](https://www.nuget.org/packages/StrongInject)
 # StrongInject
 compile time dependency injection for .Net
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table Of Contents
 
 - [Aims](#aims)
@@ -48,9 +49,9 @@ compile time dependency injection for .Net
 
 Source generators are currently in preview and so you will require a preview version of VS and dotnet.
 
-[Visual Studio preview version](https://visualstudio.microsoft.com/vs/preview/) >= 16.8 preview 3
+[Visual Studio preview version](https://visualstudio.microsoft.com/vs/preview/) >= 16.8 preview 4
 
-[.NET 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0) >= 5.0.100-rc.1
+[.NET 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0) >= 5.0.100-rc.2
 
 ## Nuget
 
@@ -60,6 +61,8 @@ We recommend you use floating versions for now, as `StrongInject` is still in pr
 `<PackageReference Include="StrongInject" Version="0.0.1-CI-*" />`
 
 ## Usage
+
+The [wiki](https://github.com/YairHalberstadt/stronginject/wiki) is currently a work in progress. It aims to give a more thorough formal overview of everything in StrongInject, whereas this section of the readme gives a briefer overview relying heavily on examples. I would read through this first, then check out the wiki if you have any questions.
 
 ### Declaring a container
 To create a container for a specific type, declare your container partial and inherit from `StrongInject.IContainer<T>`:
