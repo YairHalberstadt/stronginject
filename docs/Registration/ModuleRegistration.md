@@ -5,6 +5,7 @@
 - [Module Registration](#module-registration)
   - [Modules](#modules)
   - [Registering a module](#registering-a-module)
+  - [Inheriting from a module](#inheriting-from-a-module)
   - [Example](#example)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
