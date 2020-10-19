@@ -58,7 +58,7 @@ Source generators are currently in preview and so you will require a preview ver
 https://www.nuget.org/packages/StrongInject/
 
 We recommend you use floating versions for now, as `StrongInject` is still in preview and changing rapidly. 
-`<PackageReference Include="StrongInject" Version="0.0.1-CI-*" />`
+`<PackageReference Include="StrongInject" Version="1.0.0-preview-CI-*" />`
 
 ## Usage
 
