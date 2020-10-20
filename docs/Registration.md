@@ -59,7 +59,7 @@ You can register a type as a decorator for an interface it implements, if its co
 
 #### Decorator Factory Method Registration
 
-You can register a method returning `T` as a decoraor of `T` if it has exactly one parameter of type `T`.
+You can register a method returning `T` as a decorator of `T` if it has exactly one parameter of type `T`.
 
 ## Other registration concepts
 
