@@ -1,0 +1,25 @@
+# Decorators
+
+A Decorator is different to other registrations, in that it does not provide an instance of a type, but rather wraps/modifies an *underlying* instance of a type, which is redolved in the normal manner.
+
+If multiple decorators are registered for a type, all of them will be applied, by wrapping one decorator in another, onion style. The order in which decorators wrap each other is deterministic but an implmentation detail - you should not rely on this order.
+
+Decorators are not applied to delegate parameters, or to `[Instance]` fields and properties with Options.DoNotDecorate applied. They are applied to everything else.
+
+## Decorator Registration
+
+There are two ways to register decorators.
+
+### Decorator Type Registration
+
+You can register a type as a decorator for an interface it implements, if its constructor has exactly one parameter whose type is the interface.
+
+### Decorator Factory Method Registration
+
+You can register a method returning `T` as a decorator of `T` if it has exactly one parameter of type `T`.
+
+## Disposal
+
+Decorators are disposed from outermost to innermost, followed by the underlying instance.
+
+For that reason best practice when implementing a decorator is to only dispose any resources owned directly by the decorator, and not dispose the underlying instance.
