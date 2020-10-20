@@ -34,7 +34,7 @@ namespace StrongInject.Generator
 
                         foreach (var sourceNotMatchingConstraints in sourcesNotMatchingConstraints)
                         {
-                            reportDiagnostic(WarnFactoryMethodNotMatchingConstraint(location, target, type, sourceNotMatchingConstraints));
+                            reportDiagnostic(WarnFactoryMethodNotMatchingConstraint(location, target, type, sourceNotMatchingConstraints.Method));
                         }
                     }
                     return null;
@@ -431,7 +431,7 @@ namespace StrongInject.Generator
                     elementType);
         }
 
-        private static Diagnostic WarnFactoryMethodNotMatchingConstraint(Location location, ITypeSymbol target, ITypeSymbol type, FactoryMethod factoryMethodNotMatchingConstraints)
+        private static Diagnostic WarnFactoryMethodNotMatchingConstraint(Location location, ITypeSymbol target, ITypeSymbol type, IMethodSymbol factoryMethodNotMatchingConstraints)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(

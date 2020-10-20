@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Immutable;
 
 namespace StrongInject.Generator
 {
@@ -7,51 +8,16 @@ namespace StrongInject.Generator
     {
         public static bool CanConstructFromGenericMethodReturnType(Compilation compilation, ITypeSymbol toConstruct, ITypeSymbol toConstructFrom, IMethodSymbol method, out IMethodSymbol constructedMethod, out bool constraintsDoNotMatch)
         {
-            if (!CanConstructFromReturnType(toConstruct, toConstructFrom, method, out var typeArguments))
+            if (CanConstructFromReturnType(toConstruct, toConstructFrom, method, out var typeArguments)
+                && SatisfiesConstraints(method, typeArguments, compilation))
             {
-                constructedMethod = null!;
+                constructedMethod = method.Construct(typeArguments);
                 constraintsDoNotMatch = false;
-                return false;
+                return true;
             }
-
-            var typeParameters = method.TypeParameters;
-            for (int i = 0; i < typeParameters.Length; i++)
-            {
-                var typeParameter = typeParameters[i];
-                var typeArgument = typeArguments[i];
-
-                if (typeArgument.IsPointerOrFunctionPointer() || toConstruct.IsRefLikeType)
-                {
-                    constructedMethod = null!;
-                    constraintsDoNotMatch = false;
-                    return false;
-                }
-
-                if (typeParameter.HasReferenceTypeConstraint && !typeArgument.IsReferenceType
-                    || typeParameter.HasValueTypeConstraint && !typeArgument.IsNonNullableValueType()
-                    || typeParameter.HasUnmanagedTypeConstraint && !(typeArgument.IsUnmanagedType && typeArgument.IsNonNullableValueType())
-                    || typeParameter.HasConstructorConstraint && !SatisfiesConstructorConstraint(typeArgument))
-                {
-                    constructedMethod = null!;
-                    constraintsDoNotMatch = true;
-                    return false;
-                }
-
-                foreach (var typeConstraint in typeParameter.ConstraintTypes)
-                {
-                    var conversion = compilation.ClassifyConversion(typeArgument, typeConstraint);
-                    if (typeArgument.IsNullableType() || conversion is not ({ IsIdentity: true } or { IsImplicit: true, IsReference: true } or { IsBoxing: true }))
-                    {
-                        constructedMethod = null!;
-                        constraintsDoNotMatch = true;
-                        return false;
-                    }
-                }
-            }
-
-            constructedMethod = method.Construct(typeArguments);
+            constructedMethod = null!;
             constraintsDoNotMatch = false;
-            return true;
+            return false;
         }
 
         private static bool CanConstructFromReturnType(ITypeSymbol toConstruct, ITypeSymbol toConstructFrom, IMethodSymbol method, out ITypeSymbol[] typeArguments)
@@ -112,6 +78,40 @@ namespace StrongInject.Generator
             }
         }
 
+        private static bool SatisfiesConstraints(IMethodSymbol method, ITypeSymbol[] typeArguments, Compilation compilation)
+        {
+            var typeParameters = method.TypeParameters;
+            for (int i = 0; i < typeParameters.Length; i++)
+            {
+                var typeParameter = typeParameters[i];
+                var typeArgument = typeArguments[i];
+
+                if (typeArgument.IsPointerOrFunctionPointer() || typeArgument.IsRefLikeType)
+                {
+                    return false;
+                }
+
+                if (typeParameter.HasReferenceTypeConstraint && !typeArgument.IsReferenceType
+                    || typeParameter.HasValueTypeConstraint && !typeArgument.IsNonNullableValueType()
+                    || typeParameter.HasUnmanagedTypeConstraint && !(typeArgument.IsUnmanagedType && typeArgument.IsNonNullableValueType())
+                    || typeParameter.HasConstructorConstraint && !SatisfiesConstructorConstraint(typeArgument))
+                {
+                    return false;
+                }
+
+                foreach (var typeConstraint in typeParameter.ConstraintTypes)
+                {
+                    var substitutedConstraintType = SubstituteType(compilation, typeConstraint, method, typeArguments);
+                    var conversion = compilation.ClassifyConversion(typeArgument, substitutedConstraintType);
+                    if (typeArgument.IsNullableType() || conversion is not ({ IsIdentity: true } or { IsImplicit: true, IsReference: true } or { IsBoxing: true }))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         private static bool SatisfiesConstructorConstraint(ITypeSymbol typeArgument)
         {
             switch (typeArgument.TypeKind)
@@ -145,6 +145,40 @@ namespace StrongInject.Generator
                 }
             }
             return false;
+        }
+
+        private static ITypeSymbol SubstituteType(Compilation compilation, ITypeSymbol type, IMethodSymbol method, ITypeSymbol[] typeArguments)
+        {
+            return Visit(type);
+
+            ITypeSymbol Visit(ITypeSymbol type)
+            {
+                switch (type)
+                {
+                    case ITypeParameterSymbol typeParameterSymbol:
+                        return SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringMethod, method)
+                            ? typeArguments[typeParameterSymbol.Ordinal]
+                            : type;
+                    case IArrayTypeSymbol { ElementType: var elementType, Rank: var rank } arrayTypeSymbol:
+                        var visitedElementType = Visit(elementType);
+                        return ReferenceEquals(elementType, visitedElementType)
+                            ? arrayTypeSymbol
+                            : compilation.CreateArrayTypeSymbol(visitedElementType, rank);
+                    case INamedTypeSymbol { OriginalDefinition: var originalDefinition, TypeArguments: var typeArguments } namedTypeSymbol:
+                        var visitedTypeArguments = new ITypeSymbol[typeArguments.Length];
+                        var anyChanged = false;
+                        for (var i = 0; i < typeArguments.Length; i++)
+                        {
+                            var typeArgument = typeArguments[i];
+                            var visited = Visit(typeArgument);
+                            if (!ReferenceEquals(visited, typeArgument))
+                                anyChanged = true;
+                            visitedTypeArguments[i] = visited;
+                        }
+                        return anyChanged ? originalDefinition.Construct(visitedTypeArguments) : namedTypeSymbol;
+                    default: return type;
+                }
+            }
         }
     }
 }

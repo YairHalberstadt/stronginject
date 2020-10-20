@@ -10055,6 +10055,78 @@ public partial class Container<T1, T2, T3> : IContainer<T3> where T2 : T1 where 
         }
 
         [Fact]
+        public void TestTypeConstraints5()
+        {
+            string userSource = @"
+using StrongInject;
+
+public interface A<out T> {}
+
+public partial class Container1 : IContainer<(A<int>, int)>
+{
+    [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T2> => default;
+}
+
+public partial class Container2 : IContainer<(A<int>, string)>
+{
+    [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T2> => default;
+}
+
+public partial class Container3 : IContainer<(A<string>, object)>
+{
+    [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T2> => default;
+}
+
+public partial class Container4 : IContainer<(A<object>, string)>
+{
+    [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T2> => default;
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (11,22): Error SI0102: Error while resolving dependencies for '(A<int>, string)': We have no source for instance of type '(A<int>, string)'
+                // Container2
+                new DiagnosticResult("SI0102", @"Container2", DiagnosticSeverity.Error).WithLocation(11, 22),
+                // (11,22): Warning SI1106: Warning while resolving dependencies for '(A<int>, string)': factory method 'Container2.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<int>, string)' as the required type arguments do not satisfy the generic constraints.
+                // Container2
+                new DiagnosticResult("SI1106", @"Container2", DiagnosticSeverity.Warning).WithLocation(11, 22),
+                // (21,22): Error SI0102: Error while resolving dependencies for '(A<object>, string)': We have no source for instance of type '(A<object>, string)'
+                // Container4
+                new DiagnosticResult("SI0102", @"Container4", DiagnosticSeverity.Error).WithLocation(21, 22),
+                // (21,22): Warning SI1106: Warning while resolving dependencies for '(A<object>, string)': factory method 'Container4.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<object>, string)' as the required type arguments do not satisfy the generic constraints.
+                // Container4
+                new DiagnosticResult("SI1106", @"Container4", DiagnosticSeverity.Warning).WithLocation(21, 22));
+        }
+
+        [Fact]
+        public void TestTypeConstraints6()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class A<T1, T2> {}
+
+public partial class Container1<T> : IContainer<(A<T, A<int, string>[]>, string)>
+{
+    [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T, A<int, T2>[]> => default;
+}
+
+public partial class Container2<T> : IContainer<(A<T, A<int, string>[]>, int)>
+{
+    [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T, A<int, T2>[]> => default;
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            comp.GetDiagnostics().Verify();
+            generatorDiagnostics.Verify(
+                // (11,22): Error SI0102: Error while resolving dependencies for '(A<T, A<int, string>[]>, int)': We have no source for instance of type '(A<T, A<int, string>[]>, int)'
+                // Container2
+                new DiagnosticResult("SI0102", @"Container2", DiagnosticSeverity.Error).WithLocation(11, 22),
+                // (11,22): Warning SI1106: Warning while resolving dependencies for '(A<T, A<int, string>[]>, int)': factory method 'Container2<T>.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<T, A<int, string>[]>, int)' as the required type arguments do not satisfy the generic constraints.
+                // Container2
+                new DiagnosticResult("SI1106", @"Container2", DiagnosticSeverity.Warning).WithLocation(11, 22));
+        }
+
+        [Fact]
         public void CanImportGenericFactoryMethod()
         {
             string userSource = @"

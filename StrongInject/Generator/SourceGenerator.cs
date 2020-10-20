@@ -80,7 +80,6 @@ namespace StrongInject.Generator
                 foreach (var module in modules)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    // do this even if not a container to report diagnostics
                     if (module.isContainer)
                     {
                         var file = ContainerGenerator.GenerateContainerImplementations(
