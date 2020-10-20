@@ -8,16 +8,23 @@ namespace StrongInject.Generator
     {
         public static bool CanConstructFromGenericMethodReturnType(Compilation compilation, ITypeSymbol toConstruct, ITypeSymbol toConstructFrom, IMethodSymbol method, out IMethodSymbol constructedMethod, out bool constraintsDoNotMatch)
         {
-            if (CanConstructFromReturnType(toConstruct, toConstructFrom, method, out var typeArguments)
-                && SatisfiesConstraints(method, typeArguments, compilation))
+            if (!CanConstructFromReturnType(toConstruct, toConstructFrom, method, out var typeArguments))
             {
-                constructedMethod = method.Construct(typeArguments);
+                constructedMethod = null!;
                 constraintsDoNotMatch = false;
-                return true;
+                return false;
             }
-            constructedMethod = null!;
+
+            if (!SatisfiesConstraints(method, typeArguments, compilation))
+            {
+                constructedMethod = null!;
+                constraintsDoNotMatch = true;
+                return false;
+            }
+
+            constructedMethod = method.Construct(typeArguments);
             constraintsDoNotMatch = false;
-            return false;
+            return true;
         }
 
         private static bool CanConstructFromReturnType(ITypeSymbol toConstruct, ITypeSymbol toConstructFrom, IMethodSymbol method, out ITypeSymbol[] typeArguments)
