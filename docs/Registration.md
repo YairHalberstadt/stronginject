@@ -49,7 +49,7 @@ If a type implements `IFactory<T>` or `IAsyncFactory<T>` you can register it as 
 
 You can register a method returning `T` as a factory for `T`.
 
-### Decorators
+### [Decorators](https://github.com/YairHalberstadt/stronginject/wiki/Decorators)
 
 Decorators are used to modify an instance created by another registration. There are two forms of registering decorators:
 
