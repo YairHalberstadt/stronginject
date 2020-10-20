@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Decorators](#decorators)
+  - [Decorator Registration](#decorator-registration)
+    - [Decorator Type Registration](#decorator-type-registration)
+    - [Decorator Factory Method Registration](#decorator-factory-method-registration)
+  - [Disposal](#disposal)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Decorators
 
 A Decorator is different to other registrations, in that it does not provide an instance of a type, but rather wraps/modifies an *underlying* instance of a type, which is redolved in the normal manner.
