@@ -871,6 +871,23 @@ public class Container : IContainer<IInterface[]>
 
 It will contain 2 items.
 
+### Optional Parameters
+
+If a parameter to a type or method is optional, StrongInject will not error if it cannot be resolved, and will instead just use the default value.
+
+An example of where this can be useful is for providing a default instance of an interface if none is registered:
+
+```csharp
+public class DefaultImplementation : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(DefaultImplementation))]
+public class Module
+{
+  [Decorator] GetIInterface(IInterface? impl = null, DefaultImplementation defaultImpl) => impl ?? defaultImpl;
+}
+```
+
 ### Disposal
 
 Once a call to `Run` or `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `Run` or `RunAsync` will be disposed.
