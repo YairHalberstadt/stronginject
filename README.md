@@ -28,6 +28,7 @@ compile time dependency injection for .Net
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
   - [Resolving all instances of a type](#resolving-all-instances-of-a-type)
+  - [Optional Parameters](#optional-parameters)
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
   - [Inbuilt Modules](#inbuilt-modules)
@@ -870,6 +871,23 @@ public class Container : IContainer<IInterface[]>
 ```
 
 It will contain 2 items.
+
+### Optional Parameters
+
+If a parameter to a type or method is optional, StrongInject will not error if it cannot be resolved, and will instead just use the default value.
+
+An example of where this can be useful is for providing a default instance of an interface if none is registered:
+
+```csharp
+public class DefaultImplementation : IInterface {}
+public interface IInterface {}
+
+[Register(typeof(DefaultImplementation))]
+public class Module
+{
+  [Decorator] GetIInterface(IInterface? impl = null, DefaultImplementation defaultImpl) => impl ?? defaultImpl;
+}
+```
 
 ### Disposal
 
