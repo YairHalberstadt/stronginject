@@ -493,19 +493,27 @@ namespace StrongInject.Generator
                             }
                         }
                         variableSource.Append("(");
+                        bool isFirst = true;
                         for (int i = 0; i < method.Parameters.Length; i++)
                         {
-                            if (i != 0)
-                            {
-                                variableSource.Append(",");
-                            }
                             IParameterSymbol? parameter = method.Parameters[i];
-                            var source = i == decoratedParameter?.ordinal ? decoratedParameter.Value.parameterInstanceSource : instanceSourcesScope[parameter.Type];
-                            var variable = CreateVariableInternal(source, instanceSourcesScope);
-                            variableSource.Append("(");
-                            variableSource.Append(parameter.Type.FullName());
-                            variableSource.Append(")");
-                            variableSource.Append(variable);
+                            var source = (i == decoratedParameter?.ordinal)
+                                ? decoratedParameter.Value.parameterInstanceSource
+                                : instanceSourcesScope.GetParameterSource(parameter);
+                            if (source is not null)
+                            {
+                                if (!isFirst)
+                                {
+                                    variableSource.Append(",");
+                                }
+                                isFirst = false;
+                                var variable = CreateVariableInternal(source, instanceSourcesScope);
+                                variableSource.Append(parameter.Name);
+                                variableSource.Append(":(");
+                                variableSource.Append(parameter.Type.FullName());
+                                variableSource.Append(")");
+                                variableSource.Append(variable);
+                            }
                         }
                         variableSource.Append(");");
                         methodSource.Append(variableSource);

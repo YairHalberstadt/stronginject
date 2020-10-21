@@ -15,12 +15,12 @@ namespace StrongInject.Generator
             var visited = new HashSet<InstanceSource>();
 
             return Visit(
-                GetInstanceSourceOrReport(target, containerScope),
+                GetInstanceSourceOrReport(target, containerScope, isOptional: false),
                 containerScope,
                 usedParams: null,
                 isScopeAsync: isAsync);
 
-            InstanceSource? GetInstanceSourceOrReport(ITypeSymbol type, InstanceSourcesScope instanceSourcesScope)
+            InstanceSource? GetInstanceSourceOrReport(ITypeSymbol type, InstanceSourcesScope instanceSourcesScope, bool isOptional)
             {
                 if (!instanceSourcesScope.TryGetSource(type, out var instanceSource, out var ambiguous, out var sourcesNotMatchingConstraints))
                 {
@@ -30,7 +30,14 @@ namespace StrongInject.Generator
                     }
                     else
                     {
-                        reportDiagnostic(NoSourceForType(location, target, type));
+                        if (isOptional)
+                        {
+                            reportDiagnostic(InfoNoSourceForOptionalParameter(location, target, type));
+                        }
+                        else
+                        {
+                            reportDiagnostic(NoSourceForType(location, target, type));
+                        }
 
                         foreach (var sourceNotMatchingConstraints in sourcesNotMatchingConstraints)
                         {
@@ -85,7 +92,7 @@ namespace StrongInject.Generator
                                 }
                             }
 
-                            var returnTypeSource = GetInstanceSourceOrReport(returnType, instanceSourcesScope);
+                            var returnTypeSource = GetInstanceSourceOrReport(returnType, instanceSourcesScope, isOptional: false);
 
                             if (returnTypeSource is DelegateParameter { Parameter: var param })
                             {
@@ -130,11 +137,16 @@ namespace StrongInject.Generator
                         {
                             foreach (var param in parameters)
                             {
-                                result |= Visit(
-                                    GetInstanceSourceOrReport(param.Type, instanceSourcesScope),
-                                    instanceSourcesScope,
-                                    usedParams,
-                                    isScopeAsync);
+                                var isOptional = param.IsOptional;
+                                var source = GetInstanceSourceOrReport(param.Type, instanceSourcesScope, isOptional);
+                                if (!isOptional || source is not null)
+                                {
+                                    result |= Visit(
+                                        source,
+                                        instanceSourcesScope,
+                                        usedParams,
+                                        isScopeAsync);
+                                }
                             }
 
                             break;
@@ -167,11 +179,16 @@ namespace StrongInject.Generator
                         {
                             foreach (var param in parameters)
                             {
-                                result |= Visit(
-                                    GetInstanceSourceOrReport(param.Type, instanceSourcesScope),
-                                    instanceSourcesScope,
-                                    usedParams,
-                                    isScopeAsync);
+                                var isOptional = param.IsOptional;
+                                var source = GetInstanceSourceOrReport(param.Type, instanceSourcesScope, isOptional);
+                                if (!isOptional || source is not null)
+                                {
+                                    result |= Visit(
+                                        source,
+                                        instanceSourcesScope,
+                                        usedParams,
+                                        isScopeAsync);
+                                }
                             }
 
                             break;
@@ -184,15 +201,19 @@ namespace StrongInject.Generator
                                     {
                                         foreach (var param in parameters)
                                         {
+                                            var isOptional = param.IsOptional;
                                             var paramSource = param.Ordinal == decoratorSource.decoratedParameter
                                                 ? underlyingInstanceSource
-                                                : GetInstanceSourceOrReport(param.Type, instanceSourcesScope);
+                                                : GetInstanceSourceOrReport(param.Type, instanceSourcesScope, isOptional);
 
-                                            result |= Visit(
+                                            if (!isOptional || paramSource is not null)
+                                            {
+                                                result |= Visit(
                                                 paramSource,
                                                 instanceSourcesScope,
                                                 usedParams,
                                                 isScopeAsync);
+                                            }
                                         }
 
                                         break;
@@ -201,15 +222,19 @@ namespace StrongInject.Generator
                                     {
                                         foreach (var param in parameters)
                                         {
+                                            var isOptional = param.IsOptional;
                                             var paramSource = param.Ordinal == decoratorSource.decoratedParameter
                                                 ? underlyingInstanceSource
-                                                : GetInstanceSourceOrReport(param.Type, instanceSourcesScope);
+                                                : GetInstanceSourceOrReport(param.Type, instanceSourcesScope, isOptional);
 
-                                            result |= Visit(
+                                            if (!isOptional || paramSource is not null)
+                                            {
+                                                result |= Visit(
                                                 paramSource,
                                                 instanceSourcesScope,
                                                 usedParams,
                                                 isScopeAsync);
+                                            }
                                         }
 
                                         break;
@@ -447,6 +472,21 @@ namespace StrongInject.Generator
                     type);
         }
 
+        private static Diagnostic InfoNoSourceForOptionalParameter(Location location, ITypeSymbol target, ITypeSymbol type)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                        "SI2100",
+                        "No source for instance of Type used in optional parameter",
+                        "Info about resolving dependencies for '{0}': We have no source for instance of type '{1}' used in an optional parameter. Using The default value instead.",
+                        "StrongInject",
+                        DiagnosticSeverity.Info,
+                        isEnabledByDefault: true),
+                    location,
+                    target,
+                    type);
+        }
+
         /// <summary>
         /// Only call if <see cref="HasCircularOrMissingDependencies"/> returns true,
         /// as this does no validation, and could throw or stack overflow otherwise.
@@ -456,20 +496,19 @@ namespace StrongInject.Generator
             var visited = new HashSet<InstanceSource>();
             return Visit(source);
 
-            bool Visit(InstanceSource source)
+            bool Visit(InstanceSource? source)
             {
+                if (source is null)
+                    return false;
+
                 if (visited.Contains(source))
                     return false;
 
                 if (source is DelegateSource)
-                {
                     return false;
-                }
 
                 if (source.IsAsync)
-                {
                     return true;
-                }
 
                 switch (source)
                 {
@@ -477,7 +516,7 @@ namespace StrongInject.Generator
                         {
                             foreach (var param in parameters)
                             {
-                                var paramSource = containerScope[param.Type];
+                                var paramSource = containerScope.GetParameterSource(param);
                                 if (Visit(paramSource))
                                     return true;
                             }
@@ -507,7 +546,7 @@ namespace StrongInject.Generator
                         {
                             foreach (var param in parameters)
                             {
-                                var paramSource = containerScope[param.Type];
+                                var paramSource = containerScope.GetParameterSource(param);
                                 if (Visit(paramSource))
                                     return true;
                             }
@@ -523,7 +562,7 @@ namespace StrongInject.Generator
                                         {
                                             var paramSource = param.Ordinal == decoratorSource.decoratedParameter
                                                 ? underlyingInstanceSource
-                                                : containerScope[param.Type];
+                                                : containerScope.GetParameterSource(param);
 
                                             if (Visit(paramSource))
                                                 return true;
@@ -537,7 +576,7 @@ namespace StrongInject.Generator
                                         {
                                             var paramSource = param.Ordinal == decoratorSource.decoratedParameter
                                                 ? underlyingInstanceSource
-                                                : containerScope[param.Type];
+                                                : containerScope.GetParameterSource(param);
 
                                             if (Visit(paramSource))
                                                 return true;
@@ -585,8 +624,13 @@ namespace StrongInject.Generator
 
             return results;
 
-            void Visit(InstanceSource source, InstanceSourcesScope instanceSourcesScope, ref List<InstanceSource>? results)
+            void Visit(InstanceSource? source, InstanceSourcesScope instanceSourcesScope, ref List<InstanceSource>? results)
             {
+                if (source is null)
+                {
+                    return;
+                }
+
                 if (source.Scope == Scope.SingleInstance && source is not (InstanceFieldOrProperty or ForwardedInstanceSource))
                 {
                     if (added.Add(source))
@@ -600,7 +644,9 @@ namespace StrongInject.Generator
                 }
 
                 if (visited.Contains(source))
+                {
                     return;
+                }
 
                 var innerScope = instanceSourcesScope.Enter(source);
 
@@ -610,7 +656,7 @@ namespace StrongInject.Generator
                         {
                             foreach (var param in parameters)
                             {
-                                var paramSource = innerScope[param.Type];
+                                var paramSource = innerScope.GetParameterSource(param);
                                 Visit(paramSource, innerScope, ref results);
                             }
 
@@ -640,7 +686,7 @@ namespace StrongInject.Generator
                         {
                             foreach (var param in parameters)
                             {
-                                var paramSource = innerScope[param.Type];
+                                var paramSource = innerScope.GetParameterSource(param);
                                 Visit(paramSource, innerScope, ref results);
                             }
 
@@ -656,7 +702,7 @@ namespace StrongInject.Generator
                                         {
                                             var paramSource = param.Ordinal == decoratorSource.decoratedParameter
                                                 ? underlyingInstanceSource
-                                                : innerScope[param.Type];
+                                                : innerScope.GetParameterSource(param);
 
                                             Visit(paramSource, innerScope, ref results);
                                         }
@@ -669,7 +715,7 @@ namespace StrongInject.Generator
                                         {
                                             var paramSource = param.Ordinal == decoratorSource.decoratedParameter
                                                 ? underlyingInstanceSource
-                                                : innerScope[param.Type];
+                                                : innerScope.GetParameterSource(param);
 
                                             Visit(paramSource, innerScope, ref results);
                                         }
