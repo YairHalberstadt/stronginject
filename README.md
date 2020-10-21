@@ -28,6 +28,7 @@ compile time dependency injection for .Net
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
   - [Resolving all instances of a type](#resolving-all-instances-of-a-type)
+  - [Optional Parameters](#optional-parameters)
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
   - [Inbuilt Modules](#inbuilt-modules)
