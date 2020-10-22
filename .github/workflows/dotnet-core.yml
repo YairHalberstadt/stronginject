@@ -16,7 +16,12 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100-rc.1.20452.10
+        dotnet-version: 5.0.100-rtm.20515.8
+        # Temporary till 5.0.100-rtm is released
+        source-url: https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json 
+      env:
+        # Temporary till 5.0.100-rtm is released
+        NUGET_AUTH_TOKEN: "FOO"
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -29,7 +34,9 @@ jobs:
       with:
         format: YYYYMMDD-HHmmSS
     - name: Pack
-      run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+      run: |
+        dotnet pack StrongInject/StrongInject.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+        dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
     - name: Push
       if: ${{ success() && github.ref == 'refs/heads/master' }}
       run: dotnet nuget push out/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://nuget.org
@@ -43,7 +50,12 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100-rc.1.20452.10
+        dotnet-version: 5.0.100-rtm.20515.8
+        # Temporary till 5.0.100-rtm is released
+        source-url: https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json 
+      env:
+        # Temporary till 5.0.100-rtm is released
+        NUGET_AUTH_TOKEN: "FOO"
     - name: Install dependencies
       run: dotnet restore
     - name: Build

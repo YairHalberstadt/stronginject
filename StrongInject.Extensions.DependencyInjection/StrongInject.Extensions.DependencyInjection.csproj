@@ -10,11 +10,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>1.0.0-preview</VersionPrefix>
-		<PackageId>StrongInject</PackageId>
+		<VersionPrefix>0.0.1-preview</VersionPrefix>
+		<PackageId>StrongInject.Extensions.DependencyInjection</PackageId>
 		<Authors>StrongInject</Authors>
 		<Product>StrongInject</Product>
-		<Description>compile time dependency injection for .Net</Description>
+		<Description>Provides integration between Microsoft.Extensions.DependencyInjection and StrongInject</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
@@ -22,14 +22,12 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0-4.final" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="tools" />
-		<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<ProjectReference Include="..\StrongInject\StrongInject.csproj" />
 	</ItemGroup>
-	
+
 </Project>
