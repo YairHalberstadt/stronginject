@@ -53,7 +53,7 @@ You can register a method returning `T` as a factory for `T`.
 
 Decorators are used to modify an instance created by another registration. There are two forms of registering decorators:
 
-#### Decorator Type Registration
+#### [Decorator Type Registration](https://github.com/YairHalberstadt/stronginject/wiki/DecoratorTypeRegistration)
 
 You can register a type as a decorator for an interface it implements, if its constructor has exactly one parameter whose type is the interface.
 
