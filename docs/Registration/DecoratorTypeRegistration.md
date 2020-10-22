@@ -52,16 +52,15 @@ It is recommended to not dispose of the underlying instance of `decoratedType`, 
 ## Example
 
 ```csharp
-
 using StrongInject;
 using System;
 
-public interface IService { string GetMessage() }
+public interface IService { string GetMessage(); }
 public class Service : IService { public string GetMessage() => "Hello World"; }
 public class ServiceDecorator : IService
 {
     private readonly IService _impl;
-    private readonly Loggger _logger;
+    private readonly Logger _logger;
     public ServiceDecorator(IService impl, Logger logger) => (_impl, _logger) = (impl, logger);
     public string GetMessage()
     {
@@ -75,7 +74,6 @@ public class Logger { public void Log(string str) => Console.WriteLine(str); }
 [Register(typeof(Service), typeof(IService))]
 [Register(typeof(Logger))]
 [RegisterDecorator(typeof(ServiceDecorator), typeof(IService))]
-
 public partial class Container : IContainer<IService> {}
 
 var container = new Container();
