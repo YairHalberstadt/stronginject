@@ -32,7 +32,7 @@ compile time dependency injection for .Net
   - [Disposal](#disposal)
   - [Thread Safety](#thread-safety)
   - [Inbuilt Modules](#inbuilt-modules)
-- [Integrate with Asp.NetCore/Microsoft.Extensions.DependencyInjection](#integrate-with-aspnetcoremicrosoftextensionsdependencyinjection)
+  - [Integrate with Asp.NetCore/Microsoft.Extensions.DependencyInjection](#integrate-with-aspnetcoremicrosoftextensionsdependencyinjection)
 - [Product Roadmap](#product-roadmap)
 - [Contributing](#contributing)
 - [Need Help?](#need-help)
