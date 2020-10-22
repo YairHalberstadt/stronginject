@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Decorator Type Registration](#decorator-type-registration)
+  - [Constructor](#constructor)
+  - [Disposal](#disposal)
+  - [Scope](#scope)
+  - [Example](#example)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Decorator Type Registration
 
 You can register a type as a decorator for it's base classes/interfaces. StrongInject will look for a suitable constructor to use to instantiate it.
