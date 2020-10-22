@@ -39,7 +39,7 @@ jobs:
         dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
     - name: Push
       if: ${{ success() && github.ref == 'refs/heads/master' }}
-      run: dotnet nuget push out/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://nuget.org
+      run: dotnet nuget push 'out/*.nupkg' -k ${{ secrets.NUGET_API_KEY }} -s https://nuget.org
       
   build-test-debug:
 
