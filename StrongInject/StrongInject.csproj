@@ -19,6 +19,8 @@
 		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<IncludeSymbols>true</IncludeSymbols>
+                <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 	
 	<ItemGroup>
