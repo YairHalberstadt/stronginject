@@ -58,9 +58,12 @@ For that reason it's best to use the `Options.DoNotDecorate` parameter on dispos
 ## Example
 
 ```csharp
-public class A {}
-public class B : IDisposable { public void Dispose(){} }
-public class C { public C(A a, B b){} }
+using StrongInject;
+using System;
+
+public class A { }
+public class B : IDisposable { public void Dispose() { } }
+public class C { public C(A a, B b) { } }
 
 public class Module
 {
@@ -68,9 +71,10 @@ public class Module
 }
 
 [Register(typeof(C))]
-public class Container : IContainer<C>
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<C>
 {
-    [Instance] private readonly A a; // Can be private and instance.
+    [Instance] private readonly A _a; // Can be private and instance.
     public Container(A a) => _a = a;
 }
 ```
