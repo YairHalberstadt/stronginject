@@ -164,8 +164,20 @@ namespace StrongInject.Generator
                 if (ambiguous)
                     throw new InvalidOperationException($"No best source for type {typeSymbol}");
                 throw new KeyNotFoundException($"No source is available for type {typeSymbol}");
-
             }
+        }
+
+        public InstanceSource? GetParameterSource(IParameterSymbol parameterSymbol)
+        {
+            if (parameterSymbol.IsOptional)
+            {
+                if (TryGetSource(parameterSymbol.Type, out var instanceSource, out var ambiguous, out _))
+                    return instanceSource;
+                if (ambiguous)
+                    throw new InvalidOperationException($"No best source for type {parameterSymbol.Type}");
+                return null;
+            }
+            return this[parameterSymbol.Type];
         }
 
         public InstanceSourcesScope Enter(InstanceSource instanceSource)
