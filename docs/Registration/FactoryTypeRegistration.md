@@ -49,18 +49,21 @@ Any instances created by the factory will be passed to  `IFactory<T>.Release(T)`
 using StrongInject;
 using System;
 
-public class A : IDisposable { public void Dispose() {} }
+public class A : IDisposable { public void Dispose() { } }
 public class Factory : IFactory<A>, IDisposable
 {
     public A Create() => new A();
+
+    public void Dispose() { }
+
     public void Release(A instance) => instance.Dispose();
 }
 
 [RegisterFactory(typeof(Factory), Scope.SingleInstance, Scope.InstancePerResolution)]
-public class Container : IContainer<A> {}
+public partial class Container : IContainer<A> { }
 
 var container = new Container();
 container.Run(x => Console.WriteLine(x.ToString())); // Will create a new instance of Factory. Will call Factory.Create() to create an instance of A. After the lambda completes, will call factory.Release() to dispose of the instance of A.
 container.Run(x => Console.WriteLine(x.ToString())); // Will reuse the existing instance of Factory since it is SingleInstance. Will call Factory.Create() to create an instance of A since it is InstancePerResolution. After the lambda completes, will call factory.Release() to dispose of the instance of A.
-container.Dispose() // Will dispose of the single instance of Factory
+container.Dispose(); // Will dispose of the single instance of Factory
 ```
