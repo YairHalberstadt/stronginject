@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 5.0.100-rtm.20515.8
         source-url: https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json
       env:
-        NUGET_AUTH_TOKEN: ""
+        NUGET_AUTH_TOKEN: "FOO"
     - name: Install dependencies
       run: dotnet restore
     - name: Build
