@@ -74,8 +74,9 @@ public class Logger { public void Log(string str) => Console.WriteLine(str); }
 [Register(typeof(Service), typeof(IService))]
 [Register(typeof(Logger))]
 [RegisterDecorator(typeof(ServiceDecorator), typeof(IService))]
-public partial class Container : IContainer<IService> { }
+public partial class Container : IContainer<IService> {}
 
+var container = new Container();
 container.Run(x => Console.WriteLine(x.GetMessage())); // Will create a new instance of Service and Logger, and pass them as parameters to the ServiceDecorator constructor. The instance of ServiceDecorator will be used as the parameter to the lambda.
 ```
 

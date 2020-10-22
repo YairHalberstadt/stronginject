@@ -57,15 +57,15 @@ If `type` implements `IDisposable` or `IAsyncDisposable`, an instance of `type` 
 using StrongInject;
 using System;
 
-public class A : IDisposable { public void Dispose(){} }
-public class B : IDisposable { public void Dispose(){} }
-public interface I {}
-public class C : I { public C(A a, B b)}
+public class A : IDisposable { public void Dispose() { } }
+public class B : IDisposable { public void Dispose() { } }
+public interface I { }
+public class C : I { public C(A a, B b) { } }
 
 [Register(typeof(A), Scope.SingleInstance)] // No types specified for `registerAs`, will be registered as type `A`.
 [Register(typeof(B))] // No `scope` specified, Scope will be InstancePerResolution. No types specified for `registerAs`, will be registered as type `B`.
 [Register(typeof(C), typeof(C), typeof(I))] // No `scope` specified, Scope will be InstancePerResolution. Registered as type `C` and as type `I`.
-public class Container : IContainer<I> {}
+public partial class Container : IContainer<I> { }
 
 var container = new Container();
 container.Run(x => Console.WriteLine(x.ToString())); // Will create a new instance of `C` which is registered as `I`, and new instances of `A` and `B` to satisfy `C`'s constructor. `B` will be disposed once the lambda completes.

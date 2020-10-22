@@ -50,16 +50,18 @@ You can also inherit from a module. This is functionally the same as importing t
 ## Example
 
 ```csharp
-public class A {}
-public class B { public B(A a){} }
-public class C { public C(B b, int i){} }
+using StrongInject;
+
+public class A { }
+public class B { public B(A a) { } }
+public class C { public C(B b, int i) { } }
 
 [Register(typeof(A))]
-public class ModuleA {}
+public class ModuleA { }
 
 [Register(typeof(A), Scope.SingleInstance)]
 [Register(typeof(B))]
-public class ModuleB {}
+public class ModuleB { }
 
 public class ModuleC
 {
@@ -70,8 +72,8 @@ public class ModuleC
 
 [RegisterModule(typeof(ModuleA))]
 [RegisterModule(typeof(ModuleB), typeof(A))] // Have to exclude A, as otherwise we will have multiple conflicting registrations for A
-public class Container : ModuleC, IContainer<C> // By inheriting from ModuleC we import the protected method CreateC
+public partial class Container : ModuleC, IContainer<C> // By inheriting from ModuleC we import the protected method CreateC
 {
-    public Container(int i) : base(i){}
+    public Container(int i) : base(i) { }
 }
 ```

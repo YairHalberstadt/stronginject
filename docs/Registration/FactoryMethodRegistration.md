@@ -47,11 +47,11 @@ using System.Collections.Generic;
 
 public class A { }
 
-public class Container : IContainer<List<A>>
+public partial class Container : IContainer<List<A>>
 {
     [Factory(Scope.SingleInstance)] private A CreateA() => new A(); // Registration for A
-    [Factory] private List<T> CreateList<T>(T t) => new List<T>{ t }; // Registration for List<A> by substituting T for A
-    [Factory] private List<T> CreateList<T>() where T : struct => new List<T>{ new T() }; // Not a registration for List<A> because substituting T for A does not match the struct constraint
+    [Factory] private List<T> CreateList<T>(T t) => new List<T> { t }; // Registration for List<A> by substituting T for A
+    [Factory] private List<T> CreateList<T>() where T : struct => new List<T> { new T() }; // Not a registration for List<A> because substituting T for A does not match the struct constraint
 }
 
 var container = new Container();
