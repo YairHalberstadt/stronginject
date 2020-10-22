@@ -3,11 +3,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace StrongInject.Extensions.DependencyInjection
 {
-    public static class IServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
-        public static void AddContainerForTransientService<TContainer, TService>(this IServiceCollection services) where TContainer : IContainer<TService> where TService : class
+        public static void AddContainerForTransientService<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class
         {
-            services.Replace(new ServiceDescriptor(typeof(TContainer), typeof(TContainer), ServiceLifetime.Singleton));
+            services.TryAddSingleton<TContainer, TContainer>();
             services.AddTransient(x => x.GetRequiredService<TContainer>().Resolve());
             services.AddTransient(x => x.GetRequiredService<Owned<TService>>().Value);
         }
@@ -18,9 +18,9 @@ namespace StrongInject.Extensions.DependencyInjection
             services.AddTransient(x => x.GetRequiredService<Owned<TService>>().Value);
         }
 
-        public static void AddContainerForScopedService<TContainer, TService>(this IServiceCollection services) where TContainer : IContainer<TService> where TService : class
+        public static void AddContainerForScopedService<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class
         {
-            services.Replace(new ServiceDescriptor(typeof(TContainer), typeof(TContainer), ServiceLifetime.Singleton));
+            services.TryAddSingleton<TContainer, TContainer>();
             services.AddScoped(x => x.GetRequiredService<TContainer>().Resolve());
             services.AddScoped(x => x.GetRequiredService<Owned<TService>>().Value);
         }
@@ -31,29 +31,29 @@ namespace StrongInject.Extensions.DependencyInjection
             services.AddScoped(x => x.GetRequiredService<Owned<TService>>().Value);
         }
 
-        public static void AddContainerForSingletonService<TContainer, TService>(this IServiceCollection services) where TContainer : IContainer<TService> where TService : class
+        public static void AddContainerForSingletonService<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class
         {
-            services.Replace(new ServiceDescriptor(typeof(TContainer), typeof(TContainer), ServiceLifetime.Singleton));
+            services.TryAddSingleton<TContainer, TContainer>();
             services.AddSingleton(x => x.GetRequiredService<TContainer>().Resolve());
-            services.AddScoped(x => x.GetRequiredService<Owned<TService>>().Value);
+            services.AddSingleton(x => x.GetRequiredService<Owned<TService>>().Value);
         }
 
         public static void AddContainerForSingletonService<TService>(this IServiceCollection services, IContainer<TService> container) where TService : class
         {
-            services.AddScoped(x => container.Resolve());
-            services.AddScoped(x => x.GetRequiredService<Owned<TService>>().Value);
+            services.AddSingleton(x => container.Resolve());
+            services.AddSingleton(x => x.GetRequiredService<Owned<TService>>().Value);
         }
 
-        public static void AddScopedContainerForTransientService<TContainer, TService>(this IServiceCollection services) where TContainer : IContainer<TService> where TService : class
+        public static void AddScopedContainerForTransientService<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class
         {
-            services.Replace(new ServiceDescriptor(typeof(TContainer), typeof(TContainer), ServiceLifetime.Scoped));
+            services.TryAddScoped<TContainer, TContainer>();
             services.AddTransient(x => x.GetRequiredService<TContainer>().Resolve());
             services.AddTransient(x => x.GetRequiredService<Owned<TService>>().Value);
         }
 
-        public static void AddScopedContainerForScopedService<TContainer, TService>(this IServiceCollection services) where TContainer : IContainer<TService> where TService : class
+        public static void AddScopedContainerForScopedService<TContainer, TService>(this IServiceCollection services) where TContainer : class, IContainer<TService> where TService : class
         {
-            services.Replace(new ServiceDescriptor(typeof(TContainer), typeof(TContainer), ServiceLifetime.Scoped));
+            services.TryAddScoped<TContainer, TContainer>();
             services.AddScoped(x => x.GetRequiredService<TContainer>().Resolve());
             services.AddScoped(x => x.GetRequiredService<Owned<TService>>().Value);
         }

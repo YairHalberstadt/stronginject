@@ -270,6 +270,7 @@ namespace StrongInject.Tests.Integration
                 }
             }
 
+            [Fact]
             public async Task Test()
             {
                 var container = new Container(new DbFactory(new MockDb()));
