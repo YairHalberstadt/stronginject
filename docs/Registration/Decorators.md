@@ -22,7 +22,7 @@ Decorators are not applied to delegate parameters, or to `[Instance]` fields and
 
 There are two ways to register decorators.
 
-### Decorator Type Registration
+### [Decorator Type Registration](https://github.com/YairHalberstadt/stronginject/wiki/DecoratorTypeRegistration)
 
 You can register a type as a decorator for an interface it implements, if its constructor has exactly one parameter whose type is the interface.
 
