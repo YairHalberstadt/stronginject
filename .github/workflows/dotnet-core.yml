@@ -29,7 +29,9 @@ jobs:
       with:
         format: YYYYMMDD-HHmmSS
     - name: Pack
-      run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+      run: |
+        dotnet pack StrongInject/StrongInject.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+        dotnet pack StrongInject/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source --include-symbols -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
     - name: Push
       if: ${{ success() && github.ref == 'refs/heads/master' }}
       run: dotnet nuget push out/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://nuget.org
