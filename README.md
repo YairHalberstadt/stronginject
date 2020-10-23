@@ -942,6 +942,7 @@ Then you can add the container to a service collection as follows:
 using StrongInject.Extensions.DependencyInjection;
 ...
 serviceCollection.AddContainerForTransientService<MyContainer, MyService>();
+var myService = serviceCollection.BuildServiceProvider().GetRequiredService<MyService>();
 ```
 
 A number of other extension methods are available. This package is in an early preview, and liable to change. Please try it out and give feedback!
