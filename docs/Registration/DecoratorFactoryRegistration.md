@@ -2,7 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table Of Contents
 
-- [Factory Method Registration](#factory-method-registration)
+- [Decorator Factory Method Registration](#decorator-factory-method-registration)
   - [Generic Decorator Factory Methods](#generic-decorator-factory-methods)
   - [Usage in Modules](#usage-in-modules)
   - [Example](#example)
