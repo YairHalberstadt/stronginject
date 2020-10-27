@@ -85,16 +85,16 @@ namespace StrongInject.Generator
                     runMethodSource.Append("async ");
                 }
                 runMethodSource.Append(runMethodSymbol.ReturnType.FullName());
-                runMethodSource.Append(" ");
+                runMethodSource.Append(' ');
                 runMethodSource.Append(constructedContainerInterface.FullName());
-                runMethodSource.Append(".");
+                runMethodSource.Append('.');
                 runMethodSource.Append(runMethodSymbol.Name);
-                runMethodSource.Append("<");
+                runMethodSource.Append('<');
                 for (int i = 0; i < runMethodSymbol.TypeParameters.Length; i++)
                 {
                     var typeParam = runMethodSymbol.TypeParameters[i];
                     if (i != 0)
-                        runMethodSource.Append(",");
+                        runMethodSource.Append(',');
                     runMethodSource.Append(typeParam.Name);
                 }
                 runMethodSource.Append(">(");
@@ -102,9 +102,9 @@ namespace StrongInject.Generator
                 {
                     var param = runMethodSymbol.Parameters[i];
                     if (i != 0)
-                        runMethodSource.Append(",");
+                        runMethodSource.Append(',');
                     runMethodSource.Append(param.Type.FullName());
-                    runMethodSource.Append(" ");
+                    runMethodSource.Append(' ');
                     runMethodSource.Append(param.Name);
                 }
                 runMethodSource.Append("){");
@@ -118,9 +118,9 @@ namespace StrongInject.Generator
                     resolveMethodSource.Append("async ");
                 }
                 resolveMethodSource.Append(resolveMethodSymbol.ReturnType.FullName());
-                resolveMethodSource.Append(" ");
+                resolveMethodSource.Append(' ');
                 resolveMethodSource.Append(constructedContainerInterface.FullName());
-                resolveMethodSource.Append(".");
+                resolveMethodSource.Append('.');
                 resolveMethodSource.Append(resolveMethodSymbol.Name);
                 resolveMethodSource.Append("(){");
 
@@ -165,7 +165,7 @@ namespace StrongInject.Generator
                         runMethodSource.Append("func((");
                     }
                     runMethodSource.Append(target.FullName());
-                    runMethodSource.Append(")");
+                    runMethodSource.Append(')');
                     runMethodSource.Append(resultVariableName);
                     runMethodSource.Append(", param);}finally{");
                     runMethodSource.Append(disposalSource);
@@ -177,7 +177,7 @@ namespace StrongInject.Generator
                     resolveMethodSource.Append(variableCreationSource);
                     resolveMethodSource.Append("return new ");
                     resolveMethodSource.Append(ownedType.FullName());
-                    resolveMethodSource.Append("(");
+                    resolveMethodSource.Append('(');
                     resolveMethodSource.Append(resultVariableName);
                     resolveMethodSource.Append(isAsync ? ",async()=>{" : ",()=>{");
                     resolveMethodSource.Append(disposalSource);
@@ -195,7 +195,7 @@ namespace StrongInject.Generator
                 closingBraceCount++;
                 file.Append("namespace ");
                 file.Append(_container.ContainingNamespace.FullName());
-                file.Append("{");
+                file.Append('{');
             }
 
             foreach (var type in _container.GetContainingTypesAndThis().Reverse())
@@ -203,7 +203,7 @@ namespace StrongInject.Generator
                 closingBraceCount++;
                 file.Append("partial class ");
                 file.Append(type.NameWithGenerics());
-                file.Append(@"{");
+                file.Append('{');
             }
 
             GenerateDisposeMethods(_implementsSyncContainer, _implementsAsyncContainer, file);
@@ -212,7 +212,7 @@ namespace StrongInject.Generator
 
             for (int i = 0; i < closingBraceCount; i++)
             {
-                file.Append("}");
+                file.Append('}');
             }
 
             return file.ToString();
@@ -239,24 +239,24 @@ namespace StrongInject.Generator
                 var lockName = "_lock" + index;
                 singleInstanceMethod = (name, isAsync, disposeFieldName, lockName);
                 _singleInstanceMethods.Add(instanceSource, singleInstanceMethod);
-                _containerMembersSource.Append("private " + type.FullName() + " " + singleInstanceFieldName + ";");
+                _containerMembersSource.Append("private " + type.FullName() + ' ' + singleInstanceFieldName + ';');
                 _containerMembersSource.Append("private global::System.Threading.SemaphoreSlim _lock" + index + "=new global::System.Threading.SemaphoreSlim(1);");
                 _containerMembersSource.Append((_implementsAsyncContainer
                     ? "private global::System.Func<global::System.Threading.Tasks.ValueTask>"
-                    : "private global::System.Action") + " _disposeAction" + index + ";");
+                    : "private global::System.Action") + " _disposeAction" + index + ';');
                 var methodSource = new StringBuilder();
                 methodSource.Append(isAsync ? "private async " : "private ");
                 methodSource.Append(isAsync ? _wellKnownTypes.ValueTask1.Construct(type).FullName() : type.FullName());
-                methodSource.Append(" ");
+                methodSource.Append(' ');
                 methodSource.Append(name);
                 methodSource.Append("(){");
-                methodSource.Append("if (!object." + nameof(ReferenceEquals) + "(");
+                methodSource.Append("if (!object." + nameof(ReferenceEquals) + '(');
                 methodSource.Append(singleInstanceFieldName);
                 methodSource.Append(",null");
                 methodSource.Append("))");
                 methodSource.Append("return ");
                 methodSource.Append(singleInstanceFieldName);
-                methodSource.Append(";");
+                methodSource.Append(';');
                 if (isAsync)
                     methodSource.Append("await ");
                 methodSource.Append("this.");
@@ -273,12 +273,12 @@ namespace StrongInject.Generator
                     orderOfCreation: out var orderOfCreation);
                 methodSource.Append("this.");
                 methodSource.Append(singleInstanceFieldName);
-                methodSource.Append("=");
+                methodSource.Append('=');
                 methodSource.Append(variableName);
-                methodSource.Append(";");
+                methodSource.Append(';');
                 methodSource.Append("this.");
                 methodSource.Append(disposeFieldName);
-                methodSource.Append("=");
+                methodSource.Append('=');
                 if (_implementsAsyncContainer)
                     methodSource.Append("async");
                 methodSource.Append("() => {");
@@ -342,7 +342,7 @@ namespace StrongInject.Generator
                                 var (name, isAsync) = GetSingleInstanceMethod(registration);
                                 methodSource.Append("var ");
                                 methodSource.Append(variableName);
-                                methodSource.Append(isAsync ? "=await " : "=");
+                                methodSource.Append(isAsync ? "=await " : '=');
                                 methodSource.Append(name);
                                 methodSource.Append("();");
                             }
@@ -353,7 +353,7 @@ namespace StrongInject.Generator
                             methodSource.Append(variableName);
                             methodSource.Append(isAsync ? "=await((" : "=((");
                             methodSource.Append(underlying.OfType.FullName());
-                            methodSource.Append(")");
+                            methodSource.Append(')');
                             methodSource.Append(factoryVariable);
                             methodSource.Append(").");
                             methodSource.Append(isAsync
@@ -381,13 +381,13 @@ namespace StrongInject.Generator
                                     ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
                                     : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
                                 methodSource.Append(delegateType.FullName());
-                                methodSource.Append(" ");
+                                methodSource.Append(' ');
                                 methodSource.Append(variableName);
                                 methodSource.Append(isAsync ? "=async(" : "=(");
                                 foreach (var (parameter, index) in parameters.WithIndex())
                                 {
                                     if (index != 0)
-                                        methodSource.Append(",");
+                                        methodSource.Append(',');
                                     methodSource.Append(((DelegateParameter)instanceSourcesScope[parameter.Type]).Name);
                                 }
                                 methodSource.Append(")=>{");
@@ -422,18 +422,18 @@ namespace StrongInject.Generator
                                 variableSource.Append(variableName);
                                 variableSource.Append("=new ");
                                 variableSource.Append(arrayType.FullName());
-                                variableSource.Append("{");
+                                variableSource.Append('{');
 
                                 var elementType = arrayType.ElementType.FullName();
                                 foreach (var source in sources)
                                 {
                                     var variable = CreateVariableInternal(source, instanceSourcesScope);
 
-                                    variableSource.Append("(");
+                                    variableSource.Append('(');
                                     variableSource.Append(elementType);
-                                    variableSource.Append(")");
+                                    variableSource.Append(')');
                                     variableSource.Append(variable);
-                                    variableSource.Append(",");
+                                    variableSource.Append(',');
                                 }
                                 variableSource.Append("};");
                                 methodSource.Append(variableSource);
@@ -470,7 +470,7 @@ namespace StrongInject.Generator
                         variableSource.Append("var ");
                         variableSource.Append(variableName);
                         bool isConstructor = method.MethodKind == MethodKind.Constructor;
-                        variableSource.Append(isAsync && !isConstructor ? "=await " : "=");
+                        variableSource.Append(isAsync && !isConstructor ? "=await " : '=');
                         if (isConstructor)
                         {
                             variableSource.Append("new ");
@@ -481,18 +481,18 @@ namespace StrongInject.Generator
                             GenerateMemberAccess(variableSource, method);
                             if (method.TypeArguments.Length > 0)
                             {
-                                variableSource.Append("<");
+                                variableSource.Append('<');
                                 for (int i = 0; i < method.TypeArguments.Length; i++)
                                 {
                                     var typeArgument = method.TypeArguments[i];
                                     if (i != 0)
-                                        variableSource.Append(",");
+                                        variableSource.Append(',');
                                     variableSource.Append(typeArgument.FullName());
                                 }
-                                variableSource.Append(">");
+                                variableSource.Append('>');
                             }
                         }
-                        variableSource.Append("(");
+                        variableSource.Append('(');
                         bool isFirst = true;
                         for (int i = 0; i < method.Parameters.Length; i++)
                         {
@@ -504,14 +504,14 @@ namespace StrongInject.Generator
                             {
                                 if (!isFirst)
                                 {
-                                    variableSource.Append(",");
+                                    variableSource.Append(',');
                                 }
                                 isFirst = false;
                                 var variable = CreateVariableInternal(source, instanceSourcesScope);
                                 variableSource.Append(parameter.Name);
                                 variableSource.Append(":(");
                                 variableSource.Append(parameter.Type.FullName());
-                                variableSource.Append(")");
+                                variableSource.Append(')');
                                 variableSource.Append(variable);
                             }
                         }
@@ -530,7 +530,7 @@ namespace StrongInject.Generator
             methodSource.Append(isAsync
                 ? _wellKnownTypes.IRequiresAsyncInitialization.FullName()
                 : _wellKnownTypes.IRequiresInitialization.FullName());
-            methodSource.Append(")");
+            methodSource.Append(')');
             methodSource.Append(variableName);
             methodSource.Append(").");
             methodSource.Append(isAsync
@@ -550,7 +550,7 @@ namespace StrongInject.Generator
                 methodSource.Append("this");
             }
 
-            methodSource.Append(".");
+            methodSource.Append('.');
             methodSource.Append(member.Name);
         }
 
@@ -574,13 +574,13 @@ namespace StrongInject.Generator
                         }
                         methodSource.Append("((");
                         methodSource.Append(cast.FullName());
-                        methodSource.Append(")");
+                        methodSource.Append(')');
                         methodSource.Append(factoryVariable);
                         methodSource.Append(").");
                         methodSource.Append(isAsyncFactory
                             ? nameof(IAsyncFactory<object>.ReleaseAsync)
                             : nameof(IFactory<object>.Release));
-                        methodSource.Append("(");
+                        methodSource.Append('(');
                         methodSource.Append(variableName);
                         methodSource.Append(");");
                         break;
@@ -625,11 +625,11 @@ namespace StrongInject.Generator
                 methodSource.Append("await ");
             }
             methodSource.Append(_wellKnownTypes.Helpers.FullName());
-            methodSource.Append(".");
+            methodSource.Append('.');
             methodSource.Append(isAsync
                 ? nameof(Helpers.DisposeAsync)
                 : nameof(Helpers.Dispose));
-            methodSource.Append("(");
+            methodSource.Append('(');
             methodSource.Append(variableName);
             methodSource.Append(");");
         }
@@ -641,18 +641,18 @@ namespace StrongInject.Generator
             {
                 methodSource.Append("await ((");
                 methodSource.Append(_wellKnownTypes.IAsyncDisposable.FullName());
-                methodSource.Append(")");
+                methodSource.Append(')');
                 methodSource.Append(variableName);
-                methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + "(");
+                methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + '(');
                 methodSource.Append(");");
             }
             else if (type.AllInterfaces.Contains(_wellKnownTypes.IDisposable))
             {
                 methodSource.Append("((");
                 methodSource.Append(_wellKnownTypes.IDisposable.FullName());
-                methodSource.Append(")");
+                methodSource.Append(')');
                 methodSource.Append(variableName);
-                methodSource.Append(")." + nameof(IDisposable.Dispose) + "(");
+                methodSource.Append(")." + nameof(IDisposable.Dispose) + '(');
                 methodSource.Append(");");
             }
             else if (isAsyncDisposable)
@@ -685,7 +685,7 @@ if (disposed != 0) return;");
                     file.Append(lockName);
                     file.Append(@".Release();}");
                 }
-                file.Append(@"}");
+                file.Append('}');
                 if (anySync)
                 {
                     file.Append(@"void global::System.IDisposable.Dispose() { throw new global::StrongInject.StrongInjectException(""This container requires async disposal""); }");
@@ -706,7 +706,7 @@ if (disposed != 0) return;");
                     file.Append(lockName);
                     file.Append(@".Release();}");
                 }
-                file.Append(@"}");
+                file.Append('}');
             }
         }
 
