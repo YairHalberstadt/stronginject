@@ -9,7 +9,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Factory Method Registration
+# Decorator Factory Method Registration
 
 A method may be marked as a Decorator Factory Method by applying the `[DecoratorFactory]` attribute:
 
