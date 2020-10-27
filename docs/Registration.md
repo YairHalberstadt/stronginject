@@ -57,7 +57,7 @@ Decorators are used to modify an instance created by another registration. There
 
 You can register a type as a decorator for an interface it implements, if its constructor has exactly one parameter whose type is the interface.
 
-#### Decorator Factory Method Registration
+#### [Decorator Factory Method Registration](https://github.com/YairHalberstadt/stronginject/wiki/DecoratorFactoryRegistration)
 
 You can register a method returning `T` as a decorator of `T` if it has exactly one parameter of type `T`.
 
