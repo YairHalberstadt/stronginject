@@ -584,8 +584,8 @@ namespace StrongInject.Generator
                         methodSource.Append(variableName);
                         methodSource.Append(");");
                         break;
-                    case FactoryMethod:
-                        DisposeExactTypeNotKnown(methodSource, isAsync, variableName);
+                    case FactoryMethod { FactoryOfType: var type }:
+                        DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
                         break;
                     case Registration { Type: var type }:
                         DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
@@ -601,8 +601,8 @@ namespace StrongInject.Generator
                             case DecoratorRegistration { Type: var type }:
                                 DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
                                 break;
-                            case DecoratorFactoryMethod:
-                                DisposeExactTypeNotKnown(methodSource, isAsync, variableName);
+                            case DecoratorFactoryMethod { DecoratedType: var type }:
+                                DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
                                 break;
                             default: throw new NotImplementedException(decorator.GetType().ToString());
                         }
@@ -618,8 +618,14 @@ namespace StrongInject.Generator
             }
         }
 
-        private void DisposeExactTypeNotKnown(StringBuilder methodSource, bool isAsync, string? variableName)
+        private void DisposeExactTypeNotKnown(StringBuilder methodSource, bool isAsync, string? variableName, ITypeSymbol subTypeOf)
         {
+            if (subTypeOf.IsSealed || subTypeOf.IsValueType)
+            {
+                DisposeExactTypeKnown(methodSource, isAsync, variableName, subTypeOf);
+                return;
+            }
+
             if (isAsync)
             {
                 methodSource.Append("await ");
@@ -634,7 +640,7 @@ namespace StrongInject.Generator
             methodSource.Append(");");
         }
 
-        private void DisposeExactTypeKnown(StringBuilder methodSource, bool isAsync, string? variableName, INamedTypeSymbol type)
+        private void DisposeExactTypeKnown(StringBuilder methodSource, bool isAsync, string? variableName, ITypeSymbol type)
         {
             var isAsyncDisposable = type.AllInterfaces.Contains(_wellKnownTypes.IAsyncDisposable);
             if (isAsync && isAsyncDisposable)

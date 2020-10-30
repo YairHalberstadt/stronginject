@@ -7973,7 +7973,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -7986,7 +7985,6 @@ partial class Container
         var _0 = this.Resolve<global::System.String>();
         return new global::StrongInject.Owned<global::System.String>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -8208,7 +8206,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -8221,7 +8218,6 @@ partial class Container
         var _0 = this.Resolve<global::System.Int32, global::System.Object, global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32)>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -8324,7 +8320,6 @@ partial class Container<T>
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -8337,7 +8332,6 @@ partial class Container<T>
         var _0 = this.Resolve<global::System.Int32>();
         return new global::StrongInject.Owned<(T, global::System.Int32)>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -8433,7 +8427,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -8447,7 +8440,6 @@ partial class Container
         var _0 = this.Resolve<global::System.Int32>(a: (global::A<global::System.Int32>)_1);
         return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -8553,7 +8545,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
             global::StrongInject.Helpers.Dispose(_2);
             global::StrongInject.Helpers.Dispose(_3);
@@ -8585,7 +8576,6 @@ partial class Container
         var _0 = this.Resolve<global::System.Int32>(a: (global::A<global::System.Int32>)_1);
         return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
             global::StrongInject.Helpers.Dispose(_2);
             global::StrongInject.Helpers.Dispose(_3);
@@ -8730,7 +8720,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -8743,7 +8732,6 @@ partial class Container1
         var _0 = this.Resolve<global::A>();
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -8759,7 +8747,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -8772,7 +8759,6 @@ partial class Container1
         var _0 = this.Resolve<global::A?>();
         return new global::StrongInject.Owned<global::A?>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -8876,7 +8862,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -8889,7 +8874,6 @@ partial class Container1
         var _0 = this.Resolve<global::System.Int32>();
         return new global::StrongInject.Owned<global::System.Int32>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9046,7 +9030,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9059,7 +9042,6 @@ partial class Container1
         var _0 = this.Resolve<global::A>();
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9095,7 +9077,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9108,7 +9089,6 @@ partial class Container1
         var _0 = this.Resolve<global::C>();
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9146,7 +9126,6 @@ partial class Container2<T1>
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9159,7 +9138,6 @@ partial class Container2<T1>
         var _0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -9542,7 +9520,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9555,7 +9532,6 @@ partial class Container1
         var _0 = this.Resolve<global::A>();
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9591,7 +9567,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9604,7 +9579,6 @@ partial class Container1
         var _0 = this.Resolve<global::C>();
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9630,7 +9604,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9643,7 +9616,6 @@ partial class Container1
         var _0 = this.Resolve<global::E>();
         return new global::StrongInject.Owned<global::E>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9659,7 +9631,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9672,7 +9643,6 @@ partial class Container1
         var _0 = this.Resolve<global::F<global::System.Int32>>();
         return new global::StrongInject.Owned<global::F<global::System.Int32>>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9688,7 +9658,6 @@ partial class Container1
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9701,7 +9670,6 @@ partial class Container1
         var _0 = this.Resolve<global::G<global::System.Int32>>();
         return new global::StrongInject.Owned<global::G<global::System.Int32>>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -9749,7 +9717,6 @@ partial class Container2<T1>
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9762,7 +9729,6 @@ partial class Container2<T1>
         var _0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -9941,7 +9907,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9954,7 +9919,6 @@ partial class Container
         var _0 = this.Resolve<global::E>();
         return new global::StrongInject.Owned<global::E>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 
@@ -10169,7 +10133,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -10182,7 +10145,6 @@ partial class Container
         var _0 = global::Module.M<global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -10289,7 +10251,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -10302,7 +10263,6 @@ partial class Container
         var _0 = global::Module2.M<global::System.Int32, global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -10357,7 +10317,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -10370,7 +10329,6 @@ partial class Container
         var _0 = global::Module2.M<global::System.Int32, global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -10425,7 +10383,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -10438,7 +10395,6 @@ partial class Container
         var _0 = global::Module1.M<global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -10558,7 +10514,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -10571,7 +10526,6 @@ partial class Container
         var _0 = global::Module1.M<global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -10636,9 +10590,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_3);
-            global::StrongInject.Helpers.Dispose(_2);
-            global::StrongInject.Helpers.Dispose(_1);
         }
 
         return result;
@@ -10654,9 +10605,6 @@ partial class Container
         var _0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_1, ((global::System.Int32, global::System.Int32))_2, ((global::System.Int32, global::System.Int32))_3, };
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_3);
-            global::StrongInject.Helpers.Dispose(_2);
-            global::StrongInject.Helpers.Dispose(_1);
         });
     }
 }");
@@ -10723,10 +10671,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_4);
-            global::StrongInject.Helpers.Dispose(_3);
-            global::StrongInject.Helpers.Dispose(_2);
-            global::StrongInject.Helpers.Dispose(_1);
         }
 
         return result;
@@ -10743,10 +10687,6 @@ partial class Container
         var _0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_1, ((global::System.Int32, global::System.Int32))_2, ((global::System.Int32, global::System.Int32))_3, ((global::System.Int32, global::System.Int32))_4, };
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_4);
-            global::StrongInject.Helpers.Dispose(_3);
-            global::StrongInject.Helpers.Dispose(_2);
-            global::StrongInject.Helpers.Dispose(_1);
         });
     }
 }");
@@ -14548,7 +14488,6 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
             ((global::StrongInject.IFactory<global::D>)_5).Release(_4);
             await ((global::StrongInject.IAsyncFactory<global::C>)_6).ReleaseAsync(_5);
             ((global::StrongInject.IFactory<global::B>)this._a).Release(_6);
@@ -14573,7 +14512,6 @@ partial class Container
         var _0 = this.M(d1: (global::D)_1, d2: (global::D)_4);
         return new global::StrongInject.AsyncOwned<global::System.Int32>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
             ((global::StrongInject.IFactory<global::D>)_5).Release(_4);
             await ((global::StrongInject.IAsyncFactory<global::C>)_6).ReleaseAsync(_5);
             ((global::StrongInject.IFactory<global::B>)this._a).Release(_6);
