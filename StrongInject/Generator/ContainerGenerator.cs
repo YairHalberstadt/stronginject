@@ -374,12 +374,19 @@ namespace StrongInject.Generator
                             }
                         case DelegateSource(var delegateType, var returnType, var parameters, var isAsync):
                             {
-                                disposeActionsName = "disposeActions" + instanceSourcesScope.Depth + variableName;
-                                methodSource.Append("var ");
-                                methodSource.Append(disposeActionsName);
-                                methodSource.Append(disposeAsynchronously
-                                    ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
-                                    : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
+                                var disposeActionsIndex = methodSource.Length;
+
+                                var disposeActionsSection = methodSource.BeginRevertableSection();
+
+                                    disposeActionsName = "disposeActions" + instanceSourcesScope.Depth + variableName;
+                                    methodSource.Append("var ");
+                                    methodSource.Append(disposeActionsName);
+                                    methodSource.Append(disposeAsynchronously
+                                        ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
+                                        : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
+
+                                disposeActionsSection.EndSection();
+
                                 methodSource.Append(delegateType.FullName());
                                 methodSource.Append(' ');
                                 methodSource.Append(variableName);
@@ -398,13 +405,30 @@ namespace StrongInject.Generator
                                     isSingleInstanceCreation: false,
                                     disposeAsynchronously: disposeAsynchronously,
                                     orderOfCreation: out var delegateOrderOfCreation);
+
+                                var disposeSection = methodSource.BeginRevertableSection();
+
                                 methodSource.Append(disposeActionsName);
                                 methodSource.Append(".Add(");
                                 if (disposeAsynchronously)
                                     methodSource.Append("async");
                                 methodSource.Append("() => {");
+
+                                var beforeGenerateDisposeCodeLength = methodSource.Length;
                                 GenerateDisposeCode(methodSource, delegateOrderOfCreation, disposeAsynchronously, null);
-                                methodSource.Append("});return ");
+                                if (beforeGenerateDisposeCodeLength == methodSource.Length)
+                                {
+                                    disposeSection.EndSection();
+                                    disposeSection.Revert();
+                                    disposeActionsSection.Revert();
+                                    disposeActionsName = null;
+                                }
+                                else
+                                {
+                                    methodSource.Append("});");
+                                }
+
+                                methodSource.Append("return ");
                                 methodSource.Append(variable);
                                 methodSource.Append(";};");
                                 break;
@@ -591,9 +615,12 @@ namespace StrongInject.Generator
                         DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
                         break;
                     case DelegateSource:
-                        methodSource.Append("foreach (var disposeAction in ");
-                        methodSource.Append(disposeActionName);
-                        methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
+                        if (disposeActionName is not null)
+                        {
+                            methodSource.Append("foreach (var disposeAction in ");
+                            methodSource.Append(disposeActionName);
+                            methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
+                        }
                         break;
                     case WrappedDecoratorInstanceSource { Decorator: var decorator }:
                         switch (decorator)

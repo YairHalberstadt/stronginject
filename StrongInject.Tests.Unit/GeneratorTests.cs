@@ -3489,14 +3489,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
         global::System.Func<global::A> _0 = () =>
         {
             var _1 = new global::B();
             var _0 = new global::A(b: (global::B)_1);
-            disposeActions1_0.Add(async () =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -3506,8 +3502,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                await disposeAction();
         }
 
         return result;
@@ -3517,20 +3511,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
         global::System.Func<global::A> _0 = () =>
         {
             var _1 = new global::B();
             var _0 = new global::A(b: (global::B)_1);
-            disposeActions1_0.Add(async () =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0, async () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                await disposeAction();
         });
     }
 }");
@@ -3575,13 +3563,9 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::B, global::A> _0 = (param0_0) =>
         {
             var _0 = new global::A(b: (global::B)param0_0);
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -3591,8 +3575,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -3602,19 +3584,13 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::B, global::A> _0 = (param0_0) =>
         {
             var _0 = new global::A(b: (global::B)param0_0);
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -3658,13 +3634,9 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::B, global::A> _0 = (param0_0) =>
         {
             var _0 = new global::A(b: (global::B)param0_0);
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -3674,8 +3646,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -3685,19 +3655,13 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::B, global::A> _0 = (param0_0) =>
         {
             var _0 = new global::A(b: (global::B)param0_0);
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -3742,13 +3706,9 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::System.String, global::B> _1 = (param0_0, param0_1) =>
         {
             var _0 = new global::B(i: (global::System.Int32)param0_0, s: (global::System.String)param0_1, i1: (global::System.Int32)param0_0);
-            disposeActions1_1.Add(() =>
-            {
-            });
             return _0;
         };
         var _0 = new global::A(b: (global::System.Func<global::System.Int32, global::System.String, global::B>)_1);
@@ -3759,8 +3719,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_1)
-                disposeAction();
         }
 
         return result;
@@ -3770,20 +3728,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::System.String, global::B> _1 = (param0_0, param0_1) =>
         {
             var _0 = new global::B(i: (global::System.Int32)param0_0, s: (global::System.String)param0_1, i1: (global::System.Int32)param0_0);
-            disposeActions1_1.Add(() =>
-            {
-            });
             return _0;
         };
         var _0 = new global::A(b: (global::System.Func<global::System.Int32, global::System.String, global::B>)_1);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_1)
-                disposeAction();
         });
     }
 }");
@@ -3828,24 +3780,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::A> _0 = (param0_0) =>
         {
-            var disposeActions2_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::System.String, global::B> _1 = (param1_0) =>
             {
                 var _0 = new global::B(i: (global::System.Int32)param0_0, s: (global::System.String)param1_0);
-                disposeActions2_1.Add(() =>
-                {
-                });
                 return _0;
             };
             var _0 = new global::A(a: (global::System.Int32)param0_0, func: (global::System.Func<global::System.String, global::B>)_1);
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_1)
-                    disposeAction();
-            });
             return _0;
         };
         TResult result;
@@ -3855,8 +3797,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -3866,30 +3806,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::A> _0 = (param0_0) =>
         {
-            var disposeActions2_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::System.String, global::B> _1 = (param1_0) =>
             {
                 var _0 = new global::B(i: (global::System.Int32)param0_0, s: (global::System.String)param1_0);
-                disposeActions2_1.Add(() =>
-                {
-                });
                 return _0;
             };
             var _0 = new global::A(a: (global::System.Int32)param0_0, func: (global::System.Func<global::System.String, global::B>)_1);
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_1)
-                    disposeAction();
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -3932,33 +3860,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0 = (param0_0) =>
         {
-            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _0 = (param1_0) =>
             {
-                var disposeActions3_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
                 global::System.Func<global::System.Int32, global::A> _0 = (param2_0) =>
                 {
                     var _0 = new global::A(a: (global::System.Int32)param2_0, b: (global::System.String)param1_0, c: (global::System.Boolean)param0_0);
-                    disposeActions3_0.Add(() =>
-                    {
-                    });
                     return _0;
                 };
-                disposeActions2_0.Add(() =>
-                {
-                    foreach (var disposeAction in disposeActions3_0)
-                        disposeAction();
-                });
                 return _0;
             };
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_0)
-                    disposeAction();
-            });
             return _0;
         };
         TResult result;
@@ -3968,8 +3880,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -3979,39 +3889,21 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0 = (param0_0) =>
         {
-            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _0 = (param1_0) =>
             {
-                var disposeActions3_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
                 global::System.Func<global::System.Int32, global::A> _0 = (param2_0) =>
                 {
                     var _0 = new global::A(a: (global::System.Int32)param2_0, b: (global::System.String)param1_0, c: (global::System.Boolean)param0_0);
-                    disposeActions3_0.Add(() =>
-                    {
-                    });
                     return _0;
                 };
-                disposeActions2_0.Add(() =>
-                {
-                    foreach (var disposeAction in disposeActions3_0)
-                        disposeAction();
-                });
                 return _0;
             };
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_0)
-                    disposeAction();
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -4152,13 +4044,9 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::System.String, global::A> _0 = (param0_0, param0_1) =>
         {
             var _0 = new global::A(s1: (global::System.String)param0_1, s2: (global::System.String)param0_1);
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -4168,8 +4056,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -4179,19 +4065,13 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::System.String, global::A> _0 = (param0_0, param0_1) =>
         {
             var _0 = new global::A(s1: (global::System.String)param0_1, s2: (global::System.String)param0_1);
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.String, global::A>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -4237,23 +4117,13 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0 = (param0_0) =>
         {
-            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::System.Int32, global::A> _0 = (param1_0) =>
             {
                 var _0 = new global::A(a1: (global::System.Int32)param1_0, a2: (global::System.Int32)param1_0);
-                disposeActions2_0.Add(() =>
-                {
-                });
                 return _0;
             };
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_0)
-                    disposeAction();
-            });
             return _0;
         };
         TResult result;
@@ -4263,8 +4133,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -4274,29 +4142,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0 = (param0_0) =>
         {
-            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::System.Int32, global::A> _0 = (param1_0) =>
             {
                 var _0 = new global::A(a1: (global::System.Int32)param1_0, a2: (global::System.Int32)param1_0);
-                disposeActions2_0.Add(() =>
-                {
-                });
                 return _0;
             };
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_0)
-                    disposeAction();
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -4387,13 +4243,9 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::B, global::A> _0 = (param0_0) =>
         {
             var _0 = GetSingleInstanceField0();
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -4403,8 +4255,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -4414,19 +4264,13 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::B, global::A> _0 = (param0_0) =>
         {
             var _0 = GetSingleInstanceField0();
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -4471,12 +4315,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::A, global::A> _0 = (param0_0) =>
         {
-            disposeActions1_0.Add(() =>
-            {
-            });
             return param0_0;
         };
         TResult result;
@@ -4486,8 +4326,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -4497,18 +4335,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::A, global::A> _0 = (param0_0) =>
         {
-            disposeActions1_0.Add(() =>
-            {
-            });
             return param0_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::A, global::A>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -4553,22 +4385,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::A, global::System.Func<global::A>> _0 = (param0_0) =>
         {
-            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::A> _0 = () =>
             {
-                disposeActions2_0.Add(() =>
-                {
-                });
                 return param0_0;
             };
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_0)
-                    disposeAction();
-            });
             return _0;
         };
         TResult result;
@@ -4578,8 +4400,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -4589,28 +4409,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::A, global::System.Func<global::A>> _0 = (param0_0) =>
         {
-            var disposeActions2_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::System.Func<global::A> _0 = () =>
             {
-                disposeActions2_0.Add(() =>
-                {
-                });
                 return param0_0;
             };
-            disposeActions1_0.Add(() =>
-            {
-                foreach (var disposeAction in disposeActions2_0)
-                    disposeAction();
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::A, global::System.Func<global::A>>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -4948,14 +4756,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::Del _0 = async (param0_0) =>
         {
             var _0 = new global::A(a: (global::System.Int32)param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -4965,8 +4769,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -4976,20 +4778,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::Del _0 = async (param0_0) =>
         {
             var _0 = new global::A(a: (global::System.Int32)param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::Del>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -5034,14 +4830,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::Del _0 = async (param0_0) =>
         {
             var _0 = new global::A(a: (global::System.Int32)param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -5051,8 +4843,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -5062,20 +4852,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::Del _0 = async (param0_0) =>
         {
             var _0 = new global::A(a: (global::System.Int32)param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::Del>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -5142,22 +4926,16 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var disposeActions1_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
             global::Del _1 = async (param0_0) =>
             {
                 var _0 = new global::A(a: (global::System.Int32)param0_0);
                 await ((global::StrongInject.IRequiresAsyncInitialization)_0).InitializeAsync();
-                disposeActions1_1.Add(() =>
-                {
-                });
                 return _0;
             };
             var _0 = new global::B(d: (global::Del)_1);
             this._singleInstanceField0 = _0;
             this._disposeAction0 = () =>
             {
-                foreach (var disposeAction in disposeActions1_1)
-                    disposeAction();
             };
         }
         finally
@@ -5374,12 +5152,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
         global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0 = (param0_0) =>
         {
-            disposeActions1_0.Add(async () =>
-            {
-            });
             return param0_0;
         };
         TResult result;
@@ -5389,8 +5163,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                await disposeAction();
         }
 
         return result;
@@ -5400,18 +5172,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
         global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0 = (param0_0) =>
         {
-            disposeActions1_0.Add(async () =>
-            {
-            });
             return param0_0;
         };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>>(_0, async () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                await disposeAction();
         });
     }
 }");
@@ -7885,15 +7651,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::IA, global::IA[]> _0 = (param0_0) =>
         {
             var _1 = new global::B();
             var _2 = new global::A();
             var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         TResult result;
@@ -7903,8 +7665,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         }
 
         return result;
@@ -7914,21 +7674,15 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
         global::System.Func<global::IA, global::IA[]> _0 = (param0_0) =>
         {
             var _1 = new global::B();
             var _2 = new global::A();
             var _0 = new global::IA[]{(global::IA)_1, (global::IA)_2, };
-            disposeActions1_0.Add(() =>
-            {
-            });
             return _0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::IA, global::IA[]>>(_0, () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                disposeAction();
         });
     }
 }");
@@ -11135,12 +10889,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
         global::System.Func<global::IA, global::IA> _0 = (param0_0) =>
         {
-            disposeActions1_0.Add(async () =>
-            {
-            });
             return param0_0;
         };
         TResult result;
@@ -11150,8 +10900,6 @@ partial class Container
         }
         finally
         {
-            foreach (var disposeAction in disposeActions1_0)
-                await disposeAction();
         }
 
         return result;
@@ -11161,18 +10909,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions1_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
         global::System.Func<global::IA, global::IA> _0 = (param0_0) =>
         {
-            disposeActions1_0.Add(async () =>
-            {
-            });
             return param0_0;
         };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::IA, global::IA>>(_0, async () =>
         {
-            foreach (var disposeAction in disposeActions1_0)
-                await disposeAction();
         });
     }
 }");
