@@ -27,7 +27,7 @@ A single instance is shared between all dependencies created for a single resolu
 
 For example if `A` debends on `B` and `C`, and `B` and `C` both depend on an instance of `D`, then when `A` is resolved `B` and `C` will share the same instance of `D`.
 
-Note every SingleInstance dependency defines a seperate resolution, so if `B` and/or `C` are `SingleInstance` they would not share an instance of `D`. Similiarly every lambda defines a seperate resolution, so if `A` depends on `Func<B>`, then each time `Func<B>` is resolved a fresh instance of both `B` and `D` will be created.
+Note every SingleInstance dependency defines a seperate resolution, so if `B` and/or `C` are `SingleInstance` they would not share an instance of `D`. Similiarly every lambda defines a seperate resolution, so if `A` depends on `Func<B>`, then each time `Func<B>` is invoked a fresh instance of both `B` and `D` will be created.
 
 ### InstancePerDependency
 
