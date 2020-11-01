@@ -8880,6 +8880,7 @@ partial class Container2<T1>
         }
         finally
         {
+            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -8892,6 +8893,7 @@ partial class Container2<T1>
         var _0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
+            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
@@ -9471,6 +9473,7 @@ partial class Container2<T1>
         }
         finally
         {
+            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -9483,6 +9486,7 @@ partial class Container2<T1>
         var _0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0, () =>
         {
+            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");

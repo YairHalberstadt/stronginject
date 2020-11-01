@@ -647,7 +647,7 @@ namespace StrongInject.Generator
 
         private void DisposeExactTypeNotKnown(StringBuilder methodSource, bool isAsync, string? variableName, ITypeSymbol subTypeOf)
         {
-            if (subTypeOf.IsSealed || subTypeOf.IsValueType)
+            if ((subTypeOf.IsSealed || subTypeOf.IsValueType) && subTypeOf.TypeKind != TypeKind.TypeParameter)
             {
                 DisposeExactTypeKnown(methodSource, isAsync, variableName, subTypeOf);
                 return;
