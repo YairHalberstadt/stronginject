@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Scopes](#scopes)
+  - [List Of Scopes](#list-of-scopes)
+    - [InstancePerResolution](#instanceperresolution)
+    - [InstancePerDependency](#instanceperdependency)
+    - [SingleInstance](#singleinstance)
+  - [Disposal](#disposal)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Scopes
 
 All registrations have a particular Scope. This tells StrongInject how long an instance resolved using that registration should live for, and how widely it should be shared.
