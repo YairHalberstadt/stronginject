@@ -51,9 +51,9 @@ By default all instances can be decorated. This can be opted out of by applying 
 
 Instance fields and properties will not be disposed by StrongInject. This is necessary so that modules containing instance fields and properties can be shared among multiple containers.
 
-However if they are decorated, the decorators will be disposed. If the decorator chooses to delegate disposal to the underlying instance, this means the instance property will be disposed.
+### Decorators
 
-For that reason it's best to use the `Options.DoNotDecorate` parameter on disposable instances.
+By default Instance fields and properties will be decorated. If you do not want this to happen, apply the `Options.DoNotDecorate` parameter.
 
 ## Example
 
@@ -62,12 +62,12 @@ using StrongInject;
 using System;
 
 public class A { }
-public class B : IDisposable { public void Dispose() { } }
+public class B : IDisposable { public void Dispose() { } } // Dispose will never be called
 public class C { public C(A a, B b) { } }
 
 public class Module
 {
-    [Instance(Options.DoNotDecorate)] public static readonly B _b = new B(); // Must be public and static. `Options.DoNotDecorate` is best practice as `B` is disposable.
+    [Instance(Options.DoNotDecorate)] public static readonly B _b = new B(); // Must be public and static.
 }
 
 [Register(typeof(C))]
