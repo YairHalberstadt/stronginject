@@ -841,7 +841,7 @@ namespace StrongInject.Generator
             {
                 _cancellationToken.ThrowIfCancellationRequested();
                 var countConstructorArguments = registerDecoratorAttribute.ConstructorArguments.Length;
-                if (countConstructorArguments != 2)
+                if (countConstructorArguments != 3)
                 {
                     // Invalid code, ignore;
                     continue;
@@ -908,12 +908,19 @@ namespace StrongInject.Generator
                     continue;
                 }
 
+                var options = DecoratorOptions.Default;
+                if (registerDecoratorAttribute.ConstructorArguments[2] is { Kind: TypedConstantKind.Enum, Value: long value })
+                {
+                    options = (DecoratorOptions)value;
+                }
+
                 var registration = new DecoratorRegistration(
                     type,
                     decoratedType,
                     requiresInitialization || requiresAsyncInitialization,
                     constructor,
                     decoratedParameters[0].Ordinal,
+                    options.HasFlag(DecoratorOptions.Dispose),
                     IsAsync: requiresAsyncInitialization);
 
                 nonGenericDecorators.Add(registration);
@@ -998,7 +1005,14 @@ namespace StrongInject.Generator
                         return null;
                     }
 
-                    return new DecoratorFactoryMethod(method, decoratorOfType, isGeneric, decoratedParameters[0].Ordinal, isAsync);
+                    var options = DecoratorOptions.Default;
+                    var constructorArguments = attribute.ConstructorArguments;
+                    if (!constructorArguments.IsDefault && constructorArguments.Length == 1 && constructorArguments[0] is { Kind: TypedConstantKind.Enum, Value: long value })
+                    {
+                        options = (DecoratorOptions)value;
+                    }
+
+                    return new DecoratorFactoryMethod(method, decoratorOfType, isGeneric, decoratedParameters[0].Ordinal, options.HasFlag(DecoratorOptions.Dispose), isAsync);
                 }
                 else
                 {

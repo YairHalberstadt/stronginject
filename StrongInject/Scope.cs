@@ -10,6 +10,9 @@
         /// 
         /// Note every SingleInstance dependency defines a seperate resolution, 
         /// so if 'B' and/or 'C' are SingleInstance they would not share an instance of 'D'.
+        /// 
+        /// Similiarly every lambda defines a seperate resolution, so if A depends on Func&lt;B&gt;,
+        /// then each time Func&lt;B&gt; is invoked a fresh instance of both B and D will be created.
         /// </summary>
         InstancePerResolution = 0,
 

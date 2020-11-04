@@ -467,7 +467,7 @@ namespace StrongInject.Generator
                             {
                                 switch (decoratorSource)
                                 {
-                                    case DecoratorRegistration(var _, _, var requiresInitialization, var constructor, var decoratedParameter, var isAsync):
+                                    case DecoratorRegistration(var _, _, var requiresInitialization, var constructor, var decoratedParameter, _, var isAsync):
 
                                         GenerateMethodCall(constructor, isAsync, (decoratedParameter, instanceSource));
 
@@ -477,7 +477,7 @@ namespace StrongInject.Generator
                                         }
 
                                         break;
-                                    case DecoratorFactoryMethod(var method, var returnType, var _, var decoratedParameter, var isAsync) registration:
+                                    case DecoratorFactoryMethod(var method, var returnType, var _, var decoratedParameter, _, var isAsync) registration:
                                         GenerateMethodCall(method, isAsync, (decoratedParameter, instanceSource));
                                         break;
                                     default: throw new NotImplementedException(decoratorSource.GetType().ToString());
@@ -622,16 +622,19 @@ namespace StrongInject.Generator
                             methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
                         }
                         break;
-                    case WrappedDecoratorInstanceSource { Decorator: var decorator }:
-                        switch (decorator)
+                    case WrappedDecoratorInstanceSource { Decorator: { dispose: var dispose } decorator }:
+                        if (dispose)
                         {
-                            case DecoratorRegistration { Type: var type }:
-                                DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
-                                break;
-                            case DecoratorFactoryMethod { DecoratedType: var type }:
-                                DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
-                                break;
-                            default: throw new NotImplementedException(decorator.GetType().ToString());
+                            switch (decorator)
+                            {
+                                case DecoratorRegistration { Type: var type }:
+                                    DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
+                                    break;
+                                case DecoratorFactoryMethod { DecoratedType: var type }:
+                                    DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
+                                    break;
+                                default: throw new NotImplementedException(decorator.GetType().ToString());
+                            }
                         }
                         break;
 

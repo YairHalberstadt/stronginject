@@ -32,6 +32,13 @@ You can register a method returning `T` as a decorator of `T` if it has exactly 
 
 ## Disposal
 
-Decorators are disposed from outermost to innermost, followed by the underlying instance.
+Decorators are not disposed by default, for a number of reasons:
+1. In many cases a decorator implements `IDisposable` as the interface requires it, but does not actually require disposal.
+2. In many cases a decorator will delegate to the underlying's `Dispose` method:
+   1. Since the underlying is disposed seperately, this can lead to double disposal.
+   2. The underlying may be an `Instance` field or property, which should never be disposed.
+3. In many cases a `DecoratorFactory` may return the same instance as was passed in, also leading to issues 2.i and 2.ii.
 
-For that reason best practice when implementing a decorator is to only dispose any resources owned directly by the decorator, and not dispose the underlying instance.
+If your decorator needs to be disposed, make sure it does not dispose the underlying instance, only resources it owns directly. Use `DecoratorOptions.Dispose` to mark it as requiring disposal.
+
+Decorators are disposed from outermost to innermost, followed by the underlying instance.

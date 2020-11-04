@@ -569,6 +569,8 @@ You can register multiple decorators for a type, and they will all be applied. A
 
 If you register an `[Instance]` and don't want it decorated, you can use `Options.DoNotDecorate`: `[Instance(Options.DoNotDecorate)]`.
 
+Decorators are not disposed by default. For more information see [the wiki](https://github.com/YairHalberstadt/stronginject/wiki/Decorators#disposal).
+
 #### Providing registrations at runtime or integrating with other IOC containers
 
 What if you need to provide configuration for a registration at runtime? Or alternatively what if you need to integrate with an existing container?

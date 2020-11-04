@@ -20,16 +20,19 @@ To register a type as a decorator, add the `[RegisterDecorator]` attribute to a 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class RegisterDecoratorAttribute : Attribute
 {
-    public RegisterDecoratorAttribute(Type type, Type decoratedType);
+    public RegisterDecoratorAttribute(Type type, Type decoratedType, DecoratorOptions decoratorOptions = DecoratorOptions.Default);
 
     public Type Type { get; }
     public Type DecoratedType { get; }
+    public DecoratorOptions DecoratorOptions { get; }
 }
 ```
 
 `type` must be a subtype of `decoratedType`.
 
 Whenever the decoratedType is resolved, an underlying instance of `decoratedType` will be resolved as normal. This instance will be used as a parameter to `type`, and `type` will be used as the resolved instance of `decoratedType` for the next decorator, or if it is the outermost decorator, for whatever originally required `decoratedType`.
+
+`decoratorOptions` is used to control [whether the decorator is disposed or not](https://github.com/YairHalberstadt/stronginject/wiki/Decorators#disposal).
 
 ## Constructor
 
