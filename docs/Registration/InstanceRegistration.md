@@ -7,6 +7,7 @@
   - [Configuration](#configuration)
     - [Decoration](#decoration)
     - [Disposal](#disposal)
+    - [Decorators](#decorators)
   - [Example](#example)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
