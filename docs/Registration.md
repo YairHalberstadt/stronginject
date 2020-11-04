@@ -63,7 +63,7 @@ You can register a method returning `T` as a decorator of `T` if it has exactly 
 
 ## Other registration concepts
 
-### Scopes
+### [Scopes](https://github.com/YairHalberstadt/stronginject/wiki/Scopes)
 
 All registrations have a particular `Scope`. This tells StrongInject how long an instance resolved using that registration should live for, and how widely it should be shared.
 
