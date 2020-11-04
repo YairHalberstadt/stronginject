@@ -17,7 +17,9 @@ A method may be marked as a Decorator Factory Method by applying the `[Decorator
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 public class DecoratorFactoryAttribute : Attribute
 {
-    public DecoratorFactoryAttribute();
+    public DecoratorFactoryAttribute(DecoratorOptions decoratorOptions = DecoratorOptions.Default);
+
+    public DecoratorOptions DecoratorOptions { get; }
 }
 ```
 
@@ -26,6 +28,8 @@ The `decoratedType` is defined as the return type of the method, unless the retu
 The method must have exactly one parameter which is of the `decoratedType`. It can have other parameters of other types as well.
 
 Whenever the `decoratedType` is resolved, an underlying instance of `decoratedType` will be resolved as normal. This instance will be used as a parameter to the method, and the result will be used as the resolved instance of `decoratedType` for the next decorator, or if it is the outermost decorator, for whatever originally required `decoratedType`.
+
+`decoratorOptions` is used to control [whether the decorator is disposed or not](https://github.com/YairHalberstadt/stronginject/wiki/Decorators#disposal).
 
 ## Generic Decorator Factory Methods
 
