@@ -10577,8 +10577,6 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
         }
 
         return result;
@@ -10594,8 +10592,6 @@ partial class Container
         var _0 = this.Decorator2(a: (global::IA)_1, b: (global::B)_3);
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
         });
     }
 }");
@@ -10810,14 +10806,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
-            await global::StrongInject.Helpers.DisposeAsync(_9);
             await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
-            await global::StrongInject.Helpers.DisposeAsync(_4);
-            await global::StrongInject.Helpers.DisposeAsync(_6);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
         }
 
         return result;
@@ -10840,14 +10829,7 @@ partial class Container
         var _0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: (global::System.Collections.Generic.List<global::IA>)_1);
         return new global::StrongInject.AsyncOwned<global::System.Collections.Generic.List<global::IA>>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
-            await global::StrongInject.Helpers.DisposeAsync(_9);
             await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
-            await global::StrongInject.Helpers.DisposeAsync(_4);
-            await global::StrongInject.Helpers.DisposeAsync(_6);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
         });
     }
 }");
@@ -11222,9 +11204,6 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
         }
 
         return result;
@@ -11241,9 +11220,6 @@ partial class Container
         var _0 = global::Module1.Decorator<global::IA>(a: (global::IA)_1);
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
         });
     }
 }");
@@ -11382,7 +11358,6 @@ partial class Container
         }
         finally
         {
-            await ((global::System.IAsyncDisposable)_0).DisposeAsync();
         }
 
         return result;
@@ -11396,7 +11371,6 @@ partial class Container
         var _0 = new global::DecoratorA(a: (global::IA)_1);
         return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
         {
-            await ((global::System.IAsyncDisposable)_0).DisposeAsync();
         });
     }
 
@@ -11413,7 +11387,6 @@ partial class Container
         }
         finally
         {
-            ((global::System.IDisposable)_0).Dispose();
             ((global::System.IDisposable)_1).Dispose();
         }
 
@@ -11428,7 +11401,6 @@ partial class Container
         var _0 = new global::DecoratorB(b: (global::IB)_1);
         return new global::StrongInject.Owned<global::IB>(_0, () =>
         {
-            ((global::System.IDisposable)_0).Dispose();
             ((global::System.IDisposable)_1).Dispose();
         });
     }
@@ -11593,7 +11565,6 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
         }
 
         return result;
@@ -11607,7 +11578,6 @@ partial class Container
         var _0 = await this.Decorator(a: (global::A)_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
         });
     }
 }");
@@ -11658,7 +11628,6 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
         }
 
         return result;
@@ -11672,7 +11641,105 @@ partial class Container
         var _0 = await this.Decorator<global::A>(t: (global::A)_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void DisposesDecoratorsWithDisposeOptionsButNotThoseWithDefaultOptions()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A), typeof(IA))]
+[RegisterDecorator(typeof(Decorator1), typeof(IA), DecoratorOptions.Dispose)]
+[RegisterDecorator(typeof(Decorator2), typeof(IA), DecoratorOptions.Default)]
+public partial class Container : IAsyncContainer<IA>
+{
+    [DecoratorFactory(DecoratorOptions.Dispose)] IA Decorator1(IA a) => a;
+    [DecoratorFactory(DecoratorOptions.Dispose)] T Decorator1<T>(T t) => t;
+    [DecoratorFactory(DecoratorOptions.Default)] IA Decorator2(IA a) => a;
+    [DecoratorFactory(DecoratorOptions.Default)] T Decorator2<T>(T t) => t;
+}
+
+public interface IA  {}
+public class A : IA {}
+public class Decorator1 : IA, IDisposable
+{
+    public Decorator1(IA a){} 
+    public void Dispose(){} 
+}
+public class Decorator2 : IA, IDisposable
+{
+    public Decorator2(IA a){} 
+    public void Dispose(){} 
+}";
+            var comp = RunGenerator(userSource, out var generatorDiagnostics, out var generated, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::IA>.RunAsync<TResult, TParam>(global::System.Func<global::IA, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _8 = new global::A();
+        var _7 = this.Decorator1<global::A>(t: (global::A)_8);
+        var _6 = this.Decorator2<global::A>(t: (global::A)_7);
+        var _5 = new global::Decorator1(a: (global::IA)_6);
+        var _4 = new global::Decorator2(a: (global::IA)_5);
+        var _3 = this.Decorator1(a: (global::IA)_4);
+        var _2 = this.Decorator2(a: (global::IA)_3);
+        var _1 = this.Decorator1<global::IA>(t: (global::IA)_2);
+        var _0 = this.Decorator2<global::IA>(t: (global::IA)_1);
+        TResult result;
+        try
+        {
+            result = await func((global::IA)_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_1);
+            await global::StrongInject.Helpers.DisposeAsync(_3);
+            ((global::System.IDisposable)_5).Dispose();
+            await global::StrongInject.Helpers.DisposeAsync(_7);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::IA>> global::StrongInject.IAsyncContainer<global::IA>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _8 = new global::A();
+        var _7 = this.Decorator1<global::A>(t: (global::A)_8);
+        var _6 = this.Decorator2<global::A>(t: (global::A)_7);
+        var _5 = new global::Decorator1(a: (global::IA)_6);
+        var _4 = new global::Decorator2(a: (global::IA)_5);
+        var _3 = this.Decorator1(a: (global::IA)_4);
+        var _2 = this.Decorator2(a: (global::IA)_3);
+        var _1 = this.Decorator1<global::IA>(t: (global::IA)_2);
+        var _0 = this.Decorator2<global::IA>(t: (global::IA)_1);
+        return new global::StrongInject.AsyncOwned<global::IA>(_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_1);
+            await global::StrongInject.Helpers.DisposeAsync(_3);
+            ((global::System.IDisposable)_5).Dispose();
+            await global::StrongInject.Helpers.DisposeAsync(_7);
         });
     }
 }");
@@ -12735,7 +12802,6 @@ partial class Container
             this._singleInstanceField0 = _0;
             this._disposeAction0 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
             };
         }
         finally
@@ -12790,7 +12856,6 @@ partial class Container
             this._singleInstanceField1 = _0;
             this._disposeAction1 = async () =>
             {
-                await global::StrongInject.Helpers.DisposeAsync(_0);
             };
         }
         finally
@@ -12815,7 +12880,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
             ((global::StrongInject.IFactory<global::B>)_2).Release(_1);
         }
 
@@ -12831,7 +12895,6 @@ partial class Container
         var _0 = this.M<global::B>(t: (global::B)_1);
         return new global::StrongInject.Owned<global::B>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
             ((global::StrongInject.IFactory<global::B>)_2).Release(_1);
         });
     }
@@ -12853,10 +12916,7 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
             await ((global::StrongInject.IAsyncFactory<global::C>)_2).ReleaseAsync(_1);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
             ((global::StrongInject.IFactory<global::B>)_5).Release(_4);
         }
 
@@ -12875,10 +12935,7 @@ partial class Container
         var _0 = this.M<global::C>(t: (global::C)_1);
         return new global::StrongInject.AsyncOwned<global::C>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
             await ((global::StrongInject.IAsyncFactory<global::C>)_2).ReleaseAsync(_1);
-            await global::StrongInject.Helpers.DisposeAsync(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
             ((global::StrongInject.IFactory<global::B>)_5).Release(_4);
         });
     }
@@ -12914,14 +12971,8 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
             ((global::StrongInject.IFactory<global::D>)_3).Release(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
-            await global::StrongInject.Helpers.DisposeAsync(_4);
             await ((global::StrongInject.IAsyncFactory<global::C>)_6).ReleaseAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_6);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
             ((global::StrongInject.IFactory<global::B>)_9).Release(_8);
         }
 
@@ -12944,14 +12995,8 @@ partial class Container
         var _0 = this.M<global::E>(t: (global::E)_1);
         return new global::StrongInject.AsyncOwned<global::E>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
             ((global::StrongInject.IFactory<global::D>)_3).Release(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
-            await global::StrongInject.Helpers.DisposeAsync(_4);
             await ((global::StrongInject.IAsyncFactory<global::C>)_6).ReleaseAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_6);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
             ((global::StrongInject.IFactory<global::B>)_9).Release(_8);
         });
     }
@@ -12977,14 +13022,8 @@ partial class Container
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
             ((global::StrongInject.IFactory<global::D>)_3).Release(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
-            await global::StrongInject.Helpers.DisposeAsync(_4);
             await ((global::StrongInject.IAsyncFactory<global::C>)_6).ReleaseAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_6);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
             ((global::StrongInject.IFactory<global::B>)_9).Release(_8);
         }
 
@@ -13007,14 +13046,8 @@ partial class Container
         var _0 = this.M<global::I>(t: (global::I)_1);
         return new global::StrongInject.AsyncOwned<global::I>(_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_0);
-            await global::StrongInject.Helpers.DisposeAsync(_1);
             ((global::StrongInject.IFactory<global::D>)_3).Release(_2);
-            await global::StrongInject.Helpers.DisposeAsync(_3);
-            await global::StrongInject.Helpers.DisposeAsync(_4);
             await ((global::StrongInject.IAsyncFactory<global::C>)_6).ReleaseAsync(_5);
-            await global::StrongInject.Helpers.DisposeAsync(_6);
-            await global::StrongInject.Helpers.DisposeAsync(_7);
             ((global::StrongInject.IFactory<global::B>)_9).Release(_8);
         });
     }
@@ -13034,8 +13067,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
-            global::StrongInject.Helpers.Dispose(_1);
             ((global::StrongInject.IFactory<global::B>)_3).Release(_2);
         }
 
@@ -13052,8 +13083,6 @@ partial class Container
         var _0 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: (global::StrongInject.IAsyncFactory<global::C>)_1);
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
-            global::StrongInject.Helpers.Dispose(_1);
             ((global::StrongInject.IFactory<global::B>)_3).Release(_2);
         });
     }
@@ -14549,7 +14578,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
         }
 
@@ -14564,7 +14592,6 @@ partial class Container
         var _0 = this.DecorateC(c: (global::C)_1);
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
         });
     }
@@ -14621,7 +14648,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
         }
 
@@ -14636,7 +14662,6 @@ partial class Container
         var _0 = global::Module.DecorateC(c: (global::C)_1);
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
         });
     }
@@ -14693,7 +14718,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
         }
 
@@ -14708,7 +14732,6 @@ partial class Container
         var _0 = global::Module.DecorateC(c: (global::C)_1);
         return new global::StrongInject.Owned<global::C>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
             global::StrongInject.Helpers.Dispose(_1);
         });
     }
@@ -15038,7 +15061,6 @@ partial class Container
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_0);
         }
 
         return result;
@@ -15054,7 +15076,6 @@ partial class Container
         var _0 = this.CreateA(c: (global::C)_1, d: (global::D)_2, a: (global::A)_3);
         return new global::StrongInject.Owned<global::A>(_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_0);
         });
     }
 }");
