@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Registration Options](#registration-options)
+  - [Members](#members)
+    - [As Options](#as-options)
+      - [AsImplementedInterfaces](#asimplementedinterfaces)
+      - [AsBaseClasses](#asbaseclasses)
+      - [UseAsFactory](#useasfactory)
+      - [ApplySameOptionsToFactoryTargets](#applysameoptionstofactorytargets)
+      - [AsImplementedInterfacesAndBaseClasses](#asimplementedinterfacesandbaseclasses)
+      - [AsImplementedInterfacesAndUseAsFactory](#asimplementedinterfacesanduseasfactory)
+      - [AsEverythingPossible](#aseverythingpossible)
+    - [Factory Target Scope Options](#factory-target-scope-options)
+      - [FactoryTargetScopeShouldBeInstancePerResolution](#factorytargetscopeshouldbeinstanceperresolution)
+      - [FactoryTargetScopeShouldBeInstancePerDependency](#factorytargetscopeshouldbeinstanceperdependency)
+      - [FactoryTargetScopeShouldBeSingleInstance](#factorytargetscopeshouldbesingleinstance)
+    - [Other Options](#other-options)
+      - [DoNotDecorate](#donotdecorate)
+  - [Combining options](#combining-options)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Registration Options
 
 The `Options` enum is a [flags](https://docs.microsoft.com/en-us/dotnet/api/system.flagsattribute) enum, which can be used to modify certain registrations.
