@@ -67,7 +67,7 @@ You can register a method returning `T` as a decorator of `T` if it has exactly 
 
 All registrations have a particular `Scope`. This tells StrongInject how long an instance resolved using that registration should live for, and how widely it should be shared.
 
-### Options
+### [Options](https://github.com/YairHalberstadt/stronginject/wiki/RegistrationOptions)
 
 Some registrations can have their behavior modified using the `Options` enum. This allows for all sorts of customization of the registration.
 
