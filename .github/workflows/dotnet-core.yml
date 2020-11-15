@@ -23,6 +23,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: echo envs
+      run: |
+        echo ${{ github.event.inputs.is_stronginject_release }}
+        echo ${{ github.event.inputs.is_stronginject_extensions_dependencyinjection_release }}
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
