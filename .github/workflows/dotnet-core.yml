@@ -46,10 +46,10 @@ jobs:
       run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
       if: github.event.inputs.is_stronginject_extensions_dependencyinjection_release != 'true'
     - name: Pack Release StrongInject
-      run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+      run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out
       if: github.event.inputs.is_stronginject_release == 'true'
     - name: Pack Release StrongInject.Extensions.DependencyInjection
-      run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+      run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out
       if: github.event.inputs.is_stronginject_extensions_dependencyinjection_release == 'true'
     
     - name: Push
