@@ -10,11 +10,11 @@ on:
       is_stronginject_release:
         description: Should this be a release or a preview package for Stronginject
         required: true
-        default: false
+        default: 'false'
       is_stronginject_extensions_dependencyinjection_release:
         description: Should this be a release or a preview package for Stronginject.Extensions.DependencyInjection
         required: true
-        default: false
+        default: 'false'
 
 jobs:
   build-test-push-release:
@@ -41,16 +41,16 @@ jobs:
     
     - name: Pack Preview StrongInject
       run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-      if: ${{ github.event.inputs.is_stronginject_release == false }}
+      if: ${{ github.event.inputs.is_stronginject_release == 'false' }}
     - name: Pack Preview StrongInject.Extensions.DependencyInjection
       run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-      if: ${{ github.event.inputs.is_stronginject_extensions_dependencyinjection_release == false }}
+      if: ${{ github.event.inputs.is_stronginject_extensions_dependencyinjection_release == 'false' }}
     - name: Pack Release StrongInject
       run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-      if: ${{ github.event.inputs.is_stronginject_release == true }}
+      if: ${{ github.event.inputs.is_stronginject_release == 'true' }}
     - name: Pack Release StrongInject.Extensions.DependencyInjection
       run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-      if: ${{ github.event.inputs.is_stronginject_extensions_dependencyinjection_release == true }}
+      if: ${{ github.event.inputs.is_stronginject_extensions_dependencyinjection_release == 'true' }}
     
     - name: Push
       if: ${{ success() && github.ref == 'refs/heads/master' }}
