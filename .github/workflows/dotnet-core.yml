@@ -23,10 +23,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: echo envs
-      run: |
-        echo ${{ github.event.inputs.is_stronginject_release }}
-        echo ${{ github.event.inputs.is_stronginject_extensions_dependencyinjection_release }}
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -45,10 +41,10 @@ jobs:
     
     - name: Pack Preview StrongInject
       run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-      if: github.event.inputs.is_stronginject_release == 'false'
+      if: github.event.inputs.is_stronginject_release != 'true'
     - name: Pack Preview StrongInject.Extensions.DependencyInjection
       run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-      if: github.event.inputs.is_stronginject_extensions_dependencyinjection_release == 'false'
+      if: github.event.inputs.is_stronginject_extensions_dependencyinjection_release != 'true'
     - name: Pack Release StrongInject
       run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
       if: github.event.inputs.is_stronginject_release == 'true'
