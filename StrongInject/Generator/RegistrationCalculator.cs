@@ -38,7 +38,7 @@ namespace StrongInject.Generator
             _cancellationToken = cancellationToken;
         }
 
-        private readonly Dictionary<INamedTypeSymbol, RegistrationData> _registrations = new();
+        private readonly Dictionary<INamedTypeSymbol, RegistrationData> _registrations = new(SymbolEqualityComparer.Default);
         private readonly Compilation _compilation;
         private readonly WellKnownTypes _wellKnownTypes;
         private readonly Action<Diagnostic> _reportDiagnostic;
@@ -78,7 +78,7 @@ namespace StrongInject.Generator
         {
             if (!_registrations.TryGetValue(module, out var registrations))
             {
-                if (!(dependantModules ??= new()).Add(module))
+                if (!(dependantModules ??= new(SymbolEqualityComparer.Default)).Add(module))
                 {
                     _reportDiagnostic(RecursiveModuleRegistration(module, _cancellationToken));
                     return new RegistrationData(
@@ -158,8 +158,8 @@ namespace StrongInject.Generator
                 }
                 var exclusionListConstants = exclusionListConstant.Values;
                 var exclusionList = exclusionListConstants.IsDefault
-                    ? new HashSet<INamedTypeSymbol>()
-                    : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+                    ? new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default)
+                    : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 
                 var moduleRegistrations = GetRegistrations(moduleType, dependantModules);
 
@@ -168,14 +168,14 @@ namespace StrongInject.Generator
 
             if (module.BaseType is { SpecialType: not SpecialType.System_Object } baseType)
             {
-                AddModuleRegistrations(GetBaseClassRegistrations(baseType, dependantModules), ImmutableHashSet<INamedTypeSymbol>.Empty);
+                AddModuleRegistrations(GetBaseClassRegistrations(baseType, dependantModules), ImmutableHashSet<ITypeSymbol>.Empty);
             }
 
             return importedModuleRegistrations;
 
-            void AddModuleRegistrations(RegistrationData moduleRegistrations, ISet<INamedTypeSymbol> exclusionList)
+            void AddModuleRegistrations(RegistrationData moduleRegistrations, ISet<ITypeSymbol> exclusionList)
             {
-                importedModuleRegistrations ??= new();
+                importedModuleRegistrations ??= new(SymbolEqualityComparer.Default);
                 foreach (var (type, instanceSources) in moduleRegistrations.NonGenericRegistrations)
                 {
                     if (exclusionList.Contains(type))
@@ -202,7 +202,7 @@ namespace StrongInject.Generator
             RegistrationsToCalculate registrationsToCalculate)
         {
             var attributes = module.GetAttributes();
-            var registrations = new Dictionary<ITypeSymbol, InstanceSources>();
+            var registrations = new Dictionary<ITypeSymbol, InstanceSources>(SymbolEqualityComparer.Default);
             AppendSimpleRegistrations(registrations, attributes);
             AppendFactoryRegistrations(registrations, attributes);
             AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToCalculate);
@@ -651,7 +651,7 @@ namespace StrongInject.Generator
             var useAsFactory = options.HasFlag(Options.UseAsFactory);
             if (useAsFactory && currentlyVisiting is null)
             {
-                currentlyVisiting = new HashSet<ITypeSymbol>() { instanceSource.OfType };
+                currentlyVisiting = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default) { instanceSource.OfType };
             }
 
             if (currentlyVisiting?.Count > 20)

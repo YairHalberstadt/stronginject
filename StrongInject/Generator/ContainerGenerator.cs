@@ -799,13 +799,13 @@ if (disposed != 0) return;");
                 {
                     null => 0,
                     { Scope: Scope.InstancePerDependency } => new Random().Next(),
-                    Registration r => 5 + r.Scope.GetHashCode() * 17 + r.Type.GetHashCode(),
+                    Registration r => 5 + r.Scope.GetHashCode() * 17 + SymbolEqualityComparer.Default.GetHashCode(r.Type),
                     FactorySource f => 7 + f.Scope.GetHashCode() * 17 + GetHashCode(f.Underlying),
-                    DelegateSource d => 13 + d.DelegateType.GetHashCode(),
-                    DelegateParameter dp => 17 + dp.Parameter.GetHashCode(),
-                    FactoryMethod m => 19 + m.Method.GetHashCode(),
+                    DelegateSource d => 13 + SymbolEqualityComparer.Default.GetHashCode(d.DelegateType),
+                    DelegateParameter dp => 17 + SymbolEqualityComparer.Default.GetHashCode(dp.Parameter),
+                    FactoryMethod m => 19 + SymbolEqualityComparer.Default.GetHashCode(m.Method),
                     WrappedDecoratorInstanceSource d => GetHashCode(d.Underlying),
-                    InstanceFieldOrProperty f => 23 + f.FieldOrPropertySymbol.GetHashCode(),
+                    InstanceFieldOrProperty f => 23 + SymbolEqualityComparer.Default.GetHashCode(f.FieldOrPropertySymbol),
                     ForwardedInstanceSource f => GetHashCode(f.Underlying),
                     _ => throw new InvalidOperationException("This location is thought to be unreachable"),
                 };

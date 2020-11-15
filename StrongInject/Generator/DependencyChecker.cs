@@ -83,7 +83,9 @@ namespace StrongInject.Generator
                 {
                     case DelegateSource(var delegateType, var returnType, var delegateParameters, var isAsync) delegateSource:
                         {
-                            foreach (var paramsWithType in delegateParameters.GroupBy(x => x.Type))
+#pragma warning disable RS1024 // Compare symbols correctly
+                            foreach (var paramsWithType in delegateParameters.GroupBy(x => x.Type, (IEqualityComparer<ITypeSymbol>)SymbolEqualityComparer.Default))
+#pragma warning restore RS1024 // Compare symbols correctly
                             {
                                 if (paramsWithType.Count() > 1)
                                 {
@@ -110,7 +112,7 @@ namespace StrongInject.Generator
                                 reportDiagnostic(WarnDelegateReturnTypeIsSingleInstance(location, target, instanceSource.OfType, returnType));
                             }
 
-                            var usedByDelegateParams = usedParams ?? new();
+                            var usedByDelegateParams = usedParams ?? new(SymbolEqualityComparer.Default);
 
                             result |= Visit(
                                 returnTypeSource,
@@ -754,7 +756,9 @@ namespace StrongInject.Generator
 
             public int GetHashCode(InstanceSource obj)
             {
+#pragma warning disable RS1024 // Compare symbols correctly
                 return RuntimeHelpers.GetHashCode(obj);
+#pragma warning restore RS1024 // Compare symbols correctly
             }
         }
     }
