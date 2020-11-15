@@ -109,7 +109,7 @@ namespace StrongInject.Generator
 
                 static (Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket arrayTypeBucket, Bucket typeParameterBucket) Partition(Builder builder, Compilation compilation)
                 {
-                    Dictionary<INamedTypeSymbol, (List<Bucket>? buckets, ImmutableArray<FactoryMethod>.Builder? factoryMethods)> namedTypeBucketsAndFactoryMethods = new();
+                    Dictionary<INamedTypeSymbol, (List<Bucket>? buckets, ImmutableArray<FactoryMethod>.Builder? factoryMethods)> namedTypeBucketsAndFactoryMethods = new(SymbolEqualityComparer.Default);
                     List<Bucket>? arrayTypeBuckets = null;
                     List<Bucket>? typeParameterBuckets = null;
                     ImmutableArray<FactoryMethod>.Builder? arrayTypeFactoryMethods = null;

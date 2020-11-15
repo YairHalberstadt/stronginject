@@ -1,0 +1,9 @@
+<Project>
+ <PropertyGroup>
+   <LangVersion>preview</LangVersion>
+   <Nullable>enable</Nullable>
+   <WarningsAsErrors>true</WarningsAsErrors>
+   <NoWarn>CS1591</NoWarn>
+   <WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
+ </PropertyGroup>
+</Project>

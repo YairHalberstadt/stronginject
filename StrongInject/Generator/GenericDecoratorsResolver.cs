@@ -14,7 +14,7 @@ namespace StrongInject.Generator
 
         public GenericDecoratorsResolver(Compilation compilation, IEnumerable<DecoratorFactoryMethod> decoratorFactoryMethods)
         {
-            _namedTypeDecoratorFactories = new Dictionary<INamedTypeSymbol, List<DecoratorFactoryMethod>>();
+            _namedTypeDecoratorFactories = new Dictionary<INamedTypeSymbol, List<DecoratorFactoryMethod>>(SymbolEqualityComparer.Default);
             _arrayDecoratorFactories = new List<DecoratorFactoryMethod>();
             _typeParameterDecoratorFactories = new List<DecoratorFactoryMethod>();
 
