@@ -49,18 +49,15 @@ compile time dependency injection for .Net
 
 ## Requirements
 
-Source generators are currently in preview and so you will require a preview version of VS and dotnet.
+[Visual Studio 16.8](https://visualstudio.microsoft.com/vs) or greater
 
-[Visual Studio preview version](https://visualstudio.microsoft.com/vs/preview/) >= 16.8 preview 4
-
-[.NET 5 preview version](https://dotnet.microsoft.com/download/dotnet/5.0) >= 5.0.100-rc.2
+[.NET 5 sdk](https://dotnet.microsoft.com/download/dotnet/5.0) or greater
 
 ## Nuget
 
 https://www.nuget.org/packages/StrongInject/
 
-We recommend you use floating versions for now, as `StrongInject` is still in preview and changing rapidly. 
-`<PackageReference Include="StrongInject" Version="1.0.0-preview-CI-*" />`
+`<PackageReference Include="StrongInject" Version="1.0.0" />`
 
 ## Usage
 
