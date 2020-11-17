@@ -71,6 +71,6 @@ All registrations have a particular `Scope`. This tells StrongInject how long an
 
 Some registrations can have their behavior modified using the `Options` enum. This allows for all sorts of customization of the registration.
 
-### Best Registration
+### [Best Registration](https://github.com/YairHalberstadt/stronginject/wiki/BestRegistration)
 
 If there are multiple registrations for a type, StrongInject will have to pick the best registration to use, or error if there is none.
