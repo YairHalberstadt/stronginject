@@ -1,3 +1,11 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Best Registration](#best-registration)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Best Registration
 
 You can register multiple registrations for a type `T` which allows you to resolve `T[]` and other collections of `T`. However, when resolving just one instance of `T`, StrongInject requires that there is a *best registration* for `T`, or it will error.
