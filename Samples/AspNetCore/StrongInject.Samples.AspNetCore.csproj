@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StrongInject.Extensions.DependencyInjection" Version="0.0.1-preview" />
+    <PackageReference Include="StrongInject.Extensions.DependencyInjection" Version="0.0.1" />
   </ItemGroup>
 
 
