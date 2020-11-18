@@ -12,6 +12,8 @@ compile time dependency injection for .Net
 - [Requirements](#requirements)
 - [Nuget](#nuget)
 - [Usage](#usage)
+  - [Sample Projects](#sample-projects)
+    - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
   - [Registration](#registration)
