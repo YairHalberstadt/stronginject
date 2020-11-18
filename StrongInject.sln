@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Extensions.Dep
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Extensions.DependencyInjection.Tests", "StrongInject.Extensions.DependencyInjection.Tests\StrongInject.Extensions.DependencyInjection.Tests.csproj", "{215603DA-EAA7-40CE-9481-F503C24AB628}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{9277EC4A-41B3-4A0C-9769-EA9240431771}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Samples.AspNetCore", "Samples\AspNetCore\StrongInject.Samples.AspNetCore.csproj", "{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,12 +109,25 @@ Global
 		{215603DA-EAA7-40CE-9481-F503C24AB628}.Release|x64.Build.0 = Release|Any CPU
 		{215603DA-EAA7-40CE-9481-F503C24AB628}.Release|x86.ActiveCfg = Release|Any CPU
 		{215603DA-EAA7-40CE-9481-F503C24AB628}.Release|x86.Build.0 = Release|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Debug|x64.Build.0 = Debug|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Debug|x86.Build.0 = Debug|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Release|x64.ActiveCfg = Release|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Release|x64.Build.0 = Release|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Release|x86.ActiveCfg = Release|Any CPU
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4EEDAEE4-1AAF-4918-9CA6-1EDA46256D01} = {EB46F000-80AB-4A94-A684-080CE86F9113}
+		{9FD4544D-DF0C-4036-AD57-6A3CE2E62D14} = {9277EC4A-41B3-4A0C-9769-EA9240431771}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D9D16C3-B895-461D-82AA-2B718EA57F61}
