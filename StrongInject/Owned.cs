@@ -20,7 +20,7 @@ namespace StrongInject
         public void Dispose()
         {
             var disposed = Interlocked.Exchange(ref _disposed, 1);
-            if (disposed == 1)
+            if (disposed == 0)
             {
                 _dispose();
             }
@@ -43,7 +43,7 @@ namespace StrongInject
         public ValueTask DisposeAsync()
         {
             var disposed = Interlocked.Exchange(ref _disposed, 1);
-            if (disposed == 1)
+            if (disposed == 0)
             {
                 return _dispose();
             }

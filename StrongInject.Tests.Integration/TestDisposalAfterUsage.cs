@@ -69,6 +69,24 @@ namespace StrongInject.Tests.Integration
         }
 
         [Fact]
+        public async Task TestCalledForInstancePerDependencyAndResolutionOnOwned()
+        {
+            var container = new Container1();
+            A a;
+            await using (var aOwned = await container.ResolveAsync<A>())
+            {
+                a = aOwned.Value;
+                Assert.False(a.Disposed);
+            }
+            Assert.True(a.Disposed);
+            Assert.True(a.b.Disposed);
+            Assert.True(a.c.AsyncDisposed);
+            Assert.False(a.c.Disposed);
+            Assert.True(a.b.d.AsyncDisposed);
+            Assert.True(a.c.d.AsyncDisposed);
+        }
+
+        [Fact]
         public async Task TestCalledForInstancePerDependencyAndResolutionOnAllFuncs()
         {
             var container = new Container1();
