@@ -29,9 +29,9 @@ For example:
 using StrongInject;
 
 [Register(typeof(A))]
-public class MyContainer : IContainer<A>() {}
+public partial class MyContainer : IContainer<A> {}
 
-public class A : IDisposable { public void Dispose(){} }
+public class A : IDisposable { public void Dispose() { } }
 
 var myContainer = new MyContainer();
 myContainer.Run(a => Console.WriteLine($"We've resolved an instance of A: {a.ToString()}!!"));
@@ -43,13 +43,13 @@ You can also return a result from `Run` and use that:
 using StrongInject;
 
 [Register(typeof(A))]
-public class MyContainer : IContainer<A>() {}
+public partial class MyContainer : IContainer<A> { }
 
-public class A : IDisposable { public void Dispose(){} }
+public class A : IDisposable { public void Dispose() { } }
 
 var myContainer = new MyContainer();
 var aString = myContainer.Run(a => a.ToString());
-Console.WriteLine($"We've resolved an instance of A: {aString()}!!");
+Console.WriteLine($"We've resolved an instance of A: {aString}!!");
 ```
 
 Either way, you must make sure that the resolved type, and any of its dependencies, do not escape the scope of the delegate, or you may end up using them after they are disposed.
