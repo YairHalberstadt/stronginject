@@ -55,7 +55,7 @@ jobs:
     - name: Push
       if: ${{ success() && github.ref == 'refs/heads/master' }}
       run: |
-        dotnet nuget push 'out/*.nupkg' -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push 'out/*.nupkg' -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
       
   build-test-debug:
 
