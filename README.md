@@ -937,23 +937,6 @@ At the moment the `StandardModule` imports `lazyModule`, `CollectionsModule` and
 
 If you would like more modules/registrations added please open an issue.
 
-### Integrate with Asp.NetCore/Microsoft.Extensions.DependencyInjection
-
-There is an experimental [nuget package](https://www.nuget.org/packages/StrongInject.Extensions.DependencyInjection/0.0.1-preview-CI-20201022-111667) which allows you to easily use a container with Microsoft.Extensions.DependencyInjection.
-
-For example, assume you have a container `MyContainer : IContainer<MyService>`.
-
-Then you can add the container to a service collection as follows:
-
-```csharp
-using StrongInject.Extensions.DependencyInjection;
-...
-serviceCollection.AddContainerForTransientService<MyContainer, MyService>();
-var myService = serviceCollection.BuildServiceProvider().GetRequiredService<MyService>();
-```
-
-A number of other extension methods are available. This package is in an early preview, and liable to change. Please try it out and give feedback!
-
 ## Product Roadmap
 
 https://github.com/YairHalberstadt/stronginject/projects/1
