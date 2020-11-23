@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>0.0.1</VersionPrefix>
+		<VersionPrefix>0.0.2</VersionPrefix>
 		<PackageId>StrongInject.Extensions.DependencyInjection</PackageId>
 		<Authors>StrongInject</Authors>
 		<Product>StrongInject</Product>
@@ -24,6 +24,7 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
 	</ItemGroup>
