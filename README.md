@@ -60,6 +60,47 @@ https://www.nuget.org/packages/StrongInject/
 
 `<PackageReference Include="StrongInject" Version="1.0.0" />`
 
+## How It Works
+
+To use StrongInject, you first need to tell StrongInject the top-level services you would like to resolve. You do this by adding a new class implementing `IContainer<T>`. This will be your container. If you want to resolve multiple top-level services, then you can implement `IContainer<T>` multiple times on one container, or create multiple containers. StrongInject will then check at compile time that you've registered everything you need with the container to enable it to resolve all the top-level services. If you haven't, the compilation will fail with an error explaining what's gone wrong.
+
+For example, if you want to resolve `MyApp` you might try doing this:
+
+```csharp
+using StrongInject;
+
+public class MyService {}
+public class MyApp { public MyApp(MyService myService) {} }
+
+[Register(typeof(MyApp))]
+public partial class MyContainer : IContainer<MyApp> {}
+```
+
+When you try compiling, it will fail with the following error: `SI0102: Error while resolving dependencies for 'MyApp': We have no source for instance of type 'MyService'`.
+
+Now you fix it by adding a registration for `MyService`:
+
+```csharp
+using StrongInject;
+
+public class MyService {}
+public class MyApp { public MyApp(MyService myService) {} }
+
+[Register(typeof(MyApp))]
+[Register(typeof(MyService))]
+public partial class MyContainer : IContainer<MyApp> {}
+```
+
+And this time when you compile, it will succeed and generate all the code needed to resolve an instance of `MyApp` at compile time.
+
+What do I mean by a top-level service?
+
+When using an IOC container, sometimes you request an instance from the container directly. These are top-level services. Most of the time the container resolves something though, you never ask for it explicitly - instead it's needed as a dependency for something else, which may itself be a dependency or a top-level service etc.
+
+Ideally you want IOC containers to be non invasive - this means you write all your code as if there was no container, and then just use the container once to bootstrap your code. When writing code like this there should only ever be one top-level service. Sometimes this is not possible - for example when integrating with Asp.Net Core your controllers will usually need to be top-level services, but you should always try to minimize the number of top-level services where possible.
+
+The next section will go into more detail about exactly how to register stuff with containers, and how to use them.
+
 ## Usage
 
 The [wiki](https://github.com/YairHalberstadt/stronginject/wiki) is currently a work in progress. It aims to give a more thorough formal overview of everything in StrongInject, whereas this section of the readme gives a briefer overview relying heavily on examples. I would read through this first, then check out the wiki if you have any questions.
