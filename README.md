@@ -11,6 +11,7 @@ compile time dependency injection for .Net
 - [Aims](#aims)
 - [Requirements](#requirements)
 - [Nuget](#nuget)
+- [How It Works](#how-it-works)
 - [Usage](#usage)
   - [Sample Projects](#sample-projects)
     - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
