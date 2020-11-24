@@ -455,8 +455,6 @@ namespace StrongInject.Extensions.DependencyInjection.Tests
             Assert.True(b1.A.Disposed);
         }
 
-#pragma warning restore CS0618
-
         [Fact]
         public void TestMixedAddContainerForSingletonServiceAndScopedService()
         {
@@ -550,6 +548,8 @@ namespace StrongInject.Extensions.DependencyInjection.Tests
             Assert.True(c1.Disposed);
             Assert.True(b1.A.Disposed);
         }
+
+#pragma warning restore CS0618
 
         [Fact]
         public void TestGenericReplaceWithTransientServiceUsingContainer()

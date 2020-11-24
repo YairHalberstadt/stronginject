@@ -7,7 +7,6 @@ using System.Linq;
 
 namespace StrongInject.Samples.AspNetCore.Controllers
 {
-
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase

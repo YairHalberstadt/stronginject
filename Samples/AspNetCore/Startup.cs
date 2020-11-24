@@ -1,3 +1,5 @@
+#define DontAutoRegisterControllers
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,8 +22,15 @@ namespace StrongInject.Samples.AspNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddContainerForTransientService<Container, WeatherForecastController>();
-            services.AddControllers().AddControllersAsServices();
+#if DontAutoRegisterControllers
+            services.AddControllers().ResolveControllersThroughServiceProvider(); // Tells Asp.Net to resolve controllers through the ServiceProvider, rather than calling their constructors directly.
+            services.AddTransientServiceUsingContainer<Container, WeatherForecastController>(); // register the controller with the ServiceProvider.
+            services.AddTransientServiceUsingContainer<Container, UsersController>();
+#else
+            services.AddControllers().AddControllersAsServices(); // Tells Asp.Net to resolve controllers through the ServiceProvider, rather than calling their constructors directly, and then auto registers all controllers with the service provider.
+            services.ReplaceWithTransientServiceUsingContainer<Container, WeatherForecastController>(); // register the controller with the ServiceProvider, and remove the existing registration that was added automatically by AddControllersAsServices().
+            services.ReplaceWithTransientServiceUsingContainer<Container, UsersController>();
+#endif
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
