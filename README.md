@@ -2,7 +2,7 @@
 [![Join the chat at https://gitter.im/stronginject/community](https://badges.gitter.im/stronginject/community.svg)](https://gitter.im/stronginject/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/StrongInject)](https://www.nuget.org/packages/StrongInject)
 # StrongInject
-compile time dependency injection for .Net
+**compile time dependency injection for .NET**
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -113,7 +113,7 @@ Check out these sample projects to help you get started:
 #### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
 
 ### Declaring a container
-To create a container for a specific type, declare your container partial and inherit from `StrongInject.IContainer<T>`:
+To create a container for a specific type, declare your a partial class and implement `StrongInject.IContainer<T>`:
 
 ```csharp
 using StrongInject;
@@ -143,7 +143,7 @@ public partial class Container : IContainer<A>, IContainer<B> {}
 
 There are two ways to use a container - using the `Run` methods or the `Resolve` methods.
 
-Either way you'll find it easier if you the extension methods defined in `StrongInject.ContainerExtensions` rather than those defined directly on the container, so make sure you're `using StrongInject;`
+Either way you'll find it easier if you use the extension methods defined in `StrongInject.ContainerExtensions` rather than those defined directly on the container, so make sure you're `using StrongInject;`
 
 The `Run` method on `IContainer<T>` takes a `Func<T, TResult>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not too leak those objects out of the delegate. There are also overloads that allow you to pass in a void returning lambda.
 
@@ -181,7 +181,7 @@ public class Program
 
 #### Basics
 
-As you saw above, you can register a type with a container using the `RegistrationAttribute`:
+As you saw above, you can register a type with a container using the `RegisterAttribute`:
 
 ```csharp
 using StrongInject;
@@ -196,7 +196,7 @@ public partial class Container : IContainer<A>, IContainer<B> {}
 
 All the dependencies of the container type parameter must be registered or you will get a compile time error.
 
-By default `[Register(typeof(A))]` will register an type `A` as itself. You can however register a type as any base type or implemented interface:
+By default `[Register(typeof(A))]` will register a type `A` as itself. You can however register a type as any base type or implemented interface:
 
 ```csharp
 using StrongInject;
@@ -258,7 +258,7 @@ A single instance will be shared across all dependencies, from any resolution
 
 #### Modules
 
-You can add registrations to any type, and then import them using the `ModuleRegistrationAttribute`, or by inheriting from the module. This allows you to create reusable modules of common registrations.
+You can add registrations to any type, and then import them using the `RegisterModuleAttribute`, or by inheriting from the module. This allows you to create reusable modules of common registrations.
 
 ```csharp
 using StrongInject;
@@ -272,7 +272,7 @@ public class Module {}
 public partial class Container : IContainer<A> {}
 ```
 
-If you import multiple modules, and they both register the same type differently, you will get an error.
+If you import multiple modules, and they both register the same type differently, you will get an error when trying to resolve an instance of the type.
 
 There are two ways to solve this:
 
@@ -300,7 +300,7 @@ public partial class Container : IContainer<A>
 }
 ```
 
-If the instance field/property is defined on the container type, it can be private or public, instance or static. However if you want to export the instance as part of a module it must be public and static. If you inherit from the module, you can also access protected registrations.
+If the instance field/property is defined on the container type, it can be private or public, instance or static. However if you want to export the instance as part of a module it must be public and static. If you inherit from the module, you can also access protected instances.
 
 ```csharp
 using StrongInject;
@@ -369,7 +369,7 @@ public partial class Container : IContainer<IInterface[]>
 
 You can set the scope of the factory method (how often it's called), by passing in the scope parameter: `[Factory(Scope.SingleInstance)]`.
 
-If the factory method is defined on the container type, it can be private or public, instance or static. However if you want to export the factory method as part of a module it must be public and static. If you inherit from the module, you can also access protected registrations.
+If the factory method is defined on the container type, it can be private or public, instance or static. However if you want to export the factory method as part of a module it must be public and static. If you inherit from the module, you can also access protected factories.
 
 ```csharp
 using StrongInject;
