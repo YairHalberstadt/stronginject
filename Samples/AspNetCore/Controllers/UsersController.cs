@@ -26,4 +26,15 @@ namespace StrongInject.Samples.AspNetCore.Controllers
             return _usersCache.GetUsersList();
         }
     }
+
+    public class MyApp { public MyApp(MyService myService) { } }
+
+    public class MyService
+    {
+    }
+
+    [Register(typeof(MyApp))]
+    public partial class MyContainer : IContainer<MyApp> { }
 }
+
+
