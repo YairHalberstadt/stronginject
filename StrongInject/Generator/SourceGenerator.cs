@@ -14,30 +14,6 @@ namespace StrongInject.Generator
     {
         public void Execute(GeneratorExecutionContext context)
         {
-            try
-            {
-                ExecuteInternal(context);
-            }
-            catch (Exception e)
-            {
-                //This is temporary till https://github.com/dotnet/roslyn/issues/46084 is fixed
-                context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "SI0000",
-                        "An exception was thrown by the StrongInject generator",
-                        "An exception was thrown by the StrongInject generator: '{0}'",
-                        "StrongInject",
-                        DiagnosticSeverity.Error,
-                        isEnabledByDefault: true),
-                    Location.None,
-                    e.ToString()));
-            }
-        }
-
-        //By not inlining we make sure we can catch assembly loading errors when jitting this method
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ExecuteInternal(GeneratorExecutionContext context)
-        {
             var cancellationToken = context.CancellationToken;
             var compilation = context.Compilation;
             Action<Diagnostic> reportDiagnostic = context.ReportDiagnostic;

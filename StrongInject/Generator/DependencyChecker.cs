@@ -18,7 +18,8 @@ namespace StrongInject.Generator
                 GetInstanceSourceOrReport(target, containerScope, isOptional: false),
                 containerScope,
                 usedParams: null,
-                isScopeAsync: isAsync);
+                isScopeAsync: isAsync,
+                anyScopeAsync: isAsync);
 
             InstanceSource? GetInstanceSourceOrReport(ITypeSymbol type, InstanceSourcesScope instanceSourcesScope, bool isOptional)
             {
@@ -50,7 +51,7 @@ namespace StrongInject.Generator
             }
 
             // returns true if has any errors that make resolution impossible
-            bool Visit(InstanceSource? instanceSource, InstanceSourcesScope instanceSourcesScope, HashSet<IParameterSymbol>? usedParams, bool isScopeAsync)
+            bool Visit(InstanceSource? instanceSource, InstanceSourcesScope instanceSourcesScope, HashSet<IParameterSymbol>? usedParams, bool isScopeAsync, bool anyScopeAsync)
             {
                 if (instanceSource is null)
                     return true;
@@ -118,7 +119,8 @@ namespace StrongInject.Generator
                                 returnTypeSource,
                                 instanceSourcesScope,
                                 usedParams: usedByDelegateParams,
-                                isScopeAsync: isAsync);
+                                isScopeAsync: isAsync,
+                                anyScopeAsync: isAsync | anyScopeAsync);
 
                             foreach (var delegateParam in delegateParameters)
                             {
@@ -147,7 +149,8 @@ namespace StrongInject.Generator
                                         source,
                                         instanceSourcesScope,
                                         usedParams,
-                                        isScopeAsync);
+                                        isScopeAsync,
+                                        anyScopeAsync);
                                 }
                             }
 
@@ -158,7 +161,8 @@ namespace StrongInject.Generator
                             underlying,
                             instanceSourcesScope,
                             usedParams,
-                            isScopeAsync);
+                            isScopeAsync,
+                            anyScopeAsync);
                         break;
                     case DelegateParameter { Parameter: var parameter }:
                         usedParams!.Add(parameter);
@@ -174,7 +178,8 @@ namespace StrongInject.Generator
                                 item,
                                 instanceSourcesScope,
                                 usedParams,
-                                isScopeAsync);
+                                isScopeAsync,
+                                anyScopeAsync);
                         }
                         break;
                     case FactoryMethod {Method: { Parameters: var parameters } }:
@@ -189,7 +194,8 @@ namespace StrongInject.Generator
                                         source,
                                         instanceSourcesScope,
                                         usedParams,
-                                        isScopeAsync);
+                                        isScopeAsync,
+                                        anyScopeAsync);
                                 }
                             }
 
@@ -214,7 +220,8 @@ namespace StrongInject.Generator
                                                 paramSource,
                                                 instanceSourcesScope,
                                                 usedParams,
-                                                isScopeAsync);
+                                                isScopeAsync,
+                                                anyScopeAsync);
                                             }
                                         }
 
@@ -235,7 +242,8 @@ namespace StrongInject.Generator
                                                 paramSource,
                                                 instanceSourcesScope,
                                                 usedParams,
-                                                isScopeAsync);
+                                                isScopeAsync,
+                                                anyScopeAsync);
                                             }
                                         }
 
@@ -246,7 +254,7 @@ namespace StrongInject.Generator
                         }
                     case ForwardedInstanceSource { Underlying: var underlying }:
                         {
-                            result |= Visit(underlying, instanceSourcesScope, usedParams, isScopeAsync);
+                            result |= Visit(underlying, instanceSourcesScope, usedParams, isScopeAsync, anyScopeAsync);
                             break;
                         }
                     case InstanceFieldOrProperty:
@@ -254,7 +262,8 @@ namespace StrongInject.Generator
                     default: throw new NotImplementedException(instanceSource.GetType().ToString());
                 }
 
-                if (instanceSource is not DelegateSource && instanceSource.IsAsync && !isScopeAsync)
+                if (instanceSource is { IsAsync: true, Scope: not Scope.SingleInstance } and not DelegateSource && !isScopeAsync
+                    || instanceSource is { IsAsync: true, Scope: Scope.SingleInstance } && !anyScopeAsync)
                 {
                     reportDiagnostic(RequiresAsyncResolution(location, target, instanceSource.OfType));
                     result = true;
@@ -496,21 +505,26 @@ namespace StrongInject.Generator
         internal static bool RequiresAsync(InstanceSource source, InstanceSourcesScope containerScope)
         {
             var visited = new HashSet<InstanceSource>();
-            return Visit(source);
+            return Visit(source, containerScope);
 
-            bool Visit(InstanceSource? source)
+            bool Visit(InstanceSource? source, InstanceSourcesScope instanceSourcesScope)
             {
                 if (source is null)
                     return false;
 
-                if (visited.Contains(source))
+                if (instanceSourcesScope == containerScope && visited.Contains(source))
                     return false;
 
-                if (source is DelegateSource)
+                if (source is DelegateSource { IsAsync: true })
                     return false;
 
                 if (source.IsAsync)
                     return true;
+
+                var innerScope = instanceSourcesScope.Enter(source);
+
+                if (innerScope == containerScope && visited.Contains(source))
+                    return false;
 
                 switch (source)
                 {
@@ -519,7 +533,7 @@ namespace StrongInject.Generator
                             foreach (var param in parameters)
                             {
                                 var paramSource = containerScope.GetParameterSource(param);
-                                if (Visit(paramSource))
+                                if (Visit(paramSource, innerScope))
                                     return true;
                             }
 
@@ -528,7 +542,15 @@ namespace StrongInject.Generator
 
                     case FactorySource { Underlying: var underlying }:
                         {
-                            if (Visit(underlying))
+                            if (Visit(underlying, innerScope))
+                                return true;
+                            break;
+                        }
+
+                    case DelegateSource { ReturnType: var returnType }:
+                        {
+                            var returnTypeSource = innerScope[returnType];
+                            if (Visit(returnTypeSource, innerScope))
                                 return true;
                             break;
                         }
@@ -537,7 +559,7 @@ namespace StrongInject.Generator
                         {
                             foreach (var item in items)
                             {
-                                if (Visit(item))
+                                if (Visit(item, innerScope))
                                     return true;
                                     
                             }
@@ -549,7 +571,7 @@ namespace StrongInject.Generator
                             foreach (var param in parameters)
                             {
                                 var paramSource = containerScope.GetParameterSource(param);
-                                if (Visit(paramSource))
+                                if (Visit(paramSource, innerScope))
                                     return true;
                             }
                         }
@@ -566,7 +588,7 @@ namespace StrongInject.Generator
                                                 ? underlyingInstanceSource
                                                 : containerScope.GetParameterSource(param);
 
-                                            if (Visit(paramSource))
+                                            if (Visit(paramSource, innerScope))
                                                 return true;
                                         }
 
@@ -580,7 +602,7 @@ namespace StrongInject.Generator
                                                 ? underlyingInstanceSource
                                                 : containerScope.GetParameterSource(param);
 
-                                            if (Visit(paramSource))
+                                            if (Visit(paramSource, innerScope))
                                                 return true;
                                         }
 
@@ -591,7 +613,7 @@ namespace StrongInject.Generator
                         }
                     case ForwardedInstanceSource { Underlying: var underlying }:
                         {
-                            if (Visit(underlying))
+                            if (Visit(underlying, innerScope))
                                 return true;
                             break;
                         }
@@ -601,9 +623,128 @@ namespace StrongInject.Generator
                     default: throw new NotImplementedException(source.GetType().ToString());
                 }
 
-                visited.Add(source);
+                if (ReferenceEquals(instanceSourcesScope, containerScope) || ReferenceEquals(innerScope, containerScope))
+                    visited.Add(source);
 
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Only call if <see cref="HasCircularOrMissingDependencies"/> returns true,
+        /// as this does no validation, and could throw or stack overflow otherwise.
+        /// </summary>
+        internal static List<InstanceSource> SingleInstanceVariablesToCreateEarly(DelegateSource source, InstanceSourcesScope scope)
+        {
+            var singleInstanceVariablesToCreateEarly = new List<InstanceSource>();
+            Visit(source, scope);
+            return singleInstanceVariablesToCreateEarly;
+
+            void Visit(InstanceSource? source, InstanceSourcesScope instanceSourcesScope)
+            {
+                if (source is null)
+                    return;
+
+                if (source is DelegateSource { IsAsync: true })
+                    return;
+
+                if (source.Scope == Scope.SingleInstance)
+                {
+                    if (RequiresAsync(source, instanceSourcesScope.Enter(source)))
+                    {
+                        singleInstanceVariablesToCreateEarly.Add(source);
+                    }
+                    return;
+                }
+
+                var innerScope = instanceSourcesScope.Enter(source);
+
+                switch (source)
+                {
+                    case Registration { Constructor: { Parameters: var parameters } }:
+                        {
+                            foreach (var param in parameters)
+                            {
+                                var paramSource = innerScope.GetParameterSource(param);
+                                Visit(paramSource, innerScope);
+                            }
+
+                            break;
+                        }
+
+                    case FactorySource { Underlying: var underlying }:
+                        {
+                            Visit(underlying, innerScope);
+                            break;
+                        }
+                    case DelegateSource { ReturnType: var returnType }:
+                        {
+                            var returnTypeSource = innerScope[returnType];
+                            Visit(returnTypeSource, innerScope);
+                            break;
+                        }
+                    case ArraySource { Items: var items, }:
+                        {
+                            foreach (var item in items)
+                            {
+                                Visit(item, innerScope);
+
+                            }
+
+                            break;
+                        }
+                    case FactoryMethod { Method: { Parameters: var parameters } }:
+                        {
+                            foreach (var param in parameters)
+                            {
+                                var paramSource = innerScope.GetParameterSource(param);
+                                Visit(paramSource, innerScope);
+                            }
+                        }
+                        break;
+                    case WrappedDecoratorInstanceSource(var decoratorSource, var underlyingInstanceSource):
+                        {
+                            switch (decoratorSource)
+                            {
+                                case DecoratorRegistration { Constructor: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : innerScope.GetParameterSource(param);
+
+                                            Visit(paramSource, innerScope);
+                                        }
+
+                                        break;
+                                    }
+                                case DecoratorFactoryMethod { Method: { Parameters: var parameters } }:
+                                    {
+                                        foreach (var param in parameters)
+                                        {
+                                            var paramSource = param.Ordinal == decoratorSource.decoratedParameter
+                                                ? underlyingInstanceSource
+                                                : innerScope.GetParameterSource(param);
+
+                                            Visit(paramSource, innerScope);
+                                        }
+
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case ForwardedInstanceSource { Underlying: var underlying }:
+                        {
+                            Visit(underlying, innerScope);
+                            break;
+                        }
+                    case InstanceFieldOrProperty:
+                    case DelegateParameter:
+                        break;
+                    default: throw new NotImplementedException(source.GetType().ToString());
+                }
             }
         }
 

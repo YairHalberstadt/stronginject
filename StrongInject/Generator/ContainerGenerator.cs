@@ -148,6 +148,7 @@ namespace StrongInject.Generator
                         _containerScope,
                         isSingleInstanceCreation: false,
                         disposeAsynchronously: isAsync,
+                        isAsyncContext: isAsync,
                         orderOfCreation: out var orderOfCreation);
 
                     var disposalSource = new StringBuilder();
@@ -270,6 +271,7 @@ namespace StrongInject.Generator
                     _containerScope,
                     isSingleInstanceCreation: true,
                     disposeAsynchronously: _implementsAsyncContainer,
+                    isAsyncContext: isAsync,
                     orderOfCreation: out var orderOfCreation);
                 methodSource.Append("this.");
                 methodSource.Append(singleInstanceFieldName);
@@ -300,19 +302,22 @@ namespace StrongInject.Generator
             InstanceSourcesScope instanceSourcesScope,
             bool isSingleInstanceCreation,
             bool disposeAsynchronously,
-            out List<(string variableName, string? disposeActionsName, string? factoryVariable, InstanceSource source)> orderOfCreation)
+            bool isAsyncContext,
+            out List<(string variableName, string? disposeActionsName, string? factoryVariable, InstanceSource source)> orderOfCreation,
+            IEnumerable<KeyValuePair<InstanceSource, string>>? singleInstanceVariablesInScope = null)
         {
             _cancellationToken.ThrowIfCancellationRequested();
             orderOfCreation = new();
             var orderOfCreationTemp = orderOfCreation;
-            var variables = new Dictionary<InstanceSource, string>(CanShareSameInstanceComparer.Instance);
+            var variables = singleInstanceVariablesInScope?.ToDictionary(x => x.Key, x => x.Value, CanShareSameInstanceComparer.Instance)
+                ??  new Dictionary<InstanceSource, string>(CanShareSameInstanceComparer.Instance);
             var outerTarget = target;
             return CreateVariableInternal(target, instanceSourcesScope);
-            string CreateVariableInternal(InstanceSource target, InstanceSourcesScope instanceSourcesScope)
+            string CreateVariableInternal(InstanceSource target, InstanceSourcesScope parentScope)
             {
                 if (target is ForwardedInstanceSource { Underlying : var underlyingSource })
                 {
-                    return CreateVariableInternal(underlyingSource, instanceSourcesScope);
+                    return CreateVariableInternal(underlyingSource, parentScope);
                 }
 
                 if (target is DelegateParameter { Name: var variableName })
@@ -327,12 +332,12 @@ namespace StrongInject.Generator
                     return symbolAccessBuilder.ToString();
                 }
 
-                instanceSourcesScope = instanceSourcesScope.Enter(target);
                 string? disposeActionsName = null;
                 string? factoryVariable = null;
                 if (target.Scope == Scope.InstancePerDependency || !variables.TryGetValue(target, out variableName))
                 {
-                    variableName = "_" + variables.Count;
+                    variableName = "_" + parentScope.Depth + "_" + variables.Count;
+                    var newScope = parentScope.Enter(target);
                     variables.Add(target, variableName);
                     switch (target)
                     {
@@ -348,7 +353,7 @@ namespace StrongInject.Generator
                             }
                             break;
                         case FactorySource(var factoryOf, var underlying, var scope, var isAsync) registration:
-                            factoryVariable = CreateVariableInternal(underlying, instanceSourcesScope);
+                            factoryVariable = CreateVariableInternal(underlying, newScope);
                             methodSource.Append("var ");
                             methodSource.Append(variableName);
                             methodSource.Append(isAsync ? "=await((" : "=((");
@@ -372,13 +377,22 @@ namespace StrongInject.Generator
 
                                 break;
                             }
-                        case DelegateSource(var delegateType, var returnType, var parameters, var isAsync):
+                        case DelegateSource(var delegateType, var returnType, var parameters, var isAsync) delegateSource:
                             {
+                                if (isAsyncContext && !isAsync)
+                                {
+                                    var instanceSourceVariablesToCreateEagerly = DependencyChecker.SingleInstanceVariablesToCreateEarly(delegateSource, parentScope);
+                                    foreach (var instanceSourceVariable in instanceSourceVariablesToCreateEagerly)
+                                    {
+                                        CreateVariableInternal(instanceSourceVariable, parentScope);
+                                    }
+                                }
+
                                 var disposeActionsIndex = methodSource.Length;
 
                                 var disposeActionsSection = methodSource.BeginRevertableSection();
 
-                                    disposeActionsName = "disposeActions" + instanceSourcesScope.Depth + variableName;
+                                    disposeActionsName = "disposeActions" + newScope.Depth + variableName;
                                     methodSource.Append("var ");
                                     methodSource.Append(disposeActionsName);
                                     methodSource.Append(disposeAsynchronously
@@ -395,16 +409,20 @@ namespace StrongInject.Generator
                                 {
                                     if (index != 0)
                                         methodSource.Append(',');
-                                    methodSource.Append(((DelegateParameter)instanceSourcesScope[parameter.Type]).Name);
+                                    methodSource.Append(((DelegateParameter)newScope[parameter.Type]).Name);
                                 }
+
                                 methodSource.Append(")=>{");
+
                                 var variable = CreateVariable(
-                                    instanceSourcesScope[returnType],
+                                    newScope[returnType],
                                     methodSource,
-                                    instanceSourcesScope,
+                                    newScope,
                                     isSingleInstanceCreation: false,
                                     disposeAsynchronously: disposeAsynchronously,
-                                    orderOfCreation: out var delegateOrderOfCreation);
+                                    isAsyncContext: isAsync,
+                                    orderOfCreation: out var delegateOrderOfCreation,
+                                    variables.Where(x => x.Key.Scope is Scope.SingleInstance));
 
                                 var disposeSection = methodSource.BeginRevertableSection();
 
@@ -451,7 +469,7 @@ namespace StrongInject.Generator
                                 var elementType = arrayType.ElementType.FullName();
                                 foreach (var source in sources)
                                 {
-                                    var variable = CreateVariableInternal(source, instanceSourcesScope);
+                                    var variable = CreateVariableInternal(source, newScope);
 
                                     variableSource.Append('(');
                                     variableSource.Append(elementType);
@@ -523,7 +541,7 @@ namespace StrongInject.Generator
                             IParameterSymbol? parameter = method.Parameters[i];
                             var source = (i == decoratedParameter?.ordinal)
                                 ? decoratedParameter.Value.parameterInstanceSource
-                                : instanceSourcesScope.GetParameterSource(parameter);
+                                : newScope.GetParameterSource(parameter);
                             if (source is not null)
                             {
                                 if (!isFirst)
@@ -531,7 +549,7 @@ namespace StrongInject.Generator
                                     variableSource.Append(',');
                                 }
                                 isFirst = false;
-                                var variable = CreateVariableInternal(source, instanceSourcesScope);
+                                var variable = CreateVariableInternal(source, newScope);
                                 variableSource.Append(parameter.Name);
                                 variableSource.Append(":(");
                                 variableSource.Append(parameter.Type.FullName());
