@@ -1,0 +1,6 @@
+﻿{
+  "BootstrapServers": "localhost:29092",
+  "GroupId": "StrongInJectKafkaConsumer",
+  "TargetTopicPrefix": "inbox_",
+  "ConsumedTopic": "all_messages"
+}
