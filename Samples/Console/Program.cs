@@ -18,11 +18,15 @@ namespace StrongInject.Samples.ConsoleApp
 
                 await using (var container = new Container())
                 {
-                    await container.RunAsync(x => new ValueTask(x.FanMessagesToRecipients()));
+                    await container.RunAsync(x => x.FanMessagesToRecipients());
                 }
             }
         }
 
+        /// <summary>
+        /// This code starts docker containers running zookeeper and kafka, to allow the sample app to run.
+        /// YOU CAN IGNORE THIS CODE
+        /// </summary>
         private static Process StartDockerContainers()
         {
             var processInfo = new ProcessStartInfo("docker-compose", "up");
@@ -44,6 +48,10 @@ namespace StrongInject.Samples.ConsoleApp
             return process;
         }
 
+        /// <summary>
+        /// This code creates the all_messages topic and produces messages to it so that the sample app will have messages to consume.
+        /// YOU CAN IGNORE THIS CODE
+        /// </summary>
         private static async Task CreateKafkaTopicAndStartWritingMessagesToIt()
         {
             var config = await new JsonConfigLoader().LoadConfig();
