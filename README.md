@@ -115,7 +115,7 @@ Check out these sample projects to help you get started:
 ##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
 ##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Console)
 
-#### Real Life Projects Using Stronginject
+#### Real World Projects Using Stronginject
 
 - [FluentLang](https://github.com/YairHalberstadt/fluentlang/blob/master/source/flc/DependencyInjection/FlcContainer.cs)
 
