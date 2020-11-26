@@ -16,7 +16,7 @@
   - [Sample Projects](#sample-projects)
       - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
       - [Console Application](#console-application)
-    - [Real Life Projects Using Stronginject](#real-life-projects-using-stronginject)
+    - [Real World Projects Using Stronginject](#real-world-projects-using-stronginject)
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
   - [Registration](#registration)
