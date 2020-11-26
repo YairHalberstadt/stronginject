@@ -14,7 +14,9 @@
 - [How It Works](#how-it-works)
 - [Usage](#usage)
   - [Sample Projects](#sample-projects)
-    - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
+      - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
+      - [Console Application](#console-application)
+    - [Real World Projects Using Stronginject](#real-world-projects-using-stronginject)
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
   - [Registration](#registration)
@@ -110,7 +112,12 @@ The [wiki](https://github.com/YairHalberstadt/stronginject/wiki) is currently a 
 
 Check out these sample projects to help you get started:
 
-#### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
+##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
+##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Console)
+
+#### Real World Projects Using Stronginject
+
+- [FluentLang](https://github.com/YairHalberstadt/fluentlang/blob/master/source/flc/DependencyInjection/FlcContainer.cs)
 
 ### Declaring a container
 To create a container for a specific type, declare your a partial class and implement `StrongInject.IContainer<T>`:
