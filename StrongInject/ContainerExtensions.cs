@@ -1,4 +1,6 @@
-﻿using System;
+﻿using StrongInject.Internal;
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace StrongInject
@@ -39,10 +41,36 @@ namespace StrongInject
             return container.RunAsync(static (t, func) => func(t), func);
         }
 
-        public static ValueTask<TResult> RunAsync<T, TResult>(this IAsyncContainer<T> container, Func<T, TResult> func)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="container"></param>
+        /// <param name="func"></param>
+        /// <param name="_">Ignore this parameter. Used to prefer overload <see cref="RunAsync{T, TResult}(IAsyncContainer{T}, Func{T, ValueTask{TResult}})"/> to this overload.</param>
+        /// <returns></returns>
+        public static ValueTask<TResult> RunAsync<T, TResult>(this IAsyncContainer<T> container, Func<T, Task<TResult>> func, DummyParameter? _ = null)
         {
             return container.RunAsync(static (t, func) => new ValueTask<TResult>(func(t)), func);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="container"></param>
+        /// <param name="func"></param>
+        /// <param name="_">Ignore this parameter. Used to prefer overload <see cref="RunAsync{T, TResult}(IAsyncContainer{T}, Func{T, Task{TResult}}, DummyParameter?)"/> to this overload.</param>
+        /// <returns></returns>
+        public static ValueTask<TResult> RunAsync<T, TResult>(this IAsyncContainer<T> container, Func<T, TResult> func, DummyParameter? _ = null)
+        {
+            return container.RunAsync(static (t, func) => new ValueTask<TResult>(func(t)), func);
+        }
+
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
+        public static ValueTask<TResult> RunAsync<T, TResult>(IAsyncContainer<T> container, Func<T, TResult> func) => container.RunAsync(func);
 
         public static ValueTask RunAsync<T>(this IAsyncContainer<T> container, Func<T, ValueTask> action)
         {
@@ -53,7 +81,32 @@ namespace StrongInject
             }, action).AsValueTask();
         }
 
-        public static ValueTask RunAsync<T>(this IAsyncContainer<T> container, Action<T> action)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="container"></param>
+        /// <param name="action"></param>
+        /// <param name="_">Ignore this parameter. Used to prefer overload <see cref="RunAsync{T}(IAsyncContainer{T}, Func{T, ValueTask})"/> to this overload.</param>
+        /// <returns></returns>
+        public static ValueTask RunAsync<T>(this IAsyncContainer<T> container, Func<T, Task> action, DummyParameter? _ = null)
+        {
+            return container.RunAsync(static async (t, action) =>
+            {
+                await action(t);
+                return default(object?);
+            }, action).AsValueTask();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="container"></param>
+        /// <param name="action"></param>
+        /// <param name="_">Ignore this parameter. Used to prefer overload <see cref="RunAsync{T}(IAsyncContainer{T}, Func{T, Task}, DummyParameter?)"/> to this overload.</param>
+        /// <returns></returns>
+        public static ValueTask RunAsync<T>(this IAsyncContainer<T> container, Action<T> action, DummyParameter? _ = null)
         {
             return container.RunAsync(static (t, action) =>
             {
@@ -61,6 +114,9 @@ namespace StrongInject
                 return new ValueTask<object?>(default(object));
             }, action).AsValueTask();
         }
+
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
+        public static ValueTask RunAsync<T>(IAsyncContainer<T> container, Action<T> action) => container.RunAsync(action);
 
         public static ValueTask<AsyncOwned<T>> ResolveAsync<T>(this IAsyncContainer<T> container) => container.ResolveAsync();
     }
