@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using StrongInject.Generator.Visitors;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -8,9 +9,9 @@ using Xunit.Abstractions;
 
 namespace StrongInject.Generator.Tests.Unit
 {
-    public class DependencyCheckerTests : TestBase
+    public class DependencyCheckerVisitorTests : TestBase
     {
-        public DependencyCheckerTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        public DependencyCheckerVisitorTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
         }
 
@@ -46,7 +47,7 @@ public class D
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("A"),
                 isAsync: true,
                 new(
@@ -93,7 +94,7 @@ public class E {}
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("B"),
                 isAsync: true,
                 new(
@@ -143,7 +144,7 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("A"),
                 isAsync: true,
                 new(
@@ -197,7 +198,7 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("A"),
                 isAsync: true,
                 new(
@@ -248,7 +249,7 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("A"),
                 isAsync: true,
                 new(
@@ -298,7 +299,7 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("A"),
                 isAsync: true,
                 new(
@@ -346,7 +347,7 @@ public class D
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("A"),
                 isAsync: true,
                 new(
@@ -399,7 +400,7 @@ public class E {}
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
-            var hasErrors = DependencyChecker.HasCircularOrMissingDependencies(
+            var hasErrors = DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                 comp.AssertGetTypeByMetadataName("A"),
                 isAsync: true,
                 new(
