@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using StrongInject.Generator.Visitors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -124,7 +125,7 @@ namespace StrongInject.Generator
                 resolveMethodSource.Append(resolveMethodSymbol.Name);
                 resolveMethodSource.Append("(){");
 
-                if (DependencyChecker.HasCircularOrMissingDependencies(
+                if (DependencyCheckerVisitor.HasCircularOrMissingDependencies(
                         target,
                         isAsync,
                         _containerScope,
@@ -235,7 +236,7 @@ namespace StrongInject.Generator
                 var index = _singleInstanceMethods.Count;
                 var singleInstanceFieldName = "_singleInstanceField" + index;
                 var name = "GetSingleInstanceField" + index;
-                var isAsync = DependencyChecker.RequiresAsync(instanceSource, _containerScope);
+                var isAsync = RequiresAsyncVisitor.RequiresAsync(instanceSource, _containerScope);
                 var disposeFieldName = "_disposeAction" + index;
                 var lockName = "_lock" + index;
                 singleInstanceMethod = (name, isAsync, disposeFieldName, lockName);
@@ -381,7 +382,7 @@ namespace StrongInject.Generator
                             {
                                 if (isAsyncContext && !isAsync)
                                 {
-                                    var instanceSourceVariablesToCreateEagerly = DependencyChecker.SingleInstanceVariablesToCreateEarly(delegateSource, parentScope);
+                                    var instanceSourceVariablesToCreateEagerly = SingleInstanceVariablesToCreateEarlyVisitor.CalculateVariables(delegateSource, parentScope, _containerScope);
                                     foreach (var instanceSourceVariable in instanceSourceVariablesToCreateEagerly)
                                     {
                                         CreateVariableInternal(instanceSourceVariable, parentScope);
@@ -722,7 +723,7 @@ namespace StrongInject.Generator
             file.Append(@"private int _disposed = 0; private bool Disposed => _disposed != 0;");
             var singleInstanceMethodsDisposalOrderings = _singleInstanceMethods is null
                 ? Enumerable.Empty<(string name, bool isAsync, string disposeFieldName, string lockName)>()
-                : DependencyChecker.GetPartialOrderingOfSingleInstanceDependencies(_containerScope, _singleInstanceMethods.Keys.ToHashSet()).Select(x => _singleInstanceMethods[x]);
+                : PartialOrderingOfSingleInstanceDependenciesVisitor.GetPartialOrdering(_containerScope, _singleInstanceMethods.Keys.ToHashSet()).Select(x => _singleInstanceMethods[x]);
 
             if (anyAsync)
             {
