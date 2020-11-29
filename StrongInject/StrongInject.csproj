@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>1.0.3</VersionPrefix>
+		<VersionPrefix>1.0.4</VersionPrefix>
 		<PackageId>StrongInject</PackageId>
 		<Authors>StrongInject</Authors>
 		<Product>StrongInject</Product>
@@ -20,11 +20,20 @@
 		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<IncludeSymbols>true</IncludeSymbols>
-                <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
-	
+
+	<ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
+	  <Compile Remove="Generator\**" />
+	  <EmbeddedResource Remove="Generator\**" />
+	  <None Remove="Generator\**" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.1" PrivateAssets="all" />
 	</ItemGroup>
