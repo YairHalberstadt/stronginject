@@ -1,4 +1,4 @@
-# StrongInject.Samples.ConsoleApp
+# StrongInject.Samples.XamarinApp
 
 ## Overview
 
