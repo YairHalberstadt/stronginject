@@ -8,6 +8,10 @@ It consists of an "About" tab, an "Items" tab which lets you navigate to each it
 
 The implementation presents just one way to do navigation whilst injecting pages and view models. Other techniques are possible.
 
+## Debugging
+
+The Android app is not built by the Debug/Release configurations as the dotnet CLI doesn't support xamarin. To debug the app change the configuration to AndroidApp, and then run/debug as normal.
+
 ## Navigation
 
 In this sample all pages and view models are created by the StrongInject container.
