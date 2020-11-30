@@ -45,7 +45,7 @@ namespace StrongInject.Generator.Tests.Unit
 
         protected Compilation RunGeneratorWithStrongInjectReference(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
-            var reference = MetadataReference.CreateFromFile(typeof(StrongInject.IContainer<>).Assembly.Location.Replace("StrongInject.Tests.Unit", "StrongInject").Replace("net5.0","netstandard2.1"));
+            var reference = MetadataReference.CreateFromFile(typeof(IContainer<>).Assembly.Location.Replace("StrongInject.Tests.Unit", "StrongInject").Replace("net5.0","netstandard2.1"));
             return RunGenerator(source, out diagnostics, out generatedFiles, reference);
         }
         protected Compilation RunGenerator(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles, params MetadataReference[] metadataReferences)

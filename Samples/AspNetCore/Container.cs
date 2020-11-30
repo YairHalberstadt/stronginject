@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using StrongInject;
 using StrongInject.Samples.AspNetCore.Controllers;
 using StrongInject.Samples.AspNetCore.Services;
 using System;
