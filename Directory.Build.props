@@ -5,5 +5,7 @@
    <WarningsAsErrors>true</WarningsAsErrors>
    <NoWarn>CS1591</NoWarn>
    <WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
+   <StrongInjectSampleVersion>1.0.4</StrongInjectSampleVersion>
+   <StrongInjectExtensionsDependenInjectionSampleVersion>0.0.5</StrongInjectExtensionsDependenInjectionSampleVersion>
  </PropertyGroup>
 </Project>
