@@ -114,6 +114,7 @@ Check out these sample projects to help you get started:
 
 ##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
 ##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Console)
+##### [Xamarin Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Xamarin)
 
 #### Real World Projects Using Stronginject
 
