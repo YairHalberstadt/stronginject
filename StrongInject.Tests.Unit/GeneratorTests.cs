@@ -16062,5 +16062,114 @@ partial class Container
     }
 }");
         }
+
+        [Fact]
+        public void RegressionTest_FalseCircularDependencyBug()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B), Scope.SingleInstance)]
+[Register(typeof(C))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A { public A(B b, Func<C> c){} }
+public class B { }
+public class C { public C(B b1, B b2){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::B _singleInstanceField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::B GetSingleInstanceField0()
+    {
+        if (!object.ReferenceEquals(_singleInstanceField0, null))
+            return _singleInstanceField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            var _0_0 = new global::B();
+            this._singleInstanceField0 = _0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _singleInstanceField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0_1 = GetSingleInstanceField0();
+        global::System.Func<global::C> _0_2 = () =>
+        {
+            var _1_1 = new global::C(b1: (global::B)_0_1, b2: (global::B)_0_1);
+            return _1_1;
+        };
+        var _0_0 = new global::A(b: (global::B)_0_1, c: (global::System.Func<global::C>)_0_2);
+        TResult result;
+        try
+        {
+            result = func((global::A)_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        var _0_1 = GetSingleInstanceField0();
+        global::System.Func<global::C> _0_2 = () =>
+        {
+            var _1_1 = new global::C(b1: (global::B)_0_1, b2: (global::B)_0_1);
+            return _1_1;
+        };
+        var _0_0 = new global::A(b: (global::B)_0_1, c: (global::System.Func<global::C>)_0_2);
+        return new global::StrongInject.Owned<global::A>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
     }
 }

@@ -1,16 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace StrongInject.Generator.Tests.Unit
@@ -45,7 +43,10 @@ namespace StrongInject.Generator.Tests.Unit
 
         protected Compilation RunGeneratorWithStrongInjectReference(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
-            var reference = MetadataReference.CreateFromFile(typeof(StrongInject.IContainer<>).Assembly.Location.Replace("StrongInject.Tests.Unit", "StrongInject").Replace("net5.0","netstandard2.1"));
+            var location = Regex
+                .Replace(typeof(IContainer<>).Assembly.Location, "stronginject[/|\\\\].*[/|\\\\]bin[/|\\\\]", "stronginject/StrongInject/bin/")
+                .Replace("net5.0", "netstandard2.1");
+            var reference = MetadataReference.CreateFromFile(location);
             return RunGenerator(source, out diagnostics, out generatedFiles, reference);
         }
         protected Compilation RunGenerator(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles, params MetadataReference[] metadataReferences)
