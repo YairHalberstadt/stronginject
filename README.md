@@ -16,6 +16,7 @@
   - [Sample Projects](#sample-projects)
       - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
       - [Console Application](#console-application)
+      - [Xamarin Application](#xamarin-application)
     - [Real World Projects Using Stronginject](#real-world-projects-using-stronginject)
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
@@ -114,6 +115,7 @@ Check out these sample projects to help you get started:
 
 ##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
 ##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Console)
+##### [Xamarin Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Xamarin)
 
 #### Real World Projects Using Stronginject
 

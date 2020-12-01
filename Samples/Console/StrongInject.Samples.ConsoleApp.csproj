@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="1.5.2" />
-    <PackageReference Include="StrongInject" Version="1.0.2" />
+    <PackageReference Include="StrongInject" Version="$(StrongInjectSampleVersion)" />
   </ItemGroup>
 
   <ItemGroup>
