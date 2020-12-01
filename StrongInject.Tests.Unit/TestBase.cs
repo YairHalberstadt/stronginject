@@ -43,9 +43,15 @@ namespace StrongInject.Generator.Tests.Unit
 
         protected Compilation RunGeneratorWithStrongInjectReference(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
-            var location = Regex
-                .Replace(typeof(IContainer<>).Assembly.Location, "stronginject[/|\\\\].*[/|\\\\]bin[/|\\\\]", "stronginject/StrongInject/bin/")
-                .Replace("net5.0", "netstandard2.1");
+            var currentStrongInjectLocation = typeof(IContainer<>).Assembly.Location;
+            var start = currentStrongInjectLocation.LastIndexOf("\\stronginject\\");
+            if (start == -1)
+                start = currentStrongInjectLocation.LastIndexOf("/stronginject/");
+            var end = currentStrongInjectLocation.IndexOf("\\bin\\");
+            if (end == -1)
+                end = currentStrongInjectLocation.IndexOf("/bin/");
+
+            var location = currentStrongInjectLocation[..start] + "/stronginject/StrongInject" + currentStrongInjectLocation[end..].Replace("net5.0", "netstandard2.1");
             var reference = MetadataReference.CreateFromFile(location);
             return RunGenerator(source, out diagnostics, out generatedFiles, reference);
         }
