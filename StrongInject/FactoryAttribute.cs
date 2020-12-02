@@ -3,7 +3,7 @@
 namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class FactoryAttribute : Attribute
+    public sealed class FactoryAttribute : Attribute
     {
         public FactoryAttribute(Scope scope = Scope.InstancePerResolution)
         {

@@ -3,7 +3,7 @@
 namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class RegisterModuleAttribute : Attribute
+    public sealed class RegisterModuleAttribute : Attribute
     {
         public RegisterModuleAttribute(Type type, params Type[] exclusionList)
         {

@@ -3,7 +3,7 @@
 namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class RegisterDecoratorAttribute : Attribute
+    public sealed class RegisterDecoratorAttribute : Attribute
     {
         public RegisterDecoratorAttribute(Type type, Type decoratedType, DecoratorOptions decoratorOptions = DecoratorOptions.Default)
         {

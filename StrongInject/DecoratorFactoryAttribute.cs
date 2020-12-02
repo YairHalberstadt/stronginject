@@ -3,7 +3,7 @@
 namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class DecoratorFactoryAttribute : Attribute
+    public sealed class DecoratorFactoryAttribute : Attribute
     {
         public DecoratorFactoryAttribute(DecoratorOptions decoratorOptions = DecoratorOptions.Default)
         {
