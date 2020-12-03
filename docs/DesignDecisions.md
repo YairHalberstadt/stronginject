@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Design Decisions](#design-decisions)
+  - [Why attributes?](#why-attributes)
+  - [Why Async](#why-async)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Design Decisions
 
 This document intends to explain my thought process when designing StrongInject's API.
