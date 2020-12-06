@@ -18,11 +18,10 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
-		<PackageIcon>https://raw.githubusercontent.com/YairHalberstadt/stronginject/master/resources/logo-circle.ico</PackageIcon>
-		<PackageIconUrl>https://raw.githubusercontent.com/YairHalberstadt/stronginject/master/resources/logo-circle.ico</PackageIconUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<IncludeSymbols>true</IncludeSymbols>
          <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+         <PackageIcon>logo-circle.png</PackageIcon>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -33,6 +32,13 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\StrongInject\StrongInject.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\resources\logo-circle.png">
+	    <Pack>True</Pack>
+	    <PackagePath></PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
