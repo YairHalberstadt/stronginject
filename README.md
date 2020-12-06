@@ -6,7 +6,7 @@
 
 **Compile Time Dependency Injection For C#**
 
-Logo kindly contributed by @onelioubov and @khalidabuhakmeh
+Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@khalidabuhakmeh](https://github.com/khalidabuhakmeh)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
