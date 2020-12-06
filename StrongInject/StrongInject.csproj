@@ -14,10 +14,11 @@
 		<PackageId>StrongInject</PackageId>
 		<Authors>StrongInject</Authors>
 		<Product>StrongInject</Product>
-		<Description>compile time dependency injection for .Net</Description>
+		<Description>compile time dependency injection for C#</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
+		<IconUrl>https://raw.githubusercontent.com/YairHalberstadt/stronginject/master/resources/logo-circle.ico</IconUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
