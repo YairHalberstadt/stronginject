@@ -14,13 +14,14 @@
 		<PackageId>StrongInject</PackageId>
 		<Authors>StrongInject</Authors>
 		<Product>StrongInject</Product>
-		<Description>compile time dependency injection for .Net</Description>
+		<Description>compile time dependency injection for C#</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageIcon>logo-circle.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
@@ -40,6 +41,10 @@
 
 	<ItemGroup>
 		<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<None Include="..\resources\logo-circle.png">
+		  <Pack>True</Pack>
+		  <PackagePath></PackagePath>
+		</None>
 	</ItemGroup>
 	
 </Project>
