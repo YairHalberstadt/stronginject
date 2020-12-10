@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StrongInject.Generator.Visitors;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -150,10 +151,10 @@ namespace StrongInject.Generator
                         isSingleInstanceCreation: false,
                         disposeAsynchronously: isAsync,
                         isAsyncContext: isAsync,
-                        orderOfCreation: out var orderOfCreation);
+                        requiringDisposal: out var requiringDisposal);
 
                     var disposalSource = new StringBuilder();
-                    GenerateDisposeCode(disposalSource, orderOfCreation, isAsync, singleInstanceTarget: null);
+                    GenerateDisposeCode(disposalSource, requiringDisposal, isAsync, singleInstanceTarget: null);
 
                     runMethodSource.Append(variableCreationSource);
                     runMethodSource.Append(runMethodSymbol.TypeParameters[0].Name);
@@ -271,7 +272,7 @@ namespace StrongInject.Generator
                     isSingleInstanceCreation: true,
                     disposeAsynchronously: _implementsAsyncContainer,
                     isAsyncContext: isAsync,
-                    orderOfCreation: out var orderOfCreation);
+                    requiringDisposal: out var requiringDisposal);
                 methodSource.Append("this.");
                 methodSource.Append(singleInstanceFieldName);
                 methodSource.Append('=');
@@ -283,7 +284,7 @@ namespace StrongInject.Generator
                 if (_implementsAsyncContainer)
                     methodSource.Append("async");
                 methodSource.Append("() => {");
-                GenerateDisposeCode(methodSource, orderOfCreation, _implementsAsyncContainer, instanceSource);
+                GenerateDisposeCode(methodSource, requiringDisposal, _implementsAsyncContainer, instanceSource);
                 methodSource.Append("};");
                 methodSource.Append("}finally{this.");
                 methodSource.Append(lockName);
@@ -302,11 +303,12 @@ namespace StrongInject.Generator
             bool isSingleInstanceCreation,
             bool disposeAsynchronously,
             bool isAsyncContext,
-            out List<(string variableName, string? disposeActionsName, string? factoryVariable, InstanceSource source)> orderOfCreation,
-            List<(string, InstanceSource)>? singleInstanceVariablesInScope = null)
+            out List<Statement> requiringDisposal,
+            IEnumerable<(string, InstanceSource)>? singleInstanceVariablesInScope = null)
         {
             _cancellationToken.ThrowIfCancellationRequested();
-            var order = DependencyOrderingVisitor.OrderDependencies(
+
+            var order = LoweringVisitor.LowerResolution(
                 target: target,
                 currentScope: instanceSourcesScope,
                 containerScope: _containerScope,
@@ -314,203 +316,223 @@ namespace StrongInject.Generator
                 isAsyncContext: isAsyncContext,
                 singleInstanceVariablesInScope: singleInstanceVariablesInScope,
                 out var targetName);
+            requiringDisposal = new();
 
-            orderOfCreation = new();
-            foreach (var (source, assignedName, dependencies) in order)
+            foreach (var statement in order)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
-                CreateVariable(source, assignedName, dependencies, out var disposeActionsName, out var factoryName);
-                orderOfCreation.Add((assignedName, disposeActionsName, factoryName, source));
+                EmitStatement(statement, out var supressDisposal);
+                if (!supressDisposal)
+                    requiringDisposal.Add(statement);
+
             }
             return targetName;
 
-            void CreateVariable(InstanceSource source, string assignedName, List<(string? name, InstanceSource? source)> dependencies, out string? disposeActionsName, out string? factoryName)
+            void EmitStatement(Statement statement, out bool supressDisposal)
             {
-                factoryName = null;
-                disposeActionsName = null;
-                switch (source)
+                supressDisposal = false;
+                switch (statement)
                 {
-                    case { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource)
-                        when !(isSingleInstanceCreation && ReferenceEquals(target, source)):
+                    case SingleInstanceReferenceStatement(var variableName, var source):
                         {
                             var (name, isAsync) = GetSingleInstanceMethod(source);
                             methodSource.Append("var ");
-                            methodSource.Append(assignedName);
+                            methodSource.Append(variableName);
                             methodSource.Append(isAsync ? "=await " : '=');
                             methodSource.Append(name);
                             methodSource.Append("();");
                         }
                         break;
-                    case FactorySource(var factoryOf, var underlying, var scope, var isAsync) registration:
-                        factoryName = dependencies[0].name;
+                    case DelegateCreationStatement
+                    {
+                        VariableName: var variableName,
+                        Source:
+                        {
+                            DelegateType: var delegateType,
+                            IsAsync: var isAsync,
+                            Parameters: var parameters,
+                            ReturnType: var returnType
+                        } source,
+                        SingleInstanceVariablesCreatedEarly: var singleInstanceVariablesCreatedEarly,
+                        DisposeActionsName: var disposeActionsName
+                    }:
+                        var disposeActionsIndex = methodSource.Length;
+
+                        var disposeActionsSection = methodSource.BeginRevertableSection();
+
                         methodSource.Append("var ");
-                        methodSource.Append(assignedName);
-                        methodSource.Append(isAsync ? "=await " : "= ");
-                        methodSource.Append(factoryName);
-                        methodSource.Append('.');
-                        methodSource.Append(isAsync
-                            ? nameof(IAsyncFactory<object>.CreateAsync)
-                            : nameof(IFactory<object>.Create));
-                        methodSource.Append("();");
-                        break;
-                    case Registration(var _, var _, var requiresInitialization, var constructor, var isAsync) registration:
+                        methodSource.Append(disposeActionsName);
+                        methodSource.Append(disposeAsynchronously
+                            ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
+                            : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
+
+                        disposeActionsSection.EndSection();
+
+                        methodSource.Append(delegateType.FullName());
+                        methodSource.Append(' ');
+                        methodSource.Append(variableName);
+                        methodSource.Append(isAsync ? "=async(" : "=(");
+
+                        var newScope = instanceSourcesScope.Enter(source);
+                        foreach (var (parameter, index) in parameters.WithIndex())
                         {
-                            GenerateMethodCall(constructor, isAsync, decoratedParameter: null);
-
-                            if (requiresInitialization)
-                            {
-                                GenerateInitializeCall(methodSource, assignedName, isAsync);
-                            }
-
-                            break;
-                        }
-                    case DelegateSource(var delegateType, var returnType, var parameters, var isAsync) delegateSource:
-                        {
-                            var disposeActionsIndex = methodSource.Length;
-
-                            var disposeActionsSection = methodSource.BeginRevertableSection();
-
-                            disposeActionsName = "disposeActions_" + assignedName;
-                            methodSource.Append("var ");
-                            methodSource.Append(disposeActionsName);
-                            methodSource.Append(disposeAsynchronously
-                                ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
-                                : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
-
-                            disposeActionsSection.EndSection();
-
-                            methodSource.Append(delegateType.FullName());
-                            methodSource.Append(' ');
-                            methodSource.Append(assignedName);
-                            methodSource.Append(isAsync ? "=async(" : "=(");
-
-                            var newScope = instanceSourcesScope.Enter(delegateSource);
-                            foreach (var (parameter, index) in parameters.WithIndex())
-                            {
-                                if (index != 0)
-                                    methodSource.Append(',');
-                                methodSource.Append(((DelegateParameter)newScope[parameter.Type]).Name);
-                            }
-
-                            methodSource.Append(")=>{");
-
-                            var newSingleInstanceVariablesInScope = singleInstanceVariablesInScope is { Count: > 0 }
-                                    ? dependencies.Count > 0
-                                        ? singleInstanceVariablesInScope.Concat(dependencies!).ToList()
-                                        : singleInstanceVariablesInScope
-                                     : dependencies!;
-
-                            var variable = CreateVariables(
-                                newScope[returnType],
-                                methodSource,
-                                newScope,
-                                isSingleInstanceCreation: false,
-                                disposeAsynchronously: disposeAsynchronously,
-                                isAsyncContext: isAsync,
-                                orderOfCreation: out var delegateOrderOfCreation,
-                                newSingleInstanceVariablesInScope);
-
-                            var disposeSection = methodSource.BeginRevertableSection();
-
-                            methodSource.Append("disposeActions_" + assignedName);
-                            methodSource.Append(".Add(");
-                            if (disposeAsynchronously)
-                                methodSource.Append("async");
-                            methodSource.Append("() => {");
-
-                            var beforeGenerateDisposeCodeLength = methodSource.Length;
-                            GenerateDisposeCode(methodSource, delegateOrderOfCreation, disposeAsynchronously, null);
-                            if (beforeGenerateDisposeCodeLength == methodSource.Length)
-                            {
-                                disposeSection.EndSection();
-                                disposeSection.Revert();
-                                disposeActionsSection.Revert();
-                                disposeActionsName = null;
-                            }
-                            else
-                            {
-                                methodSource.Append("});");
-                            }
-
-                            methodSource.Append("return ");
-                            methodSource.Append(variable);
-                            methodSource.Append(";};");
-                            break;
-                        }
-                    case FactoryMethod(var method, var _, var _, var _, var isAsync) registration:
-                        {
-                            GenerateMethodCall(method, isAsync, decoratedParameter: null);
-
-                            break;
-                        }
-                    case ArraySource(var arrayType, _, var sources):
-                        {
-                            methodSource.Append("var ");
-                            methodSource.Append(assignedName);
-                            methodSource.Append("=new ");
-                            methodSource.Append(arrayType.FullName());
-                            methodSource.Append('{');
-
-                            var elementType = arrayType.ElementType.FullName();
-                            foreach (var dependency in dependencies)
-                            {
-                                methodSource.Append('(');
-                                methodSource.Append(elementType);
-                                methodSource.Append(')');
-                                methodSource.Append(dependency.name);
+                            if (index != 0)
                                 methodSource.Append(',');
-                            }
-                            methodSource.Append("};");
-                            break;
+                            methodSource.Append(((DelegateParameter)newScope[parameter.Type]).Name);
                         }
-                    case WrappedDecoratorInstanceSource(var decoratorSource, var instanceSource):
-                        {
-                            switch (decoratorSource)
-                            {
-                                case DecoratorRegistration(var _, _, var requiresInitialization, var constructor, var decoratedParameter, _, var isAsync):
 
-                                    GenerateMethodCall(constructor, isAsync, (decoratedParameter, instanceSource));
+                        methodSource.Append(")=>{");
+
+                        var newSingleInstanceVariablesInScope = (singleInstanceVariablesInScope, singleInstanceVariablesCreatedEarly) switch
+                        {
+                            (null, { IsEmpty: true }) => null,
+                            (null, var b) => b,
+                            (var a, { IsEmpty: true }) => a,
+                            (var a, var b) => a.Concat(b),
+                        };
+
+                        var variable = CreateVariables(
+                            newScope[returnType],
+                            methodSource,
+                            newScope,
+                            isSingleInstanceCreation: false,
+                            disposeAsynchronously: disposeAsynchronously,
+                            isAsyncContext: isAsync,
+                            requiringDisposal: out var innerRequiringDisposal,
+                            newSingleInstanceVariablesInScope);
+
+                        var disposeSection = methodSource.BeginRevertableSection();
+
+                        methodSource.Append(disposeActionsName);
+                        methodSource.Append(".Add(");
+                        if (disposeAsynchronously)
+                            methodSource.Append("async");
+                        methodSource.Append("() => {");
+
+                        var beforeGenerateDisposeCodeLength = methodSource.Length;
+                        GenerateDisposeCode(methodSource, innerRequiringDisposal, disposeAsynchronously, null);
+                        if (beforeGenerateDisposeCodeLength == methodSource.Length)
+                        {
+                            disposeSection.EndSection();
+                            disposeSection.Revert();
+                            disposeActionsSection.Revert();
+                            supressDisposal = true;
+                        }
+                        else
+                        {
+                            methodSource.Append("});");
+                        }
+
+                        methodSource.Append("return ");
+                        methodSource.Append(variable);
+                        methodSource.Append(";};");
+                        break;
+                    case DependencyCreationStatement(var variableName, var source, var dependencies):
+
+                        switch (source)
+                        {
+                            case FactorySource(var factoryOf, var underlying, var scope, var isAsync) registration:
+                                var factoryName = dependencies[0];
+                                methodSource.Append("var ");
+                                methodSource.Append(variableName);
+                                methodSource.Append(isAsync ? "=await " : "= ");
+                                methodSource.Append(factoryName);
+                                methodSource.Append('.');
+                                methodSource.Append(isAsync
+                                    ? nameof(IAsyncFactory<object>.CreateAsync)
+                                    : nameof(IFactory<object>.Create));
+                                methodSource.Append("();");
+                                break;
+                            case Registration(var _, var _, var requiresInitialization, var constructor, var isAsync) registration:
+                                {
+                                    GenerateMethodCall(variableName, constructor, isAsync, dependencies);
 
                                     if (requiresInitialization)
                                     {
-                                        GenerateInitializeCall(methodSource, assignedName, isAsync);
+                                        GenerateInitializeCall(methodSource, variableName, isAsync);
                                     }
 
                                     break;
-                                case DecoratorFactoryMethod(var method, var returnType, var _, var decoratedParameter, _, var isAsync) registration:
-                                    GenerateMethodCall(method, isAsync, (decoratedParameter, instanceSource));
+                                }
+                            case FactoryMethod(var method, var _, var _, var _, var isAsync) registration:
+                                {
+                                    GenerateMethodCall(variableName, method, isAsync, dependencies);
+
                                     break;
-                                default: throw new NotImplementedException(decoratorSource.GetType().ToString());
-                            }
-                            break;
+                                }
+                            case ArraySource(var arrayType, _, var sources):
+                                {
+                                    methodSource.Append("var ");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append("=new ");
+                                    methodSource.Append(arrayType.FullName());
+                                    methodSource.Append('{');
+
+                                    var elementType = arrayType.ElementType.FullName();
+                                    foreach (var dependency in dependencies)
+                                    {
+                                        methodSource.Append('(');
+                                        methodSource.Append(elementType);
+                                        methodSource.Append(')');
+                                        methodSource.Append(dependency);
+                                        methodSource.Append(',');
+                                    }
+                                    methodSource.Append("};");
+                                    break;
+                                }
+                            case WrappedDecoratorInstanceSource(var decoratorSource, var instanceSource):
+                                {
+                                    switch (decoratorSource)
+                                    {
+                                        case DecoratorRegistration(var _, _, var requiresInitialization, var constructor, var decoratedParameter, _, var isAsync):
+
+                                            GenerateMethodCall(variableName, constructor, isAsync, dependencies);
+
+                                            if (requiresInitialization)
+                                            {
+                                                GenerateInitializeCall(methodSource, variableName, isAsync);
+                                            }
+
+                                            break;
+                                        case DecoratorFactoryMethod(var method, var returnType, var _, var decoratedParameter, _, var isAsync) registration:
+                                            GenerateMethodCall(variableName, method, isAsync, dependencies);
+                                            break;
+                                        default: throw new NotImplementedException(decoratorSource.GetType().ToString());
+                                    }
+                                    break;
+                                }
+                            case InstanceFieldOrProperty { FieldOrPropertySymbol: var fieldOrPropertySymbol }:
+                                {
+                                    methodSource.Append("var ");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append("=");
+                                    GenerateMemberAccess(methodSource, fieldOrPropertySymbol);
+                                    methodSource.Append(";");
+                                    break;
+                                }
+                            case ForwardedInstanceSource { AsType: var asType }:
+                                {
+                                    methodSource.Append("var ");
+                                    methodSource.Append(variableName);
+                                    methodSource.Append("=(");
+                                    methodSource.Append(asType.FullName());
+                                    methodSource.Append(")");
+                                    methodSource.Append(dependencies[0]);
+                                    methodSource.Append(";");
+                                    break;
+                                }
+                            default:
+                                throw new NotImplementedException(source.GetType().ToString());
                         }
-                    case InstanceFieldOrProperty { FieldOrPropertySymbol: var fieldOrPropertySymbol }:
-                        {
-                            methodSource.Append("var ");
-                            methodSource.Append(assignedName);
-                            methodSource.Append("=");
-                            GenerateMemberAccess(methodSource, fieldOrPropertySymbol);
-                            methodSource.Append(";");
-                            break;
-                        }
-                    case ForwardedInstanceSource { AsType: var asType }:
-                        {
-                            methodSource.Append("var ");
-                            methodSource.Append(assignedName);
-                            methodSource.Append("=(");
-                            methodSource.Append(asType.FullName());
-                            methodSource.Append(")");
-                            methodSource.Append(dependencies[0].name);
-                            methodSource.Append(";");
-                            break;
-                        }
+                        break;
                     default:
-                        throw new NotImplementedException(target.GetType().ToString());
+                        throw new NotImplementedException(statement.GetType().ToString());
                 }
-                void GenerateMethodCall(IMethodSymbol method, bool isAsync, (int ordinal, InstanceSource parameterInstanceSource)? decoratedParameter)
+
+                void GenerateMethodCall(string variableName, IMethodSymbol method, bool isAsync, ImmutableArray<string?> dependencies)
                 {
                     methodSource.Append("var ");
-                    methodSource.Append(assignedName);
+                    methodSource.Append(variableName);
                     bool isConstructor = method.MethodKind == MethodKind.Constructor;
                     methodSource.Append(isAsync && !isConstructor ? "=await " : '=');
                     if (isConstructor)
@@ -539,8 +561,8 @@ namespace StrongInject.Generator
                     for (int i = 0; i < method.Parameters.Length; i++)
                     {
                         IParameterSymbol? parameter = method.Parameters[i];
-                        var (name, source) = dependencies[i];
-                        if (source is not null)
+                        var name = dependencies[i];
+                        if (name is not null)
                         {
                             if (!isFirst)
                             {
@@ -589,67 +611,75 @@ namespace StrongInject.Generator
 
         private void GenerateDisposeCode(
             StringBuilder methodSource,
-            List<(string variableName, string? disposeActionsName, string? factoryName, InstanceSource source)> orderOfCreation,
+            List<Statement> orderOfCreation,
             bool isAsync,
             InstanceSource? singleInstanceTarget)
         {
             for (int i = orderOfCreation.Count - 1; i >= 0; i--)
             {
-                var (variableName, disposeActionName, factoryVariable, source) = orderOfCreation[i];
-                switch (source)
+                switch (orderOfCreation[i])
                 {
-                    case { Scope: Scope.SingleInstance } when !source.Equals(singleInstanceTarget):
-                        break;
-                    case FactorySource { IsAsync: var isAsyncFactory }:
-                        if (isAsyncFactory)
-                        {
-                            methodSource.Append("await ");
-                        }
-                        methodSource.Append(factoryVariable);
-                        methodSource.Append('.');
-                        methodSource.Append(isAsyncFactory
-                            ? nameof(IAsyncFactory<object>.ReleaseAsync)
-                            : nameof(IFactory<object>.Release));
-                        methodSource.Append('(');
-                        methodSource.Append(variableName);
-                        methodSource.Append(");");
-                        break;
-                    case FactoryMethod { FactoryOfType: var type }:
-                        DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
-                        break;
-                    case Registration { Type: var type }:
-                        DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
-                        break;
-                    case DelegateSource:
-                        if (disposeActionName is not null)
+                    case DelegateCreationStatement
+                    {
+                        Source: { IsAsync: var isAsyncDelegate },
+                        DisposeActionsName: var disposeActionsName,
+                    }:
                         {
                             methodSource.Append("foreach (var disposeAction in ");
-                            methodSource.Append(disposeActionName);
-                            methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
+                            methodSource.Append(disposeActionsName);
+                            methodSource.Append(isAsyncDelegate ? ")await disposeAction();" : ")disposeAction();");
+                            break;
                         }
-                        break;
-                    case WrappedDecoratorInstanceSource { Decorator: { dispose: var dispose } decorator }:
-                        if (dispose)
+                    case DependencyCreationStatement(var variableName, var source, var dependencies):
+                        switch (source)
                         {
-                            switch (decorator)
-                            {
-                                case DecoratorRegistration { Type: var type }:
-                                    DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
-                                    break;
-                                case DecoratorFactoryMethod { DecoratedType: var type }:
-                                    DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
-                                    break;
-                                default: throw new NotImplementedException(decorator.GetType().ToString());
-                            }
+                            case FactorySource { IsAsync: var isAsyncFactory }:
+                                if (isAsyncFactory)
+                                {
+                                    methodSource.Append("await ");
+                                }
+                                methodSource.Append(dependencies[0]);
+                                methodSource.Append('.');
+                                methodSource.Append(isAsyncFactory
+                                    ? nameof(IAsyncFactory<object>.ReleaseAsync)
+                                    : nameof(IFactory<object>.Release));
+                                methodSource.Append('(');
+                                methodSource.Append(variableName);
+                                methodSource.Append(");");
+                                break;
+                            case FactoryMethod { FactoryOfType: var type }:
+                                DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
+                                break;
+                            case Registration { Type: var type }:
+                                DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
+                                break;
+                            case WrappedDecoratorInstanceSource { Decorator: { dispose: var dispose } decorator }:
+                                if (dispose)
+                                {
+                                    switch (decorator)
+                                    {
+                                        case DecoratorRegistration { Type: var type }:
+                                            DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
+                                            break;
+                                        case DecoratorFactoryMethod { DecoratedType: var type }:
+                                            DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
+                                            break;
+                                        default: throw new NotImplementedException(decorator.GetType().ToString());
+                                    }
+                                }
+                                break;
+
+                            case DelegateParameter:
+                            case InstanceFieldOrProperty:
+                            case ArraySource:
+                            case ForwardedInstanceSource:
+                                break;
+                            default: throw new NotImplementedException(source.GetType().ToString());
                         }
                         break;
-
-                    case DelegateParameter:
-                    case InstanceFieldOrProperty:
-                    case ArraySource:
-                    case ForwardedInstanceSource:
+                    case SingleInstanceReferenceStatement:
                         break;
-                    default: throw new NotImplementedException(source.GetType().ToString());
+                    case var statement: throw new NotImplementedException(statement.GetType().ToString());
                 }
             }
         }

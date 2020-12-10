@@ -1,10 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace StrongInject.Generator.Visitors
 {
-    internal class DependencyOrderingVisitor : BaseVisitor<DependencyOrderingVisitor.State>
+    internal class LoweringVisitor : BaseVisitor<LoweringVisitor.State>
     {
         private readonly Dictionary<InstanceSource, string> _existingVariables = new();
         private int _variableCount = 0;
@@ -12,15 +14,14 @@ namespace StrongInject.Generator.Visitors
         private readonly InstanceSourcesScope _containerScope;
         private readonly bool _isSingleInstanceCreation;
         private readonly bool _isAsyncContext;
-        private readonly static List<(string? name, InstanceSource? source)> _emptyList = new();
-        private readonly List<(InstanceSource source, string assignedName, List<(string? name, InstanceSource? source)> dependencies)> _order = new();
+        private readonly List<Statement> _order = new();
 
-        private DependencyOrderingVisitor(
+        private LoweringVisitor(
             InstanceSource target,
             InstanceSourcesScope containerScope,
             bool isSingleInstanceCreation,
             bool isAsyncContext,
-            List<(string, InstanceSource)>? singleInstanceVariablesInScope)
+            IEnumerable<(string, InstanceSource)>? singleInstanceVariablesInScope)
         {
             if (singleInstanceVariablesInScope != null)
             {
@@ -35,15 +36,15 @@ namespace StrongInject.Generator.Visitors
             _isAsyncContext = isAsyncContext;
         }
 
-        public static List<(InstanceSource source, string assignedName, List<(string? name, InstanceSource? source)> dependencies)> OrderDependencies(
+        public static List<Statement> LowerResolution(
             InstanceSource target,
             InstanceSourcesScope currentScope,
             InstanceSourcesScope containerScope,
             bool isSingleInstanceCreation,
             bool isAsyncContext,
-            List<(string, InstanceSource)>? singleInstanceVariablesInScope, out string targetName)
+            IEnumerable<(string, InstanceSource)>? singleInstanceVariablesInScope, out string targetName)
         {
-            var visitor = new DependencyOrderingVisitor(target, containerScope, isSingleInstanceCreation, isAsyncContext, singleInstanceVariablesInScope);
+            var visitor = new LoweringVisitor(target, containerScope, isSingleInstanceCreation, isAsyncContext, singleInstanceVariablesInScope);
             var state = new State { InstanceSourcesScope = currentScope, Dependencies = new() };
             visitor.VisitCore(target, state);
             targetName = state.Dependencies[0].name!;
@@ -65,7 +66,7 @@ namespace StrongInject.Generator.Visitors
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
             {
                 name = GenerateName(state);
-                _order.Add((source, name, _emptyList));
+                _order.Add(new SingleInstanceReferenceStatement(name, source));
                 _existingVariables.Add(source, name);
                 state.Dependencies.Add((name, source));
                 return false;
@@ -98,7 +99,16 @@ namespace StrongInject.Generator.Visitors
 
         protected override void AfterVisit(InstanceSource source, State state)
         {
-            _order.Add((source, state.Name, state.Dependencies));
+            Statement statement;
+            if (source is DelegateSource delegateSource)
+            {
+                statement = new DelegateCreationStatement(state.Name, delegateSource, state.Dependencies.ToImmutableArray()!);
+            }
+            else
+            {
+                statement = new DependencyCreationStatement(state.Name, source, state.Dependencies.Select(x => x.name).ToImmutableArray());
+            }
+            _order.Add(statement);
             if (source.Scope != Scope.InstancePerDependency)
                 _existingVariables.Add(source, state.Name);
         }
