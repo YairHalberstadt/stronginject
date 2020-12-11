@@ -10,7 +10,8 @@ namespace StrongInject.Generator
     internal sealed record DelegateCreationStatement(
         string VariableName,
         DelegateSource Source,
-        ImmutableArray<(string name, InstanceSource source)> SingleInstanceVariablesCreatedEarly) : Statement()
+        ImmutableArray<Operation> InternalOperations,
+        string InternalTargetName) : Statement()
     {
         public string DisposeActionsName { get; } = "disposeActions_" + VariableName;
     }

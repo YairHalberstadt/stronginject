@@ -16543,8 +16543,7 @@ partial class Container
         var _0_1 = GetSingleInstanceField0();
         global::System.Func<global::C> _0_2 = () =>
         {
-            var _1_1 = GetSingleInstanceField0();
-            var _1_0 = new global::C(b1: _1_1, b2: _1_1);
+            var _1_0 = new global::C(b1: _0_1, b2: _0_1);
             return _1_0;
         };
         var _0_0 = new global::A(b: _0_1, c: _0_2);
@@ -16567,8 +16566,7 @@ partial class Container
         var _0_1 = GetSingleInstanceField0();
         global::System.Func<global::C> _0_2 = () =>
         {
-            var _1_1 = GetSingleInstanceField0();
-            var _1_0 = new global::C(b1: _1_1, b2: _1_1);
+            var _1_0 = new global::C(b1: _0_1, b2: _0_1);
             return _1_0;
         };
         var _0_0 = new global::A(b: _0_1, c: _0_2);

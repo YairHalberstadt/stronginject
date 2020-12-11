@@ -144,17 +144,23 @@ namespace StrongInject.Generator
                     var variableCreationSource = new StringBuilder();
                     variableCreationSource.Append("if(Disposed)");
                     ThrowObjectDisposedException(variableCreationSource);
-                    var resultVariableName = CreateVariables(
-                        _containerScope[target],
+
+                    var ops = LoweringVisitor.LowerResolution(
+                        target: _containerScope[target],
+                        containerScope: _containerScope,
+                        disposalLowerer: CreateDisposalLowerer(isAsync),
+                        isSingleInstanceCreation: false,
+                        isAsyncContext: isAsync,
+                        out var resultVariableName);
+
+                    CreateVariables(
+                        ops,
                         variableCreationSource,
                         _containerScope,
-                        isSingleInstanceCreation: false,
-                        disposeAsynchronously: isAsync,
-                        isAsyncContext: isAsync,
-                        requiringDisposal: out var requiringDisposal);
+                        isAsyncContext: isAsync);
 
                     var disposalSource = new StringBuilder();
-                    GenerateDisposeCode(disposalSource, requiringDisposal, isAsync, singleInstanceTarget: null);
+                    GenerateDisposeCode(disposalSource, ops);
 
                     runMethodSource.Append(variableCreationSource);
                     runMethodSource.Append(runMethodSymbol.TypeParameters[0].Name);
@@ -265,14 +271,20 @@ namespace StrongInject.Generator
                 methodSource.Append(isAsync ? ".WaitAsync();" : ".Wait();");
                 methodSource.Append("try{if(this.Disposed)");
                 ThrowObjectDisposedException(methodSource);
-                var variableName = CreateVariables(
-                    instanceSource,
+
+                var ops = LoweringVisitor.LowerResolution(
+                    target: instanceSource,
+                    containerScope: _containerScope,
+                    disposalLowerer: CreateDisposalLowerer(_implementsAsyncContainer),
+                    isSingleInstanceCreation: true,
+                    isAsyncContext: isAsync,
+                    out var variableName);
+                CreateVariables(
+                    ops,
                     methodSource,
                     _containerScope,
-                    isSingleInstanceCreation: true,
-                    disposeAsynchronously: _implementsAsyncContainer,
-                    isAsyncContext: isAsync,
-                    requiringDisposal: out var requiringDisposal);
+                    isAsyncContext: isAsync);
+
                 methodSource.Append("this.");
                 methodSource.Append(singleInstanceFieldName);
                 methodSource.Append('=');
@@ -284,7 +296,7 @@ namespace StrongInject.Generator
                 if (_implementsAsyncContainer)
                     methodSource.Append("async");
                 methodSource.Append("() => {");
-                GenerateDisposeCode(methodSource, requiringDisposal, _implementsAsyncContainer, instanceSource);
+                GenerateDisposeCode(methodSource, ops);
                 methodSource.Append("};");
                 methodSource.Append("}finally{this.");
                 methodSource.Append(lockName);
@@ -296,42 +308,27 @@ namespace StrongInject.Generator
             return (singleInstanceMethod.name, singleInstanceMethod.isAsync);
         }
 
-        private string CreateVariables(
-            InstanceSource target,
+        private DisposalLowerer CreateDisposalLowerer(bool disposeAsynchronously)
+            => new DisposalLowerer(disposeAsynchronously, _wellKnownTypes, _reportDiagnostic, _containerDeclarationLocation);
+
+        private void CreateVariables(
+            ImmutableArray<Operation> operations,
             StringBuilder methodSource,
             InstanceSourcesScope instanceSourcesScope,
-            bool isSingleInstanceCreation,
-            bool disposeAsynchronously,
-            bool isAsyncContext,
-            out List<Statement> requiringDisposal,
-            IEnumerable<(string, InstanceSource)>? singleInstanceVariablesInScope = null)
+            bool isAsyncContext)
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
-            var order = LoweringVisitor.LowerResolution(
-                target: target,
-                currentScope: instanceSourcesScope,
-                containerScope: _containerScope,
-                isSingleInstanceCreation: isSingleInstanceCreation,
-                isAsyncContext: isAsyncContext,
-                singleInstanceVariablesInScope: singleInstanceVariablesInScope,
-                out var targetName);
-            requiringDisposal = new();
-
-            foreach (var statement in order)
+            foreach (var operation in operations)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
-                EmitStatement(statement, out var supressDisposal);
-                if (!supressDisposal)
-                    requiringDisposal.Add(statement);
+                EmitStatement(operation);
 
             }
-            return targetName;
 
-            void EmitStatement(Statement statement, out bool supressDisposal)
+            void EmitStatement(Operation operation)
             {
-                supressDisposal = false;
-                switch (statement)
+                switch (operation.Statement)
                 {
                     case SingleInstanceReferenceStatement(var variableName, var source):
                         {
@@ -353,20 +350,20 @@ namespace StrongInject.Generator
                             Parameters: var parameters,
                             ReturnType: var returnType
                         } source,
-                        SingleInstanceVariablesCreatedEarly: var singleInstanceVariablesCreatedEarly,
+                        InternalOperations: var internalOps,
+                        InternalTargetName: var internalTargetName,
                         DisposeActionsName: var disposeActionsName
                     }:
-                        var disposeActionsIndex = methodSource.Length;
-
-                        var disposeActionsSection = methodSource.BeginRevertableSection();
-
-                        methodSource.Append("var ");
-                        methodSource.Append(disposeActionsName);
-                        methodSource.Append(disposeAsynchronously
-                            ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
-                            : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
-
-                        disposeActionsSection.EndSection();
+                        var isDisposed = operation.Disposal is not null;
+                        var disposeAsynchronously = operation.Disposal is { IsAsync: true };
+                        if (isDisposed)
+                        {
+                            methodSource.Append("var ");
+                            methodSource.Append(disposeActionsName);
+                            methodSource.Append(disposeAsynchronously
+                                ? "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();"
+                                : "=new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();");
+                        }
 
                         methodSource.Append(delegateType.FullName());
                         methodSource.Append(' ');
@@ -383,48 +380,25 @@ namespace StrongInject.Generator
 
                         methodSource.Append(")=>{");
 
-                        var newSingleInstanceVariablesInScope = (singleInstanceVariablesInScope, singleInstanceVariablesCreatedEarly) switch
-                        {
-                            (null, { IsEmpty: true }) => null,
-                            (null, var b) => b,
-                            (var a, { IsEmpty: true }) => a,
-                            (var a, var b) => a.Concat(b),
-                        };
-
-                        var variable = CreateVariables(
-                            newScope[returnType],
+                        CreateVariables(
+                            internalOps,
                             methodSource,
                             newScope,
-                            isSingleInstanceCreation: false,
-                            disposeAsynchronously: disposeAsynchronously,
-                            isAsyncContext: isAsync,
-                            requiringDisposal: out var innerRequiringDisposal,
-                            newSingleInstanceVariablesInScope);
+                            isAsyncContext: isAsync);
 
-                        var disposeSection = methodSource.BeginRevertableSection();
-
-                        methodSource.Append(disposeActionsName);
-                        methodSource.Append(".Add(");
-                        if (disposeAsynchronously)
-                            methodSource.Append("async");
-                        methodSource.Append("() => {");
-
-                        var beforeGenerateDisposeCodeLength = methodSource.Length;
-                        GenerateDisposeCode(methodSource, innerRequiringDisposal, disposeAsynchronously, null);
-                        if (beforeGenerateDisposeCodeLength == methodSource.Length)
+                        if (isDisposed)
                         {
-                            disposeSection.EndSection();
-                            disposeSection.Revert();
-                            disposeActionsSection.Revert();
-                            supressDisposal = true;
-                        }
-                        else
-                        {
+                            methodSource.Append(disposeActionsName);
+                            methodSource.Append(".Add(");
+                            if (disposeAsynchronously)
+                                methodSource.Append("async");
+                            methodSource.Append("() => {");
+                            GenerateDisposeCode(methodSource, internalOps);
                             methodSource.Append("});");
                         }
 
                         methodSource.Append("return ");
-                        methodSource.Append(variable);
+                        methodSource.Append(internalTargetName);
                         methodSource.Append(";};");
                         break;
                     case DependencyCreationStatement(var variableName, var source, var dependencies):
@@ -526,7 +500,7 @@ namespace StrongInject.Generator
                         }
                         break;
                     default:
-                        throw new NotImplementedException(statement.GetType().ToString());
+                        throw new NotImplementedException(operation.GetType().ToString());
                 }
 
                 void GenerateMethodCall(string variableName, IMethodSymbol method, bool isAsync, ImmutableArray<string?> dependencies)
@@ -611,127 +585,76 @@ namespace StrongInject.Generator
 
         private void GenerateDisposeCode(
             StringBuilder methodSource,
-            List<Statement> orderOfCreation,
-            bool isAsync,
-            InstanceSource? singleInstanceTarget)
+            ImmutableArray<Operation> operations)
         {
-            for (int i = orderOfCreation.Count - 1; i >= 0; i--)
+            for (int i = operations.Length - 1; i >= 0; i--)
             {
-                switch (orderOfCreation[i])
+                switch (operations[i].Disposal)
                 {
-                    case DelegateCreationStatement
+                    case Disposal.DelegateDisposal
                     {
-                        Source: { IsAsync: var isAsyncDelegate },
                         DisposeActionsName: var disposeActionsName,
+                        IsAsync: var isAsync,
                     }:
                         {
                             methodSource.Append("foreach (var disposeAction in ");
                             methodSource.Append(disposeActionsName);
-                            methodSource.Append(isAsyncDelegate ? ")await disposeAction();" : ")disposeAction();");
+                            methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
                             break;
                         }
-                    case DependencyCreationStatement(var variableName, var source, var dependencies):
-                        switch (source)
+                    case Disposal.FactoryDisposal { VariableName: var variableName, FactoryName: var factoryName, IsAsync: var isAsync }:
+                        if (isAsync)
                         {
-                            case FactorySource { IsAsync: var isAsyncFactory }:
-                                if (isAsyncFactory)
-                                {
-                                    methodSource.Append("await ");
-                                }
-                                methodSource.Append(dependencies[0]);
-                                methodSource.Append('.');
-                                methodSource.Append(isAsyncFactory
-                                    ? nameof(IAsyncFactory<object>.ReleaseAsync)
-                                    : nameof(IFactory<object>.Release));
-                                methodSource.Append('(');
-                                methodSource.Append(variableName);
-                                methodSource.Append(");");
-                                break;
-                            case FactoryMethod { FactoryOfType: var type }:
-                                DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
-                                break;
-                            case Registration { Type: var type }:
-                                DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
-                                break;
-                            case WrappedDecoratorInstanceSource { Decorator: { dispose: var dispose } decorator }:
-                                if (dispose)
-                                {
-                                    switch (decorator)
-                                    {
-                                        case DecoratorRegistration { Type: var type }:
-                                            DisposeExactTypeKnown(methodSource, isAsync, variableName, type);
-                                            break;
-                                        case DecoratorFactoryMethod { DecoratedType: var type }:
-                                            DisposeExactTypeNotKnown(methodSource, isAsync, variableName, type);
-                                            break;
-                                        default: throw new NotImplementedException(decorator.GetType().ToString());
-                                    }
-                                }
-                                break;
-
-                            case DelegateParameter:
-                            case InstanceFieldOrProperty:
-                            case ArraySource:
-                            case ForwardedInstanceSource:
-                                break;
-                            default: throw new NotImplementedException(source.GetType().ToString());
+                            methodSource.Append("await ");
+                        }
+                        methodSource.Append(factoryName);
+                        methodSource.Append('.');
+                        methodSource.Append(isAsync
+                            ? nameof(IAsyncFactory<object>.ReleaseAsync)
+                            : nameof(IFactory<object>.Release));
+                        methodSource.Append('(');
+                        methodSource.Append(variableName);
+                        methodSource.Append(");");
+                        break;
+                    case Disposal.DisposalHelpers { VariableName: var variableName, IsAsync: var isAsync }:
+                        if (isAsync)
+                        {
+                            methodSource.Append("await ");
+                        }
+                        methodSource.Append(_wellKnownTypes.Helpers.FullName());
+                        methodSource.Append('.');
+                        methodSource.Append(isAsync
+                            ? nameof(Helpers.DisposeAsync)
+                            : nameof(Helpers.Dispose));
+                        methodSource.Append('(');
+                        methodSource.Append(variableName);
+                        methodSource.Append(");");
+                        break;
+                    case Disposal.IDisposable { VariableName: var variableName, IsAsync: var isAsync }:
+                        if (isAsync)
+                        {
+                            methodSource.Append("await ((");
+                            methodSource.Append(_wellKnownTypes.IAsyncDisposable.FullName());
+                            methodSource.Append(')');
+                            methodSource.Append(variableName);
+                            methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + '(');
+                            methodSource.Append(");");
+                        }
+                        else
+                        {
+                            methodSource.Append("((");
+                            methodSource.Append(_wellKnownTypes.IDisposable.FullName());
+                            methodSource.Append(')');
+                            methodSource.Append(variableName);
+                            methodSource.Append(")." + nameof(IDisposable.Dispose) + '(');
+                            methodSource.Append(");");
                         }
                         break;
-                    case SingleInstanceReferenceStatement:
+                    case null:
                         break;
-                    case var statement: throw new NotImplementedException(statement.GetType().ToString());
+                    case var disposal:
+                        throw new NotImplementedException(disposal.GetType().ToString());
                 }
-            }
-        }
-
-        private void DisposeExactTypeNotKnown(StringBuilder methodSource, bool isAsync, string? variableName, ITypeSymbol subTypeOf)
-        {
-            if ((subTypeOf.IsSealed || subTypeOf.IsValueType) && subTypeOf.TypeKind != TypeKind.TypeParameter)
-            {
-                DisposeExactTypeKnown(methodSource, isAsync, variableName, subTypeOf);
-                return;
-            }
-
-            if (isAsync)
-            {
-                methodSource.Append("await ");
-            }
-            methodSource.Append(_wellKnownTypes.Helpers.FullName());
-            methodSource.Append('.');
-            methodSource.Append(isAsync
-                ? nameof(Helpers.DisposeAsync)
-                : nameof(Helpers.Dispose));
-            methodSource.Append('(');
-            methodSource.Append(variableName);
-            methodSource.Append(");");
-        }
-
-        private void DisposeExactTypeKnown(StringBuilder methodSource, bool isAsync, string? variableName, ITypeSymbol type)
-        {
-            var isAsyncDisposable = type.AllInterfaces.Contains(_wellKnownTypes.IAsyncDisposable);
-            if (isAsync && isAsyncDisposable)
-            {
-                methodSource.Append("await ((");
-                methodSource.Append(_wellKnownTypes.IAsyncDisposable.FullName());
-                methodSource.Append(')');
-                methodSource.Append(variableName);
-                methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + '(');
-                methodSource.Append(");");
-            }
-            else if (type.AllInterfaces.Contains(_wellKnownTypes.IDisposable))
-            {
-                methodSource.Append("((");
-                methodSource.Append(_wellKnownTypes.IDisposable.FullName());
-                methodSource.Append(')');
-                methodSource.Append(variableName);
-                methodSource.Append(")." + nameof(IDisposable.Dispose) + '(');
-                methodSource.Append(");");
-            }
-            else if (isAsyncDisposable)
-            {
-                _reportDiagnostic(WarnIAsyncDisposableInSynchronousResolution(
-                    type,
-                    _containerDeclarationLocation));
             }
         }
 
@@ -789,20 +712,6 @@ if (disposed != 0) return;");
             methodSource.Append("(nameof(");
             methodSource.Append(_container.NameWithTypeParameters());
             methodSource.Append("));");
-        }
-
-        private static Diagnostic WarnIAsyncDisposableInSynchronousResolution(ITypeSymbol type, Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI1301",
-                    "Cannot call asynchronous dispose for Type in implementation of synchronous container",
-                    "Cannot call asynchronous dispose for '{0}' in implementation of synchronous container",
-                    "StrongInject",
-                    DiagnosticSeverity.Warning,
-                    isEnabledByDefault: true),
-                location,
-                type);
         }
     }
 }
