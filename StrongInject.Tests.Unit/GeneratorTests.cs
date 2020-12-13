@@ -10033,15 +10033,6 @@ partial class Container2<T1>
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
         T1 _0_0;
         _0_0 = this.Resolve<T1>();
-        try
-        {
-        }
-        catch
-        {
-            global::StrongInject.Helpers.Dispose(_0_0);
-            throw;
-        }
-
         TResult result;
         try
         {
@@ -10061,15 +10052,6 @@ partial class Container2<T1>
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
         T1 _0_0;
         _0_0 = this.Resolve<T1>();
-        try
-        {
-        }
-        catch
-        {
-            global::StrongInject.Helpers.Dispose(_0_0);
-            throw;
-        }
-
         return new global::StrongInject.Owned<T1>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -10529,15 +10511,6 @@ partial class Container2<T1>
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
         T1 _0_0;
         _0_0 = this.Resolve<T1>();
-        try
-        {
-        }
-        catch
-        {
-            global::StrongInject.Helpers.Dispose(_0_0);
-            throw;
-        }
-
         TResult result;
         try
         {
@@ -10557,15 +10530,6 @@ partial class Container2<T1>
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
         T1 _0_0;
         _0_0 = this.Resolve<T1>();
-        try
-        {
-        }
-        catch
-        {
-            global::StrongInject.Helpers.Dispose(_0_0);
-            throw;
-        }
-
         return new global::StrongInject.Owned<T1>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
