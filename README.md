@@ -965,8 +965,9 @@ Since `IFactory<T>` is free to create a new instance every time or return a sing
 Single Instance dependencies and their dependencies are disposed when the container is disposed. If the container implements `IAsyncDisposable` it must be disposed asynchronously even if it also implements `IDisposable`.
 
 Note that dependencies may not be disposed in the following circumstances:
-1. Resolution throws
+1. Resolution of a SingleInstance dependency throws.
 2. Disposal of other dependencies throws.
+When either of these happen it is most likely best to restart the application anyway, as a safe recovery is very unlikely.
 
 ### Thread Safety
 
