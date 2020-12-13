@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace StrongInject.Generator
@@ -13,6 +14,8 @@ namespace StrongInject.Generator
         INamedTypeSymbol IRequiresAsyncInitialization,
         INamedTypeSymbol IDisposable,
         INamedTypeSymbol IAsyncDisposable,
+        INamedTypeSymbol ConcurrentBagOfAction,
+        INamedTypeSymbol ConcurrentBagOfFuncTask,
         INamedTypeSymbol Owned,
         INamedTypeSymbol AsyncOwned,
         INamedTypeSymbol RegisterAttribute,
@@ -37,6 +40,17 @@ namespace StrongInject.Generator
             var iRequiresAsyncInitialization = compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), reportDiagnostic);
             var iDisposable = compilation.GetTypeOrReport(typeof(IDisposable), reportDiagnostic);
             var iAsyncDisposable = compilation.GetTypeOrReport("System.IAsyncDisposable", reportDiagnostic);
+            var action = compilation.GetTypeOrReport(typeof(Action), reportDiagnostic);
+            var concurrentBagOfAction = action is null
+                ? null
+                : compilation.GetTypeOrReport(typeof(ConcurrentBag<>), reportDiagnostic)?.Construct(action);
+            var valueTask = compilation.GetTypeOrReport(typeof(ValueTask), reportDiagnostic);
+            var funcOfTask = valueTask is null
+                ? null
+                : compilation.GetTypeOrReport(typeof(Func<>), reportDiagnostic)?.Construct(valueTask);
+            var concurrentBagOfFuncTask = funcOfTask is null
+                ? null
+                : compilation.GetTypeOrReport(typeof(ConcurrentBag<>), reportDiagnostic)?.Construct(funcOfTask);
             var owned = compilation.GetTypeOrReport(typeof(Owned<>), reportDiagnostic);
             var asyncOwned = compilation.GetTypeOrReport("StrongInject.AsyncOwned`1", reportDiagnostic);
             var registerAttribute = compilation.GetTypeOrReport(typeof(RegisterAttribute), reportDiagnostic);
@@ -59,6 +73,8 @@ namespace StrongInject.Generator
                 || iRequiresAsyncInitialization is null
                 || iDisposable is null
                 || iAsyncDisposable is null
+                || concurrentBagOfAction is null
+                || concurrentBagOfFuncTask is null
                 || owned is null
                 || asyncOwned is null
                 || registerAttribute is null
@@ -86,6 +102,8 @@ namespace StrongInject.Generator
                 IRequiresAsyncInitialization: iRequiresAsyncInitialization,
                 IDisposable: iDisposable,
                 IAsyncDisposable: iAsyncDisposable,
+                ConcurrentBagOfAction: concurrentBagOfAction,
+                ConcurrentBagOfFuncTask: concurrentBagOfFuncTask,
                 Owned: owned,
                 AsyncOwned: asyncOwned,
                 RegisterAttribute: registerAttribute,

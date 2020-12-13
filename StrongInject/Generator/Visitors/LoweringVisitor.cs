@@ -85,7 +85,7 @@ namespace StrongInject.Generator.Visitors
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
             {
                 name = GenerateName(state);
-                AddStatementToOrder(new SingleInstanceReferenceStatement(name, source));
+                _order.Add(_disposalLowerer.AddDisposal(new SingleInstanceReferenceStatement(name, source)));
                 _existingVariables.Add(source, name);
                 state.Dependencies.Add((name, source));
                 return false;
@@ -96,11 +96,6 @@ namespace StrongInject.Generator.Visitors
                 return false;
             }
             return true;
-        }
-
-        private void AddStatementToOrder(Statement statement)
-        {
-            _order.Add(_disposalLowerer.AddDisposal(statement));
         }
 
         private string GenerateName(State state)
@@ -123,7 +118,7 @@ namespace StrongInject.Generator.Visitors
 
         protected override void AfterVisit(InstanceSource source, State state)
         {
-            Statement statement;
+            Operation operation;
             if (source is DelegateSource delegateSource)
             {
                 var order = LowerResolution(
@@ -135,18 +130,33 @@ namespace StrongInject.Generator.Visitors
                     isAsyncContext: delegateSource.IsAsync,
                     singleInstanceVariablesInScope: _existingVariables.Where(x => x.Key.Scope == Scope.SingleInstance),
                     targetName: out var targetName);
-                statement = new DelegateCreationStatement(state.Name, delegateSource, order, targetName);
+                var delegateCreationStatement = new DelegateCreationStatement(state.Name, delegateSource, order, targetName);
+                operation = _disposalLowerer.AddDisposal(delegateCreationStatement);
+                if (operation.Disposal is Disposal.DelegateDisposal { DisposeActionsType: var disposeActionsType })
+                {
+                    _order.Add(_disposalLowerer.AddDisposal(new DisposeActionsCreationStatement(delegateCreationStatement.DisposeActionsName, disposeActionsType)));
+                }
             }
             else
             {
-                statement = new DependencyCreationStatement(
-                    state.Name,
-                    source,
-                    state.Dependencies.Select(x => x.name).ToImmutableArray());
+                operation = _disposalLowerer.AddDisposal(
+                    new DependencyCreationStatement(
+                        state.Name,
+                        source,
+                        state.Dependencies.Select(x => x.name).ToImmutableArray()));
             }
-            AddStatementToOrder(statement);
+
+            _order.Add(operation);
+
             if (source.Scope != Scope.InstancePerDependency)
+            {
                 _existingVariables.Add(source, state.Name);
+            }
+
+            if (source is Registration { RequiresInitialization: true } or WrappedDecoratorInstanceSource { Decorator: DecoratorRegistration { RequiresInitialization: true } })
+            {
+                _order.Add(_disposalLowerer.AddDisposal(new InitializationStatement(state.Name, source.IsAsync)));
+            }
         }
 
         public override void Visit(DelegateSource delegateSource, State state)

@@ -60,10 +60,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
-        var _0_3 = new global::D(c: _0_2);
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        global::C _0_2;
+        global::D _0_3;
+        global::B _0_1;
+        global::A _0_0;
+        _0_2 = new global::C();
+        _0_3 = new global::D(c: _0_2);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         TResult result;
         try
         {
@@ -80,10 +84,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
-        var _0_3 = new global::D(c: _0_2);
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        global::C _0_2;
+        global::D _0_3;
+        global::B _0_1;
+        global::A _0_0;
+        _0_2 = new global::C();
+        _0_3 = new global::D(c: _0_2);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -140,11 +148,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::C();
-        var _0_2 = (global::IC)_0_3;
-        var _0_4 = new global::D(c: _0_3);
-        var _0_1 = new global::B(c: _0_2, d: _0_4);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        global::C _0_3;
+        global::IC _0_2;
+        global::D _0_4;
+        global::B _0_1;
+        global::A _0_0;
+        _0_3 = new global::C();
+        _0_2 = (global::IC)_0_3;
+        _0_4 = new global::D(c: _0_3);
+        _0_1 = new global::B(c: _0_2, d: _0_4);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         TResult result;
         try
         {
@@ -161,11 +174,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::C();
-        var _0_2 = (global::IC)_0_3;
-        var _0_4 = new global::D(c: _0_3);
-        var _0_1 = new global::B(c: _0_2, d: _0_4);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        global::C _0_3;
+        global::IC _0_2;
+        global::D _0_4;
+        global::B _0_1;
+        global::A _0_0;
+        _0_3 = new global::C();
+        _0_2 = (global::IC)_0_3;
+        _0_4 = new global::D(c: _0_3);
+        _0_1 = new global::B(c: _0_2, d: _0_4);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -229,12 +247,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
+        global::C _0_2;
+        global::D _0_3;
+        global::B _0_1;
+        global::A _0_0;
+        _0_2 = new global::C();
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_2).InitializeAsync();
-        var _0_3 = new global::D(c: _0_2);
+        _0_3 = new global::D(c: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_3).InitializeAsync();
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         TResult result;
         try
@@ -252,12 +274,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
+        global::C _0_2;
+        global::D _0_3;
+        global::B _0_1;
+        global::A _0_0;
+        _0_2 = new global::C();
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_2).InitializeAsync();
-        var _0_3 = new global::D(c: _0_2);
+        _0_3 = new global::D(c: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_3).InitializeAsync();
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
@@ -329,18 +355,55 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = new global::C();
-        var _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_9 = new global::D(c: _0_10);
-        var _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_5 = new global::B(c: _0_6, d: _0_7);
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = new global::A(b: _0_3, c: _0_10);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::C _0_6;
+        global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_11;
+        global::CFactoryTarget _0_10;
+        global::D _0_9;
+        global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_8;
+        global::DFactoryTarget _0_7;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_4;
+        global::BFactoryTarget _0_3;
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_6 = new global::C();
+        _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
+        _0_10 = await _0_11.CreateAsync();
+        try
+        {
+            _0_9 = new global::D(c: _0_10);
+            _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_5 = new global::B(c: _0_6, d: _0_7);
+                _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
+                _0_3 = await _0_4.CreateAsync();
+                try
+                {
+                    _0_2 = new global::A(b: _0_3, c: _0_10);
+                    _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+                    _0_0 = await _0_1.CreateAsync();
+                }
+                catch
+                {
+                    await _0_4.ReleaseAsync(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            await _0_11.ReleaseAsync(_0_10);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -361,18 +424,55 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = new global::C();
-        var _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_9 = new global::D(c: _0_10);
-        var _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_5 = new global::B(c: _0_6, d: _0_7);
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = new global::A(b: _0_3, c: _0_10);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::C _0_6;
+        global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_11;
+        global::CFactoryTarget _0_10;
+        global::D _0_9;
+        global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_8;
+        global::DFactoryTarget _0_7;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_4;
+        global::BFactoryTarget _0_3;
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_6 = new global::C();
+        _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
+        _0_10 = await _0_11.CreateAsync();
+        try
+        {
+            _0_9 = new global::D(c: _0_10);
+            _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_5 = new global::B(c: _0_6, d: _0_7);
+                _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
+                _0_3 = await _0_4.CreateAsync();
+                try
+                {
+                    _0_2 = new global::A(b: _0_3, c: _0_10);
+                    _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+                    _0_0 = await _0_1.CreateAsync();
+                }
+                catch
+                {
+                    await _0_4.ReleaseAsync(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            await _0_11.ReleaseAsync(_0_10);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -432,12 +532,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
-        var _0_4 = new global::C();
-        var _0_3 = new global::D(c: _0_4);
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_5 = new global::C();
-        var _0_0 = new global::A(b: _0_1, c: _0_5);
+        global::C _0_2;
+        global::C _0_4;
+        global::D _0_3;
+        global::B _0_1;
+        global::C _0_5;
+        global::A _0_0;
+        _0_2 = new global::C();
+        _0_4 = new global::C();
+        _0_3 = new global::D(c: _0_4);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_5 = new global::C();
+        _0_0 = new global::A(b: _0_1, c: _0_5);
         TResult result;
         try
         {
@@ -454,12 +560,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
-        var _0_4 = new global::C();
-        var _0_3 = new global::D(c: _0_4);
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_5 = new global::C();
-        var _0_0 = new global::A(b: _0_1, c: _0_5);
+        global::C _0_2;
+        global::C _0_4;
+        global::D _0_3;
+        global::B _0_1;
+        global::C _0_5;
+        global::A _0_0;
+        _0_2 = new global::C();
+        _0_4 = new global::C();
+        _0_3 = new global::D(c: _0_4);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_5 = new global::C();
+        _0_0 = new global::A(b: _0_1, c: _0_5);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -516,14 +628,22 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::C();
-        var _0_2 = (global::IC)_0_3;
-        var _0_5 = new global::C();
-        var _0_4 = new global::D(c: _0_5);
-        var _0_1 = new global::B(c: _0_2, d: _0_4);
-        var _0_7 = new global::C();
-        var _0_6 = (global::IC)_0_7;
-        var _0_0 = new global::A(b: _0_1, c: _0_6);
+        global::C _0_3;
+        global::IC _0_2;
+        global::C _0_5;
+        global::D _0_4;
+        global::B _0_1;
+        global::C _0_7;
+        global::IC _0_6;
+        global::A _0_0;
+        _0_3 = new global::C();
+        _0_2 = (global::IC)_0_3;
+        _0_5 = new global::C();
+        _0_4 = new global::D(c: _0_5);
+        _0_1 = new global::B(c: _0_2, d: _0_4);
+        _0_7 = new global::C();
+        _0_6 = (global::IC)_0_7;
+        _0_0 = new global::A(b: _0_1, c: _0_6);
         TResult result;
         try
         {
@@ -540,14 +660,22 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::C();
-        var _0_2 = (global::IC)_0_3;
-        var _0_5 = new global::C();
-        var _0_4 = new global::D(c: _0_5);
-        var _0_1 = new global::B(c: _0_2, d: _0_4);
-        var _0_7 = new global::C();
-        var _0_6 = (global::IC)_0_7;
-        var _0_0 = new global::A(b: _0_1, c: _0_6);
+        global::C _0_3;
+        global::IC _0_2;
+        global::C _0_5;
+        global::D _0_4;
+        global::B _0_1;
+        global::C _0_7;
+        global::IC _0_6;
+        global::A _0_0;
+        _0_3 = new global::C();
+        _0_2 = (global::IC)_0_3;
+        _0_5 = new global::C();
+        _0_4 = new global::D(c: _0_5);
+        _0_1 = new global::B(c: _0_2, d: _0_4);
+        _0_7 = new global::C();
+        _0_6 = (global::IC)_0_7;
+        _0_0 = new global::A(b: _0_1, c: _0_6);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -611,13 +739,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
+        global::C _0_2;
+        global::D _0_3;
+        global::B _0_1;
+        global::B _0_4;
+        global::A _0_0;
+        _0_2 = new global::C();
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_2).InitializeAsync();
-        var _0_3 = new global::D(c: _0_2);
+        _0_3 = new global::D(c: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_3).InitializeAsync();
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_4 = new global::B(c: _0_2, d: _0_3);
-        var _0_0 = new global::A(b: _0_1, c: _0_2, b1: _0_4);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_4 = new global::B(c: _0_2, d: _0_3);
+        _0_0 = new global::A(b: _0_1, c: _0_2, b1: _0_4);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         TResult result;
         try
@@ -635,13 +768,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::C();
+        global::C _0_2;
+        global::D _0_3;
+        global::B _0_1;
+        global::B _0_4;
+        global::A _0_0;
+        _0_2 = new global::C();
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_2).InitializeAsync();
-        var _0_3 = new global::D(c: _0_2);
+        _0_3 = new global::D(c: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_3).InitializeAsync();
-        var _0_1 = new global::B(c: _0_2, d: _0_3);
-        var _0_4 = new global::B(c: _0_2, d: _0_3);
-        var _0_0 = new global::A(b: _0_1, c: _0_2, b1: _0_4);
+        _0_1 = new global::B(c: _0_2, d: _0_3);
+        _0_4 = new global::B(c: _0_2, d: _0_3);
+        _0_0 = new global::A(b: _0_1, c: _0_2, b1: _0_4);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
@@ -713,23 +851,89 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = new global::C();
-        var _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_9 = new global::D(c: _0_10);
-        var _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_5 = new global::B(c: _0_6, d: _0_7);
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_12 = await _0_11.CreateAsync();
-        var _0_16 = await _0_11.CreateAsync();
-        var _0_15 = new global::D(c: _0_16);
-        var _0_14 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_15;
-        var _0_13 = await _0_14.CreateAsync();
-        var _0_2 = new global::A(b: _0_3, c: _0_12, d: _0_13);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::C _0_6;
+        global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_11;
+        global::CFactoryTarget _0_10;
+        global::D _0_9;
+        global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_8;
+        global::DFactoryTarget _0_7;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_4;
+        global::BFactoryTarget _0_3;
+        global::CFactoryTarget _0_12;
+        global::CFactoryTarget _0_16;
+        global::D _0_15;
+        global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_14;
+        global::DFactoryTarget _0_13;
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_6 = new global::C();
+        _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
+        _0_10 = await _0_11.CreateAsync();
+        try
+        {
+            _0_9 = new global::D(c: _0_10);
+            _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_5 = new global::B(c: _0_6, d: _0_7);
+                _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
+                _0_3 = await _0_4.CreateAsync();
+                try
+                {
+                    _0_12 = await _0_11.CreateAsync();
+                    try
+                    {
+                        _0_16 = await _0_11.CreateAsync();
+                        try
+                        {
+                            _0_15 = new global::D(c: _0_16);
+                            _0_14 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_15;
+                            _0_13 = await _0_14.CreateAsync();
+                            try
+                            {
+                                _0_2 = new global::A(b: _0_3, c: _0_12, d: _0_13);
+                                _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+                                _0_0 = await _0_1.CreateAsync();
+                            }
+                            catch
+                            {
+                                await _0_14.ReleaseAsync(_0_13);
+                                throw;
+                            }
+                        }
+                        catch
+                        {
+                            await _0_11.ReleaseAsync(_0_16);
+                            throw;
+                        }
+                    }
+                    catch
+                    {
+                        await _0_11.ReleaseAsync(_0_12);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    await _0_4.ReleaseAsync(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            await _0_11.ReleaseAsync(_0_10);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -753,23 +957,89 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = new global::C();
-        var _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_9 = new global::D(c: _0_10);
-        var _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_5 = new global::B(c: _0_6, d: _0_7);
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_12 = await _0_11.CreateAsync();
-        var _0_16 = await _0_11.CreateAsync();
-        var _0_15 = new global::D(c: _0_16);
-        var _0_14 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_15;
-        var _0_13 = await _0_14.CreateAsync();
-        var _0_2 = new global::A(b: _0_3, c: _0_12, d: _0_13);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::C _0_6;
+        global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_11;
+        global::CFactoryTarget _0_10;
+        global::D _0_9;
+        global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_8;
+        global::DFactoryTarget _0_7;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_4;
+        global::BFactoryTarget _0_3;
+        global::CFactoryTarget _0_12;
+        global::CFactoryTarget _0_16;
+        global::D _0_15;
+        global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_14;
+        global::DFactoryTarget _0_13;
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_6 = new global::C();
+        _0_11 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_6;
+        _0_10 = await _0_11.CreateAsync();
+        try
+        {
+            _0_9 = new global::D(c: _0_10);
+            _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_5 = new global::B(c: _0_6, d: _0_7);
+                _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
+                _0_3 = await _0_4.CreateAsync();
+                try
+                {
+                    _0_12 = await _0_11.CreateAsync();
+                    try
+                    {
+                        _0_16 = await _0_11.CreateAsync();
+                        try
+                        {
+                            _0_15 = new global::D(c: _0_16);
+                            _0_14 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_15;
+                            _0_13 = await _0_14.CreateAsync();
+                            try
+                            {
+                                _0_2 = new global::A(b: _0_3, c: _0_12, d: _0_13);
+                                _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+                                _0_0 = await _0_1.CreateAsync();
+                            }
+                            catch
+                            {
+                                await _0_14.ReleaseAsync(_0_13);
+                                throw;
+                            }
+                        }
+                        catch
+                        {
+                            await _0_11.ReleaseAsync(_0_16);
+                            throw;
+                        }
+                    }
+                    catch
+                    {
+                        await _0_11.ReleaseAsync(_0_12);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    await _0_4.ReleaseAsync(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            await _0_11.ReleaseAsync(_0_10);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -862,8 +1132,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = new global::C();
-            var _0_0 = new global::D(c: _0_1);
+            global::C _0_1;
+            global::D _0_0;
+            _0_1 = new global::C();
+            _0_0 = new global::D(c: _0_1);
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
             {
@@ -886,10 +1158,14 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = new global::C();
-            var _0_3 = GetSingleInstanceField1();
-            var _0_1 = new global::B(c: _0_2, d: _0_3);
-            var _0_0 = new global::A(b: _0_1, c: _0_2);
+            global::C _0_2;
+            global::D _0_3;
+            global::B _0_1;
+            global::A _0_0;
+            _0_2 = new global::C();
+            _0_3 = GetSingleInstanceField1();
+            _0_1 = new global::B(c: _0_2, d: _0_3);
+            _0_0 = new global::A(b: _0_1, c: _0_2);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -907,7 +1183,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -924,7 +1201,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -998,7 +1276,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::C();
+            global::C _0_0;
+            _0_0 = new global::C();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -1016,11 +1295,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = GetSingleInstanceField0();
-        var _0_2 = (global::IC)_0_3;
-        var _0_4 = new global::D(c: _0_3);
-        var _0_1 = new global::B(c: _0_2, d: _0_4);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        global::C _0_3;
+        global::IC _0_2;
+        global::D _0_4;
+        global::B _0_1;
+        global::A _0_0;
+        _0_3 = GetSingleInstanceField0();
+        _0_2 = (global::IC)_0_3;
+        _0_4 = new global::D(c: _0_3);
+        _0_1 = new global::B(c: _0_2, d: _0_4);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         TResult result;
         try
         {
@@ -1037,11 +1321,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = GetSingleInstanceField0();
-        var _0_2 = (global::IC)_0_3;
-        var _0_4 = new global::D(c: _0_3);
-        var _0_1 = new global::B(c: _0_2, d: _0_4);
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        global::C _0_3;
+        global::IC _0_2;
+        global::D _0_4;
+        global::B _0_1;
+        global::A _0_0;
+        _0_3 = GetSingleInstanceField0();
+        _0_2 = (global::IC)_0_3;
+        _0_4 = new global::D(c: _0_3);
+        _0_1 = new global::B(c: _0_2, d: _0_4);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -1135,7 +1424,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::C();
+            global::C _0_0;
+            _0_0 = new global::C();
             await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
@@ -1159,11 +1449,15 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = await GetSingleInstanceField1();
-            var _0_3 = new global::D(c: _0_2);
+            global::C _0_2;
+            global::D _0_3;
+            global::B _0_1;
+            global::A _0_0;
+            _0_2 = await GetSingleInstanceField1();
+            _0_3 = new global::D(c: _0_2);
             await ((global::StrongInject.IRequiresAsyncInitialization)_0_3).InitializeAsync();
-            var _0_1 = new global::B(c: _0_2, d: _0_3);
-            var _0_0 = new global::A(b: _0_1, c: _0_2);
+            _0_1 = new global::B(c: _0_2, d: _0_3);
+            _0_0 = new global::A(b: _0_1, c: _0_2);
             await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
@@ -1182,7 +1476,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = await GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -1199,7 +1494,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = await GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -1326,9 +1622,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = new global::C();
-            var _0_1 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_2;
-            var _0_0 = await _0_1.CreateAsync();
+            global::C _0_2;
+            global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_1;
+            global::CFactoryTarget _0_0;
+            _0_2 = new global::C();
+            _0_1 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
             this._singleInstanceField3 = _0_0;
             this._disposeAction3 = async () =>
             {
@@ -1352,12 +1651,27 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = new global::C();
-            var _0_5 = await GetSingleInstanceField3();
-            var _0_4 = new global::D(c: _0_5);
-            var _0_3 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_4;
-            var _0_2 = await _0_3.CreateAsync();
-            var _0_0 = new global::B(c: _0_1, d: _0_2);
+            global::C _0_1;
+            global::CFactoryTarget _0_5;
+            global::D _0_4;
+            global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_3;
+            global::DFactoryTarget _0_2;
+            global::B _0_0;
+            _0_1 = new global::C();
+            _0_5 = await GetSingleInstanceField3();
+            _0_4 = new global::D(c: _0_5);
+            _0_3 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_0 = new global::B(c: _0_1, d: _0_2);
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+
             this._singleInstanceField2 = _0_0;
             this._disposeAction2 = async () =>
             {
@@ -1381,9 +1695,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = await GetSingleInstanceField2();
-            var _0_1 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_2;
-            var _0_0 = await _0_1.CreateAsync();
+            global::B _0_2;
+            global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_1;
+            global::BFactoryTarget _0_0;
+            _0_2 = await GetSingleInstanceField2();
+            _0_1 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
             {
@@ -1407,9 +1724,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = await GetSingleInstanceField1();
-            var _0_2 = await GetSingleInstanceField3();
-            var _0_0 = new global::A(b: _0_1, c: _0_2);
+            global::BFactoryTarget _0_1;
+            global::CFactoryTarget _0_2;
+            global::A _0_0;
+            _0_1 = await GetSingleInstanceField1();
+            _0_2 = await GetSingleInstanceField3();
+            _0_0 = new global::A(b: _0_1, c: _0_2);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -1427,9 +1747,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = await GetSingleInstanceField0();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_2 = await GetSingleInstanceField0();
+        _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+        _0_0 = await _0_1.CreateAsync();
         TResult result;
         try
         {
@@ -1447,9 +1770,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = await GetSingleInstanceField0();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_2 = await GetSingleInstanceField0();
+        _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+        _0_0 = await _0_1.CreateAsync();
         return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -1524,7 +1850,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::C();
+            global::C _0_0;
+            _0_0 = new global::C();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -1542,9 +1869,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = GetSingleInstanceField0();
-        var _0_1 = (global::IC)_0_2;
-        var _0_0 = new global::A(c: _0_1);
+        global::C _0_2;
+        global::IC _0_1;
+        global::A _0_0;
+        _0_2 = GetSingleInstanceField0();
+        _0_1 = (global::IC)_0_2;
+        _0_0 = new global::A(c: _0_1);
         TResult result;
         try
         {
@@ -1561,9 +1891,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = GetSingleInstanceField0();
-        var _0_1 = (global::IC)_0_2;
-        var _0_0 = new global::A(c: _0_1);
+        global::C _0_2;
+        global::IC _0_1;
+        global::A _0_0;
+        _0_2 = GetSingleInstanceField0();
+        _0_1 = (global::IC)_0_2;
+        _0_0 = new global::A(c: _0_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -1573,9 +1906,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_2 = new global::D(c: _0_1);
-        var _0_0 = new global::B(c: _0_1, d: _0_2);
+        global::C _0_1;
+        global::D _0_2;
+        global::B _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = new global::D(c: _0_1);
+        _0_0 = new global::B(c: _0_1, d: _0_2);
         TResult result;
         try
         {
@@ -1592,9 +1928,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_2 = new global::D(c: _0_1);
-        var _0_0 = new global::B(c: _0_1, d: _0_2);
+        global::C _0_1;
+        global::D _0_2;
+        global::B _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = new global::D(c: _0_1);
+        _0_0 = new global::B(c: _0_1, d: _0_2);
         return new global::StrongInject.AsyncOwned<global::B>(_0_0, async () =>
         {
         });
@@ -1859,9 +2198,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = new global::C();
-            var _0_1 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_2;
-            var _0_0 = await _0_1.CreateAsync();
+            global::C _0_2;
+            global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_1;
+            global::CFactoryTarget _0_0;
+            _0_2 = new global::C();
+            _0_1 = (global::StrongInject.IAsyncFactory<global::CFactoryTarget>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
             this._singleInstanceField2 = _0_0;
             this._disposeAction2 = async () =>
             {
@@ -1885,12 +2227,27 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = new global::C();
-            var _0_5 = await GetSingleInstanceField2();
-            var _0_4 = new global::D(c: _0_5);
-            var _0_3 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_4;
-            var _0_2 = await _0_3.CreateAsync();
-            var _0_0 = new global::B(c: _0_1, d: _0_2);
+            global::C _0_1;
+            global::CFactoryTarget _0_5;
+            global::D _0_4;
+            global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_3;
+            global::DFactoryTarget _0_2;
+            global::B _0_0;
+            _0_1 = new global::C();
+            _0_5 = await GetSingleInstanceField2();
+            _0_4 = new global::D(c: _0_5);
+            _0_3 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_0 = new global::B(c: _0_1, d: _0_2);
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
             {
@@ -1915,9 +2272,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = await GetSingleInstanceField1();
-            var _0_1 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_2;
-            var _0_0 = await _0_1.CreateAsync();
+            global::B _0_2;
+            global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_1;
+            global::BFactoryTarget _0_0;
+            _0_2 = await GetSingleInstanceField1();
+            _0_1 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -1944,9 +2304,21 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = this._factory;
-            var _0_1 = await _0_2.CreateAsync();
-            var _0_0 = new global::I(i: _0_1);
+            global::StrongInject.IAsyncFactory<global::System.Int32> _0_2;
+            global::System.Int32 _0_1;
+            global::I _0_0;
+            _0_2 = this._factory;
+            _0_1 = await _0_2.CreateAsync();
+            try
+            {
+                _0_0 = new global::I(i: _0_1);
+            }
+            catch
+            {
+                await _0_2.ReleaseAsync(_0_1);
+                throw;
+            }
+
             this._singleInstanceField3 = _0_0;
             this._disposeAction3 = async () =>
             {
@@ -1966,18 +2338,63 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        var _0_4 = await GetSingleInstanceField2();
-        var _0_9 = await GetSingleInstanceField3();
-        var _0_8 = new global::H(i: _0_9);
-        var _0_7 = new global::G(h: _0_8);
-        var _0_6 = new global::F(g: _0_7);
-        var _0_5 = new global::E(f: _0_6);
-        var _0_11 = this._factory;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_2 = new global::A(b: _0_3, c: _0_4, e: _0_5, i: _0_10);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::BFactoryTarget _0_3;
+        global::CFactoryTarget _0_4;
+        global::I _0_9;
+        global::H _0_8;
+        global::G _0_7;
+        global::F _0_6;
+        global::E _0_5;
+        global::StrongInject.IAsyncFactory<global::System.Int32> _0_11;
+        global::System.Int32 _0_10;
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_4 = await GetSingleInstanceField2();
+        _0_9 = await GetSingleInstanceField3();
+        _0_8 = new global::H(i: _0_9);
+        _0_7 = new global::G(h: _0_8);
+        try
+        {
+            _0_6 = new global::F(g: _0_7);
+            try
+            {
+                _0_5 = new global::E(f: _0_6);
+                try
+                {
+                    _0_11 = this._factory;
+                    _0_10 = await _0_11.CreateAsync();
+                    try
+                    {
+                        _0_2 = new global::A(b: _0_3, c: _0_4, e: _0_5, i: _0_10);
+                        _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+                        _0_0 = await _0_1.CreateAsync();
+                    }
+                    catch
+                    {
+                        await _0_11.ReleaseAsync(_0_10);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    ((global::System.IDisposable)_0_5).Dispose();
+                    throw;
+                }
+            }
+            catch
+            {
+                await ((global::System.IAsyncDisposable)_0_6).DisposeAsync();
+                throw;
+            }
+        }
+        catch
+        {
+            await ((global::System.IAsyncDisposable)_0_7).DisposeAsync();
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -1999,18 +2416,63 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        var _0_4 = await GetSingleInstanceField2();
-        var _0_9 = await GetSingleInstanceField3();
-        var _0_8 = new global::H(i: _0_9);
-        var _0_7 = new global::G(h: _0_8);
-        var _0_6 = new global::F(g: _0_7);
-        var _0_5 = new global::E(f: _0_6);
-        var _0_11 = this._factory;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_2 = new global::A(b: _0_3, c: _0_4, e: _0_5, i: _0_10);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::BFactoryTarget _0_3;
+        global::CFactoryTarget _0_4;
+        global::I _0_9;
+        global::H _0_8;
+        global::G _0_7;
+        global::F _0_6;
+        global::E _0_5;
+        global::StrongInject.IAsyncFactory<global::System.Int32> _0_11;
+        global::System.Int32 _0_10;
+        global::A _0_2;
+        global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
+        global::AFactoryTarget _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_4 = await GetSingleInstanceField2();
+        _0_9 = await GetSingleInstanceField3();
+        _0_8 = new global::H(i: _0_9);
+        _0_7 = new global::G(h: _0_8);
+        try
+        {
+            _0_6 = new global::F(g: _0_7);
+            try
+            {
+                _0_5 = new global::E(f: _0_6);
+                try
+                {
+                    _0_11 = this._factory;
+                    _0_10 = await _0_11.CreateAsync();
+                    try
+                    {
+                        _0_2 = new global::A(b: _0_3, c: _0_4, e: _0_5, i: _0_10);
+                        _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_2;
+                        _0_0 = await _0_1.CreateAsync();
+                    }
+                    catch
+                    {
+                        await _0_11.ReleaseAsync(_0_10);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    ((global::System.IDisposable)_0_5).Dispose();
+                    throw;
+                }
+            }
+            catch
+            {
+                await ((global::System.IAsyncDisposable)_0_6).DisposeAsync();
+                throw;
+            }
+        }
+        catch
+        {
+            await ((global::System.IAsyncDisposable)_0_7).DisposeAsync();
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -2063,7 +2525,8 @@ namespace N.O.P
         {
             if (Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::N.O.P.A();
+            global::N.O.P.A _0_0;
+            _0_0 = new global::N.O.P.A();
             TResult result;
             try
             {
@@ -2080,7 +2543,8 @@ namespace N.O.P
         {
             if (Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::N.O.P.A();
+            global::N.O.P.A _0_0;
+            _0_0 = new global::N.O.P.A();
             return new global::StrongInject.AsyncOwned<global::N.O.P.A>(_0_0, async () =>
             {
             });
@@ -2139,7 +2603,8 @@ namespace N.O.P
                 {
                     if (Disposed)
                         throw new global::System.ObjectDisposedException(nameof(Container));
-                    var _0_0 = new global::N.O.P.Outer1.Outer2.A();
+                    global::N.O.P.Outer1.Outer2.A _0_0;
+                    _0_0 = new global::N.O.P.Outer1.Outer2.A();
                     TResult result;
                     try
                     {
@@ -2156,7 +2621,8 @@ namespace N.O.P
                 {
                     if (Disposed)
                         throw new global::System.ObjectDisposedException(nameof(Container));
-                    var _0_0 = new global::N.O.P.Outer1.Outer2.A();
+                    global::N.O.P.Outer1.Outer2.A _0_0;
+                    _0_0 = new global::N.O.P.Outer1.Outer2.A();
                     return new global::StrongInject.AsyncOwned<global::N.O.P.Outer1.Outer2.A>(_0_0, async () =>
                     {
                     });
@@ -2217,7 +2683,8 @@ namespace N.O.P
                 {
                     if (Disposed)
                         throw new global::System.ObjectDisposedException(nameof(Container));
-                    var _0_0 = new global::N.O.P.A();
+                    global::N.O.P.A _0_0;
+                    _0_0 = new global::N.O.P.A();
                     TResult result;
                     try
                     {
@@ -2234,7 +2701,8 @@ namespace N.O.P
                 {
                     if (Disposed)
                         throw new global::System.ObjectDisposedException(nameof(Container));
-                    var _0_0 = new global::N.O.P.A();
+                    global::N.O.P.A _0_0;
+                    _0_0 = new global::N.O.P.A();
                     return new global::StrongInject.AsyncOwned<global::N.O.P.A>(_0_0, async () =>
                     {
                     });
@@ -2651,8 +3119,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = new global::A(b: _0_1);
         TResult result;
         try
         {
@@ -2669,8 +3139,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = new global::A(b: _0_1);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -2713,9 +3185,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
         ((global::StrongInject.IRequiresInitialization)_0_1).Initialize();
-        var _0_0 = new global::A(b: _0_1);
+        _0_0 = new global::A(b: _0_1);
         ((global::StrongInject.IRequiresInitialization)_0_0).Initialize();
         TResult result;
         try
@@ -2733,9 +3207,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
         ((global::StrongInject.IRequiresInitialization)_0_1).Initialize();
-        var _0_0 = new global::A(b: _0_1);
+        _0_0 = new global::A(b: _0_1);
         ((global::StrongInject.IRequiresInitialization)_0_0).Initialize();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
@@ -2779,10 +3255,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::B();
-        var _0_2 = new global::A(b: _0_3);
-        var _0_1 = (global::StrongInject.IFactory<global::System.Int32>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::B _0_3;
+        global::A _0_2;
+        global::StrongInject.IFactory<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_3 = new global::B();
+        _0_2 = new global::A(b: _0_3);
+        _0_1 = (global::StrongInject.IFactory<global::System.Int32>)_0_2;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -2800,10 +3280,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::B();
-        var _0_2 = new global::A(b: _0_3);
-        var _0_1 = (global::StrongInject.IFactory<global::System.Int32>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::B _0_3;
+        global::A _0_2;
+        global::StrongInject.IFactory<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_3 = new global::B();
+        _0_2 = new global::A(b: _0_3);
+        _0_1 = (global::StrongInject.IFactory<global::System.Int32>)_0_2;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.Owned<global::System.Int32>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -2851,10 +3335,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_3 = this._instanceProvider;
-        var _0_2 = _0_3.Create();
-        var _0_0 = new global::A(b: _0_1, i: _0_2);
+        global::B _0_1;
+        global::StrongInject.IFactory<global::System.Int32> _0_3;
+        global::System.Int32 _0_2;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_3 = this._instanceProvider;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_0 = new global::A(b: _0_1, i: _0_2);
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -2872,10 +3369,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_3 = this._instanceProvider;
-        var _0_2 = _0_3.Create();
-        var _0_0 = new global::A(b: _0_1, i: _0_2);
+        global::B _0_1;
+        global::StrongInject.IFactory<global::System.Int32> _0_3;
+        global::System.Int32 _0_2;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_3 = this._instanceProvider;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_0 = new global::A(b: _0_1, i: _0_2);
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
             _0_3.Release(_0_2);
@@ -2936,7 +3446,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::B();
+            global::B _0_0;
+            _0_0 = new global::B();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -2954,8 +3465,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         TResult result;
         try
         {
@@ -2972,8 +3485,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -3053,7 +3568,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::B();
+            global::B _0_0;
+            _0_0 = new global::B();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -3071,8 +3587,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         TResult result;
         try
         {
@@ -3089,8 +3607,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -3108,7 +3628,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::D();
+            global::D _0_0;
+            _0_0 = new global::D();
             await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
@@ -3127,9 +3648,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_2 = await GetSingleInstanceField1();
-        var _0_0 = new global::C(b: _0_1, d: _0_2);
+        global::B _0_1;
+        global::D _0_2;
+        global::C _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = await GetSingleInstanceField1();
+        _0_0 = new global::C(b: _0_1, d: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         TResult result;
         try
@@ -3147,9 +3671,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_2 = await GetSingleInstanceField1();
-        var _0_0 = new global::C(b: _0_1, d: _0_2);
+        global::B _0_1;
+        global::D _0_2;
+        global::C _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = await GetSingleInstanceField1();
+        _0_0 = new global::C(b: _0_1, d: _0_2);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::C>(_0_0, async () =>
         {
@@ -3211,7 +3738,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::B();
+            global::B _0_0;
+            _0_0 = new global::B();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -3230,8 +3758,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         TResult result;
         try
         {
@@ -3248,8 +3778,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -3325,7 +3857,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::C();
+            global::C _0_0;
+            _0_0 = new global::C();
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = () =>
             {
@@ -3349,8 +3882,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = GetSingleInstanceField1();
-            var _0_0 = new global::B(c: _0_1);
+            global::C _0_1;
+            global::B _0_0;
+            _0_1 = GetSingleInstanceField1();
+            _0_0 = new global::B(c: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -3369,8 +3904,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         TResult result;
         try
         {
@@ -3387,8 +3924,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = new global::A(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = new global::A(b: _0_1);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -3451,7 +3990,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::C();
+            global::C _0_0;
+            _0_0 = new global::C();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -3470,7 +4010,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::C _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -3487,7 +4028,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::C _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.Owned<global::C>(_0_0, () =>
         {
         });
@@ -3534,10 +4076,13 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::A> _0_0 = () =>
+        global::System.Func<global::A> _0_0;
+        _0_0 = () =>
         {
-            var _1_1 = new global::B();
-            var _1_0 = new global::A(b: _1_1);
+            global::B _1_1;
+            global::A _1_0;
+            _1_1 = new global::B();
+            _1_0 = new global::A(b: _1_1);
             return _1_0;
         };
         TResult result;
@@ -3556,10 +4101,13 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::A> _0_0 = () =>
+        global::System.Func<global::A> _0_0;
+        _0_0 = () =>
         {
-            var _1_1 = new global::B();
-            var _1_0 = new global::A(b: _1_1);
+            global::B _1_1;
+            global::A _1_0;
+            _1_1 = new global::B();
+            _1_0 = new global::A(b: _1_1);
             return _1_0;
         };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0_0, async () =>
@@ -3608,9 +4156,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::B, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_0 = new global::A(b: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(b: param0_0);
             return _1_0;
         };
         TResult result;
@@ -3629,9 +4179,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::B, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_0 = new global::A(b: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(b: param0_0);
             return _1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0_0, () =>
@@ -3679,9 +4231,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::B, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_0 = new global::A(b: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(b: param0_0);
             return _1_0;
         };
         TResult result;
@@ -3700,9 +4254,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::B, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_0 = new global::A(b: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(b: param0_0);
             return _1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0_0, () =>
@@ -3751,12 +4307,15 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::System.String, global::B> _0_1 = (param0_0, param0_1) =>
+        global::System.Func<global::System.Int32, global::System.String, global::B> _0_1;
+        global::A _0_0;
+        _0_1 = (param0_0, param0_1) =>
         {
-            var _1_0 = new global::B(i: param0_0, s: param0_1, i1: param0_0);
+            global::B _1_0;
+            _1_0 = new global::B(i: param0_0, s: param0_1, i1: param0_0);
             return _1_0;
         };
-        var _0_0 = new global::A(b: _0_1);
+        _0_0 = new global::A(b: _0_1);
         TResult result;
         try
         {
@@ -3773,12 +4332,15 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::System.String, global::B> _0_1 = (param0_0, param0_1) =>
+        global::System.Func<global::System.Int32, global::System.String, global::B> _0_1;
+        global::A _0_0;
+        _0_1 = (param0_0, param0_1) =>
         {
-            var _1_0 = new global::B(i: param0_0, s: param0_1, i1: param0_0);
+            global::B _1_0;
+            _1_0 = new global::B(i: param0_0, s: param0_1, i1: param0_0);
             return _1_0;
         };
-        var _0_0 = new global::A(b: _0_1);
+        _0_0 = new global::A(b: _0_1);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -3825,14 +4387,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Int32, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::System.String, global::B> _1_1 = (param1_0) =>
+            global::System.Func<global::System.String, global::B> _1_1;
+            global::A _1_0;
+            _1_1 = (param1_0) =>
             {
-                var _2_0 = new global::B(i: param0_0, s: param1_0);
+                global::B _2_0;
+                _2_0 = new global::B(i: param0_0, s: param1_0);
                 return _2_0;
             };
-            var _1_0 = new global::A(a: param0_0, func: _1_1);
+            _1_0 = new global::A(a: param0_0, func: _1_1);
             return _1_0;
         };
         TResult result;
@@ -3851,14 +4417,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Int32, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::System.String, global::B> _1_1 = (param1_0) =>
+            global::System.Func<global::System.String, global::B> _1_1;
+            global::A _1_0;
+            _1_1 = (param1_0) =>
             {
-                var _2_0 = new global::B(i: param0_0, s: param1_0);
+                global::B _2_0;
+                _2_0 = new global::B(i: param0_0, s: param1_0);
                 return _2_0;
             };
-            var _1_0 = new global::A(a: param0_0, func: _1_1);
+            _1_0 = new global::A(a: param0_0, func: _1_1);
             return _1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>>(_0_0, () =>
@@ -3905,13 +4475,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _1_0 = (param1_0) =>
+            global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _1_0;
+            _1_0 = (param1_0) =>
             {
-                global::System.Func<global::System.Int32, global::A> _2_0 = (param2_0) =>
+                global::System.Func<global::System.Int32, global::A> _2_0;
+                _2_0 = (param2_0) =>
                 {
-                    var _3_0 = new global::A(a: param2_0, b: param1_0, c: param0_0);
+                    global::A _3_0;
+                    _3_0 = new global::A(a: param2_0, b: param1_0, c: param0_0);
                     return _3_0;
                 };
                 return _2_0;
@@ -3934,13 +4508,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _1_0 = (param1_0) =>
+            global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> _1_0;
+            _1_0 = (param1_0) =>
             {
-                global::System.Func<global::System.Int32, global::A> _2_0 = (param2_0) =>
+                global::System.Func<global::System.Int32, global::A> _2_0;
+                _2_0 = (param2_0) =>
                 {
-                    var _3_0 = new global::A(a: param2_0, b: param1_0, c: param0_0);
+                    global::A _3_0;
+                    _3_0 = new global::A(a: param2_0, b: param1_0, c: param0_0);
                     return _3_0;
                 };
                 return _2_0;
@@ -3949,6 +4527,325 @@ partial class Container
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>>>(_0_0, () =>
         {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void DisposesOfFuncDependencies()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+using StrongInject.Modules;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+[RegisterModule(typeof(ValueTupleModule))]
+public partial class Container : IContainer<(B, Func<A>)>
+{
+}
+
+public class A : IDisposable
+{
+    public A(B b){}
+    public void Dispose(){}
+}
+public class B : IDisposable
+{
+    public void Dispose(){}
+}
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<(global::B, global::System.Func<global::A>)>.Run<TResult, TParam>(global::System.Func<(global::B, global::System.Func<global::A>), TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::B _0_1;
+        global::System.Collections.Concurrent.ConcurrentBag<global::System.Action> disposeActions__0_2;
+        global::System.Func<global::A> _0_2;
+        (global::B, global::System.Func<global::A>) _0_0;
+        _0_1 = new global::B();
+        try
+        {
+            disposeActions__0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            _0_2 = () =>
+            {
+                global::B _1_1;
+                global::A _1_0;
+                _1_1 = new global::B();
+                try
+                {
+                    _1_0 = new global::A(b: _1_1);
+                }
+                catch
+                {
+                    ((global::System.IDisposable)_1_1).Dispose();
+                    throw;
+                }
+
+                disposeActions__0_2.Add(() =>
+                {
+                    ((global::System.IDisposable)_1_0).Dispose();
+                    ((global::System.IDisposable)_1_1).Dispose();
+                });
+                return _1_0;
+            };
+            try
+            {
+                _0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::B, global::System.Func<global::A>>(a: _0_1, b: _0_2);
+            }
+            catch
+            {
+                foreach (var disposeAction in disposeActions__0_2)
+                    disposeAction();
+                throw;
+            }
+        }
+        catch
+        {
+            ((global::System.IDisposable)_0_1).Dispose();
+            throw;
+        }
+
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions__0_2)
+                disposeAction();
+            ((global::System.IDisposable)_0_1).Dispose();
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<(global::B, global::System.Func<global::A>)> global::StrongInject.IContainer<(global::B, global::System.Func<global::A>)>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::B _0_1;
+        global::System.Collections.Concurrent.ConcurrentBag<global::System.Action> disposeActions__0_2;
+        global::System.Func<global::A> _0_2;
+        (global::B, global::System.Func<global::A>) _0_0;
+        _0_1 = new global::B();
+        try
+        {
+            disposeActions__0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            _0_2 = () =>
+            {
+                global::B _1_1;
+                global::A _1_0;
+                _1_1 = new global::B();
+                try
+                {
+                    _1_0 = new global::A(b: _1_1);
+                }
+                catch
+                {
+                    ((global::System.IDisposable)_1_1).Dispose();
+                    throw;
+                }
+
+                disposeActions__0_2.Add(() =>
+                {
+                    ((global::System.IDisposable)_1_0).Dispose();
+                    ((global::System.IDisposable)_1_1).Dispose();
+                });
+                return _1_0;
+            };
+            try
+            {
+                _0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::B, global::System.Func<global::A>>(a: _0_1, b: _0_2);
+            }
+            catch
+            {
+                foreach (var disposeAction in disposeActions__0_2)
+                    disposeAction();
+                throw;
+            }
+        }
+        catch
+        {
+            ((global::System.IDisposable)_0_1).Dispose();
+            throw;
+        }
+
+        return new global::StrongInject.Owned<(global::B, global::System.Func<global::A>)>(_0_0, () =>
+        {
+            foreach (var disposeAction in disposeActions__0_2)
+                disposeAction();
+            ((global::System.IDisposable)_0_1).Dispose();
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void DisposesOfFuncDependenciesAsynchronously()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+using StrongInject.Modules;
+using System.Threading.Tasks;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+[RegisterModule(typeof(ValueTupleModule))]
+public partial class Container : IAsyncContainer<(B, Func<A>)>
+{
+}
+
+public class A : IAsyncDisposable
+{
+    public A(B b){}
+    public ValueTask DisposeAsync() => default;
+}
+public class B : IAsyncDisposable
+{
+    public ValueTask DisposeAsync() => default;
+}
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<(global::B, global::System.Func<global::A>)>.RunAsync<TResult, TParam>(global::System.Func<(global::B, global::System.Func<global::A>), TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::B _0_1;
+        global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>> disposeActions__0_2;
+        global::System.Func<global::A> _0_2;
+        (global::B, global::System.Func<global::A>) _0_0;
+        _0_1 = new global::B();
+        try
+        {
+            disposeActions__0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+            _0_2 = () =>
+            {
+                global::B _1_1;
+                global::A _1_0;
+                _1_1 = new global::B();
+                _1_0 = new global::A(b: _1_1);
+                disposeActions__0_2.Add(async () =>
+                {
+                    await ((global::System.IAsyncDisposable)_1_0).DisposeAsync();
+                    await ((global::System.IAsyncDisposable)_1_1).DisposeAsync();
+                });
+                return _1_0;
+            };
+            try
+            {
+                _0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::B, global::System.Func<global::A>>(a: _0_1, b: _0_2);
+            }
+            catch
+            {
+                foreach (var disposeAction in disposeActions__0_2)
+                    await disposeAction();
+                throw;
+            }
+        }
+        catch
+        {
+            await ((global::System.IAsyncDisposable)_0_1).DisposeAsync();
+            throw;
+        }
+
+        TResult result;
+        try
+        {
+            result = await func(_0_0, param);
+        }
+        finally
+        {
+            foreach (var disposeAction in disposeActions__0_2)
+                await disposeAction();
+            await ((global::System.IAsyncDisposable)_0_1).DisposeAsync();
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<(global::B, global::System.Func<global::A>)>> global::StrongInject.IAsyncContainer<(global::B, global::System.Func<global::A>)>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::B _0_1;
+        global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>> disposeActions__0_2;
+        global::System.Func<global::A> _0_2;
+        (global::B, global::System.Func<global::A>) _0_0;
+        _0_1 = new global::B();
+        try
+        {
+            disposeActions__0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+            _0_2 = () =>
+            {
+                global::B _1_1;
+                global::A _1_0;
+                _1_1 = new global::B();
+                _1_0 = new global::A(b: _1_1);
+                disposeActions__0_2.Add(async () =>
+                {
+                    await ((global::System.IAsyncDisposable)_1_0).DisposeAsync();
+                    await ((global::System.IAsyncDisposable)_1_1).DisposeAsync();
+                });
+                return _1_0;
+            };
+            try
+            {
+                _0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::B, global::System.Func<global::A>>(a: _0_1, b: _0_2);
+            }
+            catch
+            {
+                foreach (var disposeAction in disposeActions__0_2)
+                    await disposeAction();
+                throw;
+            }
+        }
+        catch
+        {
+            await ((global::System.IAsyncDisposable)_0_1).DisposeAsync();
+            throw;
+        }
+
+        return new global::StrongInject.AsyncOwned<(global::B, global::System.Func<global::A>)>(_0_0, async () =>
+        {
+            foreach (var disposeAction in disposeActions__0_2)
+                await disposeAction();
+            await ((global::System.IAsyncDisposable)_0_1).DisposeAsync();
         });
     }
 }");
@@ -4000,11 +4897,24 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions__0_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Collections.Concurrent.ConcurrentBag<global::System.Action> disposeActions__0_0;
+        global::System.Func<global::B, global::A> _0_0;
+        disposeActions__0_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        _0_0 = (param0_0) =>
         {
-            var _1_1 = new global::C();
-            var _1_0 = new global::A(b: param0_0, c: _1_1);
+            global::C _1_1;
+            global::A _1_0;
+            _1_1 = new global::C();
+            try
+            {
+                _1_0 = new global::A(b: param0_0, c: _1_1);
+            }
+            catch
+            {
+                ((global::System.IDisposable)_1_1).Dispose();
+                throw;
+            }
+
             disposeActions__0_0.Add(() =>
             {
                 ((global::System.IDisposable)_1_1).Dispose();
@@ -4029,11 +4939,24 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var disposeActions__0_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Collections.Concurrent.ConcurrentBag<global::System.Action> disposeActions__0_0;
+        global::System.Func<global::B, global::A> _0_0;
+        disposeActions__0_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+        _0_0 = (param0_0) =>
         {
-            var _1_1 = new global::C();
-            var _1_0 = new global::A(b: param0_0, c: _1_1);
+            global::C _1_1;
+            global::A _1_0;
+            _1_1 = new global::C();
+            try
+            {
+                _1_0 = new global::A(b: param0_0, c: _1_1);
+            }
+            catch
+            {
+                ((global::System.IDisposable)_1_1).Dispose();
+                throw;
+            }
+
             disposeActions__0_0.Add(() =>
             {
                 ((global::System.IDisposable)_1_1).Dispose();
@@ -4089,9 +5012,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::System.String, global::A> _0_0 = (param0_0, param0_1) =>
+        global::System.Func<global::System.Int32, global::System.String, global::A> _0_0;
+        _0_0 = (param0_0, param0_1) =>
         {
-            var _1_0 = new global::A(s1: param0_1, s2: param0_1);
+            global::A _1_0;
+            _1_0 = new global::A(s1: param0_1, s2: param0_1);
             return _1_0;
         };
         TResult result;
@@ -4110,9 +5035,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::System.String, global::A> _0_0 = (param0_0, param0_1) =>
+        global::System.Func<global::System.Int32, global::System.String, global::A> _0_0;
+        _0_0 = (param0_0, param0_1) =>
         {
-            var _1_0 = new global::A(s1: param0_1, s2: param0_1);
+            global::A _1_0;
+            _1_0 = new global::A(s1: param0_1, s2: param0_1);
             return _1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.String, global::A>>(_0_0, () =>
@@ -4162,11 +5089,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::System.Int32, global::A> _1_0 = (param1_0) =>
+            global::System.Func<global::System.Int32, global::A> _1_0;
+            _1_0 = (param1_0) =>
             {
-                var _2_0 = new global::A(a1: param1_0, a2: param1_0);
+                global::A _2_0;
+                _2_0 = new global::A(a1: param1_0, a2: param1_0);
                 return _2_0;
             };
             return _1_0;
@@ -4187,11 +5117,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::System.Int32, global::A> _1_0 = (param1_0) =>
+            global::System.Func<global::System.Int32, global::A> _1_0;
+            _1_0 = (param1_0) =>
             {
-                var _2_0 = new global::A(a1: param1_0, a2: param1_0);
+                global::A _2_0;
+                _2_0 = new global::A(a1: param1_0, a2: param1_0);
                 return _2_0;
             };
             return _1_0;
@@ -4269,8 +5202,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = new global::B();
-            var _0_0 = new global::A(b: _0_1);
+            global::B _0_1;
+            global::A _0_0;
+            _0_1 = new global::B();
+            _0_0 = new global::A(b: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -4288,9 +5223,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::B, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_0 = GetSingleInstanceField0();
+            global::A _1_0;
+            _1_0 = GetSingleInstanceField0();
             return _1_0;
         };
         TResult result;
@@ -4309,9 +5246,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::B, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::B, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_0 = GetSingleInstanceField0();
+            global::A _1_0;
+            _1_0 = GetSingleInstanceField0();
             return _1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(_0_0, () =>
@@ -4360,7 +5299,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::A, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::A, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
             return param0_0;
         };
@@ -4380,7 +5320,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::A, global::A> _0_0 = (param0_0) =>
+        global::System.Func<global::A, global::A> _0_0;
+        _0_0 = (param0_0) =>
         {
             return param0_0;
         };
@@ -4430,9 +5371,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::A, global::System.Func<global::A>> _0_0 = (param0_0) =>
+        global::System.Func<global::A, global::System.Func<global::A>> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::A> _1_0 = () =>
+            global::System.Func<global::A> _1_0;
+            _1_0 = () =>
             {
                 return param0_0;
             };
@@ -4454,9 +5397,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::A, global::System.Func<global::A>> _0_0 = (param0_0) =>
+        global::System.Func<global::A, global::System.Func<global::A>> _0_0;
+        _0_0 = (param0_0) =>
         {
-            global::System.Func<global::A> _1_0 = () =>
+            global::System.Func<global::A> _1_0;
+            _1_0 = () =>
             {
                 return param0_0;
             };
@@ -4801,9 +5746,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::Del _0_0 = async (param0_0) =>
+        global::Del _0_0;
+        _0_0 = async (param0_0) =>
         {
-            var _1_0 = new global::A(a: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(a: param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_1_0).InitializeAsync();
             return _1_0;
         };
@@ -4823,9 +5770,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::Del _0_0 = async (param0_0) =>
+        global::Del _0_0;
+        _0_0 = async (param0_0) =>
         {
-            var _1_0 = new global::A(a: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(a: param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_1_0).InitializeAsync();
             return _1_0;
         };
@@ -4875,9 +5824,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::Del _0_0 = async (param0_0) =>
+        global::Del _0_0;
+        _0_0 = async (param0_0) =>
         {
-            var _1_0 = new global::A(a: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(a: param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_1_0).InitializeAsync();
             return _1_0;
         };
@@ -4897,9 +5848,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::Del _0_0 = async (param0_0) =>
+        global::Del _0_0;
+        _0_0 = async (param0_0) =>
         {
-            var _1_0 = new global::A(a: param0_0);
+            global::A _1_0;
+            _1_0 = new global::A(a: param0_0);
             await ((global::StrongInject.IRequiresAsyncInitialization)_1_0).InitializeAsync();
             return _1_0;
         };
@@ -4971,13 +5924,16 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            global::Del _0_1 = async (param0_0) =>
+            global::Del _0_1;
+            global::B _0_0;
+            _0_1 = async (param0_0) =>
             {
-                var _1_0 = new global::A(a: param0_0);
+                global::A _1_0;
+                _1_0 = new global::A(a: param0_0);
                 await ((global::StrongInject.IRequiresAsyncInitialization)_1_0).InitializeAsync();
                 return _1_0;
             };
-            var _0_0 = new global::B(d: _0_1);
+            _0_0 = new global::B(d: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -4995,7 +5951,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::B _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -5012,7 +5969,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::B _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
         });
@@ -5061,8 +6019,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._instanceProvider;
-        var _0_0 = _0_1.Create();
+        global::StrongInject.IFactory<global::System.Func<global::A>> _0_1;
+        global::System.Func<global::A> _0_0;
+        _0_1 = this._instanceProvider;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -5080,8 +6040,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._instanceProvider;
-        var _0_0 = _0_1.Create();
+        global::StrongInject.IFactory<global::System.Func<global::A>> _0_1;
+        global::System.Func<global::A> _0_0;
+        _0_1 = this._instanceProvider;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0_0, async () =>
         {
             _0_1.Release(_0_0);
@@ -5131,9 +6093,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::StrongInject.IFactory<global::System.Func<global::A>>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::B _0_2;
+        global::StrongInject.IFactory<global::System.Func<global::A>> _0_1;
+        global::System.Func<global::A> _0_0;
+        _0_2 = new global::B();
+        _0_1 = (global::StrongInject.IFactory<global::System.Func<global::A>>)_0_2;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -5151,9 +6116,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::StrongInject.IFactory<global::System.Func<global::A>>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::B _0_2;
+        global::StrongInject.IFactory<global::System.Func<global::A>> _0_1;
+        global::System.Func<global::A> _0_0;
+        _0_2 = new global::B();
+        _0_1 = (global::StrongInject.IFactory<global::System.Func<global::A>>)_0_2;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.AsyncOwned<global::System.Func<global::A>>(_0_0, async () =>
         {
             _0_1.Release(_0_0);
@@ -5201,7 +6169,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0_0;
+        _0_0 = (param0_0) =>
         {
             return param0_0;
         };
@@ -5221,7 +6190,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0_0 = (param0_0) =>
+        global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> _0_0;
+        _0_0 = (param0_0) =>
         {
             return param0_0;
         };
@@ -5313,8 +6283,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = global::Module.M(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = global::Module.M(b: _0_1);
         TResult result;
         try
         {
@@ -5332,8 +6304,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = global::Module.M(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = global::Module.M(b: _0_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0_0);
@@ -5399,8 +6373,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = new global::B();
-            var _0_0 = global::Module.M(b: _0_1);
+            global::B _0_1;
+            global::A _0_0;
+            _0_1 = new global::B();
+            _0_0 = global::Module.M(b: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -5419,7 +6395,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -5436,7 +6413,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -5587,8 +6565,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = this.M(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = this.M(b: _0_1);
         TResult result;
         try
         {
@@ -5606,8 +6586,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = this.M(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = this.M(b: _0_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0_0);
@@ -5847,7 +6829,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         TResult result;
         try
         {
@@ -5864,7 +6847,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -5911,7 +6895,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         TResult result;
         try
         {
@@ -5928,7 +6913,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -6052,8 +7038,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = await global::Module.M(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = await global::Module.M(b: _0_1);
         TResult result;
         try
         {
@@ -6071,8 +7059,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = await global::Module.M(b: _0_1);
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = await global::Module.M(b: _0_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0_0);
@@ -6337,9 +7327,11 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = new global::B();
+            global::B _0_1;
+            global::A _0_0;
+            _0_1 = new global::B();
             await ((global::StrongInject.IRequiresAsyncInitialization)_0_1).InitializeAsync();
-            var _0_0 = this.M(b: _0_1);
+            _0_0 = this.M(b: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -6358,7 +7350,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = await GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -6375,7 +7368,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = await GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -6416,7 +7410,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await this.M();
+        global::A _0_0;
+        _0_0 = await this.M();
         TResult result;
         try
         {
@@ -6434,7 +7429,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await this.M();
+        global::A _0_0;
+        _0_0 = await this.M();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0_0);
@@ -6476,7 +7472,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await this.M<global::A>();
+        global::A _0_0;
+        _0_0 = await this.M<global::A>();
         TResult result;
         try
         {
@@ -6494,7 +7491,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await this.M<global::A>();
+        global::A _0_0;
+        _0_0 = await this.M<global::A>();
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0_0);
@@ -6544,7 +7542,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         TResult result;
         try
         {
@@ -6561,7 +7560,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -6605,7 +7605,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         TResult result;
         try
         {
@@ -6622,7 +7623,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -6632,7 +7634,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::B();
+        global::B _0_0;
+        _0_0 = new global::B();
         TResult result;
         try
         {
@@ -6649,7 +7652,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::B();
+        global::B _0_0;
+        _0_0 = new global::B();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
         });
@@ -6696,7 +7700,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module.Instance;
+        global::A _0_0;
+        _0_0 = global::Module.Instance;
         TResult result;
         try
         {
@@ -6713,7 +7718,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module.Instance;
+        global::A _0_0;
+        _0_0 = global::Module.Instance;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -6760,7 +7766,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module.Instance;
+        global::A _0_0;
+        _0_0 = global::Module.Instance;
         TResult result;
         try
         {
@@ -6777,7 +7784,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module.Instance;
+        global::A _0_0;
+        _0_0 = global::Module.Instance;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -7136,7 +8144,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.AInstance;
+        global::A _0_0;
+        _0_0 = this.AInstance;
         TResult result;
         try
         {
@@ -7153,7 +8162,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.AInstance;
+        global::A _0_0;
+        _0_0 = this.AInstance;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -7193,7 +8203,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.DisposableInstance;
+        global::System.IDisposable _0_0;
+        _0_0 = this.DisposableInstance;
         TResult result;
         try
         {
@@ -7210,7 +8221,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.DisposableInstance;
+        global::System.IDisposable _0_0;
+        _0_0 = this.DisposableInstance;
         return new global::StrongInject.Owned<global::System.IDisposable>(_0_0, () =>
         {
         });
@@ -7286,7 +8298,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::B();
+            global::B _0_0;
+            _0_0 = new global::B();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -7304,16 +8317,43 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::IAFactory();
-        var _0_2 = (global::StrongInject.IFactory<global::IA>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_5 = GetSingleInstanceField0();
-        var _0_4 = (global::IA)_0_5;
-        var _0_6 = global::Module.FactoryOfA();
-        var _0_7 = this.AInstance;
-        var _0_9 = new global::A();
-        var _0_8 = (global::IA)_0_9;
-        var _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_4, (global::IA)_0_6, (global::IA)_0_7, (global::IA)_0_8, };
+        global::IAFactory _0_3;
+        global::StrongInject.IFactory<global::IA> _0_2;
+        global::IA _0_1;
+        global::B _0_5;
+        global::IA _0_4;
+        global::IA _0_6;
+        global::IA _0_7;
+        global::A _0_9;
+        global::IA _0_8;
+        global::IA[] _0_0;
+        _0_3 = new global::IAFactory();
+        _0_2 = (global::StrongInject.IFactory<global::IA>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_5 = GetSingleInstanceField0();
+            _0_4 = (global::IA)_0_5;
+            _0_6 = global::Module.FactoryOfA();
+            try
+            {
+                _0_7 = this.AInstance;
+                _0_9 = new global::A();
+                _0_8 = (global::IA)_0_9;
+                _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_4, (global::IA)_0_6, (global::IA)_0_7, (global::IA)_0_8, };
+            }
+            catch
+            {
+                global::StrongInject.Helpers.Dispose(_0_6);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -7332,16 +8372,43 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::IAFactory();
-        var _0_2 = (global::StrongInject.IFactory<global::IA>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_5 = GetSingleInstanceField0();
-        var _0_4 = (global::IA)_0_5;
-        var _0_6 = global::Module.FactoryOfA();
-        var _0_7 = this.AInstance;
-        var _0_9 = new global::A();
-        var _0_8 = (global::IA)_0_9;
-        var _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_4, (global::IA)_0_6, (global::IA)_0_7, (global::IA)_0_8, };
+        global::IAFactory _0_3;
+        global::StrongInject.IFactory<global::IA> _0_2;
+        global::IA _0_1;
+        global::B _0_5;
+        global::IA _0_4;
+        global::IA _0_6;
+        global::IA _0_7;
+        global::A _0_9;
+        global::IA _0_8;
+        global::IA[] _0_0;
+        _0_3 = new global::IAFactory();
+        _0_2 = (global::StrongInject.IFactory<global::IA>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_5 = GetSingleInstanceField0();
+            _0_4 = (global::IA)_0_5;
+            _0_6 = global::Module.FactoryOfA();
+            try
+            {
+                _0_7 = this.AInstance;
+                _0_9 = new global::A();
+                _0_8 = (global::IA)_0_9;
+                _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_4, (global::IA)_0_6, (global::IA)_0_7, (global::IA)_0_8, };
+            }
+            catch
+            {
+                global::StrongInject.Helpers.Dispose(_0_6);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_6);
@@ -7393,11 +8460,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::A();
-        var _0_1 = (global::IA)_0_2;
-        var _0_4 = new global::B();
-        var _0_3 = (global::IA)_0_4;
-        var _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
+        global::A _0_2;
+        global::IA _0_1;
+        global::B _0_4;
+        global::IA _0_3;
+        global::IA[] _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::IA)_0_2;
+        _0_4 = new global::B();
+        _0_3 = (global::IA)_0_4;
+        _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
         TResult result;
         try
         {
@@ -7414,11 +8486,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::A();
-        var _0_1 = (global::IA)_0_2;
-        var _0_4 = new global::B();
-        var _0_3 = (global::IA)_0_4;
-        var _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
+        global::A _0_2;
+        global::IA _0_1;
+        global::B _0_4;
+        global::IA _0_3;
+        global::IA[] _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::IA)_0_2;
+        _0_4 = new global::B();
+        _0_3 = (global::IA)_0_4;
+        _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
         return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
         });
@@ -7473,11 +8550,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::IA)_0_2;
-        var _0_4 = new global::A();
-        var _0_3 = (global::IA)_0_4;
-        var _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
+        global::B _0_2;
+        global::IA _0_1;
+        global::A _0_4;
+        global::IA _0_3;
+        global::IA[] _0_0;
+        _0_2 = new global::B();
+        _0_1 = (global::IA)_0_2;
+        _0_4 = new global::A();
+        _0_3 = (global::IA)_0_4;
+        _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
         TResult result;
         try
         {
@@ -7494,11 +8576,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::IA)_0_2;
-        var _0_4 = new global::A();
-        var _0_3 = (global::IA)_0_4;
-        var _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
+        global::B _0_2;
+        global::IA _0_1;
+        global::A _0_4;
+        global::IA _0_3;
+        global::IA[] _0_0;
+        _0_2 = new global::B();
+        _0_1 = (global::IA)_0_2;
+        _0_4 = new global::A();
+        _0_3 = (global::IA)_0_4;
+        _0_0 = new global::IA[]{(global::IA)_0_1, (global::IA)_0_3, };
         return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
         });
@@ -7549,7 +8636,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::IA[]{};
+        global::IA[] _0_0;
+        _0_0 = new global::IA[]{};
         TResult result;
         try
         {
@@ -7566,7 +8654,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::IA[]{};
+        global::IA[] _0_0;
+        _0_0 = new global::IA[]{};
         return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
         });
@@ -7724,13 +8813,19 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::IA, global::IA[]> _0_0 = (param0_0) =>
+        global::System.Func<global::IA, global::IA[]> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_2 = new global::B();
-            var _1_1 = (global::IA)_1_2;
-            var _1_4 = new global::A();
-            var _1_3 = (global::IA)_1_4;
-            var _1_0 = new global::IA[]{(global::IA)_1_1, (global::IA)_1_3, };
+            global::B _1_2;
+            global::IA _1_1;
+            global::A _1_4;
+            global::IA _1_3;
+            global::IA[] _1_0;
+            _1_2 = new global::B();
+            _1_1 = (global::IA)_1_2;
+            _1_4 = new global::A();
+            _1_3 = (global::IA)_1_4;
+            _1_0 = new global::IA[]{(global::IA)_1_1, (global::IA)_1_3, };
             return _1_0;
         };
         TResult result;
@@ -7749,13 +8844,19 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::IA, global::IA[]> _0_0 = (param0_0) =>
+        global::System.Func<global::IA, global::IA[]> _0_0;
+        _0_0 = (param0_0) =>
         {
-            var _1_2 = new global::B();
-            var _1_1 = (global::IA)_1_2;
-            var _1_4 = new global::A();
-            var _1_3 = (global::IA)_1_4;
-            var _1_0 = new global::IA[]{(global::IA)_1_1, (global::IA)_1_3, };
+            global::B _1_2;
+            global::IA _1_1;
+            global::A _1_4;
+            global::IA _1_3;
+            global::IA[] _1_0;
+            _1_2 = new global::B();
+            _1_1 = (global::IA)_1_2;
+            _1_4 = new global::A();
+            _1_3 = (global::IA)_1_4;
+            _1_0 = new global::IA[]{(global::IA)_1_1, (global::IA)_1_3, };
             return _1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::IA, global::IA[]>>(_0_0, () =>
@@ -7796,7 +8897,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String>();
+        global::System.String _0_0;
+        _0_0 = this.Resolve<global::System.String>();
         TResult result;
         try
         {
@@ -7813,7 +8915,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String>();
+        global::System.String _0_0;
+        _0_0 = this.Resolve<global::System.String>();
         return new global::StrongInject.Owned<global::System.String>(_0_0, () =>
         {
         });
@@ -7853,7 +8956,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String>();
+        global::System.Collections.Generic.List<global::System.String> _0_0;
+        _0_0 = this.Resolve<global::System.String>();
         TResult result;
         try
         {
@@ -7871,7 +8975,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String>();
+        global::System.Collections.Generic.List<global::System.String> _0_0;
+        _0_0 = this.Resolve<global::System.String>();
         return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String>>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -7912,7 +9017,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String[]>();
+        global::System.Collections.Generic.List<global::System.String[]> _0_0;
+        _0_0 = this.Resolve<global::System.String[]>();
         TResult result;
         try
         {
@@ -7930,7 +9036,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String[]>();
+        global::System.Collections.Generic.List<global::System.String[]> _0_0;
+        _0_0 = this.Resolve<global::System.String[]>();
         return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -7971,7 +9078,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String>();
+        global::System.Collections.Generic.List<global::System.String[]> _0_0;
+        _0_0 = this.Resolve<global::System.String>();
         TResult result;
         try
         {
@@ -7989,7 +9097,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.String>();
+        global::System.Collections.Generic.List<global::System.String[]> _0_0;
+        _0_0 = this.Resolve<global::System.String>();
         return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.String[]>>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -8029,7 +9138,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.Int32>();
+        (global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.Int32>();
         TResult result;
         try
         {
@@ -8046,7 +9156,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.Int32>();
+        (global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.Int32)>(_0_0, () =>
         {
         });
@@ -8085,7 +9196,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
+        (global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[] _0_0;
+        _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
         TResult result;
         try
         {
@@ -8103,7 +9215,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
+        (global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[] _0_0;
+        _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -8143,7 +9256,8 @@ partial class Container<T>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container<T>));
-        var _0_0 = this.Resolve<global::System.Int32>();
+        (T, global::System.Int32) _0_0;
+        _0_0 = this.Resolve<global::System.Int32>();
         TResult result;
         try
         {
@@ -8160,7 +9274,8 @@ partial class Container<T>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container<T>));
-        var _0_0 = this.Resolve<global::System.Int32>();
+        (T, global::System.Int32) _0_0;
+        _0_0 = this.Resolve<global::System.Int32>();
         return new global::StrongInject.Owned<(T, global::System.Int32)>(_0_0, () =>
         {
         });
@@ -8249,8 +9364,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A<global::System.Int32>();
-        var _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
+        global::A<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_1 = new global::A<global::System.Int32>();
+        _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
         TResult result;
         try
         {
@@ -8267,8 +9384,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A<global::System.Int32>();
-        var _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
+        global::A<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_1 = new global::A<global::System.Int32>();
+        _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
         return new global::StrongInject.Owned<global::System.Int32>(_0_0, () =>
         {
         });
@@ -8358,17 +9477,101 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_10 = new global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>();
-        var _0_9 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>(a: _0_10);
-        var _0_8 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>(a: _0_9);
-        var _0_7 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>(a: _0_8);
-        var _0_6 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>(a: _0_7);
-        var _0_5 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>(a: _0_6);
-        var _0_4 = this.Resolve<global::A<global::A<global::A<global::A<global::System.Int32>>>>>(a: _0_5);
-        var _0_3 = this.Resolve<global::A<global::A<global::A<global::System.Int32>>>>(a: _0_4);
-        var _0_2 = this.Resolve<global::A<global::A<global::System.Int32>>>(a: _0_3);
-        var _0_1 = this.Resolve<global::A<global::System.Int32>>(a: _0_2);
-        var _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>> _0_10;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>> _0_9;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>> _0_8;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>> _0_7;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>> _0_6;
+        global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>> _0_5;
+        global::A<global::A<global::A<global::A<global::System.Int32>>>> _0_4;
+        global::A<global::A<global::A<global::System.Int32>>> _0_3;
+        global::A<global::A<global::System.Int32>> _0_2;
+        global::A<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_10 = new global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>();
+        _0_9 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>(a: _0_10);
+        try
+        {
+            _0_8 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>(a: _0_9);
+            try
+            {
+                _0_7 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>(a: _0_8);
+                try
+                {
+                    _0_6 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>(a: _0_7);
+                    try
+                    {
+                        _0_5 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>(a: _0_6);
+                        try
+                        {
+                            _0_4 = this.Resolve<global::A<global::A<global::A<global::A<global::System.Int32>>>>>(a: _0_5);
+                            try
+                            {
+                                _0_3 = this.Resolve<global::A<global::A<global::A<global::System.Int32>>>>(a: _0_4);
+                                try
+                                {
+                                    _0_2 = this.Resolve<global::A<global::A<global::System.Int32>>>(a: _0_3);
+                                    try
+                                    {
+                                        _0_1 = this.Resolve<global::A<global::System.Int32>>(a: _0_2);
+                                        try
+                                        {
+                                            _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
+                                        }
+                                        catch
+                                        {
+                                            global::StrongInject.Helpers.Dispose(_0_1);
+                                            throw;
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        global::StrongInject.Helpers.Dispose(_0_2);
+                                        throw;
+                                    }
+                                }
+                                catch
+                                {
+                                    global::StrongInject.Helpers.Dispose(_0_3);
+                                    throw;
+                                }
+                            }
+                            catch
+                            {
+                                global::StrongInject.Helpers.Dispose(_0_4);
+                                throw;
+                            }
+                        }
+                        catch
+                        {
+                            global::StrongInject.Helpers.Dispose(_0_5);
+                            throw;
+                        }
+                    }
+                    catch
+                    {
+                        global::StrongInject.Helpers.Dispose(_0_6);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    global::StrongInject.Helpers.Dispose(_0_7);
+                    throw;
+                }
+            }
+            catch
+            {
+                global::StrongInject.Helpers.Dispose(_0_8);
+                throw;
+            }
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_9);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -8394,17 +9597,101 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_10 = new global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>();
-        var _0_9 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>(a: _0_10);
-        var _0_8 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>(a: _0_9);
-        var _0_7 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>(a: _0_8);
-        var _0_6 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>(a: _0_7);
-        var _0_5 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>(a: _0_6);
-        var _0_4 = this.Resolve<global::A<global::A<global::A<global::A<global::System.Int32>>>>>(a: _0_5);
-        var _0_3 = this.Resolve<global::A<global::A<global::A<global::System.Int32>>>>(a: _0_4);
-        var _0_2 = this.Resolve<global::A<global::A<global::System.Int32>>>(a: _0_3);
-        var _0_1 = this.Resolve<global::A<global::System.Int32>>(a: _0_2);
-        var _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>> _0_10;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>> _0_9;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>> _0_8;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>> _0_7;
+        global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>> _0_6;
+        global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>> _0_5;
+        global::A<global::A<global::A<global::A<global::System.Int32>>>> _0_4;
+        global::A<global::A<global::A<global::System.Int32>>> _0_3;
+        global::A<global::A<global::System.Int32>> _0_2;
+        global::A<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_10 = new global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>();
+        _0_9 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>>(a: _0_10);
+        try
+        {
+            _0_8 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>>(a: _0_9);
+            try
+            {
+                _0_7 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>>(a: _0_8);
+                try
+                {
+                    _0_6 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>>(a: _0_7);
+                    try
+                    {
+                        _0_5 = this.Resolve<global::A<global::A<global::A<global::A<global::A<global::System.Int32>>>>>>(a: _0_6);
+                        try
+                        {
+                            _0_4 = this.Resolve<global::A<global::A<global::A<global::A<global::System.Int32>>>>>(a: _0_5);
+                            try
+                            {
+                                _0_3 = this.Resolve<global::A<global::A<global::A<global::System.Int32>>>>(a: _0_4);
+                                try
+                                {
+                                    _0_2 = this.Resolve<global::A<global::A<global::System.Int32>>>(a: _0_3);
+                                    try
+                                    {
+                                        _0_1 = this.Resolve<global::A<global::System.Int32>>(a: _0_2);
+                                        try
+                                        {
+                                            _0_0 = this.Resolve<global::System.Int32>(a: _0_1);
+                                        }
+                                        catch
+                                        {
+                                            global::StrongInject.Helpers.Dispose(_0_1);
+                                            throw;
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        global::StrongInject.Helpers.Dispose(_0_2);
+                                        throw;
+                                    }
+                                }
+                                catch
+                                {
+                                    global::StrongInject.Helpers.Dispose(_0_3);
+                                    throw;
+                                }
+                            }
+                            catch
+                            {
+                                global::StrongInject.Helpers.Dispose(_0_4);
+                                throw;
+                            }
+                        }
+                        catch
+                        {
+                            global::StrongInject.Helpers.Dispose(_0_5);
+                            throw;
+                        }
+                    }
+                    catch
+                    {
+                        global::StrongInject.Helpers.Dispose(_0_6);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    global::StrongInject.Helpers.Dispose(_0_7);
+                    throw;
+                }
+            }
+            catch
+            {
+                global::StrongInject.Helpers.Dispose(_0_8);
+                throw;
+            }
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_9);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::System.Int32>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_1);
@@ -8543,7 +9830,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A>();
+        global::A _0_0;
+        _0_0 = this.Resolve<global::A>();
         TResult result;
         try
         {
@@ -8560,7 +9848,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A>();
+        global::A _0_0;
+        _0_0 = this.Resolve<global::A>();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -8570,7 +9859,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A?>();
+        global::A? _0_0;
+        _0_0 = this.Resolve<global::A?>();
         TResult result;
         try
         {
@@ -8587,7 +9877,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A?>();
+        global::A? _0_0;
+        _0_0 = this.Resolve<global::A?>();
         return new global::StrongInject.Owned<global::A?>(_0_0, () =>
         {
         });
@@ -8597,7 +9888,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::B>();
+        global::B _0_0;
+        _0_0 = this.Resolve<global::B>();
         TResult result;
         try
         {
@@ -8615,7 +9907,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::B>();
+        global::B _0_0;
+        _0_0 = this.Resolve<global::B>();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -8636,7 +9929,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::D>();
+        global::D _0_0;
+        _0_0 = this.Resolve<global::D>();
         TResult result;
         try
         {
@@ -8654,7 +9948,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::D>();
+        global::D _0_0;
+        _0_0 = this.Resolve<global::D>();
         return new global::StrongInject.Owned<global::D>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -8685,7 +9980,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::System.Int32>();
+        global::System.Int32 _0_0;
+        _0_0 = this.Resolve<global::System.Int32>();
         TResult result;
         try
         {
@@ -8702,7 +9998,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::System.Int32>();
+        global::System.Int32 _0_0;
+        _0_0 = this.Resolve<global::System.Int32>();
         return new global::StrongInject.Owned<global::System.Int32>(_0_0, () =>
         {
         });
@@ -8734,7 +10031,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         TResult result;
         try
         {
@@ -8752,7 +10050,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -8853,7 +10152,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A>();
+        global::A _0_0;
+        _0_0 = this.Resolve<global::A>();
         TResult result;
         try
         {
@@ -8870,7 +10170,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A>();
+        global::A _0_0;
+        _0_0 = this.Resolve<global::A>();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -8900,7 +10201,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::C>();
+        global::C _0_0;
+        _0_0 = this.Resolve<global::C>();
         TResult result;
         try
         {
@@ -8917,7 +10219,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::C>();
+        global::C _0_0;
+        _0_0 = this.Resolve<global::C>();
         return new global::StrongInject.Owned<global::C>(_0_0, () =>
         {
         });
@@ -8949,7 +10252,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         TResult result;
         try
         {
@@ -8967,7 +10271,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -9089,7 +10394,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::B>();
+        global::B _0_0;
+        _0_0 = this.Resolve<global::B>();
         TResult result;
         try
         {
@@ -9107,7 +10413,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::B>();
+        global::B _0_0;
+        _0_0 = this.Resolve<global::B>();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -9128,7 +10435,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::I>();
+        global::I _0_0;
+        _0_0 = this.Resolve<global::I>();
         TResult result;
         try
         {
@@ -9146,7 +10454,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::I>();
+        global::I _0_0;
+        _0_0 = this.Resolve<global::I>();
         return new global::StrongInject.Owned<global::I>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -9157,7 +10466,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::System.ValueType>();
+        global::System.ValueType _0_0;
+        _0_0 = this.Resolve<global::System.ValueType>();
         TResult result;
         try
         {
@@ -9175,7 +10485,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::System.ValueType>();
+        global::System.ValueType _0_0;
+        _0_0 = this.Resolve<global::System.ValueType>();
         return new global::StrongInject.Owned<global::System.ValueType>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -9198,7 +10509,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         TResult result;
         try
         {
@@ -9216,7 +10528,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -9345,7 +10658,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A>();
+        global::A _0_0;
+        _0_0 = this.Resolve<global::A>();
         TResult result;
         try
         {
@@ -9362,7 +10676,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::A>();
+        global::A _0_0;
+        _0_0 = this.Resolve<global::A>();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -9392,7 +10707,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::C>();
+        global::C _0_0;
+        _0_0 = this.Resolve<global::C>();
         TResult result;
         try
         {
@@ -9409,7 +10725,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::C>();
+        global::C _0_0;
+        _0_0 = this.Resolve<global::C>();
         return new global::StrongInject.Owned<global::C>(_0_0, () =>
         {
         });
@@ -9429,7 +10746,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::E>();
+        global::E _0_0;
+        _0_0 = this.Resolve<global::E>();
         TResult result;
         try
         {
@@ -9446,7 +10764,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::E>();
+        global::E _0_0;
+        _0_0 = this.Resolve<global::E>();
         return new global::StrongInject.Owned<global::E>(_0_0, () =>
         {
         });
@@ -9456,7 +10775,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::F<global::System.Int32>>();
+        global::F<global::System.Int32> _0_0;
+        _0_0 = this.Resolve<global::F<global::System.Int32>>();
         TResult result;
         try
         {
@@ -9473,7 +10793,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::F<global::System.Int32>>();
+        global::F<global::System.Int32> _0_0;
+        _0_0 = this.Resolve<global::F<global::System.Int32>>();
         return new global::StrongInject.Owned<global::F<global::System.Int32>>(_0_0, () =>
         {
         });
@@ -9483,7 +10804,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::G<global::System.Int32>>();
+        global::G<global::System.Int32> _0_0;
+        _0_0 = this.Resolve<global::G<global::System.Int32>>();
         TResult result;
         try
         {
@@ -9500,7 +10822,8 @@ partial class Container1
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container1));
-        var _0_0 = this.Resolve<global::G<global::System.Int32>>();
+        global::G<global::System.Int32> _0_0;
+        _0_0 = this.Resolve<global::G<global::System.Int32>>();
         return new global::StrongInject.Owned<global::G<global::System.Int32>>(_0_0, () =>
         {
         });
@@ -9542,7 +10865,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         TResult result;
         try
         {
@@ -9560,7 +10884,8 @@ partial class Container2<T1>
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container2<T1>));
-        var _0_0 = this.Resolve<T1>();
+        T1 _0_0;
+        _0_0 = this.Resolve<T1>();
         return new global::StrongInject.Owned<T1>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -9705,7 +11030,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.Enum>();
+        global::System.Enum _0_0;
+        _0_0 = this.Resolve<global::System.Enum>();
         TResult result;
         try
         {
@@ -9723,7 +11049,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::System.Enum>();
+        global::System.Enum _0_0;
+        _0_0 = this.Resolve<global::System.Enum>();
         return new global::StrongInject.Owned<global::System.Enum>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -9734,7 +11061,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::E>();
+        global::E _0_0;
+        _0_0 = this.Resolve<global::E>();
         TResult result;
         try
         {
@@ -9751,7 +11079,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this.Resolve<global::E>();
+        global::E _0_0;
+        _0_0 = this.Resolve<global::E>();
         return new global::StrongInject.Owned<global::E>(_0_0, () =>
         {
         });
@@ -9960,7 +11289,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module.M<global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module.M<global::System.Int32>();
         TResult result;
         try
         {
@@ -9977,7 +11307,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module.M<global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module.M<global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0_0, () =>
         {
         });
@@ -10078,7 +11409,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
         TResult result;
         try
         {
@@ -10095,7 +11427,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0_0, () =>
         {
         });
@@ -10144,7 +11477,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
         TResult result;
         try
         {
@@ -10161,7 +11495,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module2.M<global::System.Int32, global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0_0, () =>
         {
         });
@@ -10210,7 +11545,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module1.M<global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module1.M<global::System.Int32>();
         TResult result;
         try
         {
@@ -10227,7 +11563,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module1.M<global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module1.M<global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0_0, () =>
         {
         });
@@ -10341,7 +11678,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module1.M<global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module1.M<global::System.Int32>();
         TResult result;
         try
         {
@@ -10358,7 +11696,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = global::Module1.M<global::System.Int32>();
+        (global::System.Int32, global::System.Int32) _0_0;
+        _0_0 = global::Module1.M<global::System.Int32>();
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)>(_0_0, () =>
         {
         });
@@ -10414,10 +11753,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        var _0_2 = global::Module1.M<global::System.Int32>();
-        var _0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, };
+        (global::System.Int32, global::System.Int32) _0_1;
+        (global::System.Int32, global::System.Int32) _0_2;
+        (global::System.Int32, global::System.Int32) _0_3;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        _0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        _0_2 = global::Module1.M<global::System.Int32>();
+        _0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, };
         TResult result;
         try
         {
@@ -10434,10 +11777,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        var _0_2 = global::Module1.M<global::System.Int32>();
-        var _0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, };
+        (global::System.Int32, global::System.Int32) _0_1;
+        (global::System.Int32, global::System.Int32) _0_2;
+        (global::System.Int32, global::System.Int32) _0_3;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        _0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        _0_2 = global::Module1.M<global::System.Int32>();
+        _0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, };
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0_0, () =>
         {
         });
@@ -10494,11 +11841,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this.M();
-        var _0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        var _0_3 = global::Module1.M<global::System.Int32>();
-        var _0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, ((global::System.Int32, global::System.Int32))_0_4, };
+        (global::System.Int32, global::System.Int32) _0_1;
+        (global::System.Int32, global::System.Int32) _0_2;
+        (global::System.Int32, global::System.Int32) _0_3;
+        (global::System.Int32, global::System.Int32) _0_4;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        _0_1 = this.M();
+        _0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        _0_3 = global::Module1.M<global::System.Int32>();
+        _0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, ((global::System.Int32, global::System.Int32))_0_4, };
         TResult result;
         try
         {
@@ -10515,11 +11867,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this.M();
-        var _0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        var _0_3 = global::Module1.M<global::System.Int32>();
-        var _0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        var _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, ((global::System.Int32, global::System.Int32))_0_4, };
+        (global::System.Int32, global::System.Int32) _0_1;
+        (global::System.Int32, global::System.Int32) _0_2;
+        (global::System.Int32, global::System.Int32) _0_3;
+        (global::System.Int32, global::System.Int32) _0_4;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        _0_1 = this.M();
+        _0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        _0_3 = global::Module1.M<global::System.Int32>();
+        _0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_0_1, ((global::System.Int32, global::System.Int32))_0_2, ((global::System.Int32, global::System.Int32))_0_3, ((global::System.Int32, global::System.Int32))_0_4, };
         return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0_0, () =>
         {
         });
@@ -10572,11 +11929,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::A();
-        var _0_2 = (global::IA)_0_3;
-        var _0_1 = new global::Decorator1(a: _0_2);
-        var _0_4 = new global::B();
-        var _0_0 = new global::Decorator2(a: _0_1, b: _0_4);
+        global::A _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::B _0_4;
+        global::IA _0_0;
+        _0_3 = new global::A();
+        _0_2 = (global::IA)_0_3;
+        _0_1 = new global::Decorator1(a: _0_2);
+        _0_4 = new global::B();
+        _0_0 = new global::Decorator2(a: _0_1, b: _0_4);
         TResult result;
         try
         {
@@ -10593,11 +11955,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::A();
-        var _0_2 = (global::IA)_0_3;
-        var _0_1 = new global::Decorator1(a: _0_2);
-        var _0_4 = new global::B();
-        var _0_0 = new global::Decorator2(a: _0_1, b: _0_4);
+        global::A _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::B _0_4;
+        global::IA _0_0;
+        _0_3 = new global::A();
+        _0_2 = (global::IA)_0_3;
+        _0_1 = new global::Decorator1(a: _0_2);
+        _0_4 = new global::B();
+        _0_0 = new global::Decorator2(a: _0_1, b: _0_4);
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -10645,11 +12012,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::A();
-        var _0_2 = (global::IA)_0_3;
-        var _0_1 = this.Decorator1(a: _0_2);
-        var _0_4 = new global::B();
-        var _0_0 = this.Decorator2(a: _0_1, b: _0_4);
+        global::A _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::B _0_4;
+        global::IA _0_0;
+        _0_3 = new global::A();
+        _0_2 = (global::IA)_0_3;
+        _0_1 = this.Decorator1(a: _0_2);
+        _0_4 = new global::B();
+        _0_0 = this.Decorator2(a: _0_1, b: _0_4);
         TResult result;
         try
         {
@@ -10666,11 +12038,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = new global::A();
-        var _0_2 = (global::IA)_0_3;
-        var _0_1 = this.Decorator1(a: _0_2);
-        var _0_4 = new global::B();
-        var _0_0 = this.Decorator2(a: _0_1, b: _0_4);
+        global::A _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::B _0_4;
+        global::IA _0_0;
+        _0_3 = new global::A();
+        _0_2 = (global::IA)_0_3;
+        _0_1 = this.Decorator1(a: _0_2);
+        _0_4 = new global::B();
+        _0_0 = this.Decorator2(a: _0_1, b: _0_4);
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -10725,8 +12102,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = (global::IA)_0_1;
+        global::A _0_1;
+        global::IA _0_0;
+        _0_1 = new global::A();
+        _0_0 = (global::IA)_0_1;
         TResult result;
         try
         {
@@ -10743,8 +12122,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = (global::IA)_0_1;
+        global::A _0_1;
+        global::IA _0_0;
+        _0_1 = new global::A();
+        _0_0 = (global::IA)_0_1;
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -10799,8 +12180,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = (global::IA)_0_1;
+        global::A _0_1;
+        global::IA _0_0;
+        _0_1 = new global::A();
+        _0_0 = (global::IA)_0_1;
         TResult result;
         try
         {
@@ -10817,8 +12200,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = (global::IA)_0_1;
+        global::A _0_1;
+        global::IA _0_0;
+        _0_1 = new global::A();
+        _0_0 = (global::IA)_0_1;
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -10873,18 +12258,39 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_9 = new global::A();
-        var _0_8 = this.Decorator1<global::A>(t: _0_9);
-        var _0_7 = (global::IA)_0_8;
-        var _0_6 = this.Decorator1<global::IA>(t: _0_7);
-        var _0_5 = new global::IA[]{(global::IA)_0_6, };
-        var _0_4 = this.Decorator3<global::IA>(a: _0_5);
-        var _0_3 = this.Decorator1<global::IA[]>(t: _0_4);
-        var _0_2 = this.ListFactory<global::IA>(a: _0_3);
-        var _0_11 = new global::B();
-        var _0_10 = this.Decorator1<global::B>(t: _0_11);
-        var _0_1 = this.Decorator2<global::IA>(a: _0_2, b: _0_10);
-        var _0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: _0_1);
+        global::A _0_9;
+        global::A _0_8;
+        global::IA _0_7;
+        global::IA _0_6;
+        global::IA[] _0_5;
+        global::IA[] _0_4;
+        global::IA[] _0_3;
+        global::System.Collections.Generic.List<global::IA> _0_2;
+        global::B _0_11;
+        global::B _0_10;
+        global::System.Collections.Generic.List<global::IA> _0_1;
+        global::System.Collections.Generic.List<global::IA> _0_0;
+        _0_9 = new global::A();
+        _0_8 = this.Decorator1<global::A>(t: _0_9);
+        _0_7 = (global::IA)_0_8;
+        _0_6 = this.Decorator1<global::IA>(t: _0_7);
+        _0_5 = new global::IA[]{(global::IA)_0_6, };
+        _0_4 = this.Decorator3<global::IA>(a: _0_5);
+        _0_3 = this.Decorator1<global::IA[]>(t: _0_4);
+        _0_2 = this.ListFactory<global::IA>(a: _0_3);
+        try
+        {
+            _0_11 = new global::B();
+            _0_10 = this.Decorator1<global::B>(t: _0_11);
+            _0_1 = this.Decorator2<global::IA>(a: _0_2, b: _0_10);
+            _0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: _0_1);
+        }
+        catch
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0_2);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -10902,18 +12308,39 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_9 = new global::A();
-        var _0_8 = this.Decorator1<global::A>(t: _0_9);
-        var _0_7 = (global::IA)_0_8;
-        var _0_6 = this.Decorator1<global::IA>(t: _0_7);
-        var _0_5 = new global::IA[]{(global::IA)_0_6, };
-        var _0_4 = this.Decorator3<global::IA>(a: _0_5);
-        var _0_3 = this.Decorator1<global::IA[]>(t: _0_4);
-        var _0_2 = this.ListFactory<global::IA>(a: _0_3);
-        var _0_11 = new global::B();
-        var _0_10 = this.Decorator1<global::B>(t: _0_11);
-        var _0_1 = this.Decorator2<global::IA>(a: _0_2, b: _0_10);
-        var _0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: _0_1);
+        global::A _0_9;
+        global::A _0_8;
+        global::IA _0_7;
+        global::IA _0_6;
+        global::IA[] _0_5;
+        global::IA[] _0_4;
+        global::IA[] _0_3;
+        global::System.Collections.Generic.List<global::IA> _0_2;
+        global::B _0_11;
+        global::B _0_10;
+        global::System.Collections.Generic.List<global::IA> _0_1;
+        global::System.Collections.Generic.List<global::IA> _0_0;
+        _0_9 = new global::A();
+        _0_8 = this.Decorator1<global::A>(t: _0_9);
+        _0_7 = (global::IA)_0_8;
+        _0_6 = this.Decorator1<global::IA>(t: _0_7);
+        _0_5 = new global::IA[]{(global::IA)_0_6, };
+        _0_4 = this.Decorator3<global::IA>(a: _0_5);
+        _0_3 = this.Decorator1<global::IA[]>(t: _0_4);
+        _0_2 = this.ListFactory<global::IA>(a: _0_3);
+        try
+        {
+            _0_11 = new global::B();
+            _0_10 = this.Decorator1<global::B>(t: _0_11);
+            _0_1 = this.Decorator2<global::IA>(a: _0_2, b: _0_10);
+            _0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: _0_1);
+        }
+        catch
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0_2);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::System.Collections.Generic.List<global::IA>>(_0_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0_2);
@@ -10962,7 +12389,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::IA, global::IA> _0_0 = (param0_0) =>
+        global::System.Func<global::IA, global::IA> _0_0;
+        _0_0 = (param0_0) =>
         {
             return param0_0;
         };
@@ -10982,7 +12410,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::IA, global::IA> _0_0 = (param0_0) =>
+        global::System.Func<global::IA, global::IA> _0_0;
+        _0_0 = (param0_0) =>
         {
             return param0_0;
         };
@@ -11050,8 +12479,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = this._ia;
-            var _0_0 = new global::Decorator(a: _0_1);
+            global::IA _0_1;
+            global::IA _0_0;
+            _0_1 = this._ia;
+            _0_0 = new global::Decorator(a: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -11069,7 +12500,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::IA _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -11086,7 +12518,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::IA _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -11161,7 +12594,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = this.GetIA();
+            global::IA _0_0;
+            _0_0 = this.GetIA();
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
             {
@@ -11185,8 +12619,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = GetSingleInstanceField1();
-            var _0_0 = new global::Decorator(a: _0_1);
+            global::IA _0_1;
+            global::IA _0_0;
+            _0_1 = GetSingleInstanceField1();
+            _0_0 = new global::Decorator(a: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -11204,7 +12640,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::IA _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -11221,7 +12658,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::IA _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -11280,12 +12718,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_5 = new global::A();
-        var _0_4 = global::Module1.Decorator<global::A>(a: _0_5);
-        var _0_3 = (global::IA)_0_4;
-        var _0_2 = global::Module1.Decorator(a: _0_3);
-        var _0_1 = new global::Decorator(a: _0_2);
-        var _0_0 = global::Module1.Decorator<global::IA>(a: _0_1);
+        global::A _0_5;
+        global::A _0_4;
+        global::IA _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_5 = new global::A();
+        _0_4 = global::Module1.Decorator<global::A>(a: _0_5);
+        _0_3 = (global::IA)_0_4;
+        _0_2 = global::Module1.Decorator(a: _0_3);
+        _0_1 = new global::Decorator(a: _0_2);
+        _0_0 = global::Module1.Decorator<global::IA>(a: _0_1);
         TResult result;
         try
         {
@@ -11302,12 +12746,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_5 = new global::A();
-        var _0_4 = global::Module1.Decorator<global::A>(a: _0_5);
-        var _0_3 = (global::IA)_0_4;
-        var _0_2 = global::Module1.Decorator(a: _0_3);
-        var _0_1 = new global::Decorator(a: _0_2);
-        var _0_0 = global::Module1.Decorator<global::IA>(a: _0_1);
+        global::A _0_5;
+        global::A _0_4;
+        global::IA _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_5 = new global::A();
+        _0_4 = global::Module1.Decorator<global::A>(a: _0_5);
+        _0_3 = (global::IA)_0_4;
+        _0_2 = global::Module1.Decorator(a: _0_3);
+        _0_1 = new global::Decorator(a: _0_2);
+        _0_0 = global::Module1.Decorator<global::IA>(a: _0_1);
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -11439,9 +12889,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::A();
-        var _0_1 = (global::IA)_0_2;
-        var _0_0 = new global::DecoratorA(a: _0_1);
+        global::A _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::IA)_0_2;
+        _0_0 = new global::DecoratorA(a: _0_1);
         TResult result;
         try
         {
@@ -11458,9 +12911,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::A();
-        var _0_1 = (global::IA)_0_2;
-        var _0_0 = new global::DecoratorA(a: _0_1);
+        global::A _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::IA)_0_2;
+        _0_0 = new global::DecoratorA(a: _0_1);
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
         });
@@ -11470,9 +12926,21 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::IB)_0_2;
-        var _0_0 = new global::DecoratorB(b: _0_1);
+        global::B _0_2;
+        global::IB _0_1;
+        global::IB _0_0;
+        _0_2 = new global::B();
+        try
+        {
+            _0_1 = (global::IB)_0_2;
+            _0_0 = new global::DecoratorB(b: _0_1);
+        }
+        catch
+        {
+            ((global::System.IDisposable)_0_2).Dispose();
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -11490,9 +12958,21 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::IB)_0_2;
-        var _0_0 = new global::DecoratorB(b: _0_1);
+        global::B _0_2;
+        global::IB _0_1;
+        global::IB _0_0;
+        _0_2 = new global::B();
+        try
+        {
+            _0_1 = (global::IB)_0_2;
+            _0_0 = new global::DecoratorB(b: _0_1);
+        }
+        catch
+        {
+            ((global::System.IDisposable)_0_2).Dispose();
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::IB>(_0_0, () =>
         {
             ((global::System.IDisposable)_0_2).Dispose();
@@ -11555,9 +13035,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::A();
-        var _0_1 = (global::IA)_0_2;
-        var _0_0 = new global::DecoratorA(a: _0_1);
+        global::A _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::IA)_0_2;
+        _0_0 = new global::DecoratorA(a: _0_1);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         TResult result;
         try
@@ -11575,9 +13058,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::A();
-        var _0_1 = (global::IA)_0_2;
-        var _0_0 = new global::DecoratorA(a: _0_1);
+        global::A _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::IA)_0_2;
+        _0_0 = new global::DecoratorA(a: _0_1);
         await ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
@@ -11588,9 +13074,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::IB)_0_2;
-        var _0_0 = new global::DecoratorB(b: _0_1);
+        global::B _0_2;
+        global::IB _0_1;
+        global::IB _0_0;
+        _0_2 = new global::B();
+        _0_1 = (global::IB)_0_2;
+        _0_0 = new global::DecoratorB(b: _0_1);
         ((global::StrongInject.IRequiresInitialization)_0_0).Initialize();
         TResult result;
         try
@@ -11608,9 +13097,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::B();
-        var _0_1 = (global::IB)_0_2;
-        var _0_0 = new global::DecoratorB(b: _0_1);
+        global::B _0_2;
+        global::IB _0_1;
+        global::IB _0_0;
+        _0_2 = new global::B();
+        _0_1 = (global::IB)_0_2;
+        _0_0 = new global::DecoratorB(b: _0_1);
         ((global::StrongInject.IRequiresInitialization)_0_0).Initialize();
         return new global::StrongInject.Owned<global::IB>(_0_0, () =>
         {
@@ -11654,8 +13146,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = await this.Decorator(a: _0_1);
+        global::A _0_1;
+        global::A _0_0;
+        _0_1 = new global::A();
+        _0_0 = await this.Decorator(a: _0_1);
         TResult result;
         try
         {
@@ -11672,8 +13166,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = await this.Decorator(a: _0_1);
+        global::A _0_1;
+        global::A _0_0;
+        _0_1 = new global::A();
+        _0_0 = await this.Decorator(a: _0_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -11717,8 +13213,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = await this.Decorator<global::A>(t: _0_1);
+        global::A _0_1;
+        global::A _0_0;
+        _0_1 = new global::A();
+        _0_0 = await this.Decorator<global::A>(t: _0_1);
         TResult result;
         try
         {
@@ -11735,8 +13233,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::A();
-        var _0_0 = await this.Decorator<global::A>(t: _0_1);
+        global::A _0_1;
+        global::A _0_0;
+        _0_1 = new global::A();
+        _0_0 = await this.Decorator<global::A>(t: _0_1);
         return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
         {
         });
@@ -11794,16 +13294,59 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_9 = new global::A();
-        var _0_8 = this.Decorator1<global::A>(t: _0_9);
-        var _0_7 = this.Decorator2<global::A>(t: _0_8);
-        var _0_6 = (global::IA)_0_7;
-        var _0_5 = new global::Decorator1(a: _0_6);
-        var _0_4 = new global::Decorator2(a: _0_5);
-        var _0_3 = this.Decorator1(a: _0_4);
-        var _0_2 = this.Decorator2(a: _0_3);
-        var _0_1 = this.Decorator1<global::IA>(t: _0_2);
-        var _0_0 = this.Decorator2<global::IA>(t: _0_1);
+        global::A _0_9;
+        global::A _0_8;
+        global::A _0_7;
+        global::IA _0_6;
+        global::IA _0_5;
+        global::IA _0_4;
+        global::IA _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_9 = new global::A();
+        _0_8 = this.Decorator1<global::A>(t: _0_9);
+        try
+        {
+            _0_7 = this.Decorator2<global::A>(t: _0_8);
+            _0_6 = (global::IA)_0_7;
+            _0_5 = new global::Decorator1(a: _0_6);
+            try
+            {
+                _0_4 = new global::Decorator2(a: _0_5);
+                _0_3 = this.Decorator1(a: _0_4);
+                try
+                {
+                    _0_2 = this.Decorator2(a: _0_3);
+                    _0_1 = this.Decorator1<global::IA>(t: _0_2);
+                    try
+                    {
+                        _0_0 = this.Decorator2<global::IA>(t: _0_1);
+                    }
+                    catch
+                    {
+                        await global::StrongInject.Helpers.DisposeAsync(_0_1);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    await global::StrongInject.Helpers.DisposeAsync(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                ((global::System.IDisposable)_0_5).Dispose();
+                throw;
+            }
+        }
+        catch
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0_8);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -11824,16 +13367,59 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_9 = new global::A();
-        var _0_8 = this.Decorator1<global::A>(t: _0_9);
-        var _0_7 = this.Decorator2<global::A>(t: _0_8);
-        var _0_6 = (global::IA)_0_7;
-        var _0_5 = new global::Decorator1(a: _0_6);
-        var _0_4 = new global::Decorator2(a: _0_5);
-        var _0_3 = this.Decorator1(a: _0_4);
-        var _0_2 = this.Decorator2(a: _0_3);
-        var _0_1 = this.Decorator1<global::IA>(t: _0_2);
-        var _0_0 = this.Decorator2<global::IA>(t: _0_1);
+        global::A _0_9;
+        global::A _0_8;
+        global::A _0_7;
+        global::IA _0_6;
+        global::IA _0_5;
+        global::IA _0_4;
+        global::IA _0_3;
+        global::IA _0_2;
+        global::IA _0_1;
+        global::IA _0_0;
+        _0_9 = new global::A();
+        _0_8 = this.Decorator1<global::A>(t: _0_9);
+        try
+        {
+            _0_7 = this.Decorator2<global::A>(t: _0_8);
+            _0_6 = (global::IA)_0_7;
+            _0_5 = new global::Decorator1(a: _0_6);
+            try
+            {
+                _0_4 = new global::Decorator2(a: _0_5);
+                _0_3 = this.Decorator1(a: _0_4);
+                try
+                {
+                    _0_2 = this.Decorator2(a: _0_3);
+                    _0_1 = this.Decorator1<global::IA>(t: _0_2);
+                    try
+                    {
+                        _0_0 = this.Decorator2<global::IA>(t: _0_1);
+                    }
+                    catch
+                    {
+                        await global::StrongInject.Helpers.DisposeAsync(_0_1);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    await global::StrongInject.Helpers.DisposeAsync(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                ((global::System.IDisposable)_0_5).Dispose();
+                throw;
+            }
+        }
+        catch
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0_8);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::IA>(_0_0, async () =>
         {
             await global::StrongInject.Helpers.DisposeAsync(_0_1);
@@ -11892,7 +13478,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._b;
+        global::B _0_0;
+        _0_0 = this._b;
         TResult result;
         try
         {
@@ -11909,7 +13496,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._b;
+        global::B _0_0;
+        _0_0 = this._b;
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
         });
@@ -11929,8 +13517,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::I3)_0_1;
+        global::B _0_1;
+        global::I3 _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::I3)_0_1;
         TResult result;
         try
         {
@@ -11947,8 +13537,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::I3)_0_1;
+        global::B _0_1;
+        global::I3 _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::I3)_0_1;
         return new global::StrongInject.Owned<global::I3>(_0_0, () =>
         {
         });
@@ -11958,8 +13550,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::I2)_0_1;
+        global::B _0_1;
+        global::I2 _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::I2)_0_1;
         TResult result;
         try
         {
@@ -11976,8 +13570,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::I2)_0_1;
+        global::B _0_1;
+        global::I2 _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::I2)_0_1;
         return new global::StrongInject.Owned<global::I2>(_0_0, () =>
         {
         });
@@ -11987,8 +13583,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::I1)_0_1;
+        global::B _0_1;
+        global::I1 _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::I1)_0_1;
         TResult result;
         try
         {
@@ -12005,8 +13603,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::I1)_0_1;
+        global::B _0_1;
+        global::I1 _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::I1)_0_1;
         return new global::StrongInject.Owned<global::I1>(_0_0, () =>
         {
         });
@@ -12016,8 +13616,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::StrongInject.IFactory<global::System.Int32>)_0_1;
+        global::B _0_1;
+        global::StrongInject.IFactory<global::System.Int32> _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::StrongInject.IFactory<global::System.Int32>)_0_1;
         TResult result;
         try
         {
@@ -12034,8 +13636,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._b;
-        var _0_0 = (global::StrongInject.IFactory<global::System.Int32>)_0_1;
+        global::B _0_1;
+        global::StrongInject.IFactory<global::System.Int32> _0_0;
+        _0_1 = this._b;
+        _0_0 = (global::StrongInject.IFactory<global::System.Int32>)_0_1;
         return new global::StrongInject.Owned<global::StrongInject.IFactory<global::System.Int32>>(_0_0, () =>
         {
         });
@@ -12098,7 +13702,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._c;
+        global::C _0_0;
+        _0_0 = this._c;
         TResult result;
         try
         {
@@ -12115,7 +13720,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._c;
+        global::C _0_0;
+        _0_0 = this._c;
         return new global::StrongInject.Owned<global::C>(_0_0, () =>
         {
         });
@@ -12125,8 +13731,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._c;
-        var _0_0 = (global::B)_0_1;
+        global::C _0_1;
+        global::B _0_0;
+        _0_1 = this._c;
+        _0_0 = (global::B)_0_1;
         TResult result;
         try
         {
@@ -12143,8 +13751,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._c;
-        var _0_0 = (global::B)_0_1;
+        global::C _0_1;
+        global::B _0_0;
+        _0_1 = this._c;
+        _0_0 = (global::B)_0_1;
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
         });
@@ -12154,8 +13764,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._c;
-        var _0_0 = (global::A)_0_1;
+        global::C _0_1;
+        global::A _0_0;
+        _0_1 = this._c;
+        _0_0 = (global::A)_0_1;
         TResult result;
         try
         {
@@ -12172,8 +13784,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._c;
-        var _0_0 = (global::A)_0_1;
+        global::C _0_1;
+        global::A _0_0;
+        _0_1 = this._c;
+        _0_0 = (global::A)_0_1;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -12283,7 +13897,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._fac;
+        global::StrongInject.IFactory<global::StrongInject.IFactory<global::System.Int32>> _0_0;
+        _0_0 = this._fac;
         TResult result;
         try
         {
@@ -12300,7 +13915,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._fac;
+        global::StrongInject.IFactory<global::StrongInject.IFactory<global::System.Int32>> _0_0;
+        _0_0 = this._fac;
         return new global::StrongInject.Owned<global::StrongInject.IFactory<global::StrongInject.IFactory<global::System.Int32>>>(_0_0, () =>
         {
         });
@@ -12310,8 +13926,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._fac;
-        var _0_0 = _0_1.Create();
+        global::StrongInject.IFactory<global::StrongInject.IFactory<global::System.Int32>> _0_1;
+        global::StrongInject.IFactory<global::System.Int32> _0_0;
+        _0_1 = this._fac;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -12329,8 +13947,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._fac;
-        var _0_0 = _0_1.Create();
+        global::StrongInject.IFactory<global::StrongInject.IFactory<global::System.Int32>> _0_1;
+        global::StrongInject.IFactory<global::System.Int32> _0_0;
+        _0_1 = this._fac;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.Owned<global::StrongInject.IFactory<global::System.Int32>>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -12398,7 +14018,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         TResult result;
         try
         {
@@ -12415,7 +14036,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -12425,9 +14047,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -12445,9 +14070,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -12458,11 +14086,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -12481,11 +14123,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::C>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -12507,14 +14163,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -12534,14 +14223,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::E>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -12554,14 +14276,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -12581,14 +14336,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::I>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -12601,10 +14389,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -12622,10 +14423,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(_0_0, () =>
         {
             _0_2.Release(_0_1);
@@ -12669,7 +14483,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         TResult result;
         try
         {
@@ -12686,7 +14501,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -12696,8 +14512,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._a;
-        var _0_0 = (global::StrongInject.IFactory<global::A>)_0_1;
+        global::A _0_1;
+        global::StrongInject.IFactory<global::A> _0_0;
+        _0_1 = this._a;
+        _0_0 = (global::StrongInject.IFactory<global::A>)_0_1;
         TResult result;
         try
         {
@@ -12714,8 +14532,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._a;
-        var _0_0 = (global::StrongInject.IFactory<global::A>)_0_1;
+        global::A _0_1;
+        global::StrongInject.IFactory<global::A> _0_0;
+        _0_1 = this._a;
+        _0_0 = (global::StrongInject.IFactory<global::A>)_0_1;
         return new global::StrongInject.Owned<global::StrongInject.IFactory<global::A>>(_0_0, () =>
         {
         });
@@ -12758,7 +14578,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A<global::System.Int32> _0_0;
+        _0_0 = this._a;
         TResult result;
         try
         {
@@ -12775,7 +14596,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A<global::System.Int32> _0_0;
+        _0_0 = this._a;
         return new global::StrongInject.Owned<global::A<global::System.Int32>>(_0_0, () =>
         {
         });
@@ -12785,8 +14607,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._a;
-        var _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_1;
+        global::A<global::System.Int32> _0_1;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_0;
+        _0_1 = this._a;
+        _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_1;
         TResult result;
         try
         {
@@ -12803,8 +14627,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = this._a;
-        var _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_1;
+        global::A<global::System.Int32> _0_1;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_0;
+        _0_1 = this._a;
+        _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_1;
         return new global::StrongInject.Owned<global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>>(_0_0, () =>
         {
         });
@@ -12814,9 +14640,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A<global::System.Int32> _0_2;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_1;
+        global::A<global::A<global::System.Int32>> _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_2;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -12834,9 +14663,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A<global::System.Int32> _0_2;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_1;
+        global::A<global::A<global::System.Int32>> _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_2;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.Owned<global::A<global::A<global::System.Int32>>>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -12847,10 +14679,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_1;
+        global::A<global::System.Int32> _0_3;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_2;
+        global::A<global::A<global::System.Int32>> _0_1;
+        global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -12868,10 +14713,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_1;
+        global::A<global::System.Int32> _0_3;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_2;
+        global::A<global::A<global::System.Int32>> _0_1;
+        global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>>(_0_0, () =>
         {
             _0_2.Release(_0_1);
@@ -12882,11 +14740,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A<global::System.Int32> _0_4;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_3;
+        global::A<global::A<global::System.Int32>> _0_2;
+        global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>> _0_1;
+        global::A<global::A<global::A<global::System.Int32>>> _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_2;
+            _0_0 = _0_1.Create();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -12905,11 +14777,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A<global::System.Int32> _0_4;
+        global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>> _0_3;
+        global::A<global::A<global::System.Int32>> _0_2;
+        global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>> _0_1;
+        global::A<global::A<global::A<global::System.Int32>>> _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::A<global::A<global::System.Int32>>>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IFactory<global::A<global::A<global::A<global::System.Int32>>>>)_0_2;
+            _0_0 = _0_1.Create();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::A<global::A<global::A<global::System.Int32>>>>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -12996,8 +14882,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = this._a;
-            var _0_0 = this.M<global::A>(t: _0_1);
+            global::A _0_1;
+            global::A _0_0;
+            _0_1 = this._a;
+            _0_0 = this.M<global::A>(t: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -13015,7 +14903,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -13032,7 +14921,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::A _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -13050,9 +14940,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = GetSingleInstanceField0();
-            var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-            var _0_0 = this.M<global::StrongInject.IFactory<global::B>>(t: _0_1);
+            global::A _0_2;
+            global::StrongInject.IFactory<global::B> _0_1;
+            global::StrongInject.IFactory<global::B> _0_0;
+            _0_2 = GetSingleInstanceField0();
+            _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+            _0_0 = this.M<global::StrongInject.IFactory<global::B>>(t: _0_1);
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
             {
@@ -13070,9 +14963,21 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = GetSingleInstanceField1();
-        var _0_1 = _0_2.Create();
-        var _0_0 = this.M<global::B>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::B _0_0;
+        _0_2 = GetSingleInstanceField1();
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = this.M<global::B>(t: _0_1);
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13090,9 +14995,21 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = GetSingleInstanceField1();
-        var _0_1 = _0_2.Create();
-        var _0_0 = this.M<global::B>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::B _0_0;
+        _0_2 = GetSingleInstanceField1();
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = this.M<global::B>(t: _0_1);
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
             _0_2.Release(_0_1);
@@ -13103,13 +15020,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = GetSingleInstanceField1();
-        var _0_5 = _0_6.Create();
-        var _0_4 = this.M<global::B>(t: _0_5);
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_3);
-        var _0_1 = await _0_2.CreateAsync();
-        var _0_0 = this.M<global::C>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::StrongInject.IAsyncFactory<global::C> _0_2;
+        global::C _0_1;
+        global::C _0_0;
+        _0_6 = GetSingleInstanceField1();
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = this.M<global::B>(t: _0_5);
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_3);
+            _0_1 = await _0_2.CreateAsync();
+            try
+            {
+                _0_0 = this.M<global::C>(t: _0_1);
+            }
+            catch
+            {
+                await _0_2.ReleaseAsync(_0_1);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13128,13 +15069,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = GetSingleInstanceField1();
-        var _0_5 = _0_6.Create();
-        var _0_4 = this.M<global::B>(t: _0_5);
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_3);
-        var _0_1 = await _0_2.CreateAsync();
-        var _0_0 = this.M<global::C>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::StrongInject.IAsyncFactory<global::C> _0_2;
+        global::C _0_1;
+        global::C _0_0;
+        _0_6 = GetSingleInstanceField1();
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = this.M<global::B>(t: _0_5);
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_3);
+            _0_1 = await _0_2.CreateAsync();
+            try
+            {
+                _0_0 = this.M<global::C>(t: _0_1);
+            }
+            catch
+            {
+                await _0_2.ReleaseAsync(_0_1);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::C>(_0_0, async () =>
         {
             await _0_2.ReleaseAsync(_0_1);
@@ -13156,19 +15121,57 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_12 = GetSingleInstanceField1();
-        var _0_11 = _0_12.Create();
-        var _0_10 = this.M<global::B>(t: _0_11);
-        var _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
-        var _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_6 = this.M<global::C>(t: _0_7);
-        var _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
-        var _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
-        var _0_3 = _0_4.Create();
-        var _0_2 = this.M<global::D>(t: _0_3);
-        var _0_1 = (global::E)_0_2;
-        var _0_0 = this.M<global::E>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_12;
+        global::B _0_11;
+        global::B _0_10;
+        global::StrongInject.IAsyncFactory<global::C> _0_9;
+        global::StrongInject.IAsyncFactory<global::C> _0_8;
+        global::C _0_7;
+        global::C _0_6;
+        global::StrongInject.IFactory<global::D> _0_5;
+        global::StrongInject.IFactory<global::D> _0_4;
+        global::D _0_3;
+        global::D _0_2;
+        global::E _0_1;
+        global::E _0_0;
+        _0_12 = GetSingleInstanceField1();
+        _0_11 = _0_12.Create();
+        try
+        {
+            _0_10 = this.M<global::B>(t: _0_11);
+            _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
+            _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_6 = this.M<global::C>(t: _0_7);
+                _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
+                _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
+                _0_3 = _0_4.Create();
+                try
+                {
+                    _0_2 = this.M<global::D>(t: _0_3);
+                    _0_1 = (global::E)_0_2;
+                    _0_0 = this.M<global::E>(t: _0_1);
+                }
+                catch
+                {
+                    _0_4.Release(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_12.Release(_0_11);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13188,19 +15191,57 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_12 = GetSingleInstanceField1();
-        var _0_11 = _0_12.Create();
-        var _0_10 = this.M<global::B>(t: _0_11);
-        var _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
-        var _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_6 = this.M<global::C>(t: _0_7);
-        var _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
-        var _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
-        var _0_3 = _0_4.Create();
-        var _0_2 = this.M<global::D>(t: _0_3);
-        var _0_1 = (global::E)_0_2;
-        var _0_0 = this.M<global::E>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_12;
+        global::B _0_11;
+        global::B _0_10;
+        global::StrongInject.IAsyncFactory<global::C> _0_9;
+        global::StrongInject.IAsyncFactory<global::C> _0_8;
+        global::C _0_7;
+        global::C _0_6;
+        global::StrongInject.IFactory<global::D> _0_5;
+        global::StrongInject.IFactory<global::D> _0_4;
+        global::D _0_3;
+        global::D _0_2;
+        global::E _0_1;
+        global::E _0_0;
+        _0_12 = GetSingleInstanceField1();
+        _0_11 = _0_12.Create();
+        try
+        {
+            _0_10 = this.M<global::B>(t: _0_11);
+            _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
+            _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_6 = this.M<global::C>(t: _0_7);
+                _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
+                _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
+                _0_3 = _0_4.Create();
+                try
+                {
+                    _0_2 = this.M<global::D>(t: _0_3);
+                    _0_1 = (global::E)_0_2;
+                    _0_0 = this.M<global::E>(t: _0_1);
+                }
+                catch
+                {
+                    _0_4.Release(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_12.Release(_0_11);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::E>(_0_0, async () =>
         {
             _0_4.Release(_0_3);
@@ -13213,19 +15254,57 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_12 = GetSingleInstanceField1();
-        var _0_11 = _0_12.Create();
-        var _0_10 = this.M<global::B>(t: _0_11);
-        var _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
-        var _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_6 = this.M<global::C>(t: _0_7);
-        var _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
-        var _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
-        var _0_3 = _0_4.Create();
-        var _0_2 = this.M<global::D>(t: _0_3);
-        var _0_1 = (global::I)_0_2;
-        var _0_0 = this.M<global::I>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_12;
+        global::B _0_11;
+        global::B _0_10;
+        global::StrongInject.IAsyncFactory<global::C> _0_9;
+        global::StrongInject.IAsyncFactory<global::C> _0_8;
+        global::C _0_7;
+        global::C _0_6;
+        global::StrongInject.IFactory<global::D> _0_5;
+        global::StrongInject.IFactory<global::D> _0_4;
+        global::D _0_3;
+        global::D _0_2;
+        global::I _0_1;
+        global::I _0_0;
+        _0_12 = GetSingleInstanceField1();
+        _0_11 = _0_12.Create();
+        try
+        {
+            _0_10 = this.M<global::B>(t: _0_11);
+            _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
+            _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_6 = this.M<global::C>(t: _0_7);
+                _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
+                _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
+                _0_3 = _0_4.Create();
+                try
+                {
+                    _0_2 = this.M<global::D>(t: _0_3);
+                    _0_1 = (global::I)_0_2;
+                    _0_0 = this.M<global::I>(t: _0_1);
+                }
+                catch
+                {
+                    _0_4.Release(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_12.Release(_0_11);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13245,19 +15324,57 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_12 = GetSingleInstanceField1();
-        var _0_11 = _0_12.Create();
-        var _0_10 = this.M<global::B>(t: _0_11);
-        var _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
-        var _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
-        var _0_7 = await _0_8.CreateAsync();
-        var _0_6 = this.M<global::C>(t: _0_7);
-        var _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
-        var _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
-        var _0_3 = _0_4.Create();
-        var _0_2 = this.M<global::D>(t: _0_3);
-        var _0_1 = (global::I)_0_2;
-        var _0_0 = this.M<global::I>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_12;
+        global::B _0_11;
+        global::B _0_10;
+        global::StrongInject.IAsyncFactory<global::C> _0_9;
+        global::StrongInject.IAsyncFactory<global::C> _0_8;
+        global::C _0_7;
+        global::C _0_6;
+        global::StrongInject.IFactory<global::D> _0_5;
+        global::StrongInject.IFactory<global::D> _0_4;
+        global::D _0_3;
+        global::D _0_2;
+        global::I _0_1;
+        global::I _0_0;
+        _0_12 = GetSingleInstanceField1();
+        _0_11 = _0_12.Create();
+        try
+        {
+            _0_10 = this.M<global::B>(t: _0_11);
+            _0_9 = (global::StrongInject.IAsyncFactory<global::C>)_0_10;
+            _0_8 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_9);
+            _0_7 = await _0_8.CreateAsync();
+            try
+            {
+                _0_6 = this.M<global::C>(t: _0_7);
+                _0_5 = (global::StrongInject.IFactory<global::D>)_0_6;
+                _0_4 = this.M<global::StrongInject.IFactory<global::D>>(t: _0_5);
+                _0_3 = _0_4.Create();
+                try
+                {
+                    _0_2 = this.M<global::D>(t: _0_3);
+                    _0_1 = (global::I)_0_2;
+                    _0_0 = this.M<global::I>(t: _0_1);
+                }
+                catch
+                {
+                    _0_4.Release(_0_3);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_8.ReleaseAsync(_0_7);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_12.Release(_0_11);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::I>(_0_0, async () =>
         {
             _0_4.Release(_0_3);
@@ -13270,11 +15387,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = GetSingleInstanceField1();
-        var _0_3 = _0_4.Create();
-        var _0_2 = this.M<global::B>(t: _0_3);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_4;
+        global::B _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_4 = GetSingleInstanceField1();
+        _0_3 = _0_4.Create();
+        try
+        {
+            _0_2 = this.M<global::B>(t: _0_3);
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_1);
+        }
+        catch
+        {
+            _0_4.Release(_0_3);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13292,11 +15423,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = GetSingleInstanceField1();
-        var _0_3 = _0_4.Create();
-        var _0_2 = this.M<global::B>(t: _0_3);
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_1);
+        global::StrongInject.IFactory<global::B> _0_4;
+        global::B _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_4 = GetSingleInstanceField1();
+        _0_3 = _0_4.Create();
+        try
+        {
+            _0_2 = this.M<global::B>(t: _0_3);
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = this.M<global::StrongInject.IAsyncFactory<global::C>>(t: _0_1);
+        }
+        catch
+        {
+            _0_4.Release(_0_3);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(_0_0, () =>
         {
             _0_4.Release(_0_3);
@@ -13352,7 +15497,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         TResult result;
         try
         {
@@ -13369,7 +15515,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -13379,9 +15526,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -13399,9 +15549,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -13412,11 +15565,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13435,11 +15602,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::C>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -13451,13 +15632,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = this._a;
-        var _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
-        var _0_4 = _0_5.Create();
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = await _0_3.CreateAsync();
-        var _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_6;
+        global::StrongInject.IFactory<global::B> _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::C _0_2;
+        global::StrongInject.IFactory<global::D> _0_1;
+        global::D _0_0;
+        _0_6 = this._a;
+        _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
+        _0_4 = _0_5.Create();
+        try
+        {
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
+                _0_0 = _0_1.Create();
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_5.Release(_0_4);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13477,13 +15682,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = this._a;
-        var _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
-        var _0_4 = _0_5.Create();
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = await _0_3.CreateAsync();
-        var _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_6;
+        global::StrongInject.IFactory<global::B> _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::C _0_2;
+        global::StrongInject.IFactory<global::D> _0_1;
+        global::D _0_0;
+        _0_6 = this._a;
+        _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
+        _0_4 = _0_5.Create();
+        try
+        {
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
+                _0_0 = _0_1.Create();
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_5.Release(_0_4);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::D>(_0_0, async () =>
         {
             _0_1.Release(_0_0);
@@ -13496,14 +15725,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13523,14 +15785,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::E>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -13543,14 +15838,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13570,14 +15898,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::I>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -13590,10 +15951,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13611,10 +15985,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(_0_0, () =>
         {
             _0_2.Release(_0_1);
@@ -13669,7 +16056,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         TResult result;
         try
         {
@@ -13686,7 +16074,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -13696,9 +16085,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -13716,9 +16108,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -13729,11 +16124,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13752,11 +16161,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::C>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -13768,13 +16191,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = this._a;
-        var _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
-        var _0_4 = _0_5.Create();
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = await _0_3.CreateAsync();
-        var _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_6;
+        global::StrongInject.IFactory<global::B> _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::C _0_2;
+        global::StrongInject.IFactory<global::D> _0_1;
+        global::D _0_0;
+        _0_6 = this._a;
+        _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
+        _0_4 = _0_5.Create();
+        try
+        {
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
+                _0_0 = _0_1.Create();
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_5.Release(_0_4);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13794,13 +16241,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = this._a;
-        var _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
-        var _0_4 = _0_5.Create();
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = await _0_3.CreateAsync();
-        var _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_6;
+        global::StrongInject.IFactory<global::B> _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::C _0_2;
+        global::StrongInject.IFactory<global::D> _0_1;
+        global::D _0_0;
+        _0_6 = this._a;
+        _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
+        _0_4 = _0_5.Create();
+        try
+        {
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
+                _0_0 = _0_1.Create();
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_5.Release(_0_4);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::D>(_0_0, async () =>
         {
             _0_1.Release(_0_0);
@@ -13813,14 +16284,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13840,14 +16344,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::E>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -13860,14 +16397,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13887,14 +16457,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::I>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -13907,10 +16510,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -13928,10 +16544,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(_0_0, () =>
         {
             _0_2.Release(_0_1);
@@ -14015,7 +16644,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         TResult result;
         try
         {
@@ -14032,7 +16662,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -14050,9 +16681,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = this._a;
-            var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-            var _0_0 = _0_1.Create();
+            global::A _0_2;
+            global::StrongInject.IFactory<global::B> _0_1;
+            global::B _0_0;
+            _0_2 = this._a;
+            _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+            _0_0 = _0_1.Create();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -14071,7 +16705,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::B _0_0;
+        _0_0 = GetSingleInstanceField0();
         TResult result;
         try
         {
@@ -14088,7 +16723,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = GetSingleInstanceField0();
+        global::B _0_0;
+        _0_0 = GetSingleInstanceField0();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
         });
@@ -14106,9 +16742,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = GetSingleInstanceField0();
-            var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-            var _0_0 = await _0_1.CreateAsync();
+            global::B _0_2;
+            global::StrongInject.IAsyncFactory<global::C> _0_1;
+            global::C _0_0;
+            _0_2 = GetSingleInstanceField0();
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
             {
@@ -14127,7 +16766,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField1();
+        global::C _0_0;
+        _0_0 = await GetSingleInstanceField1();
         TResult result;
         try
         {
@@ -14144,7 +16784,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField1();
+        global::C _0_0;
+        _0_0 = await GetSingleInstanceField1();
         return new global::StrongInject.AsyncOwned<global::C>(_0_0, async () =>
         {
         });
@@ -14162,9 +16803,12 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = await GetSingleInstanceField1();
-            var _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
-            var _0_0 = _0_1.Create();
+            global::C _0_2;
+            global::StrongInject.IFactory<global::D> _0_1;
+            global::D _0_0;
+            _0_2 = await GetSingleInstanceField1();
+            _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
+            _0_0 = _0_1.Create();
             this._singleInstanceField2 = _0_0;
             this._disposeAction2 = async () =>
             {
@@ -14183,7 +16827,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField2();
+        global::D _0_0;
+        _0_0 = await GetSingleInstanceField2();
         TResult result;
         try
         {
@@ -14200,7 +16845,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = await GetSingleInstanceField2();
+        global::D _0_0;
+        _0_0 = await GetSingleInstanceField2();
         return new global::StrongInject.AsyncOwned<global::D>(_0_0, async () =>
         {
         });
@@ -14210,8 +16856,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = await GetSingleInstanceField2();
-        var _0_0 = (global::E)_0_1;
+        global::D _0_1;
+        global::E _0_0;
+        _0_1 = await GetSingleInstanceField2();
+        _0_0 = (global::E)_0_1;
         TResult result;
         try
         {
@@ -14228,8 +16876,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = await GetSingleInstanceField2();
-        var _0_0 = (global::E)_0_1;
+        global::D _0_1;
+        global::E _0_0;
+        _0_1 = await GetSingleInstanceField2();
+        _0_0 = (global::E)_0_1;
         return new global::StrongInject.AsyncOwned<global::E>(_0_0, async () =>
         {
         });
@@ -14239,8 +16889,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = await GetSingleInstanceField2();
-        var _0_0 = (global::I)_0_1;
+        global::D _0_1;
+        global::I _0_0;
+        _0_1 = await GetSingleInstanceField2();
+        _0_0 = (global::I)_0_1;
         TResult result;
         try
         {
@@ -14257,8 +16909,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = await GetSingleInstanceField2();
-        var _0_0 = (global::I)_0_1;
+        global::D _0_1;
+        global::I _0_0;
+        _0_1 = await GetSingleInstanceField2();
+        _0_0 = (global::I)_0_1;
         return new global::StrongInject.AsyncOwned<global::I>(_0_0, async () =>
         {
         });
@@ -14268,8 +16922,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
         TResult result;
         try
         {
@@ -14286,8 +16942,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(_0_0, () =>
         {
         });
@@ -14342,7 +17000,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         TResult result;
         try
         {
@@ -14359,7 +17018,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = this._a;
+        global::A _0_0;
+        _0_0 = this._a;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -14369,9 +17029,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         TResult result;
         try
         {
@@ -14389,9 +17052,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this._a;
-        var _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_2;
+        global::StrongInject.IFactory<global::B> _0_1;
+        global::B _0_0;
+        _0_2 = this._a;
+        _0_1 = (global::StrongInject.IFactory<global::B>)_0_2;
+        _0_0 = _0_1.Create();
         return new global::StrongInject.Owned<global::B>(_0_0, () =>
         {
             _0_1.Release(_0_0);
@@ -14402,11 +17068,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -14425,11 +17105,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_4 = this._a;
-        var _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
-        var _0_2 = _0_3.Create();
-        var _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
-        var _0_0 = await _0_1.CreateAsync();
+        global::A _0_4;
+        global::StrongInject.IFactory<global::B> _0_3;
+        global::B _0_2;
+        global::StrongInject.IAsyncFactory<global::C> _0_1;
+        global::C _0_0;
+        _0_4 = this._a;
+        _0_3 = (global::StrongInject.IFactory<global::B>)_0_4;
+        _0_2 = _0_3.Create();
+        try
+        {
+            _0_1 = (global::StrongInject.IAsyncFactory<global::C>)_0_2;
+            _0_0 = await _0_1.CreateAsync();
+        }
+        catch
+        {
+            _0_3.Release(_0_2);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::C>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
@@ -14441,13 +17135,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = this._a;
-        var _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
-        var _0_4 = _0_5.Create();
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = await _0_3.CreateAsync();
-        var _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_6;
+        global::StrongInject.IFactory<global::B> _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::C _0_2;
+        global::StrongInject.IFactory<global::D> _0_1;
+        global::D _0_0;
+        _0_6 = this._a;
+        _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
+        _0_4 = _0_5.Create();
+        try
+        {
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
+                _0_0 = _0_1.Create();
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_5.Release(_0_4);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -14467,13 +17185,37 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_6 = this._a;
-        var _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
-        var _0_4 = _0_5.Create();
-        var _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
-        var _0_2 = await _0_3.CreateAsync();
-        var _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
-        var _0_0 = _0_1.Create();
+        global::A _0_6;
+        global::StrongInject.IFactory<global::B> _0_5;
+        global::B _0_4;
+        global::StrongInject.IAsyncFactory<global::C> _0_3;
+        global::C _0_2;
+        global::StrongInject.IFactory<global::D> _0_1;
+        global::D _0_0;
+        _0_6 = this._a;
+        _0_5 = (global::StrongInject.IFactory<global::B>)_0_6;
+        _0_4 = _0_5.Create();
+        try
+        {
+            _0_3 = (global::StrongInject.IAsyncFactory<global::C>)_0_4;
+            _0_2 = await _0_3.CreateAsync();
+            try
+            {
+                _0_1 = (global::StrongInject.IFactory<global::D>)_0_2;
+                _0_0 = _0_1.Create();
+            }
+            catch
+            {
+                await _0_3.ReleaseAsync(_0_2);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_5.Release(_0_4);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::D>(_0_0, async () =>
         {
             _0_1.Release(_0_0);
@@ -14486,14 +17228,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -14513,14 +17288,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::E)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::E _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::E)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::E>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -14533,14 +17341,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -14560,14 +17401,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::I)_0_1;
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::I _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_0 = (global::I)_0_1;
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::I>(_0_0, async () =>
         {
             _0_2.Release(_0_1);
@@ -14580,10 +17454,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -14601,10 +17488,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = this._a;
-        var _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        global::A _0_3;
+        global::StrongInject.IFactory<global::B> _0_2;
+        global::B _0_1;
+        global::StrongInject.IAsyncFactory<global::C> _0_0;
+        _0_3 = this._a;
+        _0_2 = (global::StrongInject.IFactory<global::B>)_0_3;
+        _0_1 = _0_2.Create();
+        try
+        {
+            _0_0 = (global::StrongInject.IAsyncFactory<global::C>)_0_1;
+        }
+        catch
+        {
+            _0_2.Release(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(_0_0, () =>
         {
             _0_2.Release(_0_1);
@@ -14615,19 +17515,81 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_12 = _0_6.Create();
-        var _0_11 = (global::StrongInject.IAsyncFactory<global::C>)_0_12;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_9 = (global::StrongInject.IFactory<global::D>)_0_10;
-        var _0_8 = _0_9.Create();
-        var _0_0 = this.M(d1: _0_1, d2: _0_8);
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::B _0_12;
+        global::StrongInject.IAsyncFactory<global::C> _0_11;
+        global::C _0_10;
+        global::StrongInject.IFactory<global::D> _0_9;
+        global::D _0_8;
+        global::System.Int32 _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_12 = _0_6.Create();
+                    try
+                    {
+                        _0_11 = (global::StrongInject.IAsyncFactory<global::C>)_0_12;
+                        _0_10 = await _0_11.CreateAsync();
+                        try
+                        {
+                            _0_9 = (global::StrongInject.IFactory<global::D>)_0_10;
+                            _0_8 = _0_9.Create();
+                            try
+                            {
+                                _0_0 = this.M(d1: _0_1, d2: _0_8);
+                            }
+                            catch
+                            {
+                                _0_9.Release(_0_8);
+                                throw;
+                            }
+                        }
+                        catch
+                        {
+                            await _0_11.ReleaseAsync(_0_10);
+                            throw;
+                        }
+                    }
+                    catch
+                    {
+                        _0_6.Release(_0_12);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -14650,19 +17612,81 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_7 = this._a;
-        var _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
-        var _0_5 = _0_6.Create();
-        var _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
-        var _0_3 = await _0_4.CreateAsync();
-        var _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-        var _0_1 = _0_2.Create();
-        var _0_12 = _0_6.Create();
-        var _0_11 = (global::StrongInject.IAsyncFactory<global::C>)_0_12;
-        var _0_10 = await _0_11.CreateAsync();
-        var _0_9 = (global::StrongInject.IFactory<global::D>)_0_10;
-        var _0_8 = _0_9.Create();
-        var _0_0 = this.M(d1: _0_1, d2: _0_8);
+        global::A _0_7;
+        global::StrongInject.IFactory<global::B> _0_6;
+        global::B _0_5;
+        global::StrongInject.IAsyncFactory<global::C> _0_4;
+        global::C _0_3;
+        global::StrongInject.IFactory<global::D> _0_2;
+        global::D _0_1;
+        global::B _0_12;
+        global::StrongInject.IAsyncFactory<global::C> _0_11;
+        global::C _0_10;
+        global::StrongInject.IFactory<global::D> _0_9;
+        global::D _0_8;
+        global::System.Int32 _0_0;
+        _0_7 = this._a;
+        _0_6 = (global::StrongInject.IFactory<global::B>)_0_7;
+        _0_5 = _0_6.Create();
+        try
+        {
+            _0_4 = (global::StrongInject.IAsyncFactory<global::C>)_0_5;
+            _0_3 = await _0_4.CreateAsync();
+            try
+            {
+                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                _0_1 = _0_2.Create();
+                try
+                {
+                    _0_12 = _0_6.Create();
+                    try
+                    {
+                        _0_11 = (global::StrongInject.IAsyncFactory<global::C>)_0_12;
+                        _0_10 = await _0_11.CreateAsync();
+                        try
+                        {
+                            _0_9 = (global::StrongInject.IFactory<global::D>)_0_10;
+                            _0_8 = _0_9.Create();
+                            try
+                            {
+                                _0_0 = this.M(d1: _0_1, d2: _0_8);
+                            }
+                            catch
+                            {
+                                _0_9.Release(_0_8);
+                                throw;
+                            }
+                        }
+                        catch
+                        {
+                            await _0_11.ReleaseAsync(_0_10);
+                            throw;
+                        }
+                    }
+                    catch
+                    {
+                        _0_6.Release(_0_12);
+                        throw;
+                    }
+                }
+                catch
+                {
+                    _0_2.Release(_0_1);
+                    throw;
+                }
+            }
+            catch
+            {
+                await _0_4.ReleaseAsync(_0_3);
+                throw;
+            }
+        }
+        catch
+        {
+            _0_6.Release(_0_5);
+            throw;
+        }
+
         return new global::StrongInject.AsyncOwned<global::System.Int32>(_0_0, async () =>
         {
             _0_9.Release(_0_8);
@@ -14710,7 +17734,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         TResult result;
         try
         {
@@ -14727,7 +17752,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -14771,7 +17797,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         TResult result;
         try
         {
@@ -14788,7 +17815,8 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_0 = new global::A();
+        global::A _0_0;
+        _0_0 = new global::A();
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -14831,8 +17859,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = (global::A)_0_1;
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = (global::A)_0_1;
         TResult result;
         try
         {
@@ -14849,8 +17879,10 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::B();
-        var _0_0 = (global::A)_0_1;
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = (global::A)_0_1;
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -14949,10 +17981,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this.A;
-        var _0_3 = this.B;
-        var _0_1 = this.CreateC(a: _0_2, b: _0_3);
-        var _0_0 = this.DecorateC(c: _0_1);
+        global::A _0_2;
+        global::B _0_3;
+        global::C _0_1;
+        global::C _0_0;
+        _0_2 = this.A;
+        _0_3 = this.B;
+        _0_1 = this.CreateC(a: _0_2, b: _0_3);
+        try
+        {
+            _0_0 = this.DecorateC(c: _0_1);
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -14970,10 +18015,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = this.A;
-        var _0_3 = this.B;
-        var _0_1 = this.CreateC(a: _0_2, b: _0_3);
-        var _0_0 = this.DecorateC(c: _0_1);
+        global::A _0_2;
+        global::B _0_3;
+        global::C _0_1;
+        global::C _0_0;
+        _0_2 = this.A;
+        _0_3 = this.B;
+        _0_1 = this.CreateC(a: _0_2, b: _0_3);
+        try
+        {
+            _0_0 = this.DecorateC(c: _0_1);
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::C>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_1);
@@ -15023,10 +18081,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = global::Module.A;
-        var _0_3 = global::Module.B;
-        var _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
-        var _0_0 = global::Module.DecorateC(c: _0_1);
+        global::A _0_2;
+        global::B _0_3;
+        global::C _0_1;
+        global::C _0_0;
+        _0_2 = global::Module.A;
+        _0_3 = global::Module.B;
+        _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
+        try
+        {
+            _0_0 = global::Module.DecorateC(c: _0_1);
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -15044,10 +18115,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = global::Module.A;
-        var _0_3 = global::Module.B;
-        var _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
-        var _0_0 = global::Module.DecorateC(c: _0_1);
+        global::A _0_2;
+        global::B _0_3;
+        global::C _0_1;
+        global::C _0_0;
+        _0_2 = global::Module.A;
+        _0_3 = global::Module.B;
+        _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
+        try
+        {
+            _0_0 = global::Module.DecorateC(c: _0_1);
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::C>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_1);
@@ -15097,10 +18181,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = global::Module.A;
-        var _0_3 = global::Module.B;
-        var _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
-        var _0_0 = global::Module.DecorateC(c: _0_1);
+        global::A _0_2;
+        global::B _0_3;
+        global::C _0_1;
+        global::C _0_0;
+        _0_2 = global::Module.A;
+        _0_3 = global::Module.B;
+        _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
+        try
+        {
+            _0_0 = global::Module.DecorateC(c: _0_1);
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_1);
+            throw;
+        }
+
         TResult result;
         try
         {
@@ -15118,10 +18215,23 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = global::Module.A;
-        var _0_3 = global::Module.B;
-        var _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
-        var _0_0 = global::Module.DecorateC(c: _0_1);
+        global::A _0_2;
+        global::B _0_3;
+        global::C _0_1;
+        global::C _0_0;
+        _0_2 = global::Module.A;
+        _0_3 = global::Module.B;
+        _0_1 = global::Module.CreateC(a: _0_2, b: _0_3);
+        try
+        {
+            _0_0 = global::Module.DecorateC(c: _0_1);
+        }
+        catch
+        {
+            global::StrongInject.Helpers.Dispose(_0_1);
+            throw;
+        }
+
         return new global::StrongInject.Owned<global::C>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_1);
@@ -15209,9 +18319,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::C();
-        var _0_2 = new global::D();
-        var _0_0 = new global::A(c: _0_1, d: _0_2);
+        global::C _0_1;
+        global::D _0_2;
+        global::A _0_0;
+        _0_1 = new global::C();
+        _0_2 = new global::D();
+        _0_0 = new global::A(c: _0_1, d: _0_2);
         TResult result;
         try
         {
@@ -15228,9 +18341,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::C();
-        var _0_2 = new global::D();
-        var _0_0 = new global::A(c: _0_1, d: _0_2);
+        global::C _0_1;
+        global::D _0_2;
+        global::A _0_0;
+        _0_1 = new global::C();
+        _0_2 = new global::D();
+        _0_0 = new global::A(c: _0_1, d: _0_2);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -15287,11 +18403,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::Impl();
-        var _0_1 = (global::IA)_0_2;
-        var _0_3 = new global::C();
-        var _0_4 = new global::D();
-        var _0_0 = new global::A(a: _0_1, c: _0_3, d: _0_4);
+        global::Impl _0_2;
+        global::IA _0_1;
+        global::C _0_3;
+        global::D _0_4;
+        global::IA _0_0;
+        _0_2 = new global::Impl();
+        _0_1 = (global::IA)_0_2;
+        _0_3 = new global::C();
+        _0_4 = new global::D();
+        _0_0 = new global::A(a: _0_1, c: _0_3, d: _0_4);
         TResult result;
         try
         {
@@ -15308,11 +18429,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_2 = new global::Impl();
-        var _0_1 = (global::IA)_0_2;
-        var _0_3 = new global::C();
-        var _0_4 = new global::D();
-        var _0_0 = new global::A(a: _0_1, c: _0_3, d: _0_4);
+        global::Impl _0_2;
+        global::IA _0_1;
+        global::C _0_3;
+        global::D _0_4;
+        global::IA _0_0;
+        _0_2 = new global::Impl();
+        _0_1 = (global::IA)_0_2;
+        _0_3 = new global::C();
+        _0_4 = new global::D();
+        _0_0 = new global::A(a: _0_1, c: _0_3, d: _0_4);
         return new global::StrongInject.Owned<global::IA>(_0_0, () =>
         {
         });
@@ -15366,9 +18492,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::C();
-        var _0_2 = new global::D();
-        var _0_0 = this.CreateA(c: _0_1, d: _0_2);
+        global::C _0_1;
+        global::D _0_2;
+        global::A _0_0;
+        _0_1 = new global::C();
+        _0_2 = new global::D();
+        _0_0 = this.CreateA(c: _0_1, d: _0_2);
         TResult result;
         try
         {
@@ -15386,9 +18515,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::C();
-        var _0_2 = new global::D();
-        var _0_0 = this.CreateA(c: _0_1, d: _0_2);
+        global::C _0_1;
+        global::D _0_2;
+        global::A _0_0;
+        _0_1 = new global::C();
+        _0_2 = new global::D();
+        _0_0 = this.CreateA(c: _0_1, d: _0_2);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_0);
@@ -15444,10 +18576,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::C();
-        var _0_2 = new global::D();
-        var _0_3 = new global::A();
-        var _0_0 = this.CreateA(c: _0_1, d: _0_2, a: _0_3);
+        global::C _0_1;
+        global::D _0_2;
+        global::A _0_3;
+        global::A _0_0;
+        _0_1 = new global::C();
+        _0_2 = new global::D();
+        _0_3 = new global::A();
+        _0_0 = this.CreateA(c: _0_1, d: _0_2, a: _0_3);
         TResult result;
         try
         {
@@ -15464,10 +18600,14 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = new global::C();
-        var _0_2 = new global::D();
-        var _0_3 = new global::A();
-        var _0_0 = this.CreateA(c: _0_1, d: _0_2, a: _0_3);
+        global::C _0_1;
+        global::D _0_2;
+        global::A _0_3;
+        global::A _0_0;
+        _0_1 = new global::C();
+        _0_2 = new global::D();
+        _0_3 = new global::A();
+        _0_0 = this.CreateA(c: _0_1, d: _0_2, a: _0_3);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
@@ -15527,7 +18667,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = await this.Create();
+            global::System.Int32 _0_0;
+            _0_0 = await this.Create();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -15545,14 +18686,19 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_3 = () =>
+        global::System.Int32 _0_1;
+        global::System.Func<global::System.String> _0_3;
+        global::System.Int64 _0_2;
+        global::System.Boolean _0_0;
+        _0_1 = await GetSingleInstanceField0();
+        _0_3 = () =>
         {
-            var _1_0 = this.Create(i: _0_1);
+            global::System.String _1_0;
+            _1_0 = this.Create(i: _0_1);
             return _1_0;
         };
-        var _0_2 = this.Create(func: _0_3);
-        var _0_0 = this.Create(i: _0_1, l: _0_2);
+        _0_2 = this.Create(func: _0_3);
+        _0_0 = this.Create(i: _0_1, l: _0_2);
         TResult result;
         try
         {
@@ -15569,14 +18715,19 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_3 = () =>
+        global::System.Int32 _0_1;
+        global::System.Func<global::System.String> _0_3;
+        global::System.Int64 _0_2;
+        global::System.Boolean _0_0;
+        _0_1 = await GetSingleInstanceField0();
+        _0_3 = () =>
         {
-            var _1_0 = this.Create(i: _0_1);
+            global::System.String _1_0;
+            _1_0 = this.Create(i: _0_1);
             return _1_0;
         };
-        var _0_2 = this.Create(func: _0_3);
-        var _0_0 = this.Create(i: _0_1, l: _0_2);
+        _0_2 = this.Create(func: _0_3);
+        _0_0 = this.Create(i: _0_1, l: _0_2);
         return new global::StrongInject.AsyncOwned<global::System.Boolean>(_0_0, async () =>
         {
         });
@@ -15636,7 +18787,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = await this.Create();
+            global::System.Int32 _0_0;
+            _0_0 = await this.Create();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -15654,14 +18806,19 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_2 = () =>
+        global::System.Int32 _0_3;
+        global::System.Func<global::System.String> _0_2;
+        global::System.Int64 _0_1;
+        global::System.Boolean _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_2 = () =>
         {
-            var _1_0 = this.Create(i: _0_3);
+            global::System.String _1_0;
+            _1_0 = this.Create(i: _0_3);
             return _1_0;
         };
-        var _0_1 = this.Create(func: _0_2);
-        var _0_0 = this.Create(l: _0_1);
+        _0_1 = this.Create(func: _0_2);
+        _0_0 = this.Create(l: _0_1);
         TResult result;
         try
         {
@@ -15678,14 +18835,19 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_2 = () =>
+        global::System.Int32 _0_3;
+        global::System.Func<global::System.String> _0_2;
+        global::System.Int64 _0_1;
+        global::System.Boolean _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_2 = () =>
         {
-            var _1_0 = this.Create(i: _0_3);
+            global::System.String _1_0;
+            _1_0 = this.Create(i: _0_3);
             return _1_0;
         };
-        var _0_1 = this.Create(func: _0_2);
-        var _0_0 = this.Create(l: _0_1);
+        _0_1 = this.Create(func: _0_2);
+        _0_0 = this.Create(l: _0_1);
         return new global::StrongInject.AsyncOwned<global::System.Boolean>(_0_0, async () =>
         {
         });
@@ -15748,7 +18910,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = await this.Create();
+            global::System.Int32 _0_0;
+            _0_0 = await this.Create();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -15766,18 +18929,24 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_2 = () =>
+        global::System.Int32 _0_3;
+        global::System.Func<global::System.String> _0_2;
+        global::System.Int64 _0_1;
+        global::System.Boolean _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_2 = () =>
         {
-            global::System.Func<global::System.Int32> _1_1 = () =>
+            global::System.Func<global::System.Int32> _1_1;
+            global::System.String _1_0;
+            _1_1 = () =>
             {
                 return _0_3;
             };
-            var _1_0 = this.Create(i: _1_1);
+            _1_0 = this.Create(i: _1_1);
             return _1_0;
         };
-        var _0_1 = this.Create(func: _0_2);
-        var _0_0 = this.Create(l: _0_1);
+        _0_1 = this.Create(func: _0_2);
+        _0_0 = this.Create(l: _0_1);
         TResult result;
         try
         {
@@ -15794,18 +18963,24 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_2 = () =>
+        global::System.Int32 _0_3;
+        global::System.Func<global::System.String> _0_2;
+        global::System.Int64 _0_1;
+        global::System.Boolean _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_2 = () =>
         {
-            global::System.Func<global::System.Int32> _1_1 = () =>
+            global::System.Func<global::System.Int32> _1_1;
+            global::System.String _1_0;
+            _1_1 = () =>
             {
                 return _0_3;
             };
-            var _1_0 = this.Create(i: _1_1);
+            _1_0 = this.Create(i: _1_1);
             return _1_0;
         };
-        var _0_1 = this.Create(func: _0_2);
-        var _0_0 = this.Create(l: _0_1);
+        _0_1 = this.Create(func: _0_2);
+        _0_0 = this.Create(l: _0_1);
         return new global::StrongInject.AsyncOwned<global::System.Boolean>(_0_0, async () =>
         {
         });
@@ -15884,7 +19059,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = await this.Create();
+            global::System.Int32 _0_0;
+            _0_0 = await this.Create();
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = async () =>
             {
@@ -15907,12 +19083,15 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_2 = await GetSingleInstanceField1();
-            global::System.Func<global::System.Int32> _0_1 = () =>
+            global::System.Int32 _0_2;
+            global::System.Func<global::System.Int32> _0_1;
+            global::System.String _0_0;
+            _0_2 = await GetSingleInstanceField1();
+            _0_1 = () =>
             {
                 return _0_2;
             };
-            var _0_0 = this.Create(i: _0_1);
+            _0_0 = this.Create(i: _0_1);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -15930,13 +19109,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_2 = () =>
+        global::System.String _0_3;
+        global::System.Func<global::System.String> _0_2;
+        global::System.Int64 _0_1;
+        global::System.Boolean _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_2 = () =>
         {
             return _0_3;
         };
-        var _0_1 = this.Create(func: _0_2);
-        var _0_0 = this.Create(l: _0_1);
+        _0_1 = this.Create(func: _0_2);
+        _0_0 = this.Create(l: _0_1);
         TResult result;
         try
         {
@@ -15953,13 +19136,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_3 = await GetSingleInstanceField0();
-        global::System.Func<global::System.String> _0_2 = () =>
+        global::System.String _0_3;
+        global::System.Func<global::System.String> _0_2;
+        global::System.Int64 _0_1;
+        global::System.Boolean _0_0;
+        _0_3 = await GetSingleInstanceField0();
+        _0_2 = () =>
         {
             return _0_3;
         };
-        var _0_1 = this.Create(func: _0_2);
-        var _0_0 = this.Create(l: _0_1);
+        _0_1 = this.Create(func: _0_2);
+        _0_0 = this.Create(l: _0_1);
         return new global::StrongInject.AsyncOwned<global::System.Boolean>(_0_0, async () =>
         {
         });
@@ -16022,7 +19209,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = await this.Create();
+            global::System.Int32 _0_0;
+            _0_0 = await this.Create();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = async () =>
             {
@@ -16040,22 +19228,29 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Threading.Tasks.ValueTask<global::System.Int64>> _0_1 = async () =>
+        global::System.Func<global::System.Threading.Tasks.ValueTask<global::System.Int64>> _0_1;
+        global::System.Boolean _0_0;
+        _0_1 = async () =>
         {
-            var _1_2 = await GetSingleInstanceField0();
-            global::System.Func<global::System.String> _1_1 = () =>
+            global::System.Int32 _1_2;
+            global::System.Func<global::System.String> _1_1;
+            global::System.Int64 _1_0;
+            _1_2 = await GetSingleInstanceField0();
+            _1_1 = () =>
             {
-                global::System.Func<global::System.Int32> _2_1 = () =>
+                global::System.Func<global::System.Int32> _2_1;
+                global::System.String _2_0;
+                _2_1 = () =>
                 {
                     return _1_2;
                 };
-                var _2_0 = this.Create(i: _2_1);
+                _2_0 = this.Create(i: _2_1);
                 return _2_0;
             };
-            var _1_0 = this.Create(func: _1_1);
+            _1_0 = this.Create(func: _1_1);
             return _1_0;
         };
-        var _0_0 = this.Create(l: _0_1);
+        _0_0 = this.Create(l: _0_1);
         TResult result;
         try
         {
@@ -16072,22 +19267,29 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::System.Threading.Tasks.ValueTask<global::System.Int64>> _0_1 = async () =>
+        global::System.Func<global::System.Threading.Tasks.ValueTask<global::System.Int64>> _0_1;
+        global::System.Boolean _0_0;
+        _0_1 = async () =>
         {
-            var _1_2 = await GetSingleInstanceField0();
-            global::System.Func<global::System.String> _1_1 = () =>
+            global::System.Int32 _1_2;
+            global::System.Func<global::System.String> _1_1;
+            global::System.Int64 _1_0;
+            _1_2 = await GetSingleInstanceField0();
+            _1_1 = () =>
             {
-                global::System.Func<global::System.Int32> _2_1 = () =>
+                global::System.Func<global::System.Int32> _2_1;
+                global::System.String _2_0;
+                _2_1 = () =>
                 {
                     return _1_2;
                 };
-                var _2_0 = this.Create(i: _2_1);
+                _2_0 = this.Create(i: _2_1);
                 return _2_0;
             };
-            var _1_0 = this.Create(func: _1_1);
+            _1_0 = this.Create(func: _1_1);
             return _1_0;
         };
-        var _0_0 = this.Create(l: _0_1);
+        _0_0 = this.Create(l: _0_1);
         return new global::StrongInject.AsyncOwned<global::System.Boolean>(_0_0, async () =>
         {
         });
@@ -16294,14 +19496,19 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = this.Navigation;
-            global::System.Func<global::ItemDetailViewModel, global::IViewOf<global::ItemDetailViewModel>> _0_2 = (param0_0) =>
+            global::INavigation _0_1;
+            global::System.Func<global::ItemDetailViewModel, global::IViewOf<global::ItemDetailViewModel>> _0_2;
+            global::INavigationService<global::ItemDetailViewModel> _0_0;
+            _0_1 = this.Navigation;
+            _0_2 = (param0_0) =>
             {
-                var _1_1 = new global::ItemDetailPage(itemDetailViewModel: param0_0);
-                var _1_0 = (global::IViewOf<global::ItemDetailViewModel>)_1_1;
+                global::ItemDetailPage _1_1;
+                global::IViewOf<global::ItemDetailViewModel> _1_0;
+                _1_1 = new global::ItemDetailPage(itemDetailViewModel: param0_0);
+                _1_0 = (global::IViewOf<global::ItemDetailViewModel>)_1_1;
                 return _1_0;
             };
-            var _0_0 = this.CreateNavigationService<global::ItemDetailViewModel>(navigation: _0_1, createView: _0_2);
+            _0_0 = this.CreateNavigationService<global::ItemDetailViewModel>(navigation: _0_1, createView: _0_2);
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -16328,14 +19535,19 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = this.Navigation;
-            global::System.Func<global::NewItemViewModel, global::IViewOf<global::NewItemViewModel>> _0_2 = (param0_0) =>
+            global::INavigation _0_1;
+            global::System.Func<global::NewItemViewModel, global::IViewOf<global::NewItemViewModel>> _0_2;
+            global::INavigationService<global::NewItemViewModel> _0_0;
+            _0_1 = this.Navigation;
+            _0_2 = (param0_0) =>
             {
-                var _1_1 = new global::NewItemPage(newItemViewModel: param0_0);
-                var _1_0 = (global::IViewOf<global::NewItemViewModel>)_1_1;
+                global::NewItemPage _1_1;
+                global::IViewOf<global::NewItemViewModel> _1_0;
+                _1_1 = new global::NewItemPage(newItemViewModel: param0_0);
+                _1_0 = (global::IViewOf<global::NewItemViewModel>)_1_1;
                 return _1_0;
             };
-            var _0_0 = this.CreateNavigationService<global::NewItemViewModel>(navigation: _0_1, createView: _0_2);
+            _0_0 = this.CreateNavigationService<global::NewItemViewModel>(navigation: _0_1, createView: _0_2);
             this._singleInstanceField1 = _0_0;
             this._disposeAction1 = () =>
             {
@@ -16362,7 +19574,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::MockDataStore();
+            global::MockDataStore _0_0;
+            _0_0 = new global::MockDataStore();
             this._singleInstanceField2 = _0_0;
             this._disposeAction2 = () =>
             {
@@ -16388,8 +19601,10 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_1 = this.Navigation;
-            var _0_0 = new global::NavigationService(navigation: _0_1);
+            global::INavigation _0_1;
+            global::NavigationService _0_0;
+            _0_1 = this.Navigation;
+            _0_0 = new global::NavigationService(navigation: _0_1);
             this._singleInstanceField3 = _0_0;
             this._disposeAction3 = () =>
             {
@@ -16407,25 +19622,38 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_2 = GetSingleInstanceField1();
-        global::System.Func<global::Item, global::ItemDetailViewModel> _0_3 = (param0_0) =>
+        global::INavigationService<global::ItemDetailViewModel> _0_1;
+        global::INavigationService<global::NewItemViewModel> _0_2;
+        global::System.Func<global::Item, global::ItemDetailViewModel> _0_3;
+        global::System.Func<global::NewItemViewModel> _0_4;
+        global::MockDataStore _0_6;
+        global::IDataStore<global::Item> _0_5;
+        global::ItemsViewModel _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = GetSingleInstanceField1();
+        _0_3 = (param0_0) =>
         {
-            var _1_0 = new global::ItemDetailViewModel(item: param0_0);
+            global::ItemDetailViewModel _1_0;
+            _1_0 = new global::ItemDetailViewModel(item: param0_0);
             return _1_0;
         };
-        global::System.Func<global::NewItemViewModel> _0_4 = () =>
+        _0_4 = () =>
         {
-            var _0_2 = GetSingleInstanceField2();
-            var _1_1 = (global::IDataStore<global::Item>)_0_2;
-            var _0_4 = GetSingleInstanceField3();
-            var _1_3 = (global::INavigationService)_0_4;
-            var _1_0 = new global::NewItemViewModel(dataStore: _1_1, navigationService: _1_3);
+            global::MockDataStore _0_2;
+            global::IDataStore<global::Item> _1_1;
+            global::NavigationService _0_4;
+            global::INavigationService _1_3;
+            global::NewItemViewModel _1_0;
+            _0_2 = GetSingleInstanceField2();
+            _1_1 = (global::IDataStore<global::Item>)_0_2;
+            _0_4 = GetSingleInstanceField3();
+            _1_3 = (global::INavigationService)_0_4;
+            _1_0 = new global::NewItemViewModel(dataStore: _1_1, navigationService: _1_3);
             return _1_0;
         };
-        var _0_6 = GetSingleInstanceField2();
-        var _0_5 = (global::IDataStore<global::Item>)_0_6;
-        var _0_0 = new global::ItemsViewModel(itemDetailNavigationService: _0_1, newItemNavigationService: _0_2, createItemDetailViewModel: _0_3, createNewItemViewModel: _0_4, dataStore: _0_5);
+        _0_6 = GetSingleInstanceField2();
+        _0_5 = (global::IDataStore<global::Item>)_0_6;
+        _0_0 = new global::ItemsViewModel(itemDetailNavigationService: _0_1, newItemNavigationService: _0_2, createItemDetailViewModel: _0_3, createNewItemViewModel: _0_4, dataStore: _0_5);
         TResult result;
         try
         {
@@ -16442,25 +19670,38 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        var _0_2 = GetSingleInstanceField1();
-        global::System.Func<global::Item, global::ItemDetailViewModel> _0_3 = (param0_0) =>
+        global::INavigationService<global::ItemDetailViewModel> _0_1;
+        global::INavigationService<global::NewItemViewModel> _0_2;
+        global::System.Func<global::Item, global::ItemDetailViewModel> _0_3;
+        global::System.Func<global::NewItemViewModel> _0_4;
+        global::MockDataStore _0_6;
+        global::IDataStore<global::Item> _0_5;
+        global::ItemsViewModel _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = GetSingleInstanceField1();
+        _0_3 = (param0_0) =>
         {
-            var _1_0 = new global::ItemDetailViewModel(item: param0_0);
+            global::ItemDetailViewModel _1_0;
+            _1_0 = new global::ItemDetailViewModel(item: param0_0);
             return _1_0;
         };
-        global::System.Func<global::NewItemViewModel> _0_4 = () =>
+        _0_4 = () =>
         {
-            var _0_2 = GetSingleInstanceField2();
-            var _1_1 = (global::IDataStore<global::Item>)_0_2;
-            var _0_4 = GetSingleInstanceField3();
-            var _1_3 = (global::INavigationService)_0_4;
-            var _1_0 = new global::NewItemViewModel(dataStore: _1_1, navigationService: _1_3);
+            global::MockDataStore _0_2;
+            global::IDataStore<global::Item> _1_1;
+            global::NavigationService _0_4;
+            global::INavigationService _1_3;
+            global::NewItemViewModel _1_0;
+            _0_2 = GetSingleInstanceField2();
+            _1_1 = (global::IDataStore<global::Item>)_0_2;
+            _0_4 = GetSingleInstanceField3();
+            _1_3 = (global::INavigationService)_0_4;
+            _1_0 = new global::NewItemViewModel(dataStore: _1_1, navigationService: _1_3);
             return _1_0;
         };
-        var _0_6 = GetSingleInstanceField2();
-        var _0_5 = (global::IDataStore<global::Item>)_0_6;
-        var _0_0 = new global::ItemsViewModel(itemDetailNavigationService: _0_1, newItemNavigationService: _0_2, createItemDetailViewModel: _0_3, createNewItemViewModel: _0_4, dataStore: _0_5);
+        _0_6 = GetSingleInstanceField2();
+        _0_5 = (global::IDataStore<global::Item>)_0_6;
+        _0_0 = new global::ItemsViewModel(itemDetailNavigationService: _0_1, newItemNavigationService: _0_2, createItemDetailViewModel: _0_3, createNewItemViewModel: _0_4, dataStore: _0_5);
         return new global::StrongInject.Owned<global::ItemsViewModel>(_0_0, () =>
         {
         });
@@ -16522,7 +19763,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            var _0_0 = new global::B();
+            global::B _0_0;
+            _0_0 = new global::B();
             this._singleInstanceField0 = _0_0;
             this._disposeAction0 = () =>
             {
@@ -16540,13 +19782,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        global::System.Func<global::C> _0_2 = () =>
+        global::B _0_1;
+        global::System.Func<global::C> _0_2;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = () =>
         {
-            var _1_0 = new global::C(b1: _0_1, b2: _0_1);
+            global::C _1_0;
+            _1_0 = new global::C(b1: _0_1, b2: _0_1);
             return _1_0;
         };
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         TResult result;
         try
         {
@@ -16563,13 +19809,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        var _0_1 = GetSingleInstanceField0();
-        global::System.Func<global::C> _0_2 = () =>
+        global::B _0_1;
+        global::System.Func<global::C> _0_2;
+        global::A _0_0;
+        _0_1 = GetSingleInstanceField0();
+        _0_2 = () =>
         {
-            var _1_0 = new global::C(b1: _0_1, b2: _0_1);
+            global::C _1_0;
+            _1_0 = new global::C(b1: _0_1, b2: _0_1);
             return _1_0;
         };
-        var _0_0 = new global::A(b: _0_1, c: _0_2);
+        _0_0 = new global::A(b: _0_1, c: _0_2);
         return new global::StrongInject.Owned<global::A>(_0_0, () =>
         {
         });
