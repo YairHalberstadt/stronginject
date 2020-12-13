@@ -25,12 +25,11 @@ namespace StrongInject.Generator
             {
                 DelegateCreationStatement { InternalOperations: var ops, DisposeActionsName: var disposeActionsName } => _disposeAsynchronously
                     ? ops.Any(x => x.Disposal is not null)
-                        ? new Disposal.DelegateDisposal(disposeActionsName, IsAsync: true)
+                        ? new Disposal.DelegateDisposal(disposeActionsName, _wellKnownTypes.ConcurrentBagOfFuncTask, IsAsync: true)
                         : null
                     : ops.Any(x => x.Disposal is { IsAsync: false })
-                        ? new Disposal.DelegateDisposal(disposeActionsName, IsAsync: false)
+                        ? new Disposal.DelegateDisposal(disposeActionsName, _wellKnownTypes.ConcurrentBagOfAction, IsAsync: false)
                         : null,
-                SingleInstanceReferenceStatement => null,
                 DependencyCreationStatement { VariableName: var variableName, Source: var source, Dependencies: var dependencies } =>
                     source switch
                     {
@@ -48,6 +47,7 @@ namespace StrongInject.Generator
                         DelegateParameter or InstanceFieldOrProperty or ArraySource or ForwardedInstanceSource => null,
                         _ => throw new NotImplementedException(source.GetType().ToString()),
                     },
+                SingleInstanceReferenceStatement or InitializationStatement or DisposeActionsCreationStatement => null,
                 _ => throw new NotImplementedException(statement.GetType().ToString()),
             };
 
