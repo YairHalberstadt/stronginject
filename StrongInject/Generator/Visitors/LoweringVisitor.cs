@@ -85,7 +85,20 @@ namespace StrongInject.Generator.Visitors
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
             {
                 name = GenerateName(state);
-                _order.Add(_disposalLowerer.AddDisposal(new SingleInstanceReferenceStatement(name, source)));
+                var isAsync = RequiresAsyncVisitor.RequiresAsync(source, _containerScope);
+                var statement = new SingleInstanceReferenceStatement(name, source, isAsync);
+                if (isAsync)
+                {
+                    var awaitVariableName = GenerateName(state);
+                    var awaitStatement = new AwaitStatement(awaitVariableName, name, source.OfType);
+                    _order.Add(CreateOperation(statement, state.Name, awaitStatement));
+                    _order.Add(CreateOperation(awaitStatement, state.Name));
+                    name = awaitVariableName;
+                }
+                else
+                {
+                    _order.Add(CreateOperation(statement, state.Name));
+                }
                 _existingVariables.Add(source, name);
                 state.Dependencies.Add((name, source));
                 return false;
@@ -118,7 +131,6 @@ namespace StrongInject.Generator.Visitors
 
         protected override void AfterVisit(InstanceSource source, State state)
         {
-            Operation operation;
             if (source is DelegateSource delegateSource)
             {
                 var order = LowerResolution(
@@ -131,31 +143,66 @@ namespace StrongInject.Generator.Visitors
                     singleInstanceVariablesInScope: _existingVariables.Where(x => x.Key.Scope == Scope.SingleInstance),
                     targetName: out var targetName);
                 var delegateCreationStatement = new DelegateCreationStatement(state.Name, delegateSource, order, targetName);
-                operation = _disposalLowerer.AddDisposal(delegateCreationStatement);
+                var operation = CreateOperation(delegateCreationStatement, state.Name);
                 if (operation.Disposal is Disposal.DelegateDisposal { DisposeActionsType: var disposeActionsType })
                 {
-                    _order.Add(_disposalLowerer.AddDisposal(new DisposeActionsCreationStatement(delegateCreationStatement.DisposeActionsName, disposeActionsType)));
+                    _order.Add(CreateOperation(new DisposeActionsCreationStatement(delegateCreationStatement.DisposeActionsName, disposeActionsType), state.Name));
                 }
+                _order.Add(operation);
             }
             else
             {
-                operation = _disposalLowerer.AddDisposal(
-                    new DependencyCreationStatement(
-                        state.Name,
-                        source,
-                        state.Dependencies.Select(x => x.name).ToImmutableArray()));
-            }
+                var requiresInitialization = source is
+                    Registration { RequiresInitialization: true }
+                    or WrappedDecoratorInstanceSource { Decorator: DecoratorRegistration { RequiresInitialization: true } };
 
-            _order.Add(operation);
+                if (requiresInitialization)
+                {
+                    var operation = CreateOperation(
+                        new DependencyCreationStatement(
+                            state.Name,
+                            source,
+                            state.Dependencies.Select(x => x.name).ToImmutableArray()),
+                        state.Name);
+                    _order.Add(operation);
+
+                    var initializationTaskVariableName = source.IsAsync ? GenerateName(state) : null;
+
+                    if (initializationTaskVariableName is not null)
+                    {
+                        var awaitStatement = new AwaitStatement(VariableName: null, VariableToAwaitName: initializationTaskVariableName, Type: null);
+                        _order.Add(CreateOperation(new InitializationStatement(initializationTaskVariableName, state.Name, source.IsAsync), state.Name, awaitStatement));
+                        _order.Add(CreateOperation(awaitStatement, state.Name));
+                    }
+                    else
+                    {
+                        _order.Add(CreateOperation(new InitializationStatement(initializationTaskVariableName, state.Name, source.IsAsync), state.Name));
+                    }
+                }
+                else if (source.IsAsync)
+                {
+                    var taskVariableName = GenerateName(state);
+                    var awaitStatement = new AwaitStatement(VariableName: state.Name, VariableToAwaitName: taskVariableName, Type: source.OfType);
+                    _order.Add(CreateOperation(
+                        new DependencyCreationStatement(
+                            taskVariableName,
+                            source,
+                            state.Dependencies.Select(x => x.name).ToImmutableArray()), state.Name, awaitStatement));
+                    _order.Add(CreateOperation(awaitStatement, state.Name));
+                }
+                else
+                {
+                    _order.Add(CreateOperation(
+                        new DependencyCreationStatement(
+                            state.Name,
+                            source,
+                            state.Dependencies.Select(x => x.name).ToImmutableArray()), state.Name));
+                }
+            }
 
             if (source.Scope != Scope.InstancePerDependency)
             {
                 _existingVariables.Add(source, state.Name);
-            }
-
-            if (source is Registration { RequiresInitialization: true } or WrappedDecoratorInstanceSource { Decorator: DecoratorRegistration { RequiresInitialization: true } })
-            {
-                _order.Add(_disposalLowerer.AddDisposal(new InitializationStatement(state.Name, source.IsAsync)));
             }
         }
 
@@ -169,6 +216,11 @@ namespace StrongInject.Generator.Visitors
                     VisitCore(dependency, state);
                 }
             }
+        }
+
+        private Operation CreateOperation(Statement statement, string variableToDisposeName, AwaitStatement? awaitStatement = null)
+        {
+            return new Operation(statement, _disposalLowerer.CreateDisposal(statement, variableToDisposeName), awaitStatement);
         }
 
         public struct State : IState

@@ -25,6 +25,7 @@ namespace StrongInject.Generator
         INamedTypeSymbol FactoryAttribute,
         INamedTypeSymbol DecoratorFactoryAttribute,
         INamedTypeSymbol InstanceAttribute,
+        INamedTypeSymbol ValueTask,
         INamedTypeSymbol ValueTask1,
         INamedTypeSymbol Task1,
         INamedTypeSymbol ObjectDisposedException,
@@ -84,6 +85,7 @@ namespace StrongInject.Generator
                 || factoryAttribute is null
                 || decoratorFactoryAttribute is null
                 || instanceAttribute is null
+                || valueTask is null
                 || valueTask1 is null
                 || task1 is null
                 || objectDisposedException is null
@@ -113,6 +115,7 @@ namespace StrongInject.Generator
                 FactoryAttribute: factoryAttribute,
                 DecoratorFactoryAttribute: decoratorFactoryAttribute,
                 InstanceAttribute: instanceAttribute,
+                ValueTask: valueTask,
                 ValueTask1: valueTask1,
                 Task1: task1,
                 ObjectDisposedException: objectDisposedException,
