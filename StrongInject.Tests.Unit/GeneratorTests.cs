@@ -1186,6 +1186,8 @@ partial class Container
         global::C _0_6;
         global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_11;
         global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_12;
+        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_16;
+        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_21;
         var hasAwaitStarted_0_12 = false;
         var _0_10 = default(global::CFactoryTarget);
         var hasAwaitCompleted_0_12 = false;
@@ -1198,20 +1200,18 @@ partial class Container
         global::B _0_5;
         global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_4;
         global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> _0_14;
-        var hasAwaitStarted_0_14 = false;
-        var _0_3 = default(global::BFactoryTarget);
-        var hasAwaitCompleted_0_14 = false;
-        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_16;
-        var hasAwaitStarted_0_16 = false;
-        var _0_15 = default(global::CFactoryTarget);
-        var hasAwaitCompleted_0_16 = false;
-        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_21;
         var hasAwaitStarted_0_21 = false;
         var _0_20 = default(global::CFactoryTarget);
         var hasAwaitCompleted_0_21 = false;
         global::D _0_19;
         global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_18;
         global::System.Threading.Tasks.ValueTask<global::DFactoryTarget> _0_22;
+        var hasAwaitStarted_0_14 = false;
+        var _0_3 = default(global::BFactoryTarget);
+        var hasAwaitCompleted_0_14 = false;
+        var hasAwaitStarted_0_16 = false;
+        var _0_15 = default(global::CFactoryTarget);
+        var hasAwaitCompleted_0_16 = false;
         var hasAwaitStarted_0_22 = false;
         var _0_17 = default(global::DFactoryTarget);
         var hasAwaitCompleted_0_22 = false;
@@ -1226,32 +1226,26 @@ partial class Container
         _0_12 = _0_11.CreateAsync();
         try
         {
-            hasAwaitStarted_0_12 = true;
-            _0_10 = await _0_12;
-            hasAwaitCompleted_0_12 = true;
-            _0_9 = new global::D(c: _0_10);
-            _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
-            _0_13 = _0_8.CreateAsync();
+            _0_16 = _0_11.CreateAsync();
             try
             {
-                hasAwaitStarted_0_13 = true;
-                _0_7 = await _0_13;
-                hasAwaitCompleted_0_13 = true;
-                _0_5 = new global::B(c: _0_6, d: _0_7);
-                _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
-                _0_14 = _0_4.CreateAsync();
+                _0_21 = _0_11.CreateAsync();
                 try
                 {
-                    hasAwaitStarted_0_14 = true;
-                    _0_3 = await _0_14;
-                    hasAwaitCompleted_0_14 = true;
-                    _0_16 = _0_11.CreateAsync();
+                    hasAwaitStarted_0_12 = true;
+                    _0_10 = await _0_12;
+                    hasAwaitCompleted_0_12 = true;
+                    _0_9 = new global::D(c: _0_10);
+                    _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
+                    _0_13 = _0_8.CreateAsync();
                     try
                     {
-                        hasAwaitStarted_0_16 = true;
-                        _0_15 = await _0_16;
-                        hasAwaitCompleted_0_16 = true;
-                        _0_21 = _0_11.CreateAsync();
+                        hasAwaitStarted_0_13 = true;
+                        _0_7 = await _0_13;
+                        hasAwaitCompleted_0_13 = true;
+                        _0_5 = new global::B(c: _0_6, d: _0_7);
+                        _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
+                        _0_14 = _0_4.CreateAsync();
                         try
                         {
                             hasAwaitStarted_0_21 = true;
@@ -1262,6 +1256,12 @@ partial class Container
                             _0_22 = _0_18.CreateAsync();
                             try
                             {
+                                hasAwaitStarted_0_14 = true;
+                                _0_3 = await _0_14;
+                                hasAwaitCompleted_0_14 = true;
+                                hasAwaitStarted_0_16 = true;
+                                _0_15 = await _0_16;
+                                hasAwaitCompleted_0_16 = true;
                                 hasAwaitStarted_0_22 = true;
                                 _0_17 = await _0_22;
                                 hasAwaitCompleted_0_22 = true;
@@ -1306,61 +1306,61 @@ partial class Container
                         }
                         catch
                         {
-                            if (!hasAwaitStarted_0_21)
+                            if (!hasAwaitStarted_0_14)
                             {
-                                _0_20 = await _0_21;
+                                _0_3 = await _0_14;
                             }
-                            else if (!hasAwaitCompleted_0_21)
+                            else if (!hasAwaitCompleted_0_14)
                             {
                                 throw;
                             }
 
-                            await _0_11.ReleaseAsync(_0_20);
+                            await _0_4.ReleaseAsync(_0_3);
                             throw;
                         }
                     }
                     catch
                     {
-                        if (!hasAwaitStarted_0_16)
+                        if (!hasAwaitStarted_0_13)
                         {
-                            _0_15 = await _0_16;
+                            _0_7 = await _0_13;
                         }
-                        else if (!hasAwaitCompleted_0_16)
+                        else if (!hasAwaitCompleted_0_13)
                         {
                             throw;
                         }
 
-                        await _0_11.ReleaseAsync(_0_15);
+                        await _0_8.ReleaseAsync(_0_7);
                         throw;
                     }
                 }
                 catch
                 {
-                    if (!hasAwaitStarted_0_14)
+                    if (!hasAwaitStarted_0_21)
                     {
-                        _0_3 = await _0_14;
+                        _0_20 = await _0_21;
                     }
-                    else if (!hasAwaitCompleted_0_14)
+                    else if (!hasAwaitCompleted_0_21)
                     {
                         throw;
                     }
 
-                    await _0_4.ReleaseAsync(_0_3);
+                    await _0_11.ReleaseAsync(_0_20);
                     throw;
                 }
             }
             catch
             {
-                if (!hasAwaitStarted_0_13)
+                if (!hasAwaitStarted_0_16)
                 {
-                    _0_7 = await _0_13;
+                    _0_15 = await _0_16;
                 }
-                else if (!hasAwaitCompleted_0_13)
+                else if (!hasAwaitCompleted_0_16)
                 {
                     throw;
                 }
 
-                await _0_8.ReleaseAsync(_0_7);
+                await _0_11.ReleaseAsync(_0_15);
                 throw;
             }
         }
@@ -1388,10 +1388,10 @@ partial class Container
         {
             await _0_1.ReleaseAsync(_0_0);
             await _0_18.ReleaseAsync(_0_17);
-            await _0_11.ReleaseAsync(_0_20);
-            await _0_11.ReleaseAsync(_0_15);
             await _0_4.ReleaseAsync(_0_3);
             await _0_8.ReleaseAsync(_0_7);
+            await _0_11.ReleaseAsync(_0_20);
+            await _0_11.ReleaseAsync(_0_15);
             await _0_11.ReleaseAsync(_0_10);
         }
 
@@ -1405,6 +1405,8 @@ partial class Container
         global::C _0_6;
         global::StrongInject.IAsyncFactory<global::CFactoryTarget> _0_11;
         global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_12;
+        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_16;
+        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_21;
         var hasAwaitStarted_0_12 = false;
         var _0_10 = default(global::CFactoryTarget);
         var hasAwaitCompleted_0_12 = false;
@@ -1417,20 +1419,18 @@ partial class Container
         global::B _0_5;
         global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_4;
         global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> _0_14;
-        var hasAwaitStarted_0_14 = false;
-        var _0_3 = default(global::BFactoryTarget);
-        var hasAwaitCompleted_0_14 = false;
-        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_16;
-        var hasAwaitStarted_0_16 = false;
-        var _0_15 = default(global::CFactoryTarget);
-        var hasAwaitCompleted_0_16 = false;
-        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_21;
         var hasAwaitStarted_0_21 = false;
         var _0_20 = default(global::CFactoryTarget);
         var hasAwaitCompleted_0_21 = false;
         global::D _0_19;
         global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_18;
         global::System.Threading.Tasks.ValueTask<global::DFactoryTarget> _0_22;
+        var hasAwaitStarted_0_14 = false;
+        var _0_3 = default(global::BFactoryTarget);
+        var hasAwaitCompleted_0_14 = false;
+        var hasAwaitStarted_0_16 = false;
+        var _0_15 = default(global::CFactoryTarget);
+        var hasAwaitCompleted_0_16 = false;
         var hasAwaitStarted_0_22 = false;
         var _0_17 = default(global::DFactoryTarget);
         var hasAwaitCompleted_0_22 = false;
@@ -1445,32 +1445,26 @@ partial class Container
         _0_12 = _0_11.CreateAsync();
         try
         {
-            hasAwaitStarted_0_12 = true;
-            _0_10 = await _0_12;
-            hasAwaitCompleted_0_12 = true;
-            _0_9 = new global::D(c: _0_10);
-            _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
-            _0_13 = _0_8.CreateAsync();
+            _0_16 = _0_11.CreateAsync();
             try
             {
-                hasAwaitStarted_0_13 = true;
-                _0_7 = await _0_13;
-                hasAwaitCompleted_0_13 = true;
-                _0_5 = new global::B(c: _0_6, d: _0_7);
-                _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
-                _0_14 = _0_4.CreateAsync();
+                _0_21 = _0_11.CreateAsync();
                 try
                 {
-                    hasAwaitStarted_0_14 = true;
-                    _0_3 = await _0_14;
-                    hasAwaitCompleted_0_14 = true;
-                    _0_16 = _0_11.CreateAsync();
+                    hasAwaitStarted_0_12 = true;
+                    _0_10 = await _0_12;
+                    hasAwaitCompleted_0_12 = true;
+                    _0_9 = new global::D(c: _0_10);
+                    _0_8 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_9;
+                    _0_13 = _0_8.CreateAsync();
                     try
                     {
-                        hasAwaitStarted_0_16 = true;
-                        _0_15 = await _0_16;
-                        hasAwaitCompleted_0_16 = true;
-                        _0_21 = _0_11.CreateAsync();
+                        hasAwaitStarted_0_13 = true;
+                        _0_7 = await _0_13;
+                        hasAwaitCompleted_0_13 = true;
+                        _0_5 = new global::B(c: _0_6, d: _0_7);
+                        _0_4 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_5;
+                        _0_14 = _0_4.CreateAsync();
                         try
                         {
                             hasAwaitStarted_0_21 = true;
@@ -1481,6 +1475,12 @@ partial class Container
                             _0_22 = _0_18.CreateAsync();
                             try
                             {
+                                hasAwaitStarted_0_14 = true;
+                                _0_3 = await _0_14;
+                                hasAwaitCompleted_0_14 = true;
+                                hasAwaitStarted_0_16 = true;
+                                _0_15 = await _0_16;
+                                hasAwaitCompleted_0_16 = true;
                                 hasAwaitStarted_0_22 = true;
                                 _0_17 = await _0_22;
                                 hasAwaitCompleted_0_22 = true;
@@ -1525,61 +1525,61 @@ partial class Container
                         }
                         catch
                         {
-                            if (!hasAwaitStarted_0_21)
+                            if (!hasAwaitStarted_0_14)
                             {
-                                _0_20 = await _0_21;
+                                _0_3 = await _0_14;
                             }
-                            else if (!hasAwaitCompleted_0_21)
+                            else if (!hasAwaitCompleted_0_14)
                             {
                                 throw;
                             }
 
-                            await _0_11.ReleaseAsync(_0_20);
+                            await _0_4.ReleaseAsync(_0_3);
                             throw;
                         }
                     }
                     catch
                     {
-                        if (!hasAwaitStarted_0_16)
+                        if (!hasAwaitStarted_0_13)
                         {
-                            _0_15 = await _0_16;
+                            _0_7 = await _0_13;
                         }
-                        else if (!hasAwaitCompleted_0_16)
+                        else if (!hasAwaitCompleted_0_13)
                         {
                             throw;
                         }
 
-                        await _0_11.ReleaseAsync(_0_15);
+                        await _0_8.ReleaseAsync(_0_7);
                         throw;
                     }
                 }
                 catch
                 {
-                    if (!hasAwaitStarted_0_14)
+                    if (!hasAwaitStarted_0_21)
                     {
-                        _0_3 = await _0_14;
+                        _0_20 = await _0_21;
                     }
-                    else if (!hasAwaitCompleted_0_14)
+                    else if (!hasAwaitCompleted_0_21)
                     {
                         throw;
                     }
 
-                    await _0_4.ReleaseAsync(_0_3);
+                    await _0_11.ReleaseAsync(_0_20);
                     throw;
                 }
             }
             catch
             {
-                if (!hasAwaitStarted_0_13)
+                if (!hasAwaitStarted_0_16)
                 {
-                    _0_7 = await _0_13;
+                    _0_15 = await _0_16;
                 }
-                else if (!hasAwaitCompleted_0_13)
+                else if (!hasAwaitCompleted_0_16)
                 {
                     throw;
                 }
 
-                await _0_8.ReleaseAsync(_0_7);
+                await _0_11.ReleaseAsync(_0_15);
                 throw;
             }
         }
@@ -1602,10 +1602,10 @@ partial class Container
         {
             await _0_1.ReleaseAsync(_0_0);
             await _0_18.ReleaseAsync(_0_17);
-            await _0_11.ReleaseAsync(_0_20);
-            await _0_11.ReleaseAsync(_0_15);
             await _0_4.ReleaseAsync(_0_3);
             await _0_8.ReleaseAsync(_0_7);
+            await _0_11.ReleaseAsync(_0_20);
+            await _0_11.ReleaseAsync(_0_15);
             await _0_11.ReleaseAsync(_0_10);
         });
     }
@@ -2339,8 +2339,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            global::C _0_1;
             global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_5;
+            global::C _0_1;
             var hasAwaitStarted_0_5 = false;
             var _0_6 = default(global::CFactoryTarget);
             var hasAwaitCompleted_0_5 = false;
@@ -2351,10 +2351,10 @@ partial class Container
             var _0_2 = default(global::DFactoryTarget);
             var hasAwaitCompleted_0_7 = false;
             global::B _0_0;
-            _0_1 = new global::C();
             _0_5 = GetSingleInstanceField3();
             try
             {
+                _0_1 = new global::C();
                 hasAwaitStarted_0_5 = true;
                 _0_6 = await _0_5;
                 hasAwaitCompleted_0_5 = true;
@@ -2488,10 +2488,10 @@ partial class Container
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> _0_1;
+            global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_3;
             var hasAwaitStarted_0_1 = false;
             var _0_2 = default(global::BFactoryTarget);
             var hasAwaitCompleted_0_1 = false;
-            global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_3;
             var hasAwaitStarted_0_3 = false;
             var _0_4 = default(global::CFactoryTarget);
             var hasAwaitCompleted_0_3 = false;
@@ -2499,12 +2499,12 @@ partial class Container
             _0_1 = GetSingleInstanceField1();
             try
             {
-                hasAwaitStarted_0_1 = true;
-                _0_2 = await _0_1;
-                hasAwaitCompleted_0_1 = true;
                 _0_3 = GetSingleInstanceField3();
                 try
                 {
+                    hasAwaitStarted_0_1 = true;
+                    _0_2 = await _0_1;
+                    hasAwaitCompleted_0_1 = true;
                     hasAwaitStarted_0_3 = true;
                     _0_4 = await _0_3;
                     hasAwaitCompleted_0_3 = true;
@@ -3135,8 +3135,8 @@ partial class Container
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            global::C _0_1;
             global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_5;
+            global::C _0_1;
             var hasAwaitStarted_0_5 = false;
             var _0_6 = default(global::CFactoryTarget);
             var hasAwaitCompleted_0_5 = false;
@@ -3147,10 +3147,10 @@ partial class Container
             var _0_2 = default(global::DFactoryTarget);
             var hasAwaitCompleted_0_7 = false;
             global::B _0_0;
-            _0_1 = new global::C();
             _0_5 = GetSingleInstanceField2();
             try
             {
+                _0_1 = new global::C();
                 hasAwaitStarted_0_5 = true;
                 _0_6 = await _0_5;
                 hasAwaitCompleted_0_5 = true;
@@ -3337,14 +3337,16 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> _0_3;
+        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_5;
+        global::System.Threading.Tasks.ValueTask<global::I> _0_11;
+        global::StrongInject.IAsyncFactory<global::System.Int32> _0_14;
+        global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_15;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::BFactoryTarget);
         var hasAwaitCompleted_0_3 = false;
-        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_5;
         var hasAwaitStarted_0_5 = false;
         var _0_6 = default(global::CFactoryTarget);
         var hasAwaitCompleted_0_5 = false;
-        global::System.Threading.Tasks.ValueTask<global::I> _0_11;
         var hasAwaitStarted_0_11 = false;
         var _0_12 = default(global::I);
         var hasAwaitCompleted_0_11 = false;
@@ -3352,8 +3354,6 @@ partial class Container
         global::G _0_9;
         global::F _0_8;
         global::E _0_7;
-        global::StrongInject.IAsyncFactory<global::System.Int32> _0_14;
-        global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_15;
         var hasAwaitStarted_0_15 = false;
         var _0_13 = default(global::System.Int32);
         var hasAwaitCompleted_0_15 = false;
@@ -3366,33 +3366,33 @@ partial class Container
         _0_3 = GetSingleInstanceField0();
         try
         {
-            hasAwaitStarted_0_3 = true;
-            _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_5 = GetSingleInstanceField2();
             try
             {
-                hasAwaitStarted_0_5 = true;
-                _0_6 = await _0_5;
-                hasAwaitCompleted_0_5 = true;
                 _0_11 = GetSingleInstanceField3();
                 try
                 {
-                    hasAwaitStarted_0_11 = true;
-                    _0_12 = await _0_11;
-                    hasAwaitCompleted_0_11 = true;
-                    _0_10 = new global::H(i: _0_12);
-                    _0_9 = new global::G(h: _0_10);
+                    _0_14 = this._factory;
+                    _0_15 = _0_14.CreateAsync();
                     try
                     {
-                        _0_8 = new global::F(g: _0_9);
+                        hasAwaitStarted_0_3 = true;
+                        _0_4 = await _0_3;
+                        hasAwaitCompleted_0_3 = true;
+                        hasAwaitStarted_0_5 = true;
+                        _0_6 = await _0_5;
+                        hasAwaitCompleted_0_5 = true;
+                        hasAwaitStarted_0_11 = true;
+                        _0_12 = await _0_11;
+                        hasAwaitCompleted_0_11 = true;
+                        _0_10 = new global::H(i: _0_12);
+                        _0_9 = new global::G(h: _0_10);
                         try
                         {
-                            _0_7 = new global::E(f: _0_8);
+                            _0_8 = new global::F(g: _0_9);
                             try
                             {
-                                _0_14 = this._factory;
-                                _0_15 = _0_14.CreateAsync();
+                                _0_7 = new global::E(f: _0_8);
                                 try
                                 {
                                     hasAwaitStarted_0_15 = true;
@@ -3424,34 +3424,34 @@ partial class Container
                                 }
                                 catch
                                 {
-                                    if (!hasAwaitStarted_0_15)
-                                    {
-                                        _0_13 = await _0_15;
-                                    }
-                                    else if (!hasAwaitCompleted_0_15)
-                                    {
-                                        throw;
-                                    }
-
-                                    await _0_14.ReleaseAsync(_0_13);
+                                    ((global::System.IDisposable)_0_7).Dispose();
                                     throw;
                                 }
                             }
                             catch
                             {
-                                ((global::System.IDisposable)_0_7).Dispose();
+                                await ((global::System.IAsyncDisposable)_0_8).DisposeAsync();
                                 throw;
                             }
                         }
                         catch
                         {
-                            await ((global::System.IAsyncDisposable)_0_8).DisposeAsync();
+                            await ((global::System.IAsyncDisposable)_0_9).DisposeAsync();
                             throw;
                         }
                     }
                     catch
                     {
-                        await ((global::System.IAsyncDisposable)_0_9).DisposeAsync();
+                        if (!hasAwaitStarted_0_15)
+                        {
+                            _0_13 = await _0_15;
+                        }
+                        else if (!hasAwaitCompleted_0_15)
+                        {
+                            throw;
+                        }
+
+                        await _0_14.ReleaseAsync(_0_13);
                         throw;
                     }
                 }
@@ -3493,10 +3493,10 @@ partial class Container
         finally
         {
             await _0_1.ReleaseAsync(_0_0);
-            await _0_14.ReleaseAsync(_0_13);
             ((global::System.IDisposable)_0_7).Dispose();
             await ((global::System.IAsyncDisposable)_0_8).DisposeAsync();
             await ((global::System.IAsyncDisposable)_0_9).DisposeAsync();
+            await _0_14.ReleaseAsync(_0_13);
         }
 
         return result;
@@ -3507,14 +3507,16 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> _0_3;
+        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_5;
+        global::System.Threading.Tasks.ValueTask<global::I> _0_11;
+        global::StrongInject.IAsyncFactory<global::System.Int32> _0_14;
+        global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_15;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::BFactoryTarget);
         var hasAwaitCompleted_0_3 = false;
-        global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_5;
         var hasAwaitStarted_0_5 = false;
         var _0_6 = default(global::CFactoryTarget);
         var hasAwaitCompleted_0_5 = false;
-        global::System.Threading.Tasks.ValueTask<global::I> _0_11;
         var hasAwaitStarted_0_11 = false;
         var _0_12 = default(global::I);
         var hasAwaitCompleted_0_11 = false;
@@ -3522,8 +3524,6 @@ partial class Container
         global::G _0_9;
         global::F _0_8;
         global::E _0_7;
-        global::StrongInject.IAsyncFactory<global::System.Int32> _0_14;
-        global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_15;
         var hasAwaitStarted_0_15 = false;
         var _0_13 = default(global::System.Int32);
         var hasAwaitCompleted_0_15 = false;
@@ -3536,33 +3536,33 @@ partial class Container
         _0_3 = GetSingleInstanceField0();
         try
         {
-            hasAwaitStarted_0_3 = true;
-            _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_5 = GetSingleInstanceField2();
             try
             {
-                hasAwaitStarted_0_5 = true;
-                _0_6 = await _0_5;
-                hasAwaitCompleted_0_5 = true;
                 _0_11 = GetSingleInstanceField3();
                 try
                 {
-                    hasAwaitStarted_0_11 = true;
-                    _0_12 = await _0_11;
-                    hasAwaitCompleted_0_11 = true;
-                    _0_10 = new global::H(i: _0_12);
-                    _0_9 = new global::G(h: _0_10);
+                    _0_14 = this._factory;
+                    _0_15 = _0_14.CreateAsync();
                     try
                     {
-                        _0_8 = new global::F(g: _0_9);
+                        hasAwaitStarted_0_3 = true;
+                        _0_4 = await _0_3;
+                        hasAwaitCompleted_0_3 = true;
+                        hasAwaitStarted_0_5 = true;
+                        _0_6 = await _0_5;
+                        hasAwaitCompleted_0_5 = true;
+                        hasAwaitStarted_0_11 = true;
+                        _0_12 = await _0_11;
+                        hasAwaitCompleted_0_11 = true;
+                        _0_10 = new global::H(i: _0_12);
+                        _0_9 = new global::G(h: _0_10);
                         try
                         {
-                            _0_7 = new global::E(f: _0_8);
+                            _0_8 = new global::F(g: _0_9);
                             try
                             {
-                                _0_14 = this._factory;
-                                _0_15 = _0_14.CreateAsync();
+                                _0_7 = new global::E(f: _0_8);
                                 try
                                 {
                                     hasAwaitStarted_0_15 = true;
@@ -3594,34 +3594,34 @@ partial class Container
                                 }
                                 catch
                                 {
-                                    if (!hasAwaitStarted_0_15)
-                                    {
-                                        _0_13 = await _0_15;
-                                    }
-                                    else if (!hasAwaitCompleted_0_15)
-                                    {
-                                        throw;
-                                    }
-
-                                    await _0_14.ReleaseAsync(_0_13);
+                                    ((global::System.IDisposable)_0_7).Dispose();
                                     throw;
                                 }
                             }
                             catch
                             {
-                                ((global::System.IDisposable)_0_7).Dispose();
+                                await ((global::System.IAsyncDisposable)_0_8).DisposeAsync();
                                 throw;
                             }
                         }
                         catch
                         {
-                            await ((global::System.IAsyncDisposable)_0_8).DisposeAsync();
+                            await ((global::System.IAsyncDisposable)_0_9).DisposeAsync();
                             throw;
                         }
                     }
                     catch
                     {
-                        await ((global::System.IAsyncDisposable)_0_9).DisposeAsync();
+                        if (!hasAwaitStarted_0_15)
+                        {
+                            _0_13 = await _0_15;
+                        }
+                        else if (!hasAwaitCompleted_0_15)
+                        {
+                            throw;
+                        }
+
+                        await _0_14.ReleaseAsync(_0_13);
                         throw;
                     }
                 }
@@ -3658,10 +3658,10 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::AFactoryTarget>(_0_0, async () =>
         {
             await _0_1.ReleaseAsync(_0_0);
-            await _0_14.ReleaseAsync(_0_13);
             ((global::System.IDisposable)_0_7).Dispose();
             await ((global::System.IAsyncDisposable)_0_8).DisposeAsync();
             await ((global::System.IAsyncDisposable)_0_9).DisposeAsync();
+            await _0_14.ReleaseAsync(_0_13);
         });
     }
 }");
@@ -4847,18 +4847,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::B _0_1;
         global::System.Threading.Tasks.ValueTask<global::D> _0_2;
+        global::B _0_1;
         var hasAwaitStarted_0_2 = false;
         var _0_3 = default(global::D);
         var hasAwaitCompleted_0_2 = false;
         global::C _0_0;
         global::System.Threading.Tasks.ValueTask _0_4;
         var hasAwaitStarted_0_4 = false;
-        _0_1 = GetSingleInstanceField0();
         _0_2 = GetSingleInstanceField1();
         try
         {
+            _0_1 = GetSingleInstanceField0();
             hasAwaitStarted_0_2 = true;
             _0_3 = await _0_2;
             hasAwaitCompleted_0_2 = true;
@@ -4905,18 +4905,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::B _0_1;
         global::System.Threading.Tasks.ValueTask<global::D> _0_2;
+        global::B _0_1;
         var hasAwaitStarted_0_2 = false;
         var _0_3 = default(global::D);
         var hasAwaitCompleted_0_2 = false;
         global::C _0_0;
         global::System.Threading.Tasks.ValueTask _0_4;
         var hasAwaitStarted_0_4 = false;
-        _0_1 = GetSingleInstanceField0();
         _0_2 = GetSingleInstanceField1();
         try
         {
+            _0_1 = GetSingleInstanceField0();
             hasAwaitStarted_0_2 = true;
             _0_3 = await _0_2;
             hasAwaitCompleted_0_2 = true;
@@ -19982,14 +19982,14 @@ partial class Container
         global::B _0_5;
         global::StrongInject.IAsyncFactory<global::C> _0_4;
         global::System.Threading.Tasks.ValueTask<global::C> _0_8;
+        global::B _0_13;
+        global::StrongInject.IAsyncFactory<global::C> _0_12;
+        global::System.Threading.Tasks.ValueTask<global::C> _0_14;
         var hasAwaitStarted_0_8 = false;
         var _0_3 = default(global::C);
         var hasAwaitCompleted_0_8 = false;
         global::StrongInject.IFactory<global::D> _0_2;
         global::D _0_1;
-        global::B _0_13;
-        global::StrongInject.IAsyncFactory<global::C> _0_12;
-        global::System.Threading.Tasks.ValueTask<global::C> _0_14;
         var hasAwaitStarted_0_14 = false;
         var _0_11 = default(global::C);
         var hasAwaitCompleted_0_14 = false;
@@ -20005,18 +20005,18 @@ partial class Container
             _0_8 = _0_4.CreateAsync();
             try
             {
-                hasAwaitStarted_0_8 = true;
-                _0_3 = await _0_8;
-                hasAwaitCompleted_0_8 = true;
-                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-                _0_1 = _0_2.Create();
+                _0_13 = _0_6.Create();
                 try
                 {
-                    _0_13 = _0_6.Create();
+                    _0_12 = (global::StrongInject.IAsyncFactory<global::C>)_0_13;
+                    _0_14 = _0_12.CreateAsync();
                     try
                     {
-                        _0_12 = (global::StrongInject.IAsyncFactory<global::C>)_0_13;
-                        _0_14 = _0_12.CreateAsync();
+                        hasAwaitStarted_0_8 = true;
+                        _0_3 = await _0_8;
+                        hasAwaitCompleted_0_8 = true;
+                        _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                        _0_1 = _0_2.Create();
                         try
                         {
                             hasAwaitStarted_0_14 = true;
@@ -20036,28 +20036,28 @@ partial class Container
                         }
                         catch
                         {
-                            if (!hasAwaitStarted_0_14)
-                            {
-                                _0_11 = await _0_14;
-                            }
-                            else if (!hasAwaitCompleted_0_14)
-                            {
-                                throw;
-                            }
-
-                            await _0_12.ReleaseAsync(_0_11);
+                            _0_2.Release(_0_1);
                             throw;
                         }
                     }
                     catch
                     {
-                        _0_6.Release(_0_13);
+                        if (!hasAwaitStarted_0_14)
+                        {
+                            _0_11 = await _0_14;
+                        }
+                        else if (!hasAwaitCompleted_0_14)
+                        {
+                            throw;
+                        }
+
+                        await _0_12.ReleaseAsync(_0_11);
                         throw;
                     }
                 }
                 catch
                 {
-                    _0_2.Release(_0_1);
+                    _0_6.Release(_0_13);
                     throw;
                 }
             }
@@ -20090,9 +20090,9 @@ partial class Container
         finally
         {
             _0_10.Release(_0_9);
+            _0_2.Release(_0_1);
             await _0_12.ReleaseAsync(_0_11);
             _0_6.Release(_0_13);
-            _0_2.Release(_0_1);
             await _0_4.ReleaseAsync(_0_3);
             _0_6.Release(_0_5);
         }
@@ -20109,14 +20109,14 @@ partial class Container
         global::B _0_5;
         global::StrongInject.IAsyncFactory<global::C> _0_4;
         global::System.Threading.Tasks.ValueTask<global::C> _0_8;
+        global::B _0_13;
+        global::StrongInject.IAsyncFactory<global::C> _0_12;
+        global::System.Threading.Tasks.ValueTask<global::C> _0_14;
         var hasAwaitStarted_0_8 = false;
         var _0_3 = default(global::C);
         var hasAwaitCompleted_0_8 = false;
         global::StrongInject.IFactory<global::D> _0_2;
         global::D _0_1;
-        global::B _0_13;
-        global::StrongInject.IAsyncFactory<global::C> _0_12;
-        global::System.Threading.Tasks.ValueTask<global::C> _0_14;
         var hasAwaitStarted_0_14 = false;
         var _0_11 = default(global::C);
         var hasAwaitCompleted_0_14 = false;
@@ -20132,18 +20132,18 @@ partial class Container
             _0_8 = _0_4.CreateAsync();
             try
             {
-                hasAwaitStarted_0_8 = true;
-                _0_3 = await _0_8;
-                hasAwaitCompleted_0_8 = true;
-                _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
-                _0_1 = _0_2.Create();
+                _0_13 = _0_6.Create();
                 try
                 {
-                    _0_13 = _0_6.Create();
+                    _0_12 = (global::StrongInject.IAsyncFactory<global::C>)_0_13;
+                    _0_14 = _0_12.CreateAsync();
                     try
                     {
-                        _0_12 = (global::StrongInject.IAsyncFactory<global::C>)_0_13;
-                        _0_14 = _0_12.CreateAsync();
+                        hasAwaitStarted_0_8 = true;
+                        _0_3 = await _0_8;
+                        hasAwaitCompleted_0_8 = true;
+                        _0_2 = (global::StrongInject.IFactory<global::D>)_0_3;
+                        _0_1 = _0_2.Create();
                         try
                         {
                             hasAwaitStarted_0_14 = true;
@@ -20163,28 +20163,28 @@ partial class Container
                         }
                         catch
                         {
-                            if (!hasAwaitStarted_0_14)
-                            {
-                                _0_11 = await _0_14;
-                            }
-                            else if (!hasAwaitCompleted_0_14)
-                            {
-                                throw;
-                            }
-
-                            await _0_12.ReleaseAsync(_0_11);
+                            _0_2.Release(_0_1);
                             throw;
                         }
                     }
                     catch
                     {
-                        _0_6.Release(_0_13);
+                        if (!hasAwaitStarted_0_14)
+                        {
+                            _0_11 = await _0_14;
+                        }
+                        else if (!hasAwaitCompleted_0_14)
+                        {
+                            throw;
+                        }
+
+                        await _0_12.ReleaseAsync(_0_11);
                         throw;
                     }
                 }
                 catch
                 {
-                    _0_2.Release(_0_1);
+                    _0_6.Release(_0_13);
                     throw;
                 }
             }
@@ -20212,9 +20212,9 @@ partial class Container
         return new global::StrongInject.AsyncOwned<global::System.Int32>(_0_0, async () =>
         {
             _0_10.Release(_0_9);
+            _0_2.Release(_0_1);
             await _0_12.ReleaseAsync(_0_11);
             _0_6.Release(_0_13);
-            _0_2.Release(_0_1);
             await _0_4.ReleaseAsync(_0_3);
             _0_6.Release(_0_5);
         });

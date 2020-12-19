@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis;
 using Xunit;
 
 namespace StrongInject.Generator.Tests.Unit
@@ -188,14 +188,14 @@ namespace StrongInject.Generator.Tests.Unit
 
         public DiagnosticResult(string code, string squiggledText, DiagnosticSeverity severity = DiagnosticSeverity.Error)
         {
-            this.Id = code;
-            this.SquiggledText = squiggledText;
+            Id = code;
+            SquiggledText = squiggledText;
             Severity = severity;
         }
 
         public DiagnosticResult WithLocation(int line, int column)
         {
-            this.Locations.Add(new DiagnosticResultLocation(line, column));
+            Locations.Add(new DiagnosticResultLocation(line, column));
             return this;
         }
     }
@@ -212,8 +212,8 @@ namespace StrongInject.Generator.Tests.Unit
                 throw new ArgumentOutOfRangeException(nameof(column), "column must be >= -1");
             }
 
-            this.Line = line;
-            this.Column = column;
+            Line = line;
+            Column = column;
         }
     }
 }
