@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>1.0.5</VersionPrefix>
+		<VersionPrefix>1.0.6</VersionPrefix>
 		<PackageId>StrongInject</PackageId>
 		<Authors>StrongInject</Authors>
 		<Product>StrongInject</Product>

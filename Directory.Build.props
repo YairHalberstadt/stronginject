@@ -6,7 +6,7 @@
    <NoWarn>CS1591</NoWarn>
    <WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
    <AnalysisLevel>5</AnalysisLevel>
-   <StrongInjectSampleVersion>1.0.4</StrongInjectSampleVersion>
-   <StrongInjectExtensionsDependenInjectionSampleVersion>0.0.5</StrongInjectExtensionsDependenInjectionSampleVersion>
+   <StrongInjectSampleVersion>1.0.6</StrongInjectSampleVersion>
+   <StrongInjectExtensionsDependenInjectionSampleVersion>0.0.7</StrongInjectExtensionsDependenInjectionSampleVersion>
  </PropertyGroup>
 </Project>
