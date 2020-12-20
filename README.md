@@ -37,6 +37,7 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
   - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
+    - [Parallel Resolution](#parallel-resolution)
   - [Resolving all instances of a type](#resolving-all-instances-of-a-type)
   - [Optional Parameters](#optional-parameters)
   - [Disposal](#disposal)
