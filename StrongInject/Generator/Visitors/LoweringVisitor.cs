@@ -242,7 +242,9 @@ namespace StrongInject.Generator.Visitors
 
         private Operation CreateOperation(Statement statement, string variableToDisposeName, List<Operation> dependencies, AwaitStatement? awaitStatement = null)
         {
-            return new Operation(statement, _disposalLowerer.CreateDisposal(statement, variableToDisposeName), dependencies, awaitStatement);
+            var disposal = _disposalLowerer.CreateDisposal(statement, variableToDisposeName);
+            var canDisposeLocally = disposal is not null && (!disposal.IsAsync || _isAsyncContext);
+            return new Operation(statement, disposal, dependencies, canDisposeLocally, awaitStatement);
         }
 
         public struct State : IState

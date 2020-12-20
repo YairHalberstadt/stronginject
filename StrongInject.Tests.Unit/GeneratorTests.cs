@@ -44,7 +44,7 @@ public class D
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -132,7 +132,7 @@ public interface IC {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -231,7 +231,7 @@ public class E : IRequiresAsyncInitialization
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -437,7 +437,7 @@ public class DFactoryTarget {}
                 new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -750,7 +750,7 @@ public class D
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -846,7 +846,7 @@ public interface IC {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -957,7 +957,7 @@ public class E : IRequiresAsyncInitialization
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1167,7 +1167,7 @@ public class DFactoryTarget {}
                 new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1644,7 +1644,7 @@ public class D
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1801,7 +1801,7 @@ public interface IC {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1936,7 +1936,7 @@ public class E : IRequiresAsyncInitialization
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -2027,7 +2027,6 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::C> _0_2;
             var hasAwaitStarted_0_2 = false;
             var _0_3 = default(global::C);
-            var hasAwaitCompleted_0_2 = false;
             global::D _0_4;
             global::System.Threading.Tasks.ValueTask _0_5;
             var hasAwaitStarted_0_5 = false;
@@ -2040,7 +2039,6 @@ partial class Container
             {
                 hasAwaitStarted_0_2 = true;
                 _0_3 = await _0_2;
-                hasAwaitCompleted_0_2 = true;
                 _0_4 = new global::D(c: _0_3);
                 _0_5 = ((global::StrongInject.IRequiresAsyncInitialization)_0_4).InitializeAsync();
                 try
@@ -2105,13 +2103,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::A);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField0();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -2142,13 +2138,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::A);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField0();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -2214,7 +2208,7 @@ public class DFactoryTarget {}
                 new DiagnosticResult("SI1001", @"Register(typeof(C), Scope.InstancePerResolution, typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -2343,7 +2337,6 @@ partial class Container
             global::C _0_1;
             var hasAwaitStarted_0_5 = false;
             var _0_6 = default(global::CFactoryTarget);
-            var hasAwaitCompleted_0_5 = false;
             global::D _0_4;
             global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_3;
             global::System.Threading.Tasks.ValueTask<global::DFactoryTarget> _0_7;
@@ -2357,7 +2350,6 @@ partial class Container
                 _0_1 = new global::C();
                 hasAwaitStarted_0_5 = true;
                 _0_6 = await _0_5;
-                hasAwaitCompleted_0_5 = true;
                 _0_4 = new global::D(c: _0_6);
                 _0_3 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_4;
                 _0_7 = _0_3.CreateAsync();
@@ -2419,7 +2411,6 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::B> _0_2;
             var hasAwaitStarted_0_2 = false;
             var _0_3 = default(global::B);
-            var hasAwaitCompleted_0_2 = false;
             global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_1;
             global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> _0_4;
             var hasAwaitStarted_0_4 = false;
@@ -2430,7 +2421,6 @@ partial class Container
             {
                 hasAwaitStarted_0_2 = true;
                 _0_3 = await _0_2;
-                hasAwaitCompleted_0_2 = true;
                 _0_1 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_3;
                 _0_4 = _0_1.CreateAsync();
                 try
@@ -2491,10 +2481,8 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> _0_3;
             var hasAwaitStarted_0_1 = false;
             var _0_2 = default(global::BFactoryTarget);
-            var hasAwaitCompleted_0_1 = false;
             var hasAwaitStarted_0_3 = false;
             var _0_4 = default(global::CFactoryTarget);
-            var hasAwaitCompleted_0_3 = false;
             global::A _0_0;
             _0_1 = GetSingleInstanceField1();
             try
@@ -2504,10 +2492,8 @@ partial class Container
                 {
                     hasAwaitStarted_0_1 = true;
                     _0_2 = await _0_1;
-                    hasAwaitCompleted_0_1 = true;
                     hasAwaitStarted_0_3 = true;
                     _0_4 = await _0_3;
-                    hasAwaitCompleted_0_3 = true;
                     _0_0 = new global::A(b: _0_2, c: _0_4);
                 }
                 catch
@@ -2550,7 +2536,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_2;
         var hasAwaitStarted_0_2 = false;
         var _0_3 = default(global::A);
-        var hasAwaitCompleted_0_2 = false;
         global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
         global::System.Threading.Tasks.ValueTask<global::AFactoryTarget> _0_4;
         var hasAwaitStarted_0_4 = false;
@@ -2561,7 +2546,6 @@ partial class Container
         {
             hasAwaitStarted_0_2 = true;
             _0_3 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
             _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_3;
             _0_4 = _0_1.CreateAsync();
             try
@@ -2615,7 +2599,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_2;
         var hasAwaitStarted_0_2 = false;
         var _0_3 = default(global::A);
-        var hasAwaitCompleted_0_2 = false;
         global::StrongInject.IAsyncFactory<global::AFactoryTarget> _0_1;
         global::System.Threading.Tasks.ValueTask<global::AFactoryTarget> _0_4;
         var hasAwaitStarted_0_4 = false;
@@ -2626,7 +2609,6 @@ partial class Container
         {
             hasAwaitStarted_0_2 = true;
             _0_3 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
             _0_1 = (global::StrongInject.IAsyncFactory<global::AFactoryTarget>)_0_3;
             _0_4 = _0_1.CreateAsync();
             try
@@ -2701,7 +2683,7 @@ public interface IC {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -2926,7 +2908,7 @@ public class InstanceFactory : IAsyncFactory<IC>, IAsyncFactory<D>
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(9, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -3013,7 +2995,7 @@ public class I : IDisposable { public I(int i) {} public void Dispose() {} }
                 // _factory
                 new DiagnosticResult("CS0649", @"_factory", DiagnosticSeverity.Warning).WithLocation(18, 57));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -3139,7 +3121,6 @@ partial class Container
             global::C _0_1;
             var hasAwaitStarted_0_5 = false;
             var _0_6 = default(global::CFactoryTarget);
-            var hasAwaitCompleted_0_5 = false;
             global::D _0_4;
             global::StrongInject.IAsyncFactory<global::DFactoryTarget> _0_3;
             global::System.Threading.Tasks.ValueTask<global::DFactoryTarget> _0_7;
@@ -3153,7 +3134,6 @@ partial class Container
                 _0_1 = new global::C();
                 hasAwaitStarted_0_5 = true;
                 _0_6 = await _0_5;
-                hasAwaitCompleted_0_5 = true;
                 _0_4 = new global::D(c: _0_6);
                 _0_3 = (global::StrongInject.IAsyncFactory<global::DFactoryTarget>)_0_4;
                 _0_7 = _0_3.CreateAsync();
@@ -3216,7 +3196,6 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::B> _0_2;
             var hasAwaitStarted_0_2 = false;
             var _0_3 = default(global::B);
-            var hasAwaitCompleted_0_2 = false;
             global::StrongInject.IAsyncFactory<global::BFactoryTarget> _0_1;
             global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> _0_4;
             var hasAwaitStarted_0_4 = false;
@@ -3227,7 +3206,6 @@ partial class Container
             {
                 hasAwaitStarted_0_2 = true;
                 _0_3 = await _0_2;
-                hasAwaitCompleted_0_2 = true;
                 _0_1 = (global::StrongInject.IAsyncFactory<global::BFactoryTarget>)_0_3;
                 _0_4 = _0_1.CreateAsync();
                 try
@@ -3343,13 +3321,10 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_15;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::BFactoryTarget);
-        var hasAwaitCompleted_0_3 = false;
         var hasAwaitStarted_0_5 = false;
         var _0_6 = default(global::CFactoryTarget);
-        var hasAwaitCompleted_0_5 = false;
         var hasAwaitStarted_0_11 = false;
         var _0_12 = default(global::I);
-        var hasAwaitCompleted_0_11 = false;
         global::H _0_10;
         global::G _0_9;
         global::F _0_8;
@@ -3378,13 +3353,10 @@ partial class Container
                     {
                         hasAwaitStarted_0_3 = true;
                         _0_4 = await _0_3;
-                        hasAwaitCompleted_0_3 = true;
                         hasAwaitStarted_0_5 = true;
                         _0_6 = await _0_5;
-                        hasAwaitCompleted_0_5 = true;
                         hasAwaitStarted_0_11 = true;
                         _0_12 = await _0_11;
-                        hasAwaitCompleted_0_11 = true;
                         _0_10 = new global::H(i: _0_12);
                         _0_9 = new global::G(h: _0_10);
                         try
@@ -3513,13 +3485,10 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_15;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::BFactoryTarget);
-        var hasAwaitCompleted_0_3 = false;
         var hasAwaitStarted_0_5 = false;
         var _0_6 = default(global::CFactoryTarget);
-        var hasAwaitCompleted_0_5 = false;
         var hasAwaitStarted_0_11 = false;
         var _0_12 = default(global::I);
-        var hasAwaitCompleted_0_11 = false;
         global::H _0_10;
         global::G _0_9;
         global::F _0_8;
@@ -3548,13 +3517,10 @@ partial class Container
                     {
                         hasAwaitStarted_0_3 = true;
                         _0_4 = await _0_3;
-                        hasAwaitCompleted_0_3 = true;
                         hasAwaitStarted_0_5 = true;
                         _0_6 = await _0_5;
-                        hasAwaitCompleted_0_5 = true;
                         hasAwaitStarted_0_11 = true;
                         _0_12 = await _0_11;
-                        hasAwaitCompleted_0_11 = true;
                         _0_10 = new global::H(i: _0_12);
                         _0_9 = new global::G(h: _0_10);
                         try
@@ -3689,7 +3655,7 @@ namespace N.O.P
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 namespace N.O.P
 {
     partial class Container
@@ -3763,7 +3729,7 @@ namespace N.O.P
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 namespace N.O.P
 {
     partial class Outer1
@@ -3843,7 +3809,7 @@ namespace N.O.P
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 namespace N.O.P
 {
     partial class Outer1<T>
@@ -3914,7 +3880,7 @@ partial class Container : IAsyncContainer<A>
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -3966,7 +3932,7 @@ public class B{}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4019,7 +3985,7 @@ public class B{}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4067,7 +4033,7 @@ public class A : IRequiresAsyncInitialization
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4117,7 +4083,7 @@ public class B : IRequiresAsyncInitialization
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4285,7 +4251,7 @@ public class B {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4351,7 +4317,7 @@ public class B : IRequiresInitialization { public void Initialize() {} }
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4421,7 +4387,7 @@ public class B {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4501,7 +4467,7 @@ public class B {}
                 new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 52));
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4595,7 +4561,7 @@ public class B {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4702,7 +4668,7 @@ public class D : IRequiresAsyncInitialization { public ValueTask InitializeAsync
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4851,7 +4817,6 @@ partial class Container
         global::B _0_1;
         var hasAwaitStarted_0_2 = false;
         var _0_3 = default(global::D);
-        var hasAwaitCompleted_0_2 = false;
         global::C _0_0;
         global::System.Threading.Tasks.ValueTask _0_4;
         var hasAwaitStarted_0_4 = false;
@@ -4861,7 +4826,6 @@ partial class Container
             _0_1 = GetSingleInstanceField0();
             hasAwaitStarted_0_2 = true;
             _0_3 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
             _0_0 = new global::C(b: _0_1, d: _0_3);
             _0_4 = ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
             try
@@ -4909,7 +4873,6 @@ partial class Container
         global::B _0_1;
         var hasAwaitStarted_0_2 = false;
         var _0_3 = default(global::D);
-        var hasAwaitCompleted_0_2 = false;
         global::C _0_0;
         global::System.Threading.Tasks.ValueTask _0_4;
         var hasAwaitStarted_0_4 = false;
@@ -4919,7 +4882,6 @@ partial class Container
             _0_1 = GetSingleInstanceField0();
             hasAwaitStarted_0_2 = true;
             _0_3 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
             _0_0 = new global::C(b: _0_1, d: _0_3);
             _0_4 = ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
             try
@@ -4974,7 +4936,7 @@ public class B : IDisposable { public void Dispose(){} }
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5080,7 +5042,7 @@ public class C : IDisposable { public void Dispose(){} }
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5226,7 +5188,7 @@ public class C : IDisposable { public void Dispose(){} }
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5329,7 +5291,7 @@ public class B {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5409,7 +5371,7 @@ public class B {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5484,7 +5446,7 @@ public class B {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5560,7 +5522,7 @@ public class B { public B(int i, string s, int i1){} }
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5640,7 +5602,7 @@ public class B { public B(int i, string s){} }
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5728,7 +5690,7 @@ public class A
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5830,7 +5792,7 @@ public class B : IDisposable
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5999,7 +5961,7 @@ public class B : IAsyncDisposable
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6150,7 +6112,7 @@ public class C : IDisposable
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6265,7 +6227,7 @@ public class A
                 new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6342,7 +6304,7 @@ public class A
                 new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6438,7 +6400,7 @@ public class B
                 new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6552,7 +6514,7 @@ public class A
                 new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6624,7 +6586,7 @@ public class A
                 new DiagnosticResult("SI1102", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6710,7 +6672,7 @@ public class A
                 new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6758,7 +6720,7 @@ public class A
                 new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6808,7 +6770,7 @@ public class A : IRequiresAsyncInitialization
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6856,7 +6818,7 @@ public class A
                 new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6904,7 +6866,7 @@ public class A
                 new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6952,7 +6914,7 @@ public class A
                 new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6999,7 +6961,7 @@ public class A : IRequiresAsyncInitialization
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7111,7 +7073,7 @@ public class A : IRequiresAsyncInitialization
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7228,7 +7190,7 @@ public class B
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7357,7 +7319,7 @@ public class A
                 // _instanceProvider
                 new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 64));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7431,7 +7393,7 @@ public class B : IFactory<Func<A>>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7507,7 +7469,7 @@ public class A
                 new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7573,7 +7535,7 @@ public partial class Container : IContainer<Action<int>>
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7621,7 +7583,7 @@ public class B{}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7694,7 +7656,7 @@ public class B{}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7806,7 +7768,7 @@ public class B{}";
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7860,7 +7822,7 @@ public class B{}";
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7903,7 +7865,7 @@ public class B{}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7975,7 +7937,7 @@ public class B{}";
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8022,7 +7984,7 @@ public class B{}";
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8071,7 +8033,7 @@ public class B{}";
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8120,7 +8082,7 @@ public class B{}";
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8167,7 +8129,7 @@ public class B{}";
                 new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8233,7 +8195,7 @@ public class B{}";
                 new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8304,7 +8266,7 @@ public partial class Container : IContainer<A>
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8376,7 +8338,7 @@ public class B{}";
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8501,7 +8463,7 @@ public class B{}";
                 // Container
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(13, 22));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8555,7 +8517,7 @@ public class B{}";
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8599,7 +8561,7 @@ public class A{}";
                 new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8649,7 +8611,7 @@ public class B : IRequiresAsyncInitialization
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8696,7 +8658,7 @@ public class B : IRequiresAsyncInitialization
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8772,13 +8734,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::A);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField0();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -8809,13 +8769,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::A);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField0();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -8851,7 +8809,7 @@ public class A{}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8961,7 +8919,7 @@ public class A{}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9079,7 +9037,7 @@ public class A : IAsyncDisposable
                 new DiagnosticResult("SI1301", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9142,7 +9100,7 @@ public class B : IInterface {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9237,7 +9195,7 @@ public class A {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9303,7 +9261,7 @@ public class A {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9375,7 +9333,7 @@ public class A {}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9428,7 +9386,7 @@ public class A {}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9481,7 +9439,7 @@ public class A {}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9534,7 +9492,7 @@ public class A {}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9587,7 +9545,7 @@ public class A {}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9640,7 +9598,7 @@ public class A {}
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9681,7 +9639,7 @@ public class A {}
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9740,7 +9698,7 @@ public partial class Container : IContainer<IDisposable>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9818,7 +9776,7 @@ public partial class Container : IContainer<IA[]>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9997,7 +9955,7 @@ public partial class Container : IContainer<IA[]>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10087,7 +10045,7 @@ public partial class Container : IContainer<IA[]>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10173,7 +10131,7 @@ public partial class Container : IContainer<IA[]>
                 new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(14, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10244,7 +10202,7 @@ public partial class Container : IContainer<IA[]>
                 new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(15, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10297,7 +10255,7 @@ public partial class Container : IContainer<IA[]>
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10350,7 +10308,7 @@ public partial class Container : IContainer<Func<IA, IA[]>>
                 // Container
                 new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(16, 22));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10434,7 +10392,7 @@ public partial class Container : IContainer<string>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10493,7 +10451,7 @@ public partial class Container : IContainer<List<string>>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10554,7 +10512,7 @@ public partial class Container : IContainer<List<string[]>>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10615,7 +10573,7 @@ public partial class Container : IContainer<List<string[]>>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10675,7 +10633,7 @@ public partial class Container : IContainer<(int, object, int, int)>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10733,7 +10691,7 @@ public partial class Container : IContainer<(int, object, int, string)[]>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10793,7 +10751,7 @@ public partial class Container<T> : IContainer<(T, int)>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container<T>
 {
     private int _disposed = 0;
@@ -10857,7 +10815,7 @@ public partial class Container : IContainer<(int, object, int)>
                 // Factory
                 new DiagnosticResult("SI0020", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10901,7 +10859,7 @@ public class A<T>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10970,7 +10928,7 @@ public class A<T>
                 // Container
                 new DiagnosticResult("SI0107", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -11014,7 +10972,7 @@ public class A<T>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -11280,7 +11238,7 @@ public partial class Container<T> : IContainer<List<(string, int, object)>>
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container<T>
 {
     private int _disposed = 0;
@@ -11367,7 +11325,7 @@ public class F { public F(int i) {} }
                 new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
             Assert.Equal(3, generated.Length);
             var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -11568,7 +11526,7 @@ partial class Container1
         throw new global::System.NotImplementedException();
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -11611,7 +11569,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -11689,7 +11647,7 @@ public enum C {}
                 new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
             Assert.Equal(3, generated.Length);
             var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -11789,7 +11747,7 @@ partial class Container1
         throw new global::System.NotImplementedException();
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -11832,7 +11790,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -11911,7 +11869,7 @@ public interface I {}
                 new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
             Assert.Equal(3, generated.Length);
             var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -12046,7 +12004,7 @@ partial class Container1
         });
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -12089,7 +12047,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -12195,7 +12153,7 @@ public struct G<T> where T : struct { T _t; }
                 new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
             Assert.Equal(3, generated.Length);
             var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -12402,7 +12360,7 @@ partial class Container1
         throw new global::System.NotImplementedException();
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -12445,7 +12403,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -12567,7 +12525,7 @@ public struct S {}";
                 // Container
                 new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -12826,7 +12784,7 @@ public partial class Container : IContainer<(int, int)>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -12897,7 +12855,7 @@ public partial class Container : IContainer<(int, int)>
                 // Container
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -12946,7 +12904,7 @@ public partial class Container : IContainer<(int, int)>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13014,7 +12972,7 @@ public partial class Container : IContainer<(int, int)>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13082,7 +13040,7 @@ public partial class Container : IContainer<(int, int)>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13159,7 +13117,7 @@ public partial class Container : IContainer<(int, int)>
                 // Container
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(22, 22));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13215,7 +13173,7 @@ public partial class Container : IContainer<(int, int)>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13290,7 +13248,7 @@ public partial class Container : IContainer<(int, int)[]>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13378,7 +13336,7 @@ public partial class Container : IContainer<(int, int)[]>
             comp.GetDiagnostics().Verify();
             generatorDiagnostics.Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13466,7 +13424,7 @@ public class Decorator2 : IA
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13549,7 +13507,7 @@ public class B {}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13639,7 +13597,7 @@ public class Decorator : IA
                 new DiagnosticResult("SI0024", @"DecoratorFactory", DiagnosticSeverity.Error).WithLocation(9, 6));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13717,7 +13675,7 @@ public class Decorator : IA
                 new DiagnosticResult("SI0025", @"DecoratorFactory", DiagnosticSeverity.Error).WithLocation(9, 6));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13795,7 +13753,7 @@ public class B {}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13926,7 +13884,7 @@ public class Decorator : IA
                 new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13999,7 +13957,7 @@ public class Decorator : IA
                 // _ia
                 new DiagnosticResult("CS0649", @"_ia", DiagnosticSeverity.Warning).WithLocation(7, 19));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14101,7 +14059,7 @@ public class Decorator : IA
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14255,7 +14213,7 @@ public class Decorator : IA
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14363,7 +14321,7 @@ public class B {}";
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14421,7 +14379,7 @@ public class DecoratorB : IB
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14567,7 +14525,7 @@ public class DecoratorB : IB, IRequiresInitialization
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14717,7 +14675,7 @@ public class A{}";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14737,14 +14695,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_2;
         var hasAwaitStarted_0_2 = false;
         var _0_0 = default(global::A);
-        var hasAwaitCompleted_0_2 = false;
         _0_1 = new global::A();
         _0_2 = this.Decorator(a: _0_1);
         try
         {
             hasAwaitStarted_0_2 = true;
             _0_0 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
         }
         catch
         {
@@ -14776,14 +14732,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_2;
         var hasAwaitStarted_0_2 = false;
         var _0_0 = default(global::A);
-        var hasAwaitCompleted_0_2 = false;
         _0_1 = new global::A();
         _0_2 = this.Decorator(a: _0_1);
         try
         {
             hasAwaitStarted_0_2 = true;
             _0_0 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
         }
         catch
         {
@@ -14822,7 +14776,7 @@ public class A : INeedsInitialization { public ValueTask Initialize() => default
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14842,14 +14796,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_2;
         var hasAwaitStarted_0_2 = false;
         var _0_0 = default(global::A);
-        var hasAwaitCompleted_0_2 = false;
         _0_1 = new global::A();
         _0_2 = this.Decorator<global::A>(t: _0_1);
         try
         {
             hasAwaitStarted_0_2 = true;
             _0_0 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
         }
         catch
         {
@@ -14881,14 +14833,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> _0_2;
         var hasAwaitStarted_0_2 = false;
         var _0_0 = default(global::A);
-        var hasAwaitCompleted_0_2 = false;
         _0_1 = new global::A();
         _0_2 = this.Decorator<global::A>(t: _0_1);
         try
         {
             hasAwaitStarted_0_2 = true;
             _0_0 = await _0_2;
-            hasAwaitCompleted_0_2 = true;
         }
         catch
         {
@@ -14941,7 +14891,7 @@ public class Decorator2 : IA, IDisposable
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15125,7 +15075,7 @@ public class B : A, I3, IFactory<int> {
                 // _b
                 new DiagnosticResult("CS0649", @"_b", DiagnosticSeverity.Warning).WithLocation(6, 51));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15349,7 +15299,7 @@ public class C : B, IFactory<int> {
                 // _c
                 new DiagnosticResult("CS0649", @"_c", DiagnosticSeverity.Warning).WithLocation(6, 41));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15500,7 +15450,7 @@ public class A {}";
                 // _a
                 new DiagnosticResult("CS0169", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 41));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15544,7 +15494,7 @@ public partial class Container : IContainer<IFactory<IFactory<int>>>, IContainer
                 // _fac
                 new DiagnosticResult("CS0649", @"_fac", DiagnosticSeverity.Warning).WithLocation(6, 62));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15660,7 +15610,7 @@ public interface I {}";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 48));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -16236,7 +16186,7 @@ public class A : IFactory<A> { public A Create() => default; }";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 48));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -16331,7 +16281,7 @@ public class A<T> : IFactory<A<A<T>>> { public A<A<T>> Create() => default; }";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 53));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -16603,7 +16553,7 @@ public interface I {}";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 48));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -17335,7 +17285,7 @@ public interface I {}";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 72));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -18030,7 +17980,7 @@ public interface I {}";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 106));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -18725,7 +18675,7 @@ public interface I {}";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 99));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -18924,13 +18874,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::C> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::C);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField1();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -18961,13 +18909,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::C> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::C);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField1();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -18999,7 +18945,6 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::C> _0_2;
             var hasAwaitStarted_0_2 = false;
             var _0_3 = default(global::C);
-            var hasAwaitCompleted_0_2 = false;
             global::StrongInject.IFactory<global::D> _0_1;
             global::D _0_0;
             _0_2 = GetSingleInstanceField1();
@@ -19007,7 +18952,6 @@ partial class Container
             {
                 hasAwaitStarted_0_2 = true;
                 _0_3 = await _0_2;
-                hasAwaitCompleted_0_2 = true;
                 _0_1 = (global::StrongInject.IFactory<global::D>)_0_3;
                 _0_0 = _0_1.Create();
             }
@@ -19042,13 +18986,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::D);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField2();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -19079,13 +19021,11 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> _0_0;
         var hasAwaitStarted_0_0 = false;
         var _0_1 = default(global::D);
-        var hasAwaitCompleted_0_0 = false;
         _0_0 = GetSingleInstanceField2();
         try
         {
             hasAwaitStarted_0_0 = true;
             _0_1 = await _0_0;
-            hasAwaitCompleted_0_0 = true;
         }
         catch
         {
@@ -19109,14 +19049,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> _0_1;
         var hasAwaitStarted_0_1 = false;
         var _0_2 = default(global::D);
-        var hasAwaitCompleted_0_1 = false;
         global::E _0_0;
         _0_1 = GetSingleInstanceField2();
         try
         {
             hasAwaitStarted_0_1 = true;
             _0_2 = await _0_1;
-            hasAwaitCompleted_0_1 = true;
             _0_0 = (global::E)_0_2;
         }
         catch
@@ -19148,14 +19086,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> _0_1;
         var hasAwaitStarted_0_1 = false;
         var _0_2 = default(global::D);
-        var hasAwaitCompleted_0_1 = false;
         global::E _0_0;
         _0_1 = GetSingleInstanceField2();
         try
         {
             hasAwaitStarted_0_1 = true;
             _0_2 = await _0_1;
-            hasAwaitCompleted_0_1 = true;
             _0_0 = (global::E)_0_2;
         }
         catch
@@ -19180,14 +19116,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> _0_1;
         var hasAwaitStarted_0_1 = false;
         var _0_2 = default(global::D);
-        var hasAwaitCompleted_0_1 = false;
         global::I _0_0;
         _0_1 = GetSingleInstanceField2();
         try
         {
             hasAwaitStarted_0_1 = true;
             _0_2 = await _0_1;
-            hasAwaitCompleted_0_1 = true;
             _0_0 = (global::I)_0_2;
         }
         catch
@@ -19219,14 +19153,12 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> _0_1;
         var hasAwaitStarted_0_1 = false;
         var _0_2 = default(global::D);
-        var hasAwaitCompleted_0_1 = false;
         global::I _0_0;
         _0_1 = GetSingleInstanceField2();
         try
         {
             hasAwaitStarted_0_1 = true;
             _0_2 = await _0_1;
-            hasAwaitCompleted_0_1 = true;
             _0_0 = (global::I)_0_2;
         }
         catch
@@ -19305,7 +19237,7 @@ public interface I {}";
                 // _a
                 new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 106));
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20240,7 +20172,7 @@ public partial class Container : Module, IContainer<A>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20303,7 +20235,7 @@ public partial class Container : InBetween, IContainer<A>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20365,7 +20297,7 @@ public partial class Container : Module, IContainer<A>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20438,7 +20370,7 @@ public partial class Container : ModuleA, IContainer<A>
                 new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(14, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20487,7 +20419,7 @@ public partial class Container : Module, IContainer<C>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20587,7 +20519,7 @@ public partial class Container : Module, IContainer<C>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20687,7 +20619,7 @@ public partial class Container : Module, IContainer<C>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20825,7 +20757,7 @@ public partial class Container : IContainer<A>
                 new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20909,7 +20841,7 @@ public partial class Container : IContainer<IA>
                 new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(15, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20998,7 +20930,7 @@ public partial class Container : IContainer<A>
                 new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(11, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21082,7 +21014,7 @@ public partial class Container : IContainer<A>
                 new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21156,7 +21088,7 @@ public partial class Container : IAsyncContainer<bool>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21192,13 +21124,11 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_1;
             var hasAwaitStarted_0_1 = false;
             var _0_0 = default(global::System.Int32);
-            var hasAwaitCompleted_0_1 = false;
             _0_1 = this.Create();
             try
             {
                 hasAwaitStarted_0_1 = true;
                 _0_0 = await _0_1;
-                hasAwaitCompleted_0_1 = true;
             }
             catch
             {
@@ -21230,7 +21160,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_1;
         var hasAwaitStarted_0_1 = false;
         var _0_2 = default(global::System.Int32);
-        var hasAwaitCompleted_0_1 = false;
         global::System.Func<global::System.String> _0_4;
         global::System.Int64 _0_3;
         global::System.Boolean _0_0;
@@ -21239,7 +21168,6 @@ partial class Container
         {
             hasAwaitStarted_0_1 = true;
             _0_2 = await _0_1;
-            hasAwaitCompleted_0_1 = true;
             _0_4 = () =>
             {
                 global::System.String _1_0;
@@ -21278,7 +21206,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_1;
         var hasAwaitStarted_0_1 = false;
         var _0_2 = default(global::System.Int32);
-        var hasAwaitCompleted_0_1 = false;
         global::System.Func<global::System.String> _0_4;
         global::System.Int64 _0_3;
         global::System.Boolean _0_0;
@@ -21287,7 +21214,6 @@ partial class Container
         {
             hasAwaitStarted_0_1 = true;
             _0_2 = await _0_1;
-            hasAwaitCompleted_0_1 = true;
             _0_4 = () =>
             {
                 global::System.String _1_0;
@@ -21333,7 +21259,7 @@ public partial class Container : IAsyncContainer<bool>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21369,13 +21295,11 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_1;
             var hasAwaitStarted_0_1 = false;
             var _0_0 = default(global::System.Int32);
-            var hasAwaitCompleted_0_1 = false;
             _0_1 = this.Create();
             try
             {
                 hasAwaitStarted_0_1 = true;
                 _0_0 = await _0_1;
-                hasAwaitCompleted_0_1 = true;
             }
             catch
             {
@@ -21407,7 +21331,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_3;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::System.Int32);
-        var hasAwaitCompleted_0_3 = false;
         global::System.Func<global::System.String> _0_2;
         global::System.Int64 _0_1;
         global::System.Boolean _0_0;
@@ -21416,7 +21339,6 @@ partial class Container
         {
             hasAwaitStarted_0_3 = true;
             _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_2 = () =>
             {
                 global::System.String _1_0;
@@ -21455,7 +21377,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_3;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::System.Int32);
-        var hasAwaitCompleted_0_3 = false;
         global::System.Func<global::System.String> _0_2;
         global::System.Int64 _0_1;
         global::System.Boolean _0_0;
@@ -21464,7 +21385,6 @@ partial class Container
         {
             hasAwaitStarted_0_3 = true;
             _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_2 = () =>
             {
                 global::System.String _1_0;
@@ -21513,7 +21433,7 @@ public partial class Container : IAsyncContainer<bool>
                 new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21549,13 +21469,11 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_1;
             var hasAwaitStarted_0_1 = false;
             var _0_0 = default(global::System.Int32);
-            var hasAwaitCompleted_0_1 = false;
             _0_1 = this.Create();
             try
             {
                 hasAwaitStarted_0_1 = true;
                 _0_0 = await _0_1;
-                hasAwaitCompleted_0_1 = true;
             }
             catch
             {
@@ -21587,7 +21505,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_3;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::System.Int32);
-        var hasAwaitCompleted_0_3 = false;
         global::System.Func<global::System.String> _0_2;
         global::System.Int64 _0_1;
         global::System.Boolean _0_0;
@@ -21596,7 +21513,6 @@ partial class Container
         {
             hasAwaitStarted_0_3 = true;
             _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_2 = () =>
             {
                 global::System.Func<global::System.Int32> _1_1;
@@ -21640,7 +21556,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_3;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::System.Int32);
-        var hasAwaitCompleted_0_3 = false;
         global::System.Func<global::System.String> _0_2;
         global::System.Int64 _0_1;
         global::System.Boolean _0_0;
@@ -21649,7 +21564,6 @@ partial class Container
         {
             hasAwaitStarted_0_3 = true;
             _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_2 = () =>
             {
                 global::System.Func<global::System.Int32> _1_1;
@@ -21706,7 +21620,7 @@ public partial class Container : IAsyncContainer<bool>
                 new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21755,13 +21669,11 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_1;
             var hasAwaitStarted_0_1 = false;
             var _0_0 = default(global::System.Int32);
-            var hasAwaitCompleted_0_1 = false;
             _0_1 = this.Create();
             try
             {
                 hasAwaitStarted_0_1 = true;
                 _0_0 = await _0_1;
-                hasAwaitCompleted_0_1 = true;
             }
             catch
             {
@@ -21798,7 +21710,6 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_2;
             var hasAwaitStarted_0_2 = false;
             var _0_3 = default(global::System.Int32);
-            var hasAwaitCompleted_0_2 = false;
             global::System.Func<global::System.Int32> _0_1;
             global::System.String _0_0;
             _0_2 = GetSingleInstanceField1();
@@ -21806,7 +21717,6 @@ partial class Container
             {
                 hasAwaitStarted_0_2 = true;
                 _0_3 = await _0_2;
-                hasAwaitCompleted_0_2 = true;
                 _0_1 = () =>
                 {
                     return _0_3;
@@ -21843,7 +21753,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.String> _0_3;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::System.String);
-        var hasAwaitCompleted_0_3 = false;
         global::System.Func<global::System.String> _0_2;
         global::System.Int64 _0_1;
         global::System.Boolean _0_0;
@@ -21852,7 +21761,6 @@ partial class Container
         {
             hasAwaitStarted_0_3 = true;
             _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_2 = () =>
             {
                 return _0_4;
@@ -21889,7 +21797,6 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::System.String> _0_3;
         var hasAwaitStarted_0_3 = false;
         var _0_4 = default(global::System.String);
-        var hasAwaitCompleted_0_3 = false;
         global::System.Func<global::System.String> _0_2;
         global::System.Int64 _0_1;
         global::System.Boolean _0_0;
@@ -21898,7 +21805,6 @@ partial class Container
         {
             hasAwaitStarted_0_3 = true;
             _0_4 = await _0_3;
-            hasAwaitCompleted_0_3 = true;
             _0_2 = () =>
             {
                 return _0_4;
@@ -21945,7 +21851,7 @@ public partial class Container : IAsyncContainer<bool>
                 new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21981,13 +21887,11 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _0_1;
             var hasAwaitStarted_0_1 = false;
             var _0_0 = default(global::System.Int32);
-            var hasAwaitCompleted_0_1 = false;
             _0_1 = this.Create();
             try
             {
                 hasAwaitStarted_0_1 = true;
                 _0_0 = await _0_1;
-                hasAwaitCompleted_0_1 = true;
             }
             catch
             {
@@ -22023,7 +21927,6 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _1_2;
             var hasAwaitStarted_1_2 = false;
             var _1_3 = default(global::System.Int32);
-            var hasAwaitCompleted_1_2 = false;
             global::System.Func<global::System.String> _1_1;
             global::System.Int64 _1_0;
             _1_2 = GetSingleInstanceField0();
@@ -22031,7 +21934,6 @@ partial class Container
             {
                 hasAwaitStarted_1_2 = true;
                 _1_3 = await _1_2;
-                hasAwaitCompleted_1_2 = true;
                 _1_1 = () =>
                 {
                     global::System.Func<global::System.Int32> _2_1;
@@ -22081,7 +21983,6 @@ partial class Container
             global::System.Threading.Tasks.ValueTask<global::System.Int32> _1_2;
             var hasAwaitStarted_1_2 = false;
             var _1_3 = default(global::System.Int32);
-            var hasAwaitCompleted_1_2 = false;
             global::System.Func<global::System.String> _1_1;
             global::System.Int64 _1_0;
             _1_2 = GetSingleInstanceField0();
@@ -22089,7 +21990,6 @@ partial class Container
             {
                 hasAwaitStarted_1_2 = true;
                 _1_3 = await _1_2;
-                hasAwaitCompleted_1_2 = true;
                 _1_1 = () =>
                 {
                     global::System.Func<global::System.Int32> _2_1;
@@ -22148,7 +22048,7 @@ public partial class Container : IContainer<bool>
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22259,7 +22159,7 @@ public partial class Container : IContainer<ItemsViewModel>
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22556,7 +22456,7 @@ public class C { public C(B b1, B b2){} }";
             generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998, CS0219
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;

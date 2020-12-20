@@ -195,7 +195,7 @@ namespace StrongInject.Generator
                 _containerMembersSource.Append(resolveMethodSource);
             }
 
-            var file = new StringBuilder("#pragma warning disable CS1998, CS0219\n");
+            var file = new StringBuilder("#pragma warning disable CS1998\n");
             var closingBraceCount = 0;
             if (_container.ContainingNamespace is { IsGlobalNamespace: false })
             {
@@ -339,9 +339,12 @@ namespace StrongInject.Generator
                         methodSource.Append(awaitResultType.FullName());
                         methodSource.Append(");");
 
-                        methodSource.Append("var ");
-                        methodSource.Append(hasAwaitCompletedVariableName);
-                        methodSource.Append("=false;");
+                        if (operation.CanDisposeAwaitStatementResultLocally())
+                        {
+                            methodSource.Append("var ");
+                            methodSource.Append(hasAwaitCompletedVariableName);
+                            methodSource.Append("=false;");
+                        }
                     }
                 }
                 else
@@ -383,7 +386,7 @@ namespace StrongInject.Generator
                 var operation = operations[i];
                 EmitStatement(operation);
 
-                if (i != operations.Length - 1 && (CanDisposeLocally(operation) || operation.AwaitStatement is not null))
+                if (i != operations.Length - 1 && (operation.CanDisposeLocally || operation.AwaitStatement is not null))
                 {
                     methodSource.Append("try{");
                 }
@@ -392,8 +395,7 @@ namespace StrongInject.Generator
             for (var i = operations.Length - 2; i >= 0; i--)
             {
                 var operation = operations[i];
-                bool canDisposeLocally = CanDisposeLocally(operation);
-                if (canDisposeLocally || operation.AwaitStatement is not null)
+                if (operation.CanDisposeLocally || operation.AwaitStatement is not null)
                 {
                     methodSource.Append("}catch{");
                     if (operation.AwaitStatement is 
@@ -407,7 +409,7 @@ namespace StrongInject.Generator
                         methodSource.Append("if(!");
                         methodSource.Append(hasAwaitStartedVariableName);
                         methodSource.Append("){");
-                        if (!canDisposeLocally)
+                        if (!operation.CanDisposeLocally)
                         {
                             methodSource.Append("_=");
                             methodSource.Append(variableToAwaitName);
@@ -437,20 +439,18 @@ namespace StrongInject.Generator
                             methodSource.Append(variableName);
                             methodSource.Append("=await ");
                             methodSource.Append(variableToAwaitName);
-                            methodSource.Append(";}else if(!");
+                            methodSource.Append(";}else if (!");
                             methodSource.Append(hasAwaitCompletedVariableName);
                             methodSource.Append("){throw;}");
                         }
                     }
-                    if (CanDisposeLocally(operation))
+                    if (operation.CanDisposeLocally)
                     {
                         EmitDisposal(methodSource, operation);
                     }
                     methodSource.Append("throw;}");
                 }
             }
-
-            bool CanDisposeLocally(Operation operation) => operation.Disposal is { IsAsync: var isAsync } && (!isAsync || isAsyncContext);
 
             void EmitStatement(Operation operation)
             {
@@ -626,7 +626,7 @@ namespace StrongInject.Generator
                         methodSource.Append("await ");
                         methodSource.Append(variableToAwaitName);
                         methodSource.Append(";");
-                        if (variableName is not null)
+                        if (operation.CanDisposeAwaitStatementResultLocally())
                         {
                             methodSource.Append(hasAwaitCompletedVariableName);
                             methodSource.Append("=true;");
