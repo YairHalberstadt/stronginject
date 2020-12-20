@@ -890,6 +890,14 @@ public static class Program
 }
 ```
 
+#### Parallel Resolution
+
+StrongInject makes the assumption that async dependencies will usually be doing IO. In order to increase performance it kicks off all async tasks in parallel as early as it can, and only awaits them once it's completed resolving all dependencies that don't require them. For example, if most of your components call the database as part of resolution, they will all do so in parallel rather than one after the other.
+
+This improves async resolution time hugely - instead of resolution time being the sum of the time to resolve all components, it's the the amount of time it takes to resolve the longest chain of dependent components, no matter how many other components there are.
+
+What this means is that components used as part of async resolution should be thread safe. If they are not, mark them as `InstancePerDependency`, which will ensure that they are only ever used by one thread of resolution at a time.
+
 ### Resolving all instances of a type
 
 When resolving an array type, if there are no user provided registrations for the array type, the array will be created by resolving all registrations (including generic registrations) for the element type, and filling the array with these instances.
