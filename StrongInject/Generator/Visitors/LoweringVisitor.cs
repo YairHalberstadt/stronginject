@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.CodeAnalysis.Operations;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -6,7 +7,7 @@ namespace StrongInject.Generator.Visitors
 {
     internal class LoweringVisitor : BaseVisitor<LoweringVisitor.State>
     {
-        private readonly Dictionary<InstanceSource, string> _existingVariables = new();
+        private readonly Dictionary<InstanceSource, (Operation operation, string name)> _existingVariables = new();
         private int _variableCount = 0;
         private readonly InstanceSource _target;
         private readonly InstanceSourcesScope _containerScope;
@@ -14,6 +15,7 @@ namespace StrongInject.Generator.Visitors
         private readonly bool _isSingleInstanceCreation;
         private readonly bool _isAsyncContext;
         private readonly List<Operation> _order = new();
+        private static readonly List<Operation> _emptyList = new();
 
         private LoweringVisitor(
             InstanceSource target,
@@ -21,13 +23,13 @@ namespace StrongInject.Generator.Visitors
             DisposalLowerer disposalLowerer,
             bool isSingleInstanceCreation,
             bool isAsyncContext,
-            IEnumerable<KeyValuePair<InstanceSource, string>>? singleInstanceVariablesInScope)
+            IEnumerable<KeyValuePair<InstanceSource, (Operation operation, string name)>>? singleInstanceVariablesInScope)
         {
             if (singleInstanceVariablesInScope != null)
             {
-                foreach (var (source, name) in singleInstanceVariablesInScope)
+                foreach (var (source, value) in singleInstanceVariablesInScope)
                 {
-                    _existingVariables.Add(source, name);
+                    _existingVariables.Add(source, value);
                 }
             }
             _target = target;
@@ -60,14 +62,14 @@ namespace StrongInject.Generator.Visitors
             DisposalLowerer disposalLowerer,
             bool isSingleInstanceCreation,
             bool isAsyncContext,
-            IEnumerable<KeyValuePair<InstanceSource, string>>? singleInstanceVariablesInScope,
+            IEnumerable<KeyValuePair<InstanceSource, (Operation operation, string name)>>? singleInstanceVariablesInScope,
             out string targetName)
         {
             var visitor = new LoweringVisitor(target, containerScope, disposalLowerer, isSingleInstanceCreation, isAsyncContext, singleInstanceVariablesInScope);
-            var state = new State { InstanceSourcesScope = currentScope, Dependencies = new() };
+            var state = new State { InstanceSourcesScope = currentScope, Dependencies = new(), OperationDependencies = new() };
             visitor.VisitCore(target, state);
             targetName = state.Dependencies[0].name!;
-            return visitor._order.ToImmutableArray();
+            return isAsyncContext ? Order(visitor._order) : visitor._order.ToImmutableArray();
         }
 
         protected override bool ShouldVisitBeforeUpdateState(InstanceSource? source, State state)
@@ -77,17 +79,36 @@ namespace StrongInject.Generator.Visitors
                 state.Dependencies.Add((null, null));
                 return false;
             }
-            if (source.Scope is not Scope.InstancePerDependency && _existingVariables.TryGetValue(source, out var name))
+            if (source.Scope is not Scope.InstancePerDependency && _existingVariables.TryGetValue(source, out var value))
             {
-                state.Dependencies.Add((name, source));
+                state.Dependencies.Add((value.name, source));
+                state.OperationDependencies.Add(value.operation);
                 return false;
             }
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
             {
-                name = GenerateName(state);
-                AddStatementToOrder(new SingleInstanceReferenceStatement(name, source));
-                _existingVariables.Add(source, name);
+                var name = GenerateName(state);
+                var isAsync = RequiresAsyncVisitor.RequiresAsync(source, _containerScope);
+                var statement = new SingleInstanceReferenceStatement(name, source, isAsync);
+                Operation targetOperation;
+                if (isAsync)
+                {
+                    var awaitVariableName = GenerateName(state);
+                    var awaitStatement = new AwaitStatement(awaitVariableName, name, source.OfType);
+                    var referenceOperation = CreateOperation(statement, state.Name, _emptyList, awaitStatement);
+                    _order.Add(referenceOperation);
+                    targetOperation = CreateOperation(awaitStatement, state.Name, new() { referenceOperation });
+                    _order.Add(targetOperation);
+                    name = awaitVariableName;
+                }
+                else
+                {
+                    targetOperation = CreateOperation(statement, state.Name, _emptyList);
+                    _order.Add(targetOperation);
+                }
+                _existingVariables.Add(source, (targetOperation, name));
                 state.Dependencies.Add((name, source));
+                state.OperationDependencies.Add(targetOperation);
                 return false;
             }
             if (source is DelegateParameter { Name: var variableName })
@@ -96,11 +117,6 @@ namespace StrongInject.Generator.Visitors
                 return false;
             }
             return true;
-        }
-
-        private void AddStatementToOrder(Statement statement)
-        {
-            _order.Add(_disposalLowerer.AddDisposal(statement));
         }
 
         private string GenerateName(State state)
@@ -113,6 +129,7 @@ namespace StrongInject.Generator.Visitors
             state.Name = GenerateName(state);
             state.Dependencies.Add((state.Name, source));
             state.Dependencies = new();
+            state.OperationDependencies = new();
             base.UpdateState(source, ref state);
         }
 
@@ -123,7 +140,7 @@ namespace StrongInject.Generator.Visitors
 
         protected override void AfterVisit(InstanceSource source, State state)
         {
-            Statement statement;
+            Operation targetOperation;
             if (source is DelegateSource delegateSource)
             {
                 var order = LowerResolution(
@@ -135,18 +152,80 @@ namespace StrongInject.Generator.Visitors
                     isAsyncContext: delegateSource.IsAsync,
                     singleInstanceVariablesInScope: _existingVariables.Where(x => x.Key.Scope == Scope.SingleInstance),
                     targetName: out var targetName);
-                statement = new DelegateCreationStatement(state.Name, delegateSource, order, targetName);
+                var delegateCreationStatement = new DelegateCreationStatement(state.Name, delegateSource, order, targetName);
+                targetOperation = CreateOperation(delegateCreationStatement, state.Name, state.OperationDependencies);
+                if (targetOperation.Disposal is Disposal.DelegateDisposal { DisposeActionsType: var disposeActionsType })
+                {
+                    var disposeActionsOperation = CreateOperation(new DisposeActionsCreationStatement(delegateCreationStatement.DisposeActionsName, disposeActionsType), state.Name, _emptyList);
+                    state.OperationDependencies.Add(disposeActionsOperation);
+                    _order.Add(disposeActionsOperation);
+                }
+                _order.Add(targetOperation);
             }
             else
             {
-                statement = new DependencyCreationStatement(
-                    state.Name,
-                    source,
-                    state.Dependencies.Select(x => x.name).ToImmutableArray());
+                var requiresInitialization = source is
+                    Registration { RequiresInitialization: true }
+                    or WrappedDecoratorInstanceSource { Decorator: DecoratorRegistration { RequiresInitialization: true } };
+
+                if (requiresInitialization)
+                {
+                    var operation = CreateOperation(
+                        new DependencyCreationStatement(
+                            state.Name,
+                            source,
+                            state.Dependencies.Select(x => x.name).ToImmutableArray()),
+                        state.Name,
+                        state.OperationDependencies);
+                    _order.Add(operation);
+
+                    var initializationTaskVariableName = source.IsAsync ? GenerateName(state) : null;
+
+                    if (initializationTaskVariableName is not null)
+                    {
+                        var awaitStatement = new AwaitStatement(VariableName: null, VariableToAwaitName: initializationTaskVariableName, Type: null);
+                        var initializationOperation = CreateOperation(new InitializationStatement(initializationTaskVariableName, state.Name, source.IsAsync), state.Name, new() { operation }, awaitStatement);
+                        _order.Add(initializationOperation);
+                        targetOperation = CreateOperation(awaitStatement, state.Name, new() { initializationOperation });
+                        _order.Add(targetOperation);
+                    }
+                    else
+                    {
+                        targetOperation = CreateOperation(new InitializationStatement(initializationTaskVariableName, state.Name, source.IsAsync), state.Name, new() { operation });
+                        _order.Add(targetOperation);
+                    }
+                }
+                else if (source.IsAsync)
+                {
+                    var taskVariableName = GenerateName(state);
+                    var awaitStatement = new AwaitStatement(VariableName: state.Name, VariableToAwaitName: taskVariableName, Type: source.OfType);
+                    var operation = CreateOperation(
+                        new DependencyCreationStatement(
+                            taskVariableName,
+                            source,
+                            state.Dependencies.Select(x => x.name).ToImmutableArray()), state.Name, state.OperationDependencies, awaitStatement);
+                    _order.Add(operation);
+                    targetOperation = CreateOperation(awaitStatement, state.Name, new() { operation });
+                    _order.Add(targetOperation);
+                }
+                else
+                {
+                    targetOperation = CreateOperation(
+                        new DependencyCreationStatement(
+                            state.Name,
+                            source,
+                            state.Dependencies.Select(x => x.name).ToImmutableArray()),
+                        state.Name,
+                        state.OperationDependencies);
+                    _order.Add(targetOperation);
+                }
             }
-            AddStatementToOrder(statement);
+
             if (source.Scope != Scope.InstancePerDependency)
-                _existingVariables.Add(source, state.Name);
+            {
+                _existingVariables.Add(source, (targetOperation, state.Name));
+            }
+            state.ParentOperationDependencies.Add(targetOperation);
         }
 
         public override void Visit(DelegateSource delegateSource, State state)
@@ -161,9 +240,17 @@ namespace StrongInject.Generator.Visitors
             }
         }
 
+        private Operation CreateOperation(Statement statement, string variableToDisposeName, List<Operation> dependencies, AwaitStatement? awaitStatement = null)
+        {
+            var disposal = _disposalLowerer.CreateDisposal(statement, variableToDisposeName);
+            var canDisposeLocally = disposal is not null && (!disposal.IsAsync || _isAsyncContext);
+            return new Operation(statement, disposal, dependencies, canDisposeLocally, awaitStatement);
+        }
+
         public struct State : IState
         {
             private InstanceSourcesScope _instanceSourcesScope;
+            private List<Operation> _operationDependencies;
 
             public InstanceSourcesScope? PreviousScope { get; private set; }
             public InstanceSourcesScope InstanceSourcesScope
@@ -177,6 +264,99 @@ namespace StrongInject.Generator.Visitors
             }
             public string Name { get; set; }
             public List<(string? name, InstanceSource? source)> Dependencies { get; set; }
+            public List<Operation> ParentOperationDependencies { get; private set; }
+            public List<Operation> OperationDependencies
+            {
+                get => _operationDependencies;
+                set
+                {
+                    ParentOperationDependencies = _operationDependencies;
+                    _operationDependencies = value;
+                }
+            }
+        }
+
+        private static ImmutableArray<Operation> Order(List<Operation> order)
+        {
+            var builder = ImmutableArray.CreateBuilder<Operation>(order.Count);
+            var ordered = new HashSet<Operation>();
+            while (order.Count > 0)
+            {
+                for (var i = 0; i < order.Count; i++)
+                {
+                    var operation = order[i];
+
+                    if (operation.Statement is InitializationStatement { IsAsync: true }
+                        or SingleInstanceReferenceStatement { IsAsync: true }
+                        or DependencyCreationStatement
+                        {
+                            Source:
+                            FactoryMethod { IsAsync: true }
+                            or WrappedDecoratorInstanceSource { Decorator: DecoratorFactoryMethod { IsAsync: true } }
+                            or FactorySource { IsAsync: true }
+                        })
+                    {
+                        if (operation.Dependencies.All(x => ordered.Contains(x)))
+                        {
+                            builder.Add(operation);
+                            ordered.Add(operation);
+                            order.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
+
+                bool found = false;
+                for (var i = 0; i < order.Count; i++)
+                {
+                    var operation = order[i];
+
+                    if (operation.Statement is not AwaitStatement)
+                    {
+                        if (operation.Dependencies.All(x => ordered.Contains(x)))
+                        {
+                            builder.Add(operation);
+                            ordered.Add(operation);
+                            order.RemoveAt(i);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (found)
+                    continue;
+
+                Operation longestPathSoFar = default!;
+                int longestPathLengthSoFar = 0;
+                FindLongestPath(order[order.Count - 1], 0);
+                builder.Add(longestPathSoFar);
+                ordered.Add(longestPathSoFar);
+                order.Remove(longestPathSoFar);
+
+                void FindLongestPath(Operation operation, int pathLength)
+                {
+                    if (operation.Statement is AwaitStatement)
+                    {
+                        pathLength++;
+                        if (pathLength > longestPathLengthSoFar)
+                        {
+                            longestPathSoFar = operation;
+                            longestPathLengthSoFar = pathLength;
+                        }
+                    }
+
+                    foreach (var dependency in operation.Dependencies)
+                    {
+                        if (!ordered.Contains(dependency))
+                        {
+                            FindLongestPath(dependency, pathLength);
+                        }
+                    }
+                }
+            }
+
+            return builder.MoveToImmutable();
         }
     }
 }

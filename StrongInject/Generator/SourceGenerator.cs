@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace StrongInject.Generator

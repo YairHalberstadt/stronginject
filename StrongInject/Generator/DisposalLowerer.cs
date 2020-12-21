@@ -19,39 +19,37 @@ namespace StrongInject.Generator
             _containerDeclarationLocation = containerDeclarationLocation;
         }
 
-        public Operation AddDisposal(Statement statement)
+        public Disposal? CreateDisposal(Statement statement, string variableToDisposeName)
         {
-            var disposal = statement switch
+            return statement switch
             {
                 DelegateCreationStatement { InternalOperations: var ops, DisposeActionsName: var disposeActionsName } => _disposeAsynchronously
                     ? ops.Any(x => x.Disposal is not null)
-                        ? new Disposal.DelegateDisposal(disposeActionsName, IsAsync: true)
+                        ? new Disposal.DelegateDisposal(disposeActionsName, _wellKnownTypes.ConcurrentBagOfFuncTask, IsAsync: true)
                         : null
                     : ops.Any(x => x.Disposal is { IsAsync: false })
-                        ? new Disposal.DelegateDisposal(disposeActionsName, IsAsync: false)
+                        ? new Disposal.DelegateDisposal(disposeActionsName, _wellKnownTypes.ConcurrentBagOfAction, IsAsync: false)
                         : null,
-                SingleInstanceReferenceStatement => null,
-                DependencyCreationStatement { VariableName: var variableName, Source: var source, Dependencies: var dependencies } =>
+                DependencyCreationStatement { Source: var source, Dependencies: var dependencies } =>
                     source switch
                     {
-                        FactorySource { IsAsync: var isAsync } => new Disposal.FactoryDisposal(variableName, dependencies[0]!, isAsync),
-                        FactoryMethod { FactoryOfType: var type } => ExactTypeNotKnown(type, variableName),
-                        Registration { Type: var type } => ExactTypeKnown(type, variableName),
+                        FactorySource { IsAsync: var isAsync } => new Disposal.FactoryDisposal(variableToDisposeName, dependencies[0]!, isAsync),
+                        FactoryMethod { FactoryOfType: var type } => ExactTypeNotKnown(type, variableToDisposeName),
+                        Registration { Type: var type } => ExactTypeKnown(type, variableToDisposeName),
                         WrappedDecoratorInstanceSource { Decorator: { dispose: var dispose } decorator } => dispose
                             ? decorator switch
                             {
-                                DecoratorFactoryMethod { DecoratedType: var type } => ExactTypeNotKnown(type, variableName),
-                                DecoratorRegistration { Type: var type } => ExactTypeKnown(type, variableName),
+                                DecoratorFactoryMethod { DecoratedType: var type } => ExactTypeNotKnown(type, variableToDisposeName),
+                                DecoratorRegistration { Type: var type } => ExactTypeKnown(type, variableToDisposeName),
                                 _ => throw new NotImplementedException(decorator.GetType().ToString()),
                             } 
                             : null,
                         DelegateParameter or InstanceFieldOrProperty or ArraySource or ForwardedInstanceSource => null,
                         _ => throw new NotImplementedException(source.GetType().ToString()),
                     },
+                SingleInstanceReferenceStatement or InitializationStatement or DisposeActionsCreationStatement or AwaitStatement => null,
                 _ => throw new NotImplementedException(statement.GetType().ToString()),
             };
-
-            return new Operation(statement, disposal);
 
             Disposal? ExactTypeNotKnown(ITypeSymbol subTypeOf, string variableName)
             {
