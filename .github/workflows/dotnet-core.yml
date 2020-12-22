@@ -24,9 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: check_env
-      if: contains(${GITHUB_REF}, 'heads')
-      run: echo "has heads"
+
       
     - name: print_env
       run: echo ${GITHUB_REF}
