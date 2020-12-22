@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+    - '*'
   pull_request:
   workflow_dispatch:
     inputs:
@@ -22,6 +24,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: check_env
+      if: contains(env.GITHUB_REF, 'heads')
+      run: echo "has heads"
+      
+    - name: print_env
+      run: echo ${{env.GITHUB_REF}}
+      
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
