@@ -25,11 +25,11 @@ jobs:
 
     steps:
     - name: check_env
-      if: contains(env.GITHUB_REF, 'heads')
+      if: contains(GITHUB_REF, 'heads')
       run: echo "has heads"
       
     - name: print_env
-      run: echo ${{env.GITHUB_REF}}
+      run: echo ${{GITHUB_REF}}
       
     - uses: actions/checkout@v2
     - name: Setup .NET Core
