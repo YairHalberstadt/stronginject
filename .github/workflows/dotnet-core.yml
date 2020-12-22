@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: check_env
-      if: contains(GITHUB_REF, 'heads')
+      if: contains(${GITHUB_REF}, 'heads')
       run: echo "has heads"
       
     - name: print_env
