@@ -53,4 +53,10 @@ I think the real reason is that's it's super difficult for a traditional IOC con
 
 StrongInject has neither issue since it generates C#, and can provide compile time errors if you implement `IContainer<T>` instead of `IAsyncContainer<T>` or resolve a `Func<T>` instead of a `Func<Task<T>>`.
 
+The next reason given in the above lined discussion is:
+
+> Executing async code during object instantiation isn't really a good idea, even if it's a factory doing that execution. At some point it has to become synchronous since things like singletons need to be originally initialized in a synchronous fashion, locks need to be made so things don't get double-instantiated, and so on.
+
+This doesn't really make a lot of sense to me. Firstly not everything that needs to do async work is going to be a singleton. Secondly StrongInject makes sure that singletons are only instantiated once, and uses a SemaphoreSlim to allow `awaiting` inside a lock. We can then parallelize any async resolutions to hugely improve resolution performance.
+
 As such making this an async container was the obvious decision.
