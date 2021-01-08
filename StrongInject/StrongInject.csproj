@@ -2,32 +2,19 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-		<LangVersion>preview</LangVersion>
-		<Nullable>enable</Nullable>
-		<WarningsAsErrors>true</WarningsAsErrors>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<NoWarn>CS1591</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<VersionPrefix>1.0.8</VersionPrefix>
 		<PackageId>StrongInject</PackageId>
-		<Authors>StrongInject</Authors>
-		<Product>StrongInject</Product>
 		<Description>compile time dependency injection for C#</Description>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PackageIcon>logo-circle.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
-	  <Compile Remove="Generator\**" />
-	  <EmbeddedResource Remove="Generator\**" />
-	  <None Remove="Generator\**" />
+		<Compile Remove="Generator\**" />
+		<EmbeddedResource Remove="Generator\**" />
+		<None Remove="Generator\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -41,10 +28,6 @@
 
 	<ItemGroup>
 		<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-		<None Include="..\resources\logo-circle.png">
-		  <Pack>True</Pack>
-		  <PackagePath></PackagePath>
-		</None>
 	</ItemGroup>
-	
+
 </Project>
