@@ -3634,6 +3634,127 @@ partial class Container
         }
 
         [Fact]
+        public void DisposeOfClassImplementingIDisposableAndIRequiresAsyncInitialization()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+using System.Threading.Tasks;
+
+class A : IDisposable, IRequiresAsyncInitialization
+{
+    public void Dispose() {}
+    public ValueTask InitializeAsync() => default;
+}
+
+[Register(typeof(A))]
+partial class Container : IAsyncContainer<A>
+{
+    
+}
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        global::System.Threading.Tasks.ValueTask _0_1;
+        var hasAwaitStarted_0_1 = false;
+        _0_0 = new global::A();
+        try
+        {
+            _0_1 = ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
+            try
+            {
+                hasAwaitStarted_0_1 = true;
+                await _0_1;
+            }
+            catch
+            {
+                if (!hasAwaitStarted_0_1)
+                {
+                    _ = _0_1.AsTask().ContinueWith(failedTask => _ = failedTask.Exception, global::System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
+                }
+
+                throw;
+            }
+        }
+        catch
+        {
+            ((global::System.IDisposable)_0_0).Dispose();
+            throw;
+        }
+
+        TResult result;
+        try
+        {
+            result = await func(_0_0, param);
+        }
+        finally
+        {
+            ((global::System.IDisposable)_0_0).Dispose();
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        global::System.Threading.Tasks.ValueTask _0_1;
+        var hasAwaitStarted_0_1 = false;
+        _0_0 = new global::A();
+        try
+        {
+            _0_1 = ((global::StrongInject.IRequiresAsyncInitialization)_0_0).InitializeAsync();
+            try
+            {
+                hasAwaitStarted_0_1 = true;
+                await _0_1;
+            }
+            catch
+            {
+                if (!hasAwaitStarted_0_1)
+                {
+                    _ = _0_1.AsTask().ContinueWith(failedTask => _ = failedTask.Exception, global::System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
+                }
+
+                throw;
+            }
+        }
+        catch
+        {
+            ((global::System.IDisposable)_0_0).Dispose();
+            throw;
+        }
+
+        return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
+        {
+            ((global::System.IDisposable)_0_0).Dispose();
+        });
+    }
+}");
+        }
+
+        [Fact]
         public void GeneratesContainerInNamespace()
         {
             string userSource = @"
