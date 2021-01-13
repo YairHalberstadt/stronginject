@@ -84,9 +84,13 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.100'
+    - name: Setup MSbuild
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup nuget
+      uses: nuget/setup-nuget@v1
     - name: Install dependencies
-      run: dotnet restore /property:Configuration=All
-    - name: Build
-      run: dotnet build -c All --no-restore
+      run: nuget restore
+    - name: Build All
+      run: msbuild .\StrongInject.sln /verbosity:minimal /t:Rebuild /p:Configuration=All
     - name: Test
-      run: dotnet test -c All --no-restore --verbosity normal
+      run: dotnet test -c Debug --verbosity normal
