@@ -85,7 +85,7 @@ jobs:
       with:
         dotnet-version: '5.0.100'
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore /property:Configuration=All
     - name: Build
       run: dotnet build -c All --no-restore
     - name: Test
