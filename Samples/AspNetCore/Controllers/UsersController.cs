@@ -27,5 +27,3 @@ namespace StrongInject.Samples.AspNetCore.Controllers
         }
     }
 }
-
-
