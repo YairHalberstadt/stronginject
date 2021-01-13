@@ -7739,15 +7739,91 @@ partial class Container
         }
 
         [Fact]
+        public void PublicFactoryInInternalModuleUsed()
+        {
+            string userSource = @"
+using StrongInject;
+
+internal class Module
+{
+    [Factory]
+    public static A M(B b) => null;
+}
+
+[Register(typeof(B))]
+[RegisterModule(typeof(Module))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A{}
+public class B{}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (11,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+                // RegisterModule(typeof(Module))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(11, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = global::Module.M(b: _0_1);
+        TResult result;
+        try
+        {
+            result = await func(_0_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::B _0_1;
+        global::A _0_0;
+        _0_1 = new global::B();
+        _0_0 = global::Module.M(b: _0_1);
+        return new global::StrongInject.AsyncOwned<global::A>(_0_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(_0_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
         public void NonPublicFactoryMethodIgnored()
         {
             string userSource = @"
 using StrongInject;
 
-class Module
+public class Module
 {
     [Factory]
-    public static A M(B b) => null;
+    internal static A M(B b) => null;
 }
 
 [Register(typeof(B))]
@@ -9464,7 +9540,7 @@ partial class Container
         }
 
         [Fact]
-        public void WarningIfInstancePropertyIsNotPublic()
+        public void PublicInstancePropertyOnInternalModuleIsUsed()
         {
             string userSource = @"
 using StrongInject;
@@ -9473,6 +9549,75 @@ internal class Module
 {
     [Instance]
     public static A Instance { get; }
+}
+
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A {}
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (10,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+                // RegisterModule(typeof(Module))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(10, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = global::Module.Instance;
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = global::Module.Instance;
+        return new global::StrongInject.Owned<global::A>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void WarningIfInstancePropertyIsNotPublic()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Module
+{
+    [Instance]
+    internal static A Instance { get; }
 }
 
 [RegisterModule(typeof(Module))]
@@ -22551,6 +22696,813 @@ partial class Container
         });
     }
 }");
+        }
+
+        [Fact]
+        public void InternalTypeCanBeUsedByInternalContainer()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A))]
+internal partial class Container : IContainer<A>
+{
+}
+
+internal class A { }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void InternalTypeCanBeUsedByInternalModuleWhichCanBeUsedByInternalContainer()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A))]
+internal class Module {}
+
+[RegisterModule(typeof(Module))]
+internal partial class Container : IContainer<A>
+{
+}
+
+internal class A { }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void WarnWhenInternalTypeUsedByPublicContainer1()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A))]
+public partial class Container : IContainer<A>
+{
+}
+
+internal class A { }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+                // Register(typeof(A))
+                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void WarnWhenInternalTypeUsedByPublicContainer2()
+        {
+            string userSource = @"
+using StrongInject;
+
+[RegisterFactory(typeof(A))]
+public partial class Container : IContainer<int>
+{
+}
+
+internal class A : IFactory<int> { public int Create() => 42; }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+                // RegisterFactory(typeof(A))
+                new DiagnosticResult("SI1005", @"RegisterFactory(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_2;
+        global::StrongInject.IFactory<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::StrongInject.IFactory<global::System.Int32>)_0_2;
+        _0_0 = _0_1.Create();
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+            _0_1.Release(_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_2;
+        global::StrongInject.IFactory<global::System.Int32> _0_1;
+        global::System.Int32 _0_0;
+        _0_2 = new global::A();
+        _0_1 = (global::StrongInject.IFactory<global::System.Int32>)_0_2;
+        _0_0 = _0_1.Create();
+        return new global::StrongInject.Owned<global::System.Int32>(_0_0, () =>
+        {
+            _0_1.Release(_0_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void WarnWhenInternalTypeUsedByPublicModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A))]
+public class Module {}
+
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<A>
+{
+}
+
+internal class A { }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Module'. If 'Module' is imported outside this assembly this may result in errors. Try making 'Module' internal.
+                // Register(typeof(A))
+                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void WarnWhenInternalModuleUsedByPublicModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A))]
+internal class Module {}
+
+[RegisterModule(typeof(Module))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A { }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+                // RegisterModule(typeof(Module))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(7, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A _0_0;
+        _0_0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorWhenLessThanInternallyVisibleTypeUsedByContainer()
+        {
+            string userSource = @"
+using StrongInject;
+
+public partial class Outer
+{
+    protected class A { }
+    private class B { }
+    private protected class C { }
+
+    private class Inner
+    {
+        internal class D { }
+    }
+
+    [Register(typeof(A))]
+    [Register(typeof(B))]
+    [Register(typeof(C))]
+    [Register(typeof(Inner.D))]
+    internal partial class Container : IContainer<A>, IContainer<B>, IContainer<C>, IContainer<Inner.D>
+    {
+    }
+}
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (15,6): Error SI0026: 'Outer.A' must have at least internal Accessibility. Try making it internal or public.
+                // Register(typeof(A))
+                new DiagnosticResult("SI0026", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(15, 6),
+                // (16,6): Error SI0026: 'Outer.B' must have at least internal Accessibility. Try making it internal or public.
+                // Register(typeof(B))
+                new DiagnosticResult("SI0026", @"Register(typeof(B))", DiagnosticSeverity.Error).WithLocation(16, 6),
+                // (17,6): Error SI0026: 'Outer.C' must have at least internal Accessibility. Try making it internal or public.
+                // Register(typeof(C))
+                new DiagnosticResult("SI0026", @"Register(typeof(C))", DiagnosticSeverity.Error).WithLocation(17, 6),
+                // (18,6): Error SI0026: 'Outer.Inner.D' must have at least internal Accessibility. Try making it internal or public.
+                // Register(typeof(Inner.D))
+                new DiagnosticResult("SI0026", @"Register(typeof(Inner.D))", DiagnosticSeverity.Error).WithLocation(18, 6),
+                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.A': We have no source for instance of type 'Outer.A'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
+                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.B': We have no source for instance of type 'Outer.B'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
+                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.C': We have no source for instance of type 'Outer.C'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
+                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.Inner.D': We have no source for instance of type 'Outer.Inner.D'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Outer
+{
+    partial class Container
+    {
+        private int _disposed = 0;
+        private bool Disposed => _disposed != 0;
+        public void Dispose()
+        {
+            var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+            if (disposed != 0)
+                return;
+        }
+
+        TResult global::StrongInject.IContainer<global::Outer.A>.Run<TResult, TParam>(global::System.Func<global::Outer.A, TParam, TResult> func, TParam param)
+        {
+            throw new global::System.NotImplementedException();
+        }
+
+        global::StrongInject.Owned<global::Outer.A> global::StrongInject.IContainer<global::Outer.A>.Resolve()
+        {
+            throw new global::System.NotImplementedException();
+        }
+
+        TResult global::StrongInject.IContainer<global::Outer.B>.Run<TResult, TParam>(global::System.Func<global::Outer.B, TParam, TResult> func, TParam param)
+        {
+            throw new global::System.NotImplementedException();
+        }
+
+        global::StrongInject.Owned<global::Outer.B> global::StrongInject.IContainer<global::Outer.B>.Resolve()
+        {
+            throw new global::System.NotImplementedException();
+        }
+
+        TResult global::StrongInject.IContainer<global::Outer.C>.Run<TResult, TParam>(global::System.Func<global::Outer.C, TParam, TResult> func, TParam param)
+        {
+            throw new global::System.NotImplementedException();
+        }
+
+        global::StrongInject.Owned<global::Outer.C> global::StrongInject.IContainer<global::Outer.C>.Resolve()
+        {
+            throw new global::System.NotImplementedException();
+        }
+
+        TResult global::StrongInject.IContainer<global::Outer.Inner.D>.Run<TResult, TParam>(global::System.Func<global::Outer.Inner.D, TParam, TResult> func, TParam param)
+        {
+            throw new global::System.NotImplementedException();
+        }
+
+        global::StrongInject.Owned<global::Outer.Inner.D> global::StrongInject.IContainer<global::Outer.Inner.D>.Resolve()
+        {
+            throw new global::System.NotImplementedException();
+        }
+    }
+}");
+        }
+
+        [Fact]
+        public void ErrorOnPrivateModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+internal partial class Outer
+{
+    internal class A { }
+
+    [Register(typeof(A))]
+    private class Module { }
+
+    [RegisterModule(typeof(Module))]
+    public partial class Container : IContainer<A>
+    {
+    }
+}
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (9,19): Error SI0401: Module 'Outer.Module' must be public or internal.
+                // Module
+                new DiagnosticResult("SI0401", @"Module", DiagnosticSeverity.Error).WithLocation(9, 19));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Outer
+{
+    partial class Container
+    {
+        private int _disposed = 0;
+        private bool Disposed => _disposed != 0;
+        public void Dispose()
+        {
+            var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+            if (disposed != 0)
+                return;
+        }
+
+        TResult global::StrongInject.IContainer<global::Outer.A>.Run<TResult, TParam>(global::System.Func<global::Outer.A, TParam, TResult> func, TParam param)
+        {
+            if (Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::Outer.A _0_0;
+            _0_0 = new global::Outer.A();
+            TResult result;
+            try
+            {
+                result = func(_0_0, param);
+            }
+            finally
+            {
+            }
+
+            return result;
+        }
+
+        global::StrongInject.Owned<global::Outer.A> global::StrongInject.IContainer<global::Outer.A>.Resolve()
+        {
+            if (Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::Outer.A _0_0;
+            _0_0 = new global::Outer.A();
+            return new global::StrongInject.Owned<global::Outer.A>(_0_0, () =>
+            {
+            });
+        }
+    }
+}");
+        }
+
+        [Fact]
+        public void WarnWhenInternalTypeUsedByMoreThanInternallyVisibleModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A))]
+public class Module1 {}
+
+public class Outer1 {
+
+    [Register(typeof(A))]
+    protected class Module2 {}
+
+    [Register(typeof(A))]
+    protected internal class Module3 {}
+
+    protected class Inner
+    {
+        [Register(typeof(A))]
+        protected internal class Module4 {}
+    }
+}
+
+internal class A { }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Module1'. If 'Module1' is imported outside this assembly this may result in errors. Try making 'Module1' internal.
+                // Register(typeof(A))
+                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2),
+                // (9,6): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Module2'. If 'Outer1.Module2' is imported outside this assembly this may result in errors. Try making 'Outer1.Module2' internal.
+                // Register(typeof(A))
+                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(9, 6),
+                // (10,21): Error SI0401: Module 'Outer1.Module2' must be public or internal.
+                // Module2
+                new DiagnosticResult("SI0401", @"Module2", DiagnosticSeverity.Error).WithLocation(10, 21),
+                // (12,6): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Module3'. If 'Outer1.Module3' is imported outside this assembly this may result in errors. Try making 'Outer1.Module3' internal.
+                // Register(typeof(A))
+                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(12, 6),
+                // (13,30): Error SI0401: Module 'Outer1.Module3' must be public or internal.
+                // Module3
+                new DiagnosticResult("SI0401", @"Module3", DiagnosticSeverity.Error).WithLocation(13, 30),
+                // (17,10): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Inner.Module4'. If 'Outer1.Inner.Module4' is imported outside this assembly this may result in errors. Try making 'Outer1.Inner.Module4' internal.
+                // Register(typeof(A))
+                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(17, 10),
+                // (18,34): Error SI0401: Module 'Outer1.Inner.Module4' must be public or internal.
+                // Module4
+                new DiagnosticResult("SI0401", @"Module4", DiagnosticSeverity.Error).WithLocation(18, 34));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
+        }
+
+        [Fact]
+        public void NoWarningWhenInternalTypeUsedByAtMostInternallyVisibleModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A))]
+internal class Module1 {}
+
+internal class Outer1 {
+
+    [Register(typeof(A))]
+    public class Module2 {}
+
+    public class Inner
+    {
+        [Register(typeof(A))]
+        public class Module3 {}
+    }
+}
+
+internal class A { }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
+        }
+
+        [Fact]
+        public void WarnWhenAtMostInternallyVisibleModuleImportedByMoreThanInternallyVisibleModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+internal class InternalModule1 {}
+
+internal class InternalOuter {
+
+    public class InternalModule2 {}
+
+    public class Inner
+    {
+        public class InternalModule3 {}
+    }
+}
+
+[RegisterModule(typeof(InternalModule1))]
+[RegisterModule(typeof(InternalOuter.InternalModule2))]
+[RegisterModule(typeof(InternalOuter.Inner.InternalModule3))]
+public class PublicModule1 {}
+
+public class PublicOuter {
+
+    [RegisterModule(typeof(InternalModule1))]
+    [RegisterModule(typeof(InternalOuter.InternalModule2))]
+    [RegisterModule(typeof(InternalOuter.Inner.InternalModule3))]
+    [RegisterModule(typeof(InternalModule4))]
+    protected class PublicModule2 {}
+
+    [RegisterModule(typeof(InternalModule1))]
+    [RegisterModule(typeof(InternalOuter.InternalModule2))]
+    [RegisterModule(typeof(InternalOuter.Inner.InternalModule3))]
+    [RegisterModule(typeof(InternalModule4))]
+    protected internal class PublicModule3 {}
+
+    protected class Inner
+    {
+        [RegisterModule(typeof(InternalModule1))]
+        [RegisterModule(typeof(InternalOuter.InternalModule2))]
+        [RegisterModule(typeof(InternalOuter.Inner.InternalModule3))]
+        [RegisterModule(typeof(InternalModule4))]
+        protected internal class PublicModule4 {}
+    }
+
+    private class InternalModule4 {}
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (16,2): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
+                // RegisterModule(typeof(InternalModule1))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(16, 2),
+                // (17,2): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
+                // RegisterModule(typeof(InternalOuter.InternalModule2))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(17, 2),
+                // (18,2): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
+                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(18, 2),
+                // (23,6): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+                // RegisterModule(typeof(InternalModule1))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(23, 6),
+                // (24,6): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+                // RegisterModule(typeof(InternalOuter.InternalModule2))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(24, 6),
+                // (25,6): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(25, 6),
+                // (26,6): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+                // RegisterModule(typeof(InternalModule4))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(26, 6),
+                // (27,21): Error SI0401: Module 'PublicOuter.PublicModule2' must be public or internal.
+                // PublicModule2
+                new DiagnosticResult("SI0401", @"PublicModule2", DiagnosticSeverity.Error).WithLocation(27, 21),
+                // (29,6): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+                // RegisterModule(typeof(InternalModule1))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(29, 6),
+                // (30,6): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+                // RegisterModule(typeof(InternalOuter.InternalModule2))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(30, 6),
+                // (31,6): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(31, 6),
+                // (32,6): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+                // RegisterModule(typeof(InternalModule4))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(32, 6),
+                // (33,30): Error SI0401: Module 'PublicOuter.PublicModule3' must be public or internal.
+                // PublicModule3
+                new DiagnosticResult("SI0401", @"PublicModule3", DiagnosticSeverity.Error).WithLocation(33, 30),
+                // (37,10): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+                // RegisterModule(typeof(InternalModule1))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(37, 10),
+                // (38,10): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+                // RegisterModule(typeof(InternalOuter.InternalModule2))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(38, 10),
+                // (39,10): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(39, 10),
+                // (40,10): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+                // RegisterModule(typeof(InternalModule4))
+                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(40, 10),
+                // (41,34): Error SI0401: Module 'PublicOuter.Inner.PublicModule4' must be public or internal.
+                // PublicModule4
+                new DiagnosticResult("SI0401", @"PublicModule4", DiagnosticSeverity.Error).WithLocation(41, 34));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
+        }
+
+        [Fact]
+        public void NoWarningWhenAtMostInternallyVisibleModuleImportedByAtMostInternallyVisibleModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+internal class ImportedModule1 {}
+
+[RegisterModule(typeof(ImportedModule1))]
+[RegisterModule(typeof(Outer.ImportedModule2))]
+[RegisterModule(typeof(Outer.Inner.ImportedModule3))]
+internal class Module1 {}
+
+internal class Outer {
+
+    public class ImportedModule2 {}
+
+    [RegisterModule(typeof(ImportedModule1))]
+    [RegisterModule(typeof(Outer.ImportedModule2))]
+    [RegisterModule(typeof(Outer.Inner.ImportedModule3))]
+    [RegisterModule(typeof(Outer.ImportedModule4))]
+    public class Module2 {}
+
+    public class Inner
+    {
+        public class ImportedModule3 {}
+
+        [RegisterModule(typeof(ImportedModule1))]
+        [RegisterModule(typeof(Outer.ImportedModule2))]
+        [RegisterModule(typeof(Outer.Inner.ImportedModule3))]
+        [RegisterModule(typeof(Outer.ImportedModule4))]
+        public class Module3 {}
+    }
+
+    private class ImportedModule4 {}
+
+    [RegisterModule(typeof(ImportedModule1))]
+    [RegisterModule(typeof(Outer.ImportedModule2))]
+    [RegisterModule(typeof(Outer.Inner.ImportedModule3))]
+    [RegisterModule(typeof(Outer.ImportedModule4))]
+    private class Module4 {}
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (38,19): Error SI0401: Module 'Outer.Module4' must be public or internal.
+                // Module4
+                new DiagnosticResult("SI0401", @"Module4", DiagnosticSeverity.Error).WithLocation(38, 19));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
         }
     }
 }

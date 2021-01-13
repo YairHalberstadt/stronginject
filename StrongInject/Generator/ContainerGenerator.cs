@@ -65,7 +65,7 @@ namespace StrongInject.Generator
 
             // Ideally we would use the location of the interface in the base list, however getting that location is complex and not critical for now.
             // See http://sourceroslyn.io/#Microsoft.CodeAnalysis.CSharp/Symbols/Source/SourceMemberContainerSymbol_ImplementationChecks.cs,333
-            _containerDeclarationLocation = ((ClassDeclarationSyntax)_container.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation();
+            _containerDeclarationLocation = ((TypeDeclarationSyntax)_container.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation();
         }
 
         private string GenerateContainerImplementations()
