@@ -1,8 +1,12 @@
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 [![Join the chat at https://gitter.im/stronginject/community](https://badges.gitter.im/stronginject/community.svg)](https://gitter.im/stronginject/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/StrongInject)](https://www.nuget.org/packages/StrongInject)
-# StrongInject
-**compile time dependency injection for .NET**
+
+![StrongInject](resources/logo-horizontal.png)
+
+**Compile Time Dependency Injection For C#**
+
+Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@khalidabuhakmeh](https://github.com/khalidabuhakmeh)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -14,7 +18,10 @@
 - [How It Works](#how-it-works)
 - [Usage](#usage)
   - [Sample Projects](#sample-projects)
-    - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
+      - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
+      - [Console Application](#console-application)
+      - [Xamarin Application](#xamarin-application)
+    - [Real World Projects Using Stronginject](#real-world-projects-using-stronginject)
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
   - [Registration](#registration)
@@ -30,6 +37,7 @@
   - [Delegate Support](#delegate-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
+    - [Parallel Resolution](#parallel-resolution)
   - [Resolving all instances of a type](#resolving-all-instances-of-a-type)
   - [Optional Parameters](#optional-parameters)
   - [Disposal](#disposal)
@@ -110,7 +118,13 @@ The [wiki](https://github.com/YairHalberstadt/stronginject/wiki) is currently a 
 
 Check out these sample projects to help you get started:
 
-#### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
+##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
+##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Console)
+##### [Xamarin Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Xamarin)
+
+#### Real World Projects Using Stronginject
+
+- [FluentLang](https://github.com/YairHalberstadt/fluentlang/blob/master/source/flc/DependencyInjection/FlcContainer.cs)
 
 ### Declaring a container
 To create a container for a specific type, declare your a partial class and implement `StrongInject.IContainer<T>`:
@@ -877,6 +891,14 @@ public static class Program
 }
 ```
 
+#### Parallel Resolution
+
+StrongInject makes the assumption that async dependencies will usually be doing IO. In order to increase performance it kicks off all async tasks in parallel as early as it can, and only awaits them once it's completed resolving all dependencies that don't require them. For example, if most of your components call the database as part of resolution, they will all do so in parallel rather than one after the other.
+
+This improves async resolution time hugely - instead of resolution time being the sum of the time to resolve all components, it's the the amount of time it takes to resolve the longest chain of dependent components, no matter how many other components there are.
+
+What this means is that components used as part of async resolution should be thread safe. If they are not, mark them as `InstancePerDependency`, which will ensure that they are only ever used by one thread of resolution at a time.
+
 ### Resolving all instances of a type
 
 When resolving an array type, if there are no user provided registrations for the array type, the array will be created by resolving all registrations (including generic registrations) for the element type, and filling the array with these instances.
@@ -952,8 +974,10 @@ Since `IFactory<T>` is free to create a new instance every time or return a sing
 Single Instance dependencies and their dependencies are disposed when the container is disposed. If the container implements `IAsyncDisposable` it must be disposed asynchronously even if it also implements `IDisposable`.
 
 Note that dependencies may not be disposed in the following circumstances:
-1. Resolution throws
+1. Resolution of a SingleInstance dependency throws.
 2. Disposal of other dependencies throws.
+
+When either of these happen it is most likely best to restart the application anyway, as a safe recovery is very unlikely.
 
 ### Thread Safety
 

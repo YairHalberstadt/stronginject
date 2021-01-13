@@ -3,7 +3,7 @@
 namespace StrongInject
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class RegisterAttribute : Attribute
+    public sealed class RegisterAttribute : Attribute
     {
         public RegisterAttribute(Type type, params Type[] registerAs) : this(type, Scope.InstancePerResolution, registerAs)
         {

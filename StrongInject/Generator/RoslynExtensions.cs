@@ -90,8 +90,26 @@ namespace StrongInject.Generator
             };
         }
 
+        public static bool IsAccessibleInternally(this ITypeSymbol type)
+        {
+            if (type is ITypeParameterSymbol)
+                return true;
+            if (!type.ContainingType?.IsAccessibleInternally() ?? false)
+                return false;
+            return type switch
+            {
+                IArrayTypeSymbol array => array.ElementType.IsAccessibleInternally(),
+                IPointerTypeSymbol pointer => pointer.PointedAtType.IsAccessibleInternally(),
+                INamedTypeSymbol named => named.DeclaredAccessibility is Accessibility.Public or Accessibility.ProtectedOrInternal or Accessibility.Internal 
+                    && named.TypeArguments.All(IsAccessibleInternally),
+                _ => false,
+            };
+        }
+
         public static bool IsPublic(this ITypeSymbol type)
         {
+            if (type is ITypeParameterSymbol)
+                return true;
             if (!type.ContainingType?.IsPublic() ?? false)
                 return false;
             return type switch
@@ -103,23 +121,30 @@ namespace StrongInject.Generator
             };
         }
 
-        public static bool IsPublic(this IMethodSymbol method)
+        public static bool IsInternal(this ITypeSymbol type)
         {
-            return method.DeclaredAccessibility == Accessibility.Public
-                && (method.ContainingType?.IsPublic() ?? true);
+            return type.HasAtMostInternalVisibility() && type.IsAccessibleInternally();
+        }
+
+        public static bool HasAtMostInternalVisibility(this ITypeSymbol type)
+        {
+            if (type is ITypeParameterSymbol)
+                return false;
+            if (type.ContainingType?.HasAtMostInternalVisibility() ?? false)
+                return true;
+            return type switch
+            {
+                IArrayTypeSymbol array => array.ElementType.HasAtMostInternalVisibility(),
+                IPointerTypeSymbol pointer => pointer.PointedAtType.HasAtMostInternalVisibility(),
+                INamedTypeSymbol named => named.DeclaredAccessibility is Accessibility.Internal or Accessibility.Private or Accessibility.ProtectedAndInternal
+                    || named.TypeArguments.Any(HasAtMostInternalVisibility),
+                _ => false,
+            };
         }
 
         public static bool IsProtected(this ISymbol member)
         {
             return member.DeclaredAccessibility is Accessibility.Protected or Accessibility.ProtectedOrInternal;
-        }
-
-        public static bool IsPublicMember(this ISymbol member)
-        {
-            if (member is not (IMethodSymbol or IPropertySymbol or IFieldSymbol or IEventSymbol))
-                throw new ArgumentException("argument is not a MemberSymbol", nameof(member));
-            return member.DeclaredAccessibility == Accessibility.Public
-                && (member.ContainingType?.IsPublic() ?? true);
         }
 
         public static string FullName(this ITypeSymbol type)

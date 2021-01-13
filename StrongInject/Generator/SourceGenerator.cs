@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace StrongInject.Generator
@@ -13,30 +12,6 @@ namespace StrongInject.Generator
     internal class SourceGenerator : ISourceGenerator
     {
         public void Execute(GeneratorExecutionContext context)
-        {
-            try
-            {
-                ExecuteInternal(context);
-            }
-            catch (Exception e)
-            {
-                //This is temporary till https://github.com/dotnet/roslyn/issues/46084 is fixed
-                context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "SI0000",
-                        "An exception was thrown by the StrongInject generator",
-                        "An exception was thrown by the StrongInject generator: '{0}'",
-                        "StrongInject",
-                        DiagnosticSeverity.Error,
-                        isEnabledByDefault: true),
-                    Location.None,
-                    e.ToString()));
-            }
-        }
-
-        //By not inlining we make sure we can catch assembly loading errors when jitting this method
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ExecuteInternal(GeneratorExecutionContext context)
         {
             var cancellationToken = context.CancellationToken;
             var compilation = context.Compilation;
@@ -79,6 +54,13 @@ namespace StrongInject.Generator
 
                 foreach (var module in modules)
                 {
+                    if (!module.type.IsInternal() && !module.type.IsPublic())
+                    {
+                        reportDiagnostic(ModuleNotPublicOrInternal(
+                            module.type,
+                            ((TypeDeclarationSyntax)module.type.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation()));
+                    }
+
                     cancellationToken.ThrowIfCancellationRequested();
                     if (module.isContainer)
                     {
@@ -121,6 +103,20 @@ namespace StrongInject.Generator
 
         public void Initialize(GeneratorInitializationContext context)
         {
+        }
+
+        private static Diagnostic ModuleNotPublicOrInternal(ITypeSymbol module, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0401",
+                    "Module must be public or internal.",
+                    "Module '{0}' must be public or internal.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                module);
         }
     }
 }

@@ -1,9 +1,40 @@
 <Project>
- <PropertyGroup>
-   <LangVersion>preview</LangVersion>
-   <Nullable>enable</Nullable>
-   <WarningsAsErrors>true</WarningsAsErrors>
-   <NoWarn>CS1591</NoWarn>
-   <WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
- </PropertyGroup>
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
+		<WarningsAsErrors>true</WarningsAsErrors>
+		<NoWarn>CS1591</NoWarn>
+		<WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
+		<AnalysisLevel>5</AnalysisLevel>
+		<StrongInjectSampleVersion>*-*</StrongInjectSampleVersion>
+		<StrongInjectExtensionsDependenInjectionSampleVersion>*-*</StrongInjectExtensionsDependenInjectionSampleVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Authors>StrongInject</Authors>
+		<Product>StrongInject</Product>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/YairHalberstadt/stronginject</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/YairHalberstadt/stronginject</RepositoryUrl>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageIcon>logo-circle.png</PackageIcon>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\resources\logo-circle.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

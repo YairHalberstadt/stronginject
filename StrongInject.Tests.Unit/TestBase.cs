@@ -1,16 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace StrongInject.Generator.Tests.Unit
@@ -43,6 +41,20 @@ namespace StrongInject.Generator.Tests.Unit
         protected static GeneratorDriver CreateDriver(Compilation compilation, params ISourceGenerator[] generators)
             => CSharpGeneratorDriver.Create(generators, parseOptions: (CSharpParseOptions)compilation.SyntaxTrees.First().Options);
 
+        protected Compilation RunGeneratorWithStrongInjectReference(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
+        {
+            var currentStrongInjectLocation = typeof(IContainer<>).Assembly.Location;
+            var start = currentStrongInjectLocation.LastIndexOf("\\stronginject\\");
+            if (start == -1)
+                start = currentStrongInjectLocation.LastIndexOf("/stronginject/");
+            var end = currentStrongInjectLocation.IndexOf("\\bin\\");
+            if (end == -1)
+                end = currentStrongInjectLocation.IndexOf("/bin/");
+
+            var location = currentStrongInjectLocation[..start] + "/stronginject/StrongInject" + currentStrongInjectLocation[end..].Replace("net5.0", "netstandard2.1");
+            var reference = MetadataReference.CreateFromFile(location);
+            return RunGenerator(source, out diagnostics, out generatedFiles, reference);
+        }
         protected Compilation RunGenerator(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles, params MetadataReference[] metadataReferences)
         {
             var compilation = CreateCompilation(source, metadataReferences);

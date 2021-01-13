@@ -20,7 +20,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\StrongInject\StrongInject.csproj">
-			<SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+			<SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
 		</ProjectReference>
 	</ItemGroup>
 </Project>
