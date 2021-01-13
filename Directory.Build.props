@@ -25,6 +25,7 @@
 
 	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
 	</PropertyGroup>
 
 	<ItemGroup>
