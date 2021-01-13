@@ -26,7 +26,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.100'
+        dotnet-version: '5.0.102'
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -66,10 +66,31 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.100'
+        dotnet-version: '5.0.102'
     - name: Install dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build -c Debug --no-restore
     - name: Test
       run: dotnet test -c Debug --no-restore --verbosity normal
+
+  build-windows:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.102'
+    - name: Setup MSbuild
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup nuget
+      uses: nuget/setup-nuget@v1
+    - name: Install dependencies
+      run: nuget restore
+    - name: Build All
+      run: msbuild .\StrongInject.sln /verbosity:minimal /t:Rebuild /p:Configuration=All
+    - name: Test
+      run: dotnet test -c Debug --verbosity normal

@@ -1,0 +1,15 @@
+﻿<Window x:Class="StrongInject.Samples.Wpf.MainWindow"
+        x:Name="ThisMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:view="clr-namespace:StrongInject.Samples.Wpf.Views"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        SizeToContent="WidthAndHeight"
+        DataContext="{Binding ElementName=ThisMainWindow, Path=MainWindowViewModel}">
+    <Grid>
+        <view:UsersView x:Name="UsersViewControl" DataContext="{Binding Path=UsersViewModel}"/>
+    </Grid>
+</Window>

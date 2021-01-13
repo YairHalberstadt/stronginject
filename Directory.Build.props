@@ -32,6 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
 		<None Include="..\resources\logo-circle.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>

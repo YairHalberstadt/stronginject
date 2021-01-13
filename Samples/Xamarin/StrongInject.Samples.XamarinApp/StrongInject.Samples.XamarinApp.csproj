@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
-    <Configurations>Debug;Release;AndroidApp</Configurations>
+    <Configurations>Debug;Release;AndroidApp;Wpf;All</Configurations>
 	<TargetPlatformVersion>10.0.17763.0</TargetPlatformVersion>
   </PropertyGroup>
 
