@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>1.0.8</VersionPrefix>
+		<VersionPrefix>1.0.9</VersionPrefix>
 		<PackageId>StrongInject</PackageId>
 		<Description>compile time dependency injection for C#</Description>
 	</PropertyGroup>
