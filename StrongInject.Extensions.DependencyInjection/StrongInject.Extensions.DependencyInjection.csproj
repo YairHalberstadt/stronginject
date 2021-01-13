@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Configurations>Debug;Release;Wpf;All</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
