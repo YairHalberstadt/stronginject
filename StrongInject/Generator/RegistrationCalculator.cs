@@ -143,11 +143,19 @@ namespace StrongInject.Generator
                     // Invalid code, ignore;
                     continue;
                 }
-                var moduleType = (INamedTypeSymbol)moduleConstant.Value!;
-                if (moduleType.IsOrReferencesErrorType())
+                var importedModule = (INamedTypeSymbol)moduleConstant.Value!;
+                if (importedModule.IsOrReferencesErrorType())
                 {
                     // Invalid code, ignore;
                     continue;
+                }
+
+                if (!module.HasAtMostInternalVisibility() && importedModule.HasAtMostInternalVisibility())
+                {
+                    _reportDiagnostic(WarnModuleNotPublic(
+                        importedModule,
+                        module,
+                        registerModuleAttribute.GetLocation(_cancellationToken)));
                 }
 
                 var exclusionListConstant = registerModuleAttribute.ConstructorArguments.FirstOrDefault(x => x.Kind == TypedConstantKind.Array);
@@ -161,7 +169,7 @@ namespace StrongInject.Generator
                     ? new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default)
                     : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
 
-                var moduleRegistrations = GetRegistrations(moduleType, dependantModules);
+                var moduleRegistrations = GetRegistrations(importedModule, dependantModules);
 
                 AddModuleRegistrations(moduleRegistrations, exclusionList);
             }
@@ -203,16 +211,16 @@ namespace StrongInject.Generator
         {
             var attributes = module.GetAttributes();
             var registrations = new Dictionary<ITypeSymbol, InstanceSources>(SymbolEqualityComparer.Default);
-            AppendSimpleRegistrations(registrations, attributes);
-            AppendFactoryRegistrations(registrations, attributes);
+            AppendSimpleRegistrations(registrations, attributes, module);
+            AppendFactoryRegistrations(registrations, attributes, module);
             AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToCalculate);
             AppendInstanceFieldAndProperties(registrations, module, registrationsToCalculate);
-            AppendDecoratorRegistrations(nonGenericDecorators, attributes);
+            AppendDecoratorRegistrations(nonGenericDecorators, attributes, module);
             AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, registrationsToCalculate);
             return registrations;
         }
 
-        private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
+        private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes, ITypeSymbol module)
         {
             foreach (var registerAttribute in moduleAttributes
                 .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterAttribute, SymbolEqualityComparer.Default) ?? false)
@@ -232,7 +240,7 @@ namespace StrongInject.Generator
                     // Invalid code, ignore;
                     continue;
                 }
-                if (!CheckValidType(registerAttribute, typeConstant, out var type))
+                if (!CheckValidType(registerAttribute, typeConstant, module, out var type))
                 {
                     continue;
                 }
@@ -289,7 +297,7 @@ namespace StrongInject.Generator
 
                 foreach (var registeredAsTypeConstant in registeredAs)
                 {
-                    if (!CheckValidType(registerAttribute, registeredAsTypeConstant, out var target))
+                    if (!CheckValidType(registerAttribute, registeredAsTypeConstant, module, out var target))
                     {
                         continue;
                     }
@@ -315,7 +323,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes)
+        private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes, ITypeSymbol module)
         {
             foreach (var registerFactoryAttribute in moduleAttributes
                 .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterFactoryAttribute, SymbolEqualityComparer.Default) ?? false)
@@ -335,7 +343,7 @@ namespace StrongInject.Generator
                     // Invalid code, ignore;
                     continue;
                 }
-                if (!CheckValidType(registerFactoryAttribute, typeConstant, out var type))
+                if (!CheckValidType(registerFactoryAttribute, typeConstant, module, out var type))
                 {
                     continue;
                 }
@@ -411,7 +419,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private bool CheckValidType(AttributeData registerAttribute, TypedConstant typedConstant, out INamedTypeSymbol type)
+        private bool CheckValidType(AttributeData registerAttribute, TypedConstant typedConstant, ITypeSymbol module, out INamedTypeSymbol type)
         {
             type = (typedConstant.Value as INamedTypeSymbol)!;
             if (typedConstant.Value is null)
@@ -433,13 +441,22 @@ namespace StrongInject.Generator
                     registerAttribute.GetLocation(_cancellationToken)));
                 return false;
             }
-            if (!type.IsPublic())
+
+            if (!type.IsAccessibleInternally())
             {
-                _reportDiagnostic(TypeNotPublic(
-                    type!,
+                _reportDiagnostic(TypeDoesNotHaveAtLeastInternalAccessibility(
+                    type,
                     registerAttribute.GetLocation(_cancellationToken)));
                 return false;
             }
+            else if (!module.HasAtMostInternalVisibility() && !type.IsPublic())
+            {
+                _reportDiagnostic(WarnTypeNotPublic(
+                    type,
+                    module,
+                    registerAttribute.GetLocation(_cancellationToken)));
+            }
+
             return true;
         }
 
@@ -497,8 +514,8 @@ namespace StrongInject.Generator
         {
             var methods = module.GetMembers().OfType<IMethodSymbol>();
             foreach (var method in registrationsToCalculate switch {
-                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.IsPublic()),
-                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.IsPublic() || x.IsProtected()),
+                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
+                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
                 RegistrationsToCalculate.All => methods,
                 _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
             })
@@ -740,7 +757,7 @@ namespace StrongInject.Generator
             Debug.Assert(symbol is IFieldSymbol or IPropertySymbol);
             if (!symbol.IsStatic)
                 return false;
-            if (!symbol.IsPublicMember())
+            if (symbol.DeclaredAccessibility != Accessibility.Public)
                 return false;
             if (symbol is IPropertySymbol { GetMethod: { DeclaredAccessibility: not Accessibility.Public } })
                 return false;
@@ -790,7 +807,7 @@ namespace StrongInject.Generator
 
         private void WarnOnNonStaticPublicOrProtectedFactoryMethods(INamedTypeSymbol module)
         {
-            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic() || x.IsProtected())))
+            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected())))
             {
                 var attribute = method.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
@@ -820,7 +837,7 @@ namespace StrongInject.Generator
 
         private void WarnOnNonStaticPublicDecoratorFactoryMethods(INamedTypeSymbol module)
         {
-            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.IsPublic() || x.IsProtected())))
+            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected())))
             {
                 var attribute = method.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
@@ -833,7 +850,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private void AppendDecoratorRegistrations(ImmutableArray<DecoratorSource>.Builder nonGenericDecorators, ImmutableArray<AttributeData> moduleAttributes)
+        private void AppendDecoratorRegistrations(ImmutableArray<DecoratorSource>.Builder nonGenericDecorators, ImmutableArray<AttributeData> moduleAttributes, ITypeSymbol module)
         {
             foreach (var registerDecoratorAttribute in moduleAttributes
                 .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterDecoratorAttribute, SymbolEqualityComparer.Default) ?? false)
@@ -853,7 +870,7 @@ namespace StrongInject.Generator
                     // Invalid code, ignore;
                     continue;
                 }
-                if (!CheckValidType(registerDecoratorAttribute, typeConstant, out var type))
+                if (!CheckValidType(registerDecoratorAttribute, typeConstant, module, out var type))
                 {
                     continue;
                 }
@@ -876,7 +893,7 @@ namespace StrongInject.Generator
                     // Invalid code, ignore;
                     continue;
                 }
-                if (!CheckValidType(registerDecoratorAttribute, decoratorOfConstant, out var decoratedType))
+                if (!CheckValidType(registerDecoratorAttribute, decoratorOfConstant, module, out var decoratedType))
                 {
                     continue;
                 }
@@ -935,8 +952,8 @@ namespace StrongInject.Generator
         {
             var methods = module.GetMembers().OfType<IMethodSymbol>();
             foreach (var method in registrationsToCalculate switch {
-                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.IsPublic()),
-                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.IsPublic() || x.IsProtected()),
+                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
+                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
                 RegistrationsToCalculate.All => methods,
                 _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
             })
@@ -1114,20 +1131,6 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
                 type);
-        }
-
-        private static Diagnostic TypeNotPublic(ITypeSymbol typeSymbol, Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0007",
-                    "Type is not public",
-                    "'{0}' is not public.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                location,
-                typeSymbol);
         }
 
         private static Diagnostic StructWithSingleInstanceScope(AttributeData registerAttribute, ITypeSymbol type, CancellationToken cancellationToken)
@@ -1348,6 +1351,20 @@ namespace StrongInject.Generator
                 decoratedType);
         }
 
+        private static Diagnostic TypeDoesNotHaveAtLeastInternalAccessibility(ITypeSymbol typeSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0026",
+                    "Type must have at least internal Accessibility. Try making it internal or public.",
+                    "'{0}' must have at least internal Accessibility. Try making it internal or public.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                typeSymbol);
+        }
+
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
         {
             return Diagnostic.Create(
@@ -1392,6 +1409,36 @@ namespace StrongInject.Generator
                 fieldOrProperty is IFieldSymbol ? "field" : "property",
                 fieldOrProperty,
                 module);
+        }
+
+        private static Diagnostic WarnTypeNotPublic(ITypeSymbol typeSymbol, ITypeSymbol moduleSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1005",
+                    "Type is not public, but is registered with public Module. If Module is imported outside this assembly this may result in errors. Try making Module internal.",
+                    "'{0}' is not public, but is registered with public module '{1}'. If '{1}' is imported outside this assembly this may result in errors. Try making '{1}' internal.",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true),
+                location,
+                typeSymbol,
+                moduleSymbol);
+        }
+
+        private static Diagnostic WarnModuleNotPublic(ITypeSymbol importedModuleSymbol, ITypeSymbol moduleSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1006",
+                    "Module is not public, but is imported by public Module. If Module is imported outside this assembly this may result in errors. Try making Module internal.",
+                    "'{0}' is not public, but is imported by public module '{1}'. If '{1}' is imported outside this assembly this may result in errors. Try making '{1}' internal.",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true),
+                location,
+                importedModuleSymbol,
+                moduleSymbol);
         }
     }
 }

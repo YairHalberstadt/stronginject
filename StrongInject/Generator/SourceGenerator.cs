@@ -54,6 +54,13 @@ namespace StrongInject.Generator
 
                 foreach (var module in modules)
                 {
+                    if (!module.type.IsInternal() && !module.type.IsPublic())
+                    {
+                        reportDiagnostic(ModuleNotPublicOrInternal(
+                            module.type,
+                            ((TypeDeclarationSyntax)module.type.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation()));
+                    }
+
                     cancellationToken.ThrowIfCancellationRequested();
                     if (module.isContainer)
                     {
@@ -96,6 +103,20 @@ namespace StrongInject.Generator
 
         public void Initialize(GeneratorInitializationContext context)
         {
+        }
+
+        private static Diagnostic ModuleNotPublicOrInternal(ITypeSymbol module, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0401",
+                    "Module must be public or internal.",
+                    "Module '{0}' must be public or internal.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                module);
         }
     }
 }
