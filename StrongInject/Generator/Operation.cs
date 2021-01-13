@@ -26,8 +26,7 @@ namespace StrongInject.Generator
         {
             if (operation.Statement is not AwaitStatement { VariableName: not null })
                 return false;
-            var originalOperation = operation.Dependencies[0];
-            return originalOperation is InitializationStatement ? originalOperation.Dependencies[0].CanDisposeLocally : originalOperation.CanDisposeLocally;
+            return operation.Dependencies[0].CanDisposeLocally;
         }
     }
 }
