@@ -9,8 +9,6 @@ namespace StrongInject.Samples.XamarinApp
         public App()
         {
             InitializeComponent();
-
-            DependencyService.Register<MockDataStore>();
             var container = new Container();
             var appShellOwned = container.Resolve();
             MainPage = appShellOwned.Value;
