@@ -61,7 +61,7 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
 
 [Visual Studio 16.8](https://visualstudio.microsoft.com/vs) or greater
 
-[.NET 5 sdk](https://dotnet.microsoft.com/download/dotnet/5.0) or greater
+[.Net 5.0.102 sdk](https://dotnet.microsoft.com/download/dotnet/5.0) or greater
 
 ## Nuget
 
