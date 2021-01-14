@@ -21,6 +21,7 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
       - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
       - [Console Application](#console-application)
       - [Xamarin Application](#xamarin-application)
+      - [Wpf Application](#wpf-application)
     - [Real World Projects Using Stronginject](#real-world-projects-using-stronginject)
   - [Declaring a container](#declaring-a-container)
   - [Using a container.](#using-a-container)
