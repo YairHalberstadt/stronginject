@@ -255,18 +255,15 @@ There are currently 3 diferent scopes:
 
 This is the default scope.
 
-A single instance is shared between all dependencies created for a single resolution.
-For example if 'A' debends on 'B' and 'C', and 'B' and 'C' both depend on an instance of 'D',
-then when 'A' is resolved 'B' and 'C' will share the same instance of 'D'.
+A single instance is shared between all dependencies created for a single resolution. For example if `A` debends on `B` and `C`, and `B` and `C` both depend on an instance of `D`, then when `A` is resolved `B` and `C` will share the same instance of `D`.
 
-Note every SingleInstance dependency defines a seperate resolution, 
-so if 'B' and/or 'C' are SingleInstance they would not share an instance of 'D'.
+Note every SingleInstance dependency defines a seperate resolution, so if `B` and/or `C` are SingleInstance they would not share an instance of `D`.
+
+Similiarly every lambda defines a seperate resolution, so if `A` depends on `Func<B>`, then each time `Func<B>` is invoked a fresh instance of both `B` and `D` will be created.
 
 **Instance Per Dependency**
 
-A new instance is created for every usage.
-For example even if type 'B' appears twice in the constructor of 'A',
-two different instances will be passed into the constructor.
+A new instance is created for every usage. For example even if type B appears twice in the constructor of `A`, two different instances will be passed into the constructor.
 
 **SingleInstance**
 
