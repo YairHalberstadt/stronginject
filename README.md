@@ -1007,11 +1007,11 @@ https://github.com/YairHalberstadt/stronginject/projects/1
 
 ## Contributing
 
-This is currently in preview, meaning we can (and will) make API breaking changes. Now is the best time to file suggestions if you feel like the API could be approved.
-
-Similiarly please do open issues if you spot any bugs.
+Please do open issues if you spot any bugs, or would like to suggest new features/API changes.
 
 Please feel free to work on any open issue and open a PR. Ideally open an issue before working on something, so that the effort doesn't go to waste if it's not suitable.
+
+Note that I will tend to be very available if you need any help whilst contributing - see next section about how to contact me.
 
 ## Need Help?
 
