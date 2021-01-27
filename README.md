@@ -68,7 +68,7 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
 
 https://www.nuget.org/packages/StrongInject/
 
-`<PackageReference Include="StrongInject" Version="1.0.0" />`
+`<PackageReference Include="StrongInject" Version="1.*.*" />`
 
 ## How It Works
 
