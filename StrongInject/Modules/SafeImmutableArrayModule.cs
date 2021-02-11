@@ -8,7 +8,7 @@ namespace StrongInject.Modules
     /// This copies the resolved array into an <see cref="ImmutableArray{T}"/>.
     /// If you require a non-copying implementation for performance, use <see cref="UnsafeImmutableArrayModule"/> instead.
     /// </summary>
-    public class SafeImmutableArrayModule
+    public static class SafeImmutableArrayModule
     {
         [Factory(Scope.InstancePerDependency)] public static ImmutableArray<T> CreateImmutableArray<T>(T[] arr) => arr.ToImmutableArray();
     }

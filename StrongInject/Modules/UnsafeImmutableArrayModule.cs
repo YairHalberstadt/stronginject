@@ -14,7 +14,7 @@ namespace StrongInject.Modules
     /// 
     /// If it's possible a custom registration for T[] exists, use <see cref="SafeImmutableArrayModule"/> instead.
     /// </summary>
-    public class UnsafeImmutableArrayModule
+    public static class UnsafeImmutableArrayModule
     {
         [Factory(Scope.InstancePerDependency)] public static ImmutableArray<T> UnsafeCreateImmutableArray<T>(T[] arr) => Unsafe.As<T[], ImmutableArray<T>>(ref arr);
     }

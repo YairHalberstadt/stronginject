@@ -226,7 +226,7 @@ namespace StrongInject.Generator.Visitors
                         result.Append("' through Constructor '");
                         result.Append(constructor);
                         result.AppendLine("'");
-                        //result.AppendLine($"Resolving Type '{ type }' through Constructor '{ constructor }'");
+                        //equivalent to: `result.AppendLine($"Resolving Type '{ type }' through Constructor '{ constructor }'");`
                         break;
                     case FactorySource { FactoryOf: var factoryOf, Underlying: { OfType: var factoryType } }:
                         result.Append("Resolving Type '");
@@ -234,19 +234,19 @@ namespace StrongInject.Generator.Visitors
                         result.Append("' through Factory '");
                         result.Append(factoryType);
                         result.AppendLine("'");
-                        //result.AppendLine($"Resolving Type '{ factoryOf }' through Factory '{ factoryType }'");
+                        //equivalent to: `result.AppendLine($"Resolving Type '{ factoryOf }' through Factory '{ factoryType }'");`
                         break;
                     case DelegateSource { DelegateType: var delegateType }:
                         result.Append("Resolving Delegate '");
                         result.Append(delegateType);
                         result.AppendLine("'");
-                        //result.AppendLine($"Resolving Delegate '{ delegateType }'");
+                        //equivalent to: `result.AppendLine($"Resolving Delegate '{ delegateType }'");`
                         break;
                     case DelegateParameter { Parameter: { Type: var type} }:
                         result.Append("Resolving Type '");
                         result.Append(type);
                         result.AppendLine("' as a Delegate Parameter");
-                        //result.AppendLine($"Resolving Type '{ type }' as a Delegate Parameter");
+                        //equivalent to: `result.AppendLine($"Resolving Type '{ type }' as a Delegate Parameter");`
                         break;
                     case FactoryMethod { FactoryOfType: var type, Method: var method }:
                         result.Append("Resolving Type '");
@@ -254,7 +254,7 @@ namespace StrongInject.Generator.Visitors
                         result.Append("' through Factory Method '");
                         Format(method);
                         result.AppendLine("'");
-                        //result.AppendLine($"Resolving Type '{ type }' through Factory Method '{ Format(method) }'");
+                        //equivalent to: `result.AppendLine($"Resolving Type '{ type }' through Factory Method '{ Format(method) }'");`
                         break;
                     case InstanceFieldOrProperty { Type: var type, FieldOrPropertySymbol: { Kind: var kind } fieldOrPropertySymbol }:
                         result.Append("Resolving Type '");
@@ -264,13 +264,13 @@ namespace StrongInject.Generator.Visitors
                         result.Append(" '");
                         result.Append(fieldOrPropertySymbol);
                         result.AppendLine("'");
-                        //result.AppendLine($"Resolving Type '{ type }' through { (kind is SymbolKind.Field  ? "Field" : "Property" ) } '{ fieldOrPropertySymbol }'");
+                        //equivalent to: `result.AppendLine($"Resolving Type '{ type }' through { (kind is SymbolKind.Field  ? "Field" : "Property" ) } '{ fieldOrPropertySymbol }'");`
                         break;
                     case ArraySource { ArrayType: var array }:
                         result.Append("Resolving Array '");
                         result.Append(array);
                         result.AppendLine("'");
-                        //result.AppendLine($"Resolving Array '{ array }'");
+                        //equivalent to: `result.AppendLine($"Resolving Array '{ array }'");`
                         break;
                     case WrappedDecoratorInstanceSource { Decorator: var decorator }:
                         switch (decorator)
@@ -281,7 +281,7 @@ namespace StrongInject.Generator.Visitors
                                 result.Append("' with Decorator Method '");
                                 Format(method);
                                 result.AppendLine("'");
-                                //result.AppendLine($"Decorating Type '{ decoratedType }' with Decorator Method '{ Format(method) }'");
+                                //equivalent to: `result.AppendLine($"Decorating Type '{ decoratedType }' with Decorator Method '{ Format(method) }'");`
                                 break;
                             case DecoratorRegistration { DecoratedType: var decoratedType, Type: var type, Constructor: var constructor }:
                                 result.Append("Decorating Type '");
@@ -291,7 +291,7 @@ namespace StrongInject.Generator.Visitors
                                 result.Append("' through Constructor '");
                                 result.Append(constructor);
                                 result.AppendLine("'");
-                                //result.AppendLine($"Decorating Type { decoratedType } with Decorator '{ type }' through Constructor '{ constructor }'");
+                                //equivalent to: `result.AppendLine($"Decorating Type { decoratedType } with Decorator '{ type }' through Constructor '{ constructor }'");`
                                 break;
                             default: throw new NotImplementedException(decorator.GetType().ToString());
                         }
@@ -302,7 +302,7 @@ namespace StrongInject.Generator.Visitors
                         result.Append("' to '");
                         result.Append(forwardedType);
                         result.AppendLine("'");
-                        //result.AppendLine($"Casting instance of Type '{ type }' to '{ forwardedType }'");
+                        //equivalent to: `result.AppendLine($"Casting instance of Type '{ type }' to '{ forwardedType }'");`
                         break;
                     default: throw new NotImplementedException(source.GetType().ToString());
 
@@ -315,7 +315,6 @@ namespace StrongInject.Generator.Visitors
                 result.Append(method.ReturnType);
                 result.Append(" ");
                 result.Append(method);
-                //return method.ReturnType.ToString() + " " + method.ToString();
             }
         }
 
