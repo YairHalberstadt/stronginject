@@ -152,7 +152,9 @@ namespace StrongInject.Generator
             return type.ToDisplayString(new SymbolDisplayFormat(
                 globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+                parameterOptions: SymbolDisplayParameterOptions.IncludeType | SymbolDisplayParameterOptions.IncludeParamsRefOut,
+                memberOptions: SymbolDisplayMemberOptions.IncludeRef));
         }
 
         public static string FullName(this INamespaceSymbol @namespace)

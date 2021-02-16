@@ -72,6 +72,8 @@ namespace StrongInject.Generator
         {
             Debug.Assert(_containerMembersSource.Length == 0);
 
+            bool requiresUnsafe = false;
+
             foreach (var (constructedContainerInterface, isAsync) in _containerInterfaces)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -141,6 +143,8 @@ namespace StrongInject.Generator
                 }
                 else
                 {
+                    requiresUnsafe |= RequiresUnsafeVisitor.RequiresUnsafe(target, _containerScope);
+
                     var variableCreationSource = new StringBuilder();
                     variableCreationSource.Append("if(Disposed)");
                     ThrowObjectDisposedException(variableCreationSource);
@@ -208,6 +212,10 @@ namespace StrongInject.Generator
             foreach (var type in _container.GetContainingTypesAndThis().Reverse())
             {
                 closingBraceCount++;
+                if (requiresUnsafe)
+                {
+                    file.Append("unsafe ");
+                }
                 file.Append("partial class ");
                 file.Append(type.NameWithGenerics());
                 file.Append('{');
