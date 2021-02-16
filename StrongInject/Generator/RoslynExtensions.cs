@@ -162,11 +162,6 @@ namespace StrongInject.Generator
             return @namespace.ToDisplayString(new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
         }
 
-        public static string FullName(this INamespaceSymbol @namespace)
-        {
-            return @namespace.ToDisplayString(new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
-        }
-
         public static string NameWithTypeParameters(this ITypeSymbol type)
         {
             return type.ToDisplayString(new SymbolDisplayFormat(
