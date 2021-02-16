@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Collections.Immutable;
+using System;
+using System.Linq;
 
 namespace StrongInject.Generator
 {
@@ -57,7 +58,6 @@ namespace StrongInject.Generator
                             return rank == toConstructRank && CanConstructFrom(elementTypeToConstruct, elementType, method, ref typeArguments);
                         }
                         return false;
-
                     case INamedTypeSymbol { OriginalDefinition: var originalDefinition, TypeArguments: var fromTypeArguments }:
 
                         if (!SymbolEqualityComparer.Default.Equals(originalDefinition, toConstruct.OriginalDefinition))
@@ -79,9 +79,58 @@ namespace StrongInject.Generator
                         }
 
                         return true;
-                }
+                    case IFunctionPointerTypeSymbol { Signature: 
+                        { 
+                            CallingConvention: var callingConvention,
+                            UnmanagedCallingConventionTypes: var unmanagedCallingConventionTypes,
+                            ReturnType: var returnType,
+                            Parameters: var parameters,
+                            RefKind: var refKind,
+                        } }:
+                        {
+                            if (toConstruct is not IFunctionPointerTypeSymbol { Signature:
+                                {
+                                        CallingConvention: var toConstructCallingConvention,
+                                        UnmanagedCallingConventionTypes: var toConstructUnmanagedCallingConventionTypes,
+                                        ReturnType: var toConstructReturnType,
+                                        Parameters: var toConstructParameters,
+                                        RefKind: var toConstructRefKind,
+                                } })
+                            {
+                                return false;
+                            }
 
-                return false;
+                            if (callingConvention != toConstructCallingConvention
+                                || !unmanagedCallingConventionTypes.SequenceEqual<INamedTypeSymbol, INamedTypeSymbol>(toConstructUnmanagedCallingConventionTypes, SymbolEqualityComparer.Default)
+                                || refKind != toConstructRefKind
+                                || parameters.Length != toConstructParameters.Length
+                                || !CanConstructFrom(toConstructReturnType, returnType, method, ref typeArguments))
+                            {
+                                return false;
+                            }
+
+                            for (var i = 0; i < parameters.Length; i++)
+                            {
+                                var parameter = parameters[i];
+                                var parameterToConstruct = toConstructParameters[i];
+
+                                if (parameter.RefKind != parameterToConstruct.RefKind
+                                    || !CanConstructFrom(parameterToConstruct.Type, parameter.Type, method, ref typeArguments))
+                                {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }
+                    case IPointerTypeSymbol { PointedAtType: var pointedAtType }:
+                        if (toConstruct is IPointerTypeSymbol { PointedAtType: var pointedAtTypeToConstruct })
+                        {
+                            return CanConstructFrom(pointedAtTypeToConstruct, pointedAtType, method, ref typeArguments);
+                        }
+                        return false;
+                    default: throw new NotImplementedException(toConstructFrom.ToString());
+                }
             }
         }
 

@@ -626,6 +626,19 @@ namespace StrongInject.Generator
                             }
 
                             break;
+                        case IFunctionPointerTypeSymbol { Signature: { ReturnType: var returnType, Parameters: var parameters } }:
+                            Visit(returnType);
+                            foreach (var parameter in parameters)
+                            {
+                                Visit(parameter.Type);
+                            }
+                            break;
+                        case IPointerTypeSymbol { PointedAtType: var pointedAtType }:
+                            Visit(pointedAtType);
+                            break;
+                        case IDynamicTypeSymbol:
+                            break;
+                        default: throw new NotImplementedException(type.ToString());
                     }
                 }
             }
