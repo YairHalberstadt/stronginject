@@ -32,7 +32,20 @@ jobs:
     - name: Build
       run: dotnet build -c Release --no-restore
     - name: Test
-      run: dotnet test -c Release --no-restore --verbosity normal
+      run: dotnet test -c Release --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+    - name: Move Test Coverage Reports
+      run: |
+        cd StrongInject.Tests.Unit/TestResults
+        mv */* .
+        cd ../../StrongInject.Tests.Integration/TestResults
+        mv */* .
+        cd ../../StrongInject.Extensions.DependencyInjection.Tests/TestResults
+        mv */* .
+    - name: Upload coverage to codacy
+      uses: codacy/codacy-coverage-reporter-action@master
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: StrongInject.Tests.Unit/TestResults/coverage.cobertura.xml,StrongInject.Tests.Integration/TestResults/coverage.cobertura.xml,StrongInject.Extensions.DependencyInjection.Tests/TestResults/coverage.cobertura.xml
     - name: Get timestamp
       uses: 1466587594/get-current-time@v1
       id: current-time

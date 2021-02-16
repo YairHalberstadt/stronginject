@@ -9,6 +9,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Castle.Core" Version="4.4.1" />
+		<PackageReference Include="coverlet.collector" Version="3.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="FluentAssertions" Version="6.0.0-alpha0001" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0-preview-20200812-03" />
 		<PackageReference Include="xunit" Version="2.4.1" />
