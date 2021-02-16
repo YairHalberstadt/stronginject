@@ -35,12 +35,9 @@ jobs:
       run: dotnet test -c Release --no-restore --verbosity normal --collect:"XPlat Code Coverage"
     - name: Move Test Coverage Reports
       run: |
-        cd StrongInject.Tests.Unit/TestResults
-        mv */* .
-        cd ../../StrongInject.Tests.Integration/TestResults
-        mv */* .
-        cd ../../StrongInject.Extensions.DependencyInjection.Tests/TestResults
-        mv */* .
+        mv StrongInject.Tests.Unit/TestResults/*/* StrongInject.Tests.Unit/TestResults
+        mv StrongInject.Tests.Integration/TestResults/*/* StrongInject.Tests.Integration/TestResults
+        mv StrongInject.Extensions.DependencyInjection.Tests/TestResults/*/* StrongInject.Extensions.DependencyInjection.Tests/TestResults
     - name: Upload coverage to codacy
       uses: codacy/codacy-coverage-reporter-action@master
       with:
