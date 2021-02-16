@@ -110,7 +110,7 @@ namespace StrongInject.Generator
                 if (_instanceSources.TryGetValue(elementType, out var nonGenericElementSources))
                 {
                     elementSources = elementSources.Concat(nonGenericElementSources);
-                };
+                }
 
                 elementSources = elementSources.Concat(_genericRegistrationsResolver.ResolveAll(elementType));
 

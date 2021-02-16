@@ -85,7 +85,7 @@ namespace StrongInject.Generator
                 IErrorTypeSymbol => true,
                 IArrayTypeSymbol array => array.ElementType.IsOrReferencesErrorType(),
                 IPointerTypeSymbol pointer => pointer.PointedAtType.IsOrReferencesErrorType(),
-                INamedTypeSymbol named => named.IsUnboundGenericType ? false : named.TypeArguments.Any(IsOrReferencesErrorType),
+                INamedTypeSymbol named => !named.IsUnboundGenericType && named.TypeArguments.Any(IsOrReferencesErrorType),
                 _ => false,
             };
         }
@@ -152,7 +152,14 @@ namespace StrongInject.Generator
             return type.ToDisplayString(new SymbolDisplayFormat(
                 globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+                parameterOptions: SymbolDisplayParameterOptions.IncludeType | SymbolDisplayParameterOptions.IncludeParamsRefOut,
+                memberOptions: SymbolDisplayMemberOptions.IncludeRef));
+        }
+
+        public static string FullName(this INamespaceSymbol @namespace)
+        {
+            return @namespace.ToDisplayString(new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
         }
 
         public static string NameWithTypeParameters(this ITypeSymbol type)
@@ -161,11 +168,6 @@ namespace StrongInject.Generator
                 globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly,
                 genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
-        }
-
-        public static string FullName(this INamespaceSymbol @namespace)
-        {
-            return @namespace.ToDisplayString(new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
         }
 
         public static string NameWithGenerics(this ITypeSymbol type)
@@ -204,7 +206,7 @@ namespace StrongInject.Generator
         {
             private AttributeComparer() { }
 
-            public static AttributeComparer Instance = new();
+            public static readonly AttributeComparer Instance = new();
             public int Compare(AttributeData x, AttributeData y)
             {
                 Debug.Assert(

@@ -140,13 +140,13 @@ namespace StrongInject.Generator
                 var moduleConstant = registerModuleAttribute.ConstructorArguments.FirstOrDefault();
                 if (moduleConstant.Kind != TypedConstantKind.Type)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
                 var importedModule = (INamedTypeSymbol)moduleConstant.Value!;
                 if (importedModule.IsOrReferencesErrorType())
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
 
@@ -161,7 +161,7 @@ namespace StrongInject.Generator
                 var exclusionListConstant = registerModuleAttribute.ConstructorArguments.FirstOrDefault(x => x.Kind == TypedConstantKind.Array);
                 if (exclusionListConstant.Kind is not TypedConstantKind.Array)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
                 var exclusionListConstants = exclusionListConstant.Values;
@@ -230,14 +230,14 @@ namespace StrongInject.Generator
                 var countConstructorArguments = registerAttribute.ConstructorArguments.Length;
                 if (countConstructorArguments is not (2 or 3))
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
 
                 var typeConstant = registerAttribute.ConstructorArguments[0];
                 if (typeConstant.Kind != TypedConstantKind.Type)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
                 if (!CheckValidType(registerAttribute, typeConstant, module, out var type))
@@ -333,14 +333,14 @@ namespace StrongInject.Generator
                 var countConstructorArguments = registerFactoryAttribute.ConstructorArguments.Length;
                 if (countConstructorArguments != 3)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
 
                 var typeConstant = registerFactoryAttribute.ConstructorArguments[0];
                 if (typeConstant.Kind != TypedConstantKind.Type)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
                 if (!CheckValidType(registerFactoryAttribute, typeConstant, module, out var type))
@@ -545,7 +545,7 @@ namespace StrongInject.Generator
                 var countConstructorArguments = attribute.ConstructorArguments.Length;
                 if (countConstructorArguments != 1)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     return null;
                 }
 
@@ -556,16 +556,13 @@ namespace StrongInject.Generator
                 if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
                 {
                     bool isGeneric = method.TypeParameters.Length > 0;
-                    if (isGeneric)
+                    if (isGeneric && !AllTypeParametersUsedInReturnType(method))
                     {
-                        if (!AllTypeParametersUsedInReturnType(method))
-                        {
-                            _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
-                                method,
-                                attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                        _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
+                            method,
+                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
 
-                            return null;
-                        }
+                        return null;
                     }
 
                     foreach (var param in method.Parameters)
@@ -629,6 +626,19 @@ namespace StrongInject.Generator
                             }
 
                             break;
+                        case IFunctionPointerTypeSymbol { Signature: { ReturnType: var returnType, Parameters: var parameters } }:
+                            Visit(returnType);
+                            foreach (var parameter in parameters)
+                            {
+                                Visit(parameter.Type);
+                            }
+                            break;
+                        case IPointerTypeSymbol { PointedAtType: var pointedAtType }:
+                            Visit(pointedAtType);
+                            break;
+                        case IDynamicTypeSymbol:
+                            break;
+                        default: throw new NotImplementedException(type.ToString());
                     }
                 }
             }
@@ -860,14 +870,14 @@ namespace StrongInject.Generator
                 var countConstructorArguments = registerDecoratorAttribute.ConstructorArguments.Length;
                 if (countConstructorArguments != 3)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
 
                 var typeConstant = registerDecoratorAttribute.ConstructorArguments[0];
                 if (typeConstant.Kind != TypedConstantKind.Type)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
                 if (!CheckValidType(registerDecoratorAttribute, typeConstant, module, out var type))
@@ -890,7 +900,7 @@ namespace StrongInject.Generator
                 var decoratorOfConstant = registerDecoratorAttribute.ConstructorArguments[1];
                 if (decoratorOfConstant.Kind != TypedConstantKind.Type)
                 {
-                    // Invalid code, ignore;
+                    // Invalid code, ignore
                     continue;
                 }
                 if (!CheckValidType(registerDecoratorAttribute, decoratorOfConstant, module, out var decoratedType))
@@ -983,16 +993,13 @@ namespace StrongInject.Generator
                 if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
                 {
                     bool isGeneric = method.TypeParameters.Length > 0;
-                    if (isGeneric)
+                    if (isGeneric && !AllTypeParametersUsedInReturnType(method))
                     {
-                        if (!AllTypeParametersUsedInReturnType(method))
-                        {
-                            _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
-                                method,
-                                attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                        _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
+                            method,
+                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
 
-                            return null;
-                        }
+                        return null;
                     }
 
                     foreach (var param in method.Parameters)
