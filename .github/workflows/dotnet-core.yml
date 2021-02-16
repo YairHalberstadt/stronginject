@@ -72,7 +72,9 @@ jobs:
     - name: Build
       run: dotnet build -c Debug --no-restore
     - name: Test
-      run: dotnet test -c Debug --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test -c Debug --no-restore --verbosity normal
+    - name: Cover
+      run: dotnet test --collect:"XPlat Code Coverage"
     - name: Move Test Coverage Reports
       run: |
         mv StrongInject.Tests.Unit/TestResults/*/* StrongInject.Tests.Unit/TestResults
