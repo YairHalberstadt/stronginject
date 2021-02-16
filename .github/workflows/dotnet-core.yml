@@ -38,9 +38,8 @@ jobs:
         mv StrongInject.Tests.Unit/TestResults/*/* StrongInject.Tests.Unit/TestResults
         mv StrongInject.Tests.Integration/TestResults/*/* StrongInject.Tests.Integration/TestResults
         mv StrongInject.Extensions.DependencyInjection.Tests/TestResults/*/* StrongInject.Extensions.DependencyInjection.Tests/TestResults
-        cat /github/workspace/StrongInject.Tests.Unit/TestResults/coverage.cobertura.xml
         cat StrongInject.Tests.Unit/TestResults/coverage.cobertura.xml
-        ls 
+        ls /github/workspace
     - name: Upload coverage to codacy
       uses: codacy/codacy-coverage-reporter-action@master
       with:
