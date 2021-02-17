@@ -81,6 +81,8 @@ jobs:
         mv StrongInject.Tests.Integration/TestResults/*/* StrongInject.Tests.Integration/TestResults
         mv StrongInject.Extensions.DependencyInjection.Tests/TestResults/*/* StrongInject.Extensions.DependencyInjection.Tests/TestResults
         cat StrongInject.Tests.Unit/TestResults/coverage.cobertura.xml
+        cat StrongInject.Tests.Integration/TestResults/coverage.cobertura.xml
+        cat StrongInject.Extensions.DependencyInjection.Tests/TestResults/coverage.cobertura.xml
     - name: Upload coverage to codacy
       uses: codacy/codacy-coverage-reporter-action@master
       with:
