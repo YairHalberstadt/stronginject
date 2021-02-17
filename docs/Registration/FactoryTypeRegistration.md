@@ -11,7 +11,7 @@
 
 # Factory Type Registration
 
-If a type implements `IFactory<T>` or `IAsyncFactory<T>` you can register it as a provider for `T` using the `[RegisterFactory] attribute. StrongInject will look for a suitable constructor to instantiate the type, as described [here](https://github.com/YairHalberstadt/stronginject/wiki/TypeRegistration#instantiation).
+If a type implements `IFactory<T>` or `IAsyncFactory<T>` you can register it as a provider for `T` using the `[RegisterFactory]` attribute. StrongInject will look for a suitable constructor to instantiate the type, as described [here](https://github.com/YairHalberstadt/stronginject/wiki/TypeRegistration#instantiation).
 
 `RegisterFactoryAttribute` has 3 parameters.
 
