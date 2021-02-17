@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides registrations for tuples for all arities from 2 till 10.
     /// </summary>
-    public class ValueTupleModule
+    public static class ValueTupleModule
     {
         [Factory(Scope.InstancePerDependency)] public static (T1, T2) CreateValueTuple<T1, T2>(T1 a, T2 b) => (a, b);
         [Factory(Scope.InstancePerDependency)] public static (T1, T2, T3) CreateValueTuple<T1, T2, T3>(T1 a, T2 b, T3 c) => (a, b, c);

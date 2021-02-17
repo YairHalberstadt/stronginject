@@ -10,13 +10,14 @@ namespace StrongInject.Generator
     internal class GenericRegistrationsResolver
     {
         private readonly Dictionary<INamedTypeSymbol, Bucket> _namedTypeBuckets;
-        private readonly Bucket _arrayTypeBucket;
+
+        private readonly Bucket _otherTypesBucket;
         private readonly Bucket _typeParameterBuckets;
 
-        private GenericRegistrationsResolver(Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket arrayTypeBucket, Bucket typeParameterBuckets)
+        private GenericRegistrationsResolver(Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket otherTypesBucket, Bucket typeParameterBuckets)
         {
             _namedTypeBuckets = namedTypeBuckets;
-            _arrayTypeBucket = arrayTypeBucket;
+            _otherTypesBucket = otherTypesBucket;
             _typeParameterBuckets = typeParameterBuckets;
         }
 
@@ -35,9 +36,9 @@ namespace StrongInject.Generator
                     }
                 }
             }
-            else if (type is IArrayTypeSymbol)
+            else if (type is IArrayTypeSymbol or IPointerTypeSymbol or IFunctionPointerTypeSymbol)
             {
-                if (!_arrayTypeBucket.TryResolve(type, out instanceSource, out isAmbiguous, out sourcesNotMatchingConstraints))
+                if (!_otherTypesBucket.TryResolve(type, out instanceSource, out isAmbiguous, out sourcesNotMatchingConstraints))
                 {
                     if (isAmbiguous)
                         return false;
@@ -85,9 +86,9 @@ namespace StrongInject.Generator
                     bucket.ResolveAll(type, instanceSources);
                 }
             }
-            else if (type is IArrayTypeSymbol)
+            else if (type is IArrayTypeSymbol or IFunctionPointerTypeSymbol or IPointerTypeSymbol)
             {
-                _arrayTypeBucket.ResolveAll(type, instanceSources);
+                _otherTypesBucket.ResolveAll(type, instanceSources);
             }
             _typeParameterBuckets.ResolveAll(type, instanceSources);
 
@@ -104,18 +105,18 @@ namespace StrongInject.Generator
 
             public GenericRegistrationsResolver Build(Compilation compilation)
             {
-                var (namedTypeBuckets, arrayTypeBucket, typeParameterBucket) = Partition(this, compilation);
-                return new(namedTypeBuckets, arrayTypeBucket, typeParameterBucket);
+                var (namedTypeBuckets, otherTypesBucket, typeParameterBucket) = Partition(this, compilation);
+                return new(namedTypeBuckets, otherTypesBucket, typeParameterBucket);
 
-                static (Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket arrayTypeBucket, Bucket typeParameterBucket) Partition(Builder builder, Compilation compilation)
+                static (Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket otherTypesBucket, Bucket typeParameterBucket) Partition(Builder builder, Compilation compilation)
                 {
                     Dictionary<INamedTypeSymbol, (List<Bucket>? buckets, ImmutableArray<FactoryMethod>.Builder? factoryMethods)> namedTypeBucketsAndFactoryMethods = new(SymbolEqualityComparer.Default);
-                    List<Bucket>? arrayTypeBuckets = null;
+                    List<Bucket>? otherTypesBuckets = null;
                     List<Bucket>? typeParameterBuckets = null;
-                    ImmutableArray<FactoryMethod>.Builder? arrayTypeFactoryMethods = null;
+                    ImmutableArray<FactoryMethod>.Builder? otherTypesFactoryMethods = null;
                     ImmutableArray<FactoryMethod>.Builder? typeParameterFactoryMethods = null;
 
-                    foreach (var (childNamedTypeBuckets, childArrayTypeBucket, childTypeParameterBucket) in builder._children.Select(x => Partition(x, compilation)))
+                    foreach (var (childNamedTypeBuckets, childOtherTypesBucket, childTypeParameterBucket) in builder._children.Select(x => Partition(x, compilation)))
                     {
                         foreach (var (namedType, bucket) in childNamedTypeBuckets)
                         {
@@ -129,7 +130,7 @@ namespace StrongInject.Generator
                                     return l;
                                 });
                         }
-                        (arrayTypeBuckets ??= new()).Add(childArrayTypeBucket);
+                        (otherTypesBuckets ??= new()).Add(childOtherTypesBucket);
                         (typeParameterBuckets ??= new()).Add(childTypeParameterBucket);
                     }
 
@@ -156,13 +157,13 @@ namespace StrongInject.Generator
                                     break;
                                 }
 
-                            case IArrayTypeSymbol:
-                                (arrayTypeFactoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(factoryMethod);
+                            case IArrayTypeSymbol or IFunctionPointerTypeSymbol or IPointerTypeSymbol:
+                                (otherTypesFactoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(factoryMethod);
                                 break;
-
                             case ITypeParameterSymbol:
                                 (typeParameterFactoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(factoryMethod);
                                 break;
+                            case var type: throw new NotImplementedException(type.ToString());
                         }
                     }
 
@@ -175,8 +176,8 @@ namespace StrongInject.Generator
                                 x.Value.factoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
                                 compilation)),
                         new Bucket(
-                            arrayTypeBuckets ?? Enumerable.Empty<Bucket>(),
-                            arrayTypeFactoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
+                            otherTypesBuckets ?? Enumerable.Empty<Bucket>(),
+                            otherTypesFactoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
                             compilation),
                         new Bucket(
                             typeParameterBuckets ?? Enumerable.Empty<Bucket>(),

@@ -33,10 +33,11 @@ namespace StrongInject.Generator.Tests.Unit
                     MetadataReference.CreateFromFile(typeof(ValueTask).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(ConcurrentBag<>).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(System.Runtime.CompilerServices.DynamicAttribute).Assembly.Location),
                     MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location)!, "netstandard.dll")),
                     MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location)!, "System.Runtime.dll")),
                 }),
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true));
 
         protected static GeneratorDriver CreateDriver(Compilation compilation, params ISourceGenerator[] generators)
             => CSharpGeneratorDriver.Create(generators, parseOptions: (CSharpParseOptions)compilation.SyntaxTrees.First().Options);

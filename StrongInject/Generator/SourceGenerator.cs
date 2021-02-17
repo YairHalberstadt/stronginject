@@ -80,7 +80,7 @@ namespace StrongInject.Generator
                     {
                         registrationCalculator.ValidateModuleRegistrations(module.type);
                     }
-                };
+                }
             }
         }
 

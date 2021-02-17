@@ -72,6 +72,8 @@ namespace StrongInject.Generator
         {
             Debug.Assert(_containerMembersSource.Length == 0);
 
+            bool requiresUnsafe = false;
+
             foreach (var (constructedContainerInterface, isAsync) in _containerInterfaces)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -141,6 +143,8 @@ namespace StrongInject.Generator
                 }
                 else
                 {
+                    requiresUnsafe |= RequiresUnsafeVisitor.RequiresUnsafe(target, _containerScope);
+
                     var variableCreationSource = new StringBuilder();
                     variableCreationSource.Append("if(Disposed)");
                     ThrowObjectDisposedException(variableCreationSource);
@@ -207,6 +211,10 @@ namespace StrongInject.Generator
             foreach (var type in _container.GetContainingTypesAndThis().Reverse())
             {
                 closingBraceCount++;
+                if (requiresUnsafe)
+                {
+                    file.Append("unsafe ");
+                }
                 file.Append("partial class ");
                 file.Append(type.NameWithGenerics());
                 file.Append('{');
@@ -535,14 +543,14 @@ namespace StrongInject.Generator
                                     : nameof(IFactory<object>.Create));
                                 methodSource.Append("();");
                                 break;
-                            case Registration(var _, var _, var requiresInitialization, var constructor, var isAsync) registration:
+                            case Registration(_, _, _, var constructor, _) registration:
                                 {
-                                    GenerateMethodCall(variableName, constructor, isAsync, dependencies);
+                                    GenerateMethodCall(variableName, constructor, dependencies);
                                     break;
                                 }
-                            case FactoryMethod(var method, var _, var _, var _, var isAsync) registration:
+                            case FactoryMethod(var method, _, _, _, _) registration:
                                 {
-                                    GenerateMethodCall(variableName, method, isAsync, dependencies);
+                                    GenerateMethodCall(variableName, method, dependencies);
 
                                     break;
                                 }
@@ -569,12 +577,11 @@ namespace StrongInject.Generator
                                 {
                                     switch (decoratorSource)
                                     {
-                                        case DecoratorRegistration(var _, _, _, var constructor, var decoratedParameter, _, var isAsync):
-
-                                            GenerateMethodCall(variableName, constructor, isAsync, dependencies);
+                                        case DecoratorRegistration(_, _, _, var constructor, _, _, _):
+                                            GenerateMethodCall(variableName, constructor, dependencies);
                                             break;
-                                        case DecoratorFactoryMethod(var method, var returnType, var _, var decoratedParameter, _, var isAsync) registration:
-                                            GenerateMethodCall(variableName, method, isAsync, dependencies);
+                                        case DecoratorFactoryMethod(var method, var returnType, _, _, _, _) registration:
+                                            GenerateMethodCall(variableName, method, dependencies);
                                             break;
                                         default: throw new NotImplementedException(decoratorSource.GetType().ToString());
                                     }
@@ -632,7 +639,7 @@ namespace StrongInject.Generator
                         throw new NotImplementedException(operation.Statement.GetType().ToString());
                 }
 
-                void GenerateMethodCall(string variableName, IMethodSymbol method, bool isAsync, ImmutableArray<string?> dependencies)
+                void GenerateMethodCall(string variableName, IMethodSymbol method, ImmutableArray<string?> dependencies)
                 {
                     methodSource.Append(variableName);
                     methodSource.Append('=');

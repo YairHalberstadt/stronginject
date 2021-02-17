@@ -311,16 +311,13 @@ namespace StrongInject.Generator.Visitors
                 {
                     var operation = order[i];
 
-                    if (operation.Statement is not AwaitStatement)
+                    if (operation.Statement is not AwaitStatement && operation.Dependencies.All(x => ordered.Contains(x)))
                     {
-                        if (operation.Dependencies.All(x => ordered.Contains(x)))
-                        {
-                            builder.Add(operation);
-                            ordered.Add(operation);
-                            order.RemoveAt(i);
-                            found = true;
-                            break;
-                        }
+                        builder.Add(operation);
+                        ordered.Add(operation);
+                        order.RemoveAt(i);
+                        found = true;
+                        break;
                     }
                 }
 
