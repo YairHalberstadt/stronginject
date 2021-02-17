@@ -276,15 +276,15 @@ namespace StrongInject.Generator.Visitors
             }
         }
 
-        private static ImmutableArray<Operation> Order(List<Operation> order)
+        private static ImmutableArray<Operation> Order(List<Operation> operations)
         {
-            var builder = ImmutableArray.CreateBuilder<Operation>(order.Count);
+            var builder = ImmutableArray.CreateBuilder<Operation>(operations.Count);
             var ordered = new HashSet<Operation>();
-            while (order.Count > 0)
+            while (operations.Count > 0)
             {
-                for (var i = 0; i < order.Count; i++)
+                for (var i = 0; i < operations.Count; i++)
                 {
-                    var operation = order[i];
+                    var operation = operations[i];
 
                     if (operation.Statement is InitializationStatement { IsAsync: true }
                         or SingleInstanceReferenceStatement { IsAsync: true }
@@ -300,22 +300,22 @@ namespace StrongInject.Generator.Visitors
                         {
                             builder.Add(operation);
                             ordered.Add(operation);
-                            order.RemoveAt(i);
+                            operations.RemoveAt(i);
                             i--;
                         }
                     }
                 }
 
                 bool found = false;
-                for (var i = 0; i < order.Count; i++)
+                for (var i = 0; i < operations.Count; i++)
                 {
-                    var operation = order[i];
+                    var operation = operations[i];
 
                     if (operation.Statement is not AwaitStatement && operation.Dependencies.All(x => ordered.Contains(x)))
                     {
                         builder.Add(operation);
                         ordered.Add(operation);
-                        order.RemoveAt(i);
+                        operations.RemoveAt(i);
                         found = true;
                         break;
                     }
@@ -326,10 +326,10 @@ namespace StrongInject.Generator.Visitors
 
                 Operation longestPathSoFar = default!;
                 int longestPathLengthSoFar = 0;
-                FindLongestPath(order[order.Count - 1], 0);
+                FindLongestPath(operations[operations.Count - 1], 0);
                 builder.Add(longestPathSoFar);
                 ordered.Add(longestPathSoFar);
-                order.Remove(longestPathSoFar);
+                operations.Remove(longestPathSoFar);
 
                 void FindLongestPath(Operation operation, int pathLength)
                 {
