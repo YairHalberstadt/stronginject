@@ -101,10 +101,6 @@ namespace StrongInject.Generator
             return stringBuilder.ToString();
         }
 
-        public void Initialize(GeneratorInitializationContext context)
-        {
-        }
-
         private static Diagnostic ModuleNotPublicOrInternal(ITypeSymbol module, Location location)
         {
             return Diagnostic.Create(
@@ -117,6 +113,10 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 module);
+        }
+
+        void ISourceGenerator.Initialize(GeneratorInitializationContext context)
+        {
         }
     }
 }
