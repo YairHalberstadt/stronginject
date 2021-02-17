@@ -155,7 +155,7 @@ public class B {}
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
-### Using a container.
+### Using a container
 
 There are two ways to use a container - using the `Run` methods or the `Resolve` methods.
 
