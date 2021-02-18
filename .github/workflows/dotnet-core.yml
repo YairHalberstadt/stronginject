@@ -80,6 +80,7 @@ jobs:
         mv StrongInject.Tests.Unit/TestResults/*/* StrongInject.Tests.Unit/TestResults
         mv StrongInject.Tests.Integration/TestResults/*/* StrongInject.Tests.Integration/TestResults
         mv StrongInject.Extensions.DependencyInjection.Tests/TestResults/*/* StrongInject.Extensions.DependencyInjection.Tests/TestResults
+        ls StrongInject.Tests.Unit/TestResults
         cat StrongInject.Tests.Unit/TestResults/*
         cat StrongInject.Tests.Integration/TestResults/coverage.cobertura.xml
         cat StrongInject.Extensions.DependencyInjection.Tests/TestResults/coverage.cobertura.xml
