@@ -74,7 +74,7 @@ jobs:
     - name: Test
       run: dotnet test -c Debug --no-restore --verbosity normal
     - name: Cover
-      run: dotnet test StrongInject.Tests.Unit\StrongInject.Tests.Unit.csproj --collect:"XPlat Code Coverage" --diag:log.txt
+      run: dotnet test StrongInject.Tests.Unit/StrongInject.Tests.Unit.csproj --collect:"XPlat Code Coverage" --diag:log.txt
     - name: Move Test Coverage Reports
       run: |
         mv StrongInject.Tests.Unit/TestResults/*/* StrongInject.Tests.Unit/TestResults
