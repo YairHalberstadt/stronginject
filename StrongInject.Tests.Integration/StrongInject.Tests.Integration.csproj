@@ -27,5 +27,6 @@
 		<ProjectReference Include="..\StrongInject\StrongInject.csproj" OutputItemType="Analyzer">
 			<SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
 		</ProjectReference>
+	    <ProjectReference Include="..\StrongInject\StrongInject.csproj"/>
 	</ItemGroup>
 </Project>

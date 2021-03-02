@@ -78,11 +78,6 @@ namespace StrongInject.Tests.Integration
             public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
             {
                 public IInterface[] Create() => new IInterface[] { A, B };
-
-                public void Release(IInterface[] instance)
-                {
-                    Helpers.Dispose(instance);
-                }
             }
 
             [Register(typeof(A))]
