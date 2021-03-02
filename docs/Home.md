@@ -54,7 +54,6 @@ A container is esentially a factory that knows how to provide an instance of a t
 
 Registration is how you let your container know what it can use, and how, to try and create that instance.
 
-
 ### [Resolution](https://github.com/YairHalberstadt/stronginject/wiki/Resolution)
 
 Resolution is how the container create/provides an instance of a type. This can be when you ask for the instance directly, or it may be needed as a dependency for another resolution.
@@ -84,4 +83,3 @@ Once an instance is no longer needed, StrongInject takes care of disposing it fo
     myContainer.Run(a => Console.WriteLine($"We've resolved an instance of A: {a.ToString()}!!"));
     ```
     To find out more about resolution see the [documentation](https://github.com/YairHalberstadt/stronginject/wiki/Resolution).
-

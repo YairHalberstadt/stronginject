@@ -209,8 +209,8 @@ namespace StrongInject.Generator
                 _compilation = compilation;
             }
 
-            private ImmutableArray<Bucket> _childResolvers;
-            private ImmutableArray<FactoryMethod> _factoryMethods;
+            private readonly ImmutableArray<Bucket> _childResolvers;
+            private readonly ImmutableArray<FactoryMethod> _factoryMethods;
             private readonly Compilation _compilation;
 
             public bool TryResolve(ITypeSymbol type, out FactoryMethod instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)

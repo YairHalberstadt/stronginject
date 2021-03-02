@@ -160,8 +160,7 @@ namespace StrongInject.Generator
                     CreateVariables(
                         ops,
                         variableCreationSource,
-                        _containerScope,
-                        isAsyncContext: isAsync);
+                        _containerScope);
 
                     var disposalSource = new StringBuilder();
                     EmitDisposals(disposalSource, ops);
@@ -288,8 +287,7 @@ namespace StrongInject.Generator
                 CreateVariables(
                     ops,
                     methodSource,
-                    _containerScope,
-                    isAsyncContext: isAsync);
+                    _containerScope);
 
                 methodSource.Append("this.");
                 methodSource.Append(singleInstanceFieldName);
@@ -320,8 +318,7 @@ namespace StrongInject.Generator
         private void CreateVariables(
             ImmutableArray<Operation> operations,
             StringBuilder methodSource,
-            InstanceSourcesScope instanceSourcesScope,
-            bool isAsyncContext)
+            InstanceSourcesScope instanceSourcesScope)
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
@@ -514,8 +511,7 @@ namespace StrongInject.Generator
                         CreateVariables(
                             internalOps,
                             methodSource,
-                            newScope,
-                            isAsyncContext: isAsync);
+                            newScope);
 
                         if (isDisposed)
                         {

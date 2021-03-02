@@ -50,4 +50,3 @@ An `InstancePerResolution` or `InstancePerDependency` instance will be disposed 
 - Else, if it was created as part of a call to `Run`/`RunAsync`, it will be disposed, once the delegate paramater to `Run`/`RunAsync` completes.
 
 - Else, if it was created as part of a call to `Resolve`/`ResolveAsync`, it will be disposed once the returned `IOwned`/`IOwnedAsync` is disposed.
-

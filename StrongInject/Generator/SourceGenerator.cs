@@ -97,12 +97,8 @@ namespace StrongInject.Generator
                     stringBuilder.Append(type.TypeParameters.Length);
                 }
             }
-            stringBuilder.Append(".generated.cs");
+            stringBuilder.Append(".g.cs");
             return stringBuilder.ToString();
-        }
-
-        public void Initialize(GeneratorInitializationContext context)
-        {
         }
 
         private static Diagnostic ModuleNotPublicOrInternal(ITypeSymbol module, Location location)
@@ -117,6 +113,10 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 module);
+        }
+
+        void ISourceGenerator.Initialize(GeneratorInitializationContext context)
+        {
         }
     }
 }
