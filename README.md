@@ -24,7 +24,7 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
       - [Wpf Application](#wpf-application)
     - [Real World Projects Using Stronginject](#real-world-projects-using-stronginject)
   - [Declaring a container](#declaring-a-container)
-  - [Using a container.](#using-a-container)
+  - [Using a container](#using-a-container)
   - [Registration](#registration)
     - [Basics](#basics)
     - [Scope](#scope)
@@ -155,7 +155,7 @@ public class B {}
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
-### Using a container.
+### Using a container
 
 There are two ways to use a container - using the `Run` methods or the `Resolve` methods.
 
