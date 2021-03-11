@@ -3,7 +3,7 @@ name: .NET Core
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
   workflow_dispatch:
     inputs:
@@ -53,7 +53,7 @@ jobs:
       if: github.event.inputs.is_stronginject_extensions_dependencyinjection_release == 'true'
     
     - name: Push
-      if: ${{ success() && github.ref == 'refs/heads/master' }}
+      if: ${{ success() && github.ref == 'refs/heads/main' }}
       run: |
         dotnet nuget push 'out/*.nupkg' -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
       

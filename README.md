@@ -119,10 +119,10 @@ The [wiki](https://github.com/YairHalberstadt/stronginject/wiki) is currently a 
 
 Check out these sample projects to help you get started:
 
-##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/AspNetCore)
-##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Console)
-##### [Xamarin Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Xamarin)
-##### [Wpf Application](https://github.com/YairHalberstadt/stronginject/tree/master/Samples/Wpf)
+##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/AspNetCore)
+##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/Console)
+##### [Xamarin Application](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/Xamarin)
+##### [Wpf Application](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/Wpf)
 
 #### Real World Projects Using Stronginject
 
