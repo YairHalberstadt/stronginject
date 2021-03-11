@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Operations;
+﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -87,13 +87,13 @@ namespace StrongInject.Generator.Visitors
             }
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
             {
-                var name = GenerateName(state);
+                var name = GenerateName(source, state);
                 var isAsync = RequiresAsyncVisitor.RequiresAsync(source, _containerScope);
                 var statement = new SingleInstanceReferenceStatement(name, source, isAsync);
                 Operation targetOperation;
                 if (isAsync)
                 {
-                    var awaitVariableName = GenerateName(state);
+                    var awaitVariableName = GenerateName(source, state);
                     var awaitStatement = new AwaitStatement(awaitVariableName, name, source.OfType);
                     var referenceOperation = CreateOperation(statement, state.Name, _emptyList, awaitStatement);
                     _order.Add(referenceOperation);
@@ -119,14 +119,14 @@ namespace StrongInject.Generator.Visitors
             return true;
         }
 
-        private string GenerateName(State state)
+        private string GenerateName(InstanceSource source, State state)
         {
-            return "_" + state.InstanceSourcesScope.Depth + "_" + _variableCount++;
+            return source.OfType.ToLowerCaseIdentifier("") + "_" + state.InstanceSourcesScope.Depth + "_" + _variableCount++;
         }
 
         protected override void UpdateState(InstanceSource source, ref State state)
         {
-            state.Name = GenerateName(state);
+            state.Name = GenerateName(source, state);
             state.Dependencies.Add((state.Name, source));
             state.Dependencies = new();
             state.OperationDependencies = new();
@@ -179,7 +179,7 @@ namespace StrongInject.Generator.Visitors
                         state.OperationDependencies);
                     _order.Add(operation);
 
-                    var initializationTaskVariableName = source.IsAsync ? GenerateName(state) : null;
+                    var initializationTaskVariableName = source.IsAsync ? GenerateName(source, state) : null;
 
                     if (initializationTaskVariableName is not null)
                     {
@@ -197,7 +197,7 @@ namespace StrongInject.Generator.Visitors
                 }
                 else if (source.IsAsync)
                 {
-                    var taskVariableName = GenerateName(state);
+                    var taskVariableName = GenerateName(source, state);
                     var awaitStatement = new AwaitStatement(VariableName: state.Name, VariableToAwaitName: taskVariableName, Type: source.OfType);
                     var operation = CreateOperation(
                         new DependencyCreationStatement(

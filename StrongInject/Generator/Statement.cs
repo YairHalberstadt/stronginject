@@ -21,7 +21,7 @@ namespace StrongInject.Generator
     internal sealed record InitializationStatement(string? VariableName, string VariableToInitializeName, bool IsAsync) : Statement;
     internal sealed record AwaitStatement(string? VariableName, string VariableToAwaitName, ITypeSymbol? Type) : Statement
     {
-        public string HasAwaitStartedVariableName { get; } = "hasAwaitStarted" + VariableToAwaitName;
-        public string HasAwaitCompletedVariableName { get; } = "hasAwaitCompleted" + VariableToAwaitName;
+        public string HasAwaitStartedVariableName { get; } = "hasAwaitStarted_" + VariableToAwaitName;
+        public string HasAwaitCompletedVariableName { get; } = "hasAwaitCompleted_" + VariableToAwaitName;
     }
 }

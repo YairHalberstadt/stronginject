@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StrongInject.Generator.Visitors;
 using System;
@@ -246,8 +247,9 @@ namespace StrongInject.Generator
                 };
 
                 var index = _singleInstanceMethods.Count;
-                var singleInstanceFieldName = "_singleInstanceField" + index;
-                var name = "GetSingleInstanceField" + index;
+
+                var singleInstanceFieldName = "_" + type.ToLowerCaseIdentifier("singleInstance") + "Field" + index;
+                var name = "Get" + type.ToIdentifier("SingleInstance") + "Field" + index;
                 var disposeFieldName = "_disposeAction" + index;
                 var lockName = "_lock" + index;
                 singleInstanceMethod = (name, disposeFieldName, lockName);

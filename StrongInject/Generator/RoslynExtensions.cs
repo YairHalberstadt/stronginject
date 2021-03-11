@@ -1,10 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace StrongInject.Generator
@@ -346,6 +349,27 @@ namespace StrongInject.Generator
 
                 default:
                     return false;
+            }
+        }
+
+        public static string ToIdentifier(this ITypeSymbol type, string defaultIfInvalidIdentifier)
+        {
+            var name = type.Name;
+            return SyntaxFacts.IsValidIdentifier(name) ? name : defaultIfInvalidIdentifier;
+        }
+
+        public static string ToLowerCaseIdentifier(this ITypeSymbol type, string defaultIfInvalidIdentifier)
+        {
+            var name = type.Name;
+            if (SyntaxFacts.IsValidIdentifier(name))
+            {
+                var array = name.ToCharArray();
+                array[0] = char.ToLowerInvariant(array[0]);
+                return new string(array);
+            }
+            else
+            {
+                return defaultIfInvalidIdentifier;
             }
         }
     }
