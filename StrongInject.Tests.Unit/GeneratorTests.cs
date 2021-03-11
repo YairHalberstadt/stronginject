@@ -1675,16 +1675,16 @@ partial class Container
         }
     }
 
-    private global::A _singleInstanceField0;
+    private global::A _aField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::D _singleInstanceField1;
+    private global::D _dField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private global::D GetSingleInstanceField1()
+    private global::D GetDField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_dField1, null))
+            return _dField1;
         this._lock1.Wait();
         try
         {
@@ -1694,7 +1694,7 @@ partial class Container
             global::D d_0_0;
             c_0_1 = new global::C();
             d_0_0 = new global::D(c: c_0_1);
-            this._singleInstanceField1 = d_0_0;
+            this._dField1 = d_0_0;
             this._disposeAction1 = async () =>
             {
             };
@@ -1704,13 +1704,13 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _dField1;
     }
 
-    private global::A GetSingleInstanceField0()
+    private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
         this._lock0.Wait();
         try
         {
@@ -1721,10 +1721,10 @@ partial class Container
             global::B b_0_1;
             global::A a_0_0;
             c_0_2 = new global::C();
-            d_0_3 = GetSingleInstanceField1();
+            d_0_3 = GetDField1();
             b_0_1 = new global::B(c: c_0_2, d: d_0_3);
             a_0_0 = new global::A(b: b_0_1, c: c_0_2);
-            this._singleInstanceField0 = a_0_0;
+            this._aField0 = a_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -1734,7 +1734,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _aField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1742,7 +1742,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::A a_0_0;
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         TResult result;
         try
         {
@@ -1760,7 +1760,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::A a_0_0;
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         return new global::StrongInject.AsyncOwned<global::A>(a_0_0, async () =>
         {
         });
@@ -1822,13 +1822,13 @@ partial class Container
         }
     }
 
-    private global::C _singleInstanceField0;
+    private global::C _cField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::C GetSingleInstanceField0()
+    private global::C GetCField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_cField0, null))
+            return _cField0;
         this._lock0.Wait();
         try
         {
@@ -1836,7 +1836,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
-            this._singleInstanceField0 = c_0_0;
+            this._cField0 = c_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -1846,7 +1846,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _cField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -1858,7 +1858,7 @@ partial class Container
         global::D d_0_4;
         global::B b_0_1;
         global::A a_0_0;
-        c_0_3 = GetSingleInstanceField0();
+        c_0_3 = GetCField0();
         iC_0_2 = (global::IC)c_0_3;
         d_0_4 = new global::D(c: c_0_3);
         b_0_1 = new global::B(c: iC_0_2, d: d_0_4);
@@ -1884,7 +1884,7 @@ partial class Container
         global::D d_0_4;
         global::B b_0_1;
         global::A a_0_0;
-        c_0_3 = GetSingleInstanceField0();
+        c_0_3 = GetCField0();
         iC_0_2 = (global::IC)c_0_3;
         d_0_4 = new global::D(c: c_0_3);
         b_0_1 = new global::B(c: iC_0_2, d: d_0_4);
@@ -1967,16 +1967,16 @@ partial class Container
         }
     }
 
-    private global::A _singleInstanceField0;
+    private global::A _aField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::C _singleInstanceField1;
+    private global::C _cField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private async global::System.Threading.Tasks.ValueTask<global::C> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::C> GetCField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_cField1, null))
+            return _cField1;
         await this._lock1.WaitAsync();
         try
         {
@@ -2002,7 +2002,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField1 = c_0_0;
+            this._cField1 = c_0_0;
             this._disposeAction1 = async () =>
             {
             };
@@ -2012,13 +2012,13 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _cField1;
     }
 
-    private async global::System.Threading.Tasks.ValueTask<global::A> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::A> GetAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
         await this._lock0.WaitAsync();
         try
         {
@@ -2034,7 +2034,7 @@ partial class Container
             global::A a_0_0;
             global::System.Threading.Tasks.ValueTask a_0_6;
             var hasAwaitStarted_a_0_6 = false;
-            c_0_2 = GetSingleInstanceField1();
+            c_0_2 = GetCField1();
             try
             {
                 hasAwaitStarted_c_0_2 = true;
@@ -2083,7 +2083,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = a_0_0;
+            this._aField0 = a_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -2093,7 +2093,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _aField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -2103,7 +2103,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> a_0_0;
         var hasAwaitStarted_a_0_0 = false;
         var a_0_1 = default(global::A);
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         try
         {
             hasAwaitStarted_a_0_0 = true;
@@ -2138,7 +2138,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> a_0_0;
         var hasAwaitStarted_a_0_0 = false;
         var a_0_1 = default(global::A);
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         try
         {
             hasAwaitStarted_a_0_0 = true;
@@ -2259,22 +2259,22 @@ partial class Container
         }
     }
 
-    private global::A _singleInstanceField0;
+    private global::A _aField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::BFactoryTarget _singleInstanceField1;
+    private global::BFactoryTarget _bFactoryTargetField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private global::B _singleInstanceField2;
+    private global::B _bField2;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction2;
-    private global::CFactoryTarget _singleInstanceField3;
+    private global::CFactoryTarget _cFactoryTargetField3;
     private global::System.Threading.SemaphoreSlim _lock3 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction3;
-    private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetSingleInstanceField3()
+    private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetCFactoryTargetField3()
     {
-        if (!object.ReferenceEquals(_singleInstanceField3, null))
-            return _singleInstanceField3;
+        if (!object.ReferenceEquals(_cFactoryTargetField3, null))
+            return _cFactoryTargetField3;
         await this._lock3.WaitAsync();
         try
         {
@@ -2310,7 +2310,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField3 = cFactoryTarget_0_0;
+            this._cFactoryTargetField3 = cFactoryTarget_0_0;
             this._disposeAction3 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(cFactoryTarget_0_0);
@@ -2321,13 +2321,13 @@ partial class Container
             this._lock3.Release();
         }
 
-        return _singleInstanceField3;
+        return _cFactoryTargetField3;
     }
 
-    private async global::System.Threading.Tasks.ValueTask<global::B> GetSingleInstanceField2()
+    private async global::System.Threading.Tasks.ValueTask<global::B> GetBField2()
     {
-        if (!object.ReferenceEquals(_singleInstanceField2, null))
-            return _singleInstanceField2;
+        if (!object.ReferenceEquals(_bField2, null))
+            return _bField2;
         await this._lock2.WaitAsync();
         try
         {
@@ -2344,7 +2344,7 @@ partial class Container
             var dFactoryTarget_0_2 = default(global::DFactoryTarget);
             var hasAwaitCompleted_dFactoryTarget_0_7 = false;
             global::B b_0_0;
-            cFactoryTarget_0_5 = GetSingleInstanceField3();
+            cFactoryTarget_0_5 = GetCFactoryTargetField3();
             try
             {
                 c_0_1 = new global::C();
@@ -2385,7 +2385,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField2 = b_0_0;
+            this._bField2 = b_0_0;
             this._disposeAction2 = async () =>
             {
                 await iAsyncFactory_0_3.ReleaseAsync(dFactoryTarget_0_2);
@@ -2396,13 +2396,13 @@ partial class Container
             this._lock2.Release();
         }
 
-        return _singleInstanceField2;
+        return _bField2;
     }
 
-    private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetBFactoryTargetField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_bFactoryTargetField1, null))
+            return _bFactoryTargetField1;
         await this._lock1.WaitAsync();
         try
         {
@@ -2416,7 +2416,7 @@ partial class Container
             var hasAwaitStarted_bFactoryTarget_0_4 = false;
             var bFactoryTarget_0_0 = default(global::BFactoryTarget);
             var hasAwaitCompleted_bFactoryTarget_0_4 = false;
-            b_0_2 = GetSingleInstanceField2();
+            b_0_2 = GetBField2();
             try
             {
                 hasAwaitStarted_b_0_2 = true;
@@ -2454,7 +2454,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField1 = bFactoryTarget_0_0;
+            this._bFactoryTargetField1 = bFactoryTarget_0_0;
             this._disposeAction1 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(bFactoryTarget_0_0);
@@ -2465,13 +2465,13 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _bFactoryTargetField1;
     }
 
-    private async global::System.Threading.Tasks.ValueTask<global::A> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::A> GetAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
         await this._lock0.WaitAsync();
         try
         {
@@ -2484,10 +2484,10 @@ partial class Container
             var hasAwaitStarted_cFactoryTarget_0_3 = false;
             var cFactoryTarget_0_4 = default(global::CFactoryTarget);
             global::A a_0_0;
-            bFactoryTarget_0_1 = GetSingleInstanceField1();
+            bFactoryTarget_0_1 = GetBFactoryTargetField1();
             try
             {
-                cFactoryTarget_0_3 = GetSingleInstanceField3();
+                cFactoryTarget_0_3 = GetCFactoryTargetField3();
                 try
                 {
                     hasAwaitStarted_bFactoryTarget_0_1 = true;
@@ -2516,7 +2516,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = a_0_0;
+            this._aField0 = a_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -2526,7 +2526,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _aField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::AFactoryTarget>.RunAsync<TResult, TParam>(global::System.Func<global::AFactoryTarget, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -2541,7 +2541,7 @@ partial class Container
         var hasAwaitStarted_aFactoryTarget_0_4 = false;
         var aFactoryTarget_0_0 = default(global::AFactoryTarget);
         var hasAwaitCompleted_aFactoryTarget_0_4 = false;
-        a_0_2 = GetSingleInstanceField0();
+        a_0_2 = GetAField0();
         try
         {
             hasAwaitStarted_a_0_2 = true;
@@ -2604,7 +2604,7 @@ partial class Container
         var hasAwaitStarted_aFactoryTarget_0_4 = false;
         var aFactoryTarget_0_0 = default(global::AFactoryTarget);
         var hasAwaitCompleted_aFactoryTarget_0_4 = false;
-        a_0_2 = GetSingleInstanceField0();
+        a_0_2 = GetAField0();
         try
         {
             hasAwaitStarted_a_0_2 = true;
@@ -2704,13 +2704,13 @@ partial class Container
         }
     }
 
-    private global::C _singleInstanceField0;
+    private global::C _cField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::C GetSingleInstanceField0()
+    private global::C GetCField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_cField0, null))
+            return _cField0;
         this._lock0.Wait();
         try
         {
@@ -2718,7 +2718,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
-            this._singleInstanceField0 = c_0_0;
+            this._cField0 = c_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -2728,7 +2728,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _cField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -2738,7 +2738,7 @@ partial class Container
         global::C c_0_2;
         global::IC iC_0_1;
         global::A a_0_0;
-        c_0_2 = GetSingleInstanceField0();
+        c_0_2 = GetCField0();
         iC_0_1 = (global::IC)c_0_2;
         a_0_0 = new global::A(c: iC_0_1);
         TResult result;
@@ -2760,7 +2760,7 @@ partial class Container
         global::C c_0_2;
         global::IC iC_0_1;
         global::A a_0_0;
-        c_0_2 = GetSingleInstanceField0();
+        c_0_2 = GetCField0();
         iC_0_1 = (global::IC)c_0_2;
         a_0_0 = new global::A(c: iC_0_1);
         return new global::StrongInject.AsyncOwned<global::A>(a_0_0, async () =>
@@ -2775,7 +2775,7 @@ partial class Container
         global::C c_0_1;
         global::D d_0_2;
         global::B b_0_0;
-        c_0_1 = GetSingleInstanceField0();
+        c_0_1 = GetCField0();
         d_0_2 = new global::D(c: c_0_1);
         b_0_0 = new global::B(c: c_0_1, d: d_0_2);
         TResult result;
@@ -2797,7 +2797,7 @@ partial class Container
         global::C c_0_1;
         global::D d_0_2;
         global::B b_0_0;
-        c_0_1 = GetSingleInstanceField0();
+        c_0_1 = GetCField0();
         d_0_2 = new global::D(c: c_0_1);
         b_0_0 = new global::B(c: c_0_1, d: d_0_2);
         return new global::StrongInject.AsyncOwned<global::B>(b_0_0, async () =>
@@ -3046,19 +3046,19 @@ partial class Container
         }
     }
 
-    private global::BFactoryTarget _singleInstanceField0;
+    private global::BFactoryTarget _bFactoryTargetField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::B _singleInstanceField1;
+    private global::B _bField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private global::CFactoryTarget _singleInstanceField2;
+    private global::CFactoryTarget _cFactoryTargetField2;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction2;
-    private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetSingleInstanceField2()
+    private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetCFactoryTargetField2()
     {
-        if (!object.ReferenceEquals(_singleInstanceField2, null))
-            return _singleInstanceField2;
+        if (!object.ReferenceEquals(_cFactoryTargetField2, null))
+            return _cFactoryTargetField2;
         await this._lock2.WaitAsync();
         try
         {
@@ -3094,7 +3094,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField2 = cFactoryTarget_0_0;
+            this._cFactoryTargetField2 = cFactoryTarget_0_0;
             this._disposeAction2 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(cFactoryTarget_0_0);
@@ -3105,13 +3105,13 @@ partial class Container
             this._lock2.Release();
         }
 
-        return _singleInstanceField2;
+        return _cFactoryTargetField2;
     }
 
-    private async global::System.Threading.Tasks.ValueTask<global::B> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::B> GetBField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_bField1, null))
+            return _bField1;
         await this._lock1.WaitAsync();
         try
         {
@@ -3128,7 +3128,7 @@ partial class Container
             var dFactoryTarget_0_2 = default(global::DFactoryTarget);
             var hasAwaitCompleted_dFactoryTarget_0_7 = false;
             global::B b_0_0;
-            cFactoryTarget_0_5 = GetSingleInstanceField2();
+            cFactoryTarget_0_5 = GetCFactoryTargetField2();
             try
             {
                 c_0_1 = new global::C();
@@ -3169,7 +3169,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField1 = b_0_0;
+            this._bField1 = b_0_0;
             this._disposeAction1 = async () =>
             {
                 ((global::System.IDisposable)b_0_0).Dispose();
@@ -3181,13 +3181,13 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _bField1;
     }
 
-    private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetBFactoryTargetField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bFactoryTargetField0, null))
+            return _bFactoryTargetField0;
         await this._lock0.WaitAsync();
         try
         {
@@ -3201,7 +3201,7 @@ partial class Container
             var hasAwaitStarted_bFactoryTarget_0_4 = false;
             var bFactoryTarget_0_0 = default(global::BFactoryTarget);
             var hasAwaitCompleted_bFactoryTarget_0_4 = false;
-            b_0_2 = GetSingleInstanceField1();
+            b_0_2 = GetBField1();
             try
             {
                 hasAwaitStarted_b_0_2 = true;
@@ -3239,7 +3239,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = bFactoryTarget_0_0;
+            this._bFactoryTargetField0 = bFactoryTarget_0_0;
             this._disposeAction0 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(bFactoryTarget_0_0);
@@ -3250,16 +3250,16 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bFactoryTargetField0;
     }
 
-    private global::I _singleInstanceField3;
+    private global::I _iField3;
     private global::System.Threading.SemaphoreSlim _lock3 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction3;
-    private async global::System.Threading.Tasks.ValueTask<global::I> GetSingleInstanceField3()
+    private async global::System.Threading.Tasks.ValueTask<global::I> GetIField3()
     {
-        if (!object.ReferenceEquals(_singleInstanceField3, null))
-            return _singleInstanceField3;
+        if (!object.ReferenceEquals(_iField3, null))
+            return _iField3;
         await this._lock3.WaitAsync();
         try
         {
@@ -3295,7 +3295,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField3 = i_0_0;
+            this._iField3 = i_0_0;
             this._disposeAction3 = async () =>
             {
                 ((global::System.IDisposable)i_0_0).Dispose();
@@ -3307,7 +3307,7 @@ partial class Container
             this._lock3.Release();
         }
 
-        return _singleInstanceField3;
+        return _iField3;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::AFactoryTarget>.RunAsync<TResult, TParam>(global::System.Func<global::AFactoryTarget, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -3338,13 +3338,13 @@ partial class Container
         var hasAwaitStarted_aFactoryTarget_0_16 = false;
         var aFactoryTarget_0_0 = default(global::AFactoryTarget);
         var hasAwaitCompleted_aFactoryTarget_0_16 = false;
-        bFactoryTarget_0_3 = GetSingleInstanceField0();
+        bFactoryTarget_0_3 = GetBFactoryTargetField0();
         try
         {
-            cFactoryTarget_0_5 = GetSingleInstanceField2();
+            cFactoryTarget_0_5 = GetCFactoryTargetField2();
             try
             {
-                i_0_11 = GetSingleInstanceField3();
+                i_0_11 = GetIField3();
                 try
                 {
                     iAsyncFactory_0_14 = this._factory;
@@ -3502,13 +3502,13 @@ partial class Container
         var hasAwaitStarted_aFactoryTarget_0_16 = false;
         var aFactoryTarget_0_0 = default(global::AFactoryTarget);
         var hasAwaitCompleted_aFactoryTarget_0_16 = false;
-        bFactoryTarget_0_3 = GetSingleInstanceField0();
+        bFactoryTarget_0_3 = GetBFactoryTargetField0();
         try
         {
-            cFactoryTarget_0_5 = GetSingleInstanceField2();
+            cFactoryTarget_0_5 = GetCFactoryTargetField2();
             try
             {
-                i_0_11 = GetSingleInstanceField3();
+                i_0_11 = GetIField3();
                 try
                 {
                     iAsyncFactory_0_14 = this._factory;
@@ -4703,13 +4703,13 @@ partial class Container
         }
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
@@ -4717,7 +4717,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
-            this._singleInstanceField0 = b_0_0;
+            this._bField0 = b_0_0;
             this._disposeAction0 = () =>
             {
             };
@@ -4727,7 +4727,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
@@ -4736,7 +4736,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         TResult result;
         try
@@ -4756,7 +4756,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         return new global::StrongInject.Owned<global::A>(a_0_0, () =>
         {
@@ -4825,13 +4825,13 @@ partial class Container
         throw new global::StrongInject.StrongInjectException(""This container requires async disposal"");
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
@@ -4839,7 +4839,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
-            this._singleInstanceField0 = b_0_0;
+            this._bField0 = b_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -4849,7 +4849,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
@@ -4858,7 +4858,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         TResult result;
         try
@@ -4878,20 +4878,20 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         return new global::StrongInject.Owned<global::A>(a_0_0, () =>
         {
         });
     }
 
-    private global::D _singleInstanceField1;
+    private global::D _dField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private async global::System.Threading.Tasks.ValueTask<global::D> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::D> GetDField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_dField1, null))
+            return _dField1;
         await this._lock1.WaitAsync();
         try
         {
@@ -4917,7 +4917,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField1 = d_0_0;
+            this._dField1 = d_0_0;
             this._disposeAction1 = async () =>
             {
             };
@@ -4927,7 +4927,7 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _dField1;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -4941,10 +4941,10 @@ partial class Container
         global::C c_0_0;
         global::System.Threading.Tasks.ValueTask c_0_4;
         var hasAwaitStarted_c_0_4 = false;
-        d_0_2 = GetSingleInstanceField1();
+        d_0_2 = GetDField1();
         try
         {
-            b_0_1 = GetSingleInstanceField0();
+            b_0_1 = GetBField0();
             hasAwaitStarted_d_0_2 = true;
             d_0_3 = await d_0_2;
             c_0_0 = new global::C(b: b_0_1, d: d_0_3);
@@ -4997,10 +4997,10 @@ partial class Container
         global::C c_0_0;
         global::System.Threading.Tasks.ValueTask c_0_4;
         var hasAwaitStarted_c_0_4 = false;
-        d_0_2 = GetSingleInstanceField1();
+        d_0_2 = GetDField1();
         try
         {
-            b_0_1 = GetSingleInstanceField0();
+            b_0_1 = GetBField0();
             hasAwaitStarted_d_0_2 = true;
             d_0_3 = await d_0_2;
             c_0_0 = new global::C(b: b_0_1, d: d_0_3);
@@ -5078,13 +5078,13 @@ partial class Container
         }
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
@@ -5092,7 +5092,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
-            this._singleInstanceField0 = b_0_0;
+            this._bField0 = b_0_0;
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)b_0_0).Dispose();
@@ -5103,7 +5103,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
@@ -5112,7 +5112,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         TResult result;
         try
@@ -5132,7 +5132,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         return new global::StrongInject.Owned<global::A>(a_0_0, () =>
         {
@@ -5194,16 +5194,16 @@ partial class Container
         }
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::C _singleInstanceField1;
+    private global::C _cField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction1;
-    private global::C GetSingleInstanceField1()
+    private global::C GetCField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_cField1, null))
+            return _cField1;
         this._lock1.Wait();
         try
         {
@@ -5211,7 +5211,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
-            this._singleInstanceField1 = c_0_0;
+            this._cField1 = c_0_0;
             this._disposeAction1 = () =>
             {
                 ((global::System.IDisposable)c_0_0).Dispose();
@@ -5222,13 +5222,13 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _cField1;
     }
 
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
@@ -5236,9 +5236,9 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_1;
             global::B b_0_0;
-            c_0_1 = GetSingleInstanceField1();
+            c_0_1 = GetCField1();
             b_0_0 = new global::B(c: c_0_1);
-            this._singleInstanceField0 = b_0_0;
+            this._bField0 = b_0_0;
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)b_0_0).Dispose();
@@ -5249,7 +5249,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
@@ -5258,7 +5258,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         TResult result;
         try
@@ -5278,7 +5278,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         a_0_0 = new global::A(b: b_0_1);
         return new global::StrongInject.Owned<global::A>(a_0_0, () =>
         {
@@ -5330,13 +5330,13 @@ partial class Container
         }
     }
 
-    private global::C _singleInstanceField0;
+    private global::C _cField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::C GetSingleInstanceField0()
+    private global::C GetCField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_cField0, null))
+            return _cField0;
         this._lock0.Wait();
         try
         {
@@ -5344,7 +5344,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
-            this._singleInstanceField0 = c_0_0;
+            this._cField0 = c_0_0;
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)c_0_0).Dispose();
@@ -5355,7 +5355,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _cField0;
     }
 
     TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
@@ -5363,7 +5363,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::C c_0_0;
-        c_0_0 = GetSingleInstanceField0();
+        c_0_0 = GetCField0();
         TResult result;
         try
         {
@@ -5381,7 +5381,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::C c_0_0;
-        c_0_0 = GetSingleInstanceField0();
+        c_0_0 = GetCField0();
         return new global::StrongInject.Owned<global::C>(c_0_0, () =>
         {
         });
@@ -6542,13 +6542,13 @@ partial class Container
         }
     }
 
-    private global::A _singleInstanceField0;
+    private global::A _aField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::A GetSingleInstanceField0()
+    private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
         this._lock0.Wait();
         try
         {
@@ -6558,7 +6558,7 @@ partial class Container
             global::A a_0_0;
             b_0_1 = new global::B();
             a_0_0 = new global::A(b: b_0_1);
-            this._singleInstanceField0 = a_0_0;
+            this._aField0 = a_0_0;
             this._disposeAction0 = () =>
             {
             };
@@ -6568,7 +6568,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _aField0;
     }
 
     TResult global::StrongInject.IContainer<global::System.Func<global::B, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::B, global::A>, TParam, TResult> func, TParam param)
@@ -6579,7 +6579,7 @@ partial class Container
         func_0_0 = (param0_0) =>
         {
             global::A a_1_0;
-            a_1_0 = GetSingleInstanceField0();
+            a_1_0 = GetAField0();
             return a_1_0;
         };
         TResult result;
@@ -6602,7 +6602,7 @@ partial class Container
         func_0_0 = (param0_0) =>
         {
             global::A a_1_0;
-            a_1_0 = GetSingleInstanceField0();
+            a_1_0 = GetAField0();
             return a_1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(func_0_0, () =>
@@ -7332,13 +7332,13 @@ partial class Container
         }
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
@@ -7371,7 +7371,7 @@ partial class Container
                 return a_1_0;
             };
             b_0_0 = new global::B(d: del_0_1);
-            this._singleInstanceField0 = b_0_0;
+            this._bField0 = b_0_0;
             this._disposeAction0 = () =>
             {
             };
@@ -7381,7 +7381,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
@@ -7389,7 +7389,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_0;
-        b_0_0 = GetSingleInstanceField0();
+        b_0_0 = GetBField0();
         TResult result;
         try
         {
@@ -7407,7 +7407,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_0;
-        b_0_0 = GetSingleInstanceField0();
+        b_0_0 = GetBField0();
         return new global::StrongInject.Owned<global::B>(b_0_0, () =>
         {
         });
@@ -7798,13 +7798,13 @@ partial class Container
         }
     }
 
-    private global::A _singleInstanceField0;
+    private global::A _aField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::A GetSingleInstanceField0()
+    private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
         this._lock0.Wait();
         try
         {
@@ -7814,7 +7814,7 @@ partial class Container
             global::A a_0_0;
             b_0_1 = new global::B();
             a_0_0 = global::Module.M(b: b_0_1);
-            this._singleInstanceField0 = a_0_0;
+            this._aField0 = a_0_0;
             this._disposeAction0 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(a_0_0);
@@ -7825,7 +7825,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _aField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -7833,7 +7833,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::A a_0_0;
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         TResult result;
         try
         {
@@ -7851,7 +7851,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::A a_0_0;
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         return new global::StrongInject.AsyncOwned<global::A>(a_0_0, async () =>
         {
         });
@@ -8876,13 +8876,13 @@ partial class Container
         }
     }
 
-    private global::A _singleInstanceField0;
+    private global::A _aField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private async global::System.Threading.Tasks.ValueTask<global::A> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::A> GetAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
         await this._lock0.WaitAsync();
         try
         {
@@ -8910,7 +8910,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = a_0_0;
+            this._aField0 = a_0_0;
             this._disposeAction0 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(a_0_0);
@@ -8921,7 +8921,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _aField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -8931,7 +8931,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> a_0_0;
         var hasAwaitStarted_a_0_0 = false;
         var a_0_1 = default(global::A);
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         try
         {
             hasAwaitStarted_a_0_0 = true;
@@ -8966,7 +8966,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::A> a_0_0;
         var hasAwaitStarted_a_0_0 = false;
         var a_0_1 = default(global::A);
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         try
         {
             hasAwaitStarted_a_0_0 = true;
@@ -10063,21 +10063,21 @@ partial class Container
         }
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
-            global::B _B_0_0;
-            _B_0_0 = new global::B();
-            this._singleInstanceField0 = _B_0_0;
+            global::B b_0_0;
+            b_0_0 = new global::B();
+            this._bField0 = b_0_0;
             this._disposeAction0 = () =>
             {
             };
@@ -10087,59 +10087,59 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::IA[]>.Run<TResult, TParam>(global::System.Func<global::IA[], TParam, TResult> func, TParam param)
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::IAFactory _IAFactory_0_3;
-        global::StrongInject.IFactory<global::IA> _IFactory_0_2;
-        global::IA _IA_0_1;
-        global::B _B_0_5;
-        global::IA _IA_0_4;
-        global::IA _IA_0_6;
-        global::IA _IA_0_7;
-        global::A _A_0_9;
-        global::IA _IA_0_8;
-        global::IA[] __0_0;
-        _IAFactory_0_3 = new global::IAFactory();
-        _IFactory_0_2 = (global::StrongInject.IFactory<global::IA>)_IAFactory_0_3;
-        _IA_0_1 = _IFactory_0_2.Create();
+        global::IAFactory iAFactory_0_3;
+        global::StrongInject.IFactory<global::IA> iFactory_0_2;
+        global::IA iA_0_1;
+        global::B b_0_5;
+        global::IA iA_0_4;
+        global::IA iA_0_6;
+        global::IA iA_0_7;
+        global::A a_0_9;
+        global::IA iA_0_8;
+        global::IA[] _0_0;
+        iAFactory_0_3 = new global::IAFactory();
+        iFactory_0_2 = (global::StrongInject.IFactory<global::IA>)iAFactory_0_3;
+        iA_0_1 = iFactory_0_2.Create();
         try
         {
-            _B_0_5 = GetSingleInstanceField0();
-            _IA_0_4 = (global::IA)_B_0_5;
-            _IA_0_6 = global::Module.FactoryOfA();
+            b_0_5 = GetBField0();
+            iA_0_4 = (global::IA)b_0_5;
+            iA_0_6 = global::Module.FactoryOfA();
             try
             {
-                _IA_0_7 = this.AInstance;
-                _A_0_9 = new global::A();
-                _IA_0_8 = (global::IA)_A_0_9;
-                __0_0 = new global::IA[]{(global::IA)_IA_0_1, (global::IA)_IA_0_4, (global::IA)_IA_0_6, (global::IA)_IA_0_7, (global::IA)_IA_0_8, };
+                iA_0_7 = this.AInstance;
+                a_0_9 = new global::A();
+                iA_0_8 = (global::IA)a_0_9;
+                _0_0 = new global::IA[]{(global::IA)iA_0_1, (global::IA)iA_0_4, (global::IA)iA_0_6, (global::IA)iA_0_7, (global::IA)iA_0_8, };
             }
             catch
             {
-                global::StrongInject.Helpers.Dispose(_IA_0_6);
+                global::StrongInject.Helpers.Dispose(iA_0_6);
                 throw;
             }
         }
         catch
         {
-            _IFactory_0_2.Release(_IA_0_1);
+            iFactory_0_2.Release(iA_0_1);
             throw;
         }
 
         TResult result;
         try
         {
-            result = func(__0_0, param);
+            result = func(_0_0, param);
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(_IA_0_6);
-            _IFactory_0_2.Release(_IA_0_1);
+            global::StrongInject.Helpers.Dispose(iA_0_6);
+            iFactory_0_2.Release(iA_0_1);
         }
 
         return result;
@@ -10149,47 +10149,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::IAFactory _IAFactory_0_3;
-        global::StrongInject.IFactory<global::IA> _IFactory_0_2;
-        global::IA _IA_0_1;
-        global::B _B_0_5;
-        global::IA _IA_0_4;
-        global::IA _IA_0_6;
-        global::IA _IA_0_7;
-        global::A _A_0_9;
-        global::IA _IA_0_8;
-        global::IA[] __0_0;
-        _IAFactory_0_3 = new global::IAFactory();
-        _IFactory_0_2 = (global::StrongInject.IFactory<global::IA>)_IAFactory_0_3;
-        _IA_0_1 = _IFactory_0_2.Create();
+        global::IAFactory iAFactory_0_3;
+        global::StrongInject.IFactory<global::IA> iFactory_0_2;
+        global::IA iA_0_1;
+        global::B b_0_5;
+        global::IA iA_0_4;
+        global::IA iA_0_6;
+        global::IA iA_0_7;
+        global::A a_0_9;
+        global::IA iA_0_8;
+        global::IA[] _0_0;
+        iAFactory_0_3 = new global::IAFactory();
+        iFactory_0_2 = (global::StrongInject.IFactory<global::IA>)iAFactory_0_3;
+        iA_0_1 = iFactory_0_2.Create();
         try
         {
-            _B_0_5 = GetSingleInstanceField0();
-            _IA_0_4 = (global::IA)_B_0_5;
-            _IA_0_6 = global::Module.FactoryOfA();
+            b_0_5 = GetBField0();
+            iA_0_4 = (global::IA)b_0_5;
+            iA_0_6 = global::Module.FactoryOfA();
             try
             {
-                _IA_0_7 = this.AInstance;
-                _A_0_9 = new global::A();
-                _IA_0_8 = (global::IA)_A_0_9;
-                __0_0 = new global::IA[]{(global::IA)_IA_0_1, (global::IA)_IA_0_4, (global::IA)_IA_0_6, (global::IA)_IA_0_7, (global::IA)_IA_0_8, };
+                iA_0_7 = this.AInstance;
+                a_0_9 = new global::A();
+                iA_0_8 = (global::IA)a_0_9;
+                _0_0 = new global::IA[]{(global::IA)iA_0_1, (global::IA)iA_0_4, (global::IA)iA_0_6, (global::IA)iA_0_7, (global::IA)iA_0_8, };
             }
             catch
             {
-                global::StrongInject.Helpers.Dispose(_IA_0_6);
+                global::StrongInject.Helpers.Dispose(iA_0_6);
                 throw;
             }
         }
         catch
         {
-            _IFactory_0_2.Release(_IA_0_1);
+            iFactory_0_2.Release(iA_0_1);
             throw;
         }
 
-        return new global::StrongInject.Owned<global::IA[]>(__0_0, () =>
+        return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(_IA_0_6);
-            _IFactory_0_2.Release(_IA_0_1);
+            global::StrongInject.Helpers.Dispose(iA_0_6);
+            iFactory_0_2.Release(iA_0_1);
         });
     }
 }");
@@ -10237,20 +10237,20 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::A _A_0_2;
-        global::IA _IA_0_1;
-        global::B _B_0_4;
-        global::IA _IA_0_3;
-        global::IA[] __0_0;
-        _A_0_2 = new global::A();
-        _IA_0_1 = (global::IA)_A_0_2;
-        _B_0_4 = new global::B();
-        _IA_0_3 = (global::IA)_B_0_4;
-        __0_0 = new global::IA[]{(global::IA)_IA_0_1, (global::IA)_IA_0_3, };
+        global::A a_0_2;
+        global::IA iA_0_1;
+        global::B b_0_4;
+        global::IA iA_0_3;
+        global::IA[] _0_0;
+        a_0_2 = new global::A();
+        iA_0_1 = (global::IA)a_0_2;
+        b_0_4 = new global::B();
+        iA_0_3 = (global::IA)b_0_4;
+        _0_0 = new global::IA[]{(global::IA)iA_0_1, (global::IA)iA_0_3, };
         TResult result;
         try
         {
-            result = func(__0_0, param);
+            result = func(_0_0, param);
         }
         finally
         {
@@ -10263,17 +10263,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::A _A_0_2;
-        global::IA _IA_0_1;
-        global::B _B_0_4;
-        global::IA _IA_0_3;
-        global::IA[] __0_0;
-        _A_0_2 = new global::A();
-        _IA_0_1 = (global::IA)_A_0_2;
-        _B_0_4 = new global::B();
-        _IA_0_3 = (global::IA)_B_0_4;
-        __0_0 = new global::IA[]{(global::IA)_IA_0_1, (global::IA)_IA_0_3, };
-        return new global::StrongInject.Owned<global::IA[]>(__0_0, () =>
+        global::A a_0_2;
+        global::IA iA_0_1;
+        global::B b_0_4;
+        global::IA iA_0_3;
+        global::IA[] _0_0;
+        a_0_2 = new global::A();
+        iA_0_1 = (global::IA)a_0_2;
+        b_0_4 = new global::B();
+        iA_0_3 = (global::IA)b_0_4;
+        _0_0 = new global::IA[]{(global::IA)iA_0_1, (global::IA)iA_0_3, };
+        return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
         });
     }
@@ -10327,20 +10327,20 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::B _B_0_2;
-        global::IA _IA_0_1;
-        global::A _A_0_4;
-        global::IA _IA_0_3;
-        global::IA[] __0_0;
-        _B_0_2 = new global::B();
-        _IA_0_1 = (global::IA)_B_0_2;
-        _A_0_4 = new global::A();
-        _IA_0_3 = (global::IA)_A_0_4;
-        __0_0 = new global::IA[]{(global::IA)_IA_0_1, (global::IA)_IA_0_3, };
+        global::B b_0_2;
+        global::IA iA_0_1;
+        global::A a_0_4;
+        global::IA iA_0_3;
+        global::IA[] _0_0;
+        b_0_2 = new global::B();
+        iA_0_1 = (global::IA)b_0_2;
+        a_0_4 = new global::A();
+        iA_0_3 = (global::IA)a_0_4;
+        _0_0 = new global::IA[]{(global::IA)iA_0_1, (global::IA)iA_0_3, };
         TResult result;
         try
         {
-            result = func(__0_0, param);
+            result = func(_0_0, param);
         }
         finally
         {
@@ -10353,17 +10353,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::B _B_0_2;
-        global::IA _IA_0_1;
-        global::A _A_0_4;
-        global::IA _IA_0_3;
-        global::IA[] __0_0;
-        _B_0_2 = new global::B();
-        _IA_0_1 = (global::IA)_B_0_2;
-        _A_0_4 = new global::A();
-        _IA_0_3 = (global::IA)_A_0_4;
-        __0_0 = new global::IA[]{(global::IA)_IA_0_1, (global::IA)_IA_0_3, };
-        return new global::StrongInject.Owned<global::IA[]>(__0_0, () =>
+        global::B b_0_2;
+        global::IA iA_0_1;
+        global::A a_0_4;
+        global::IA iA_0_3;
+        global::IA[] _0_0;
+        b_0_2 = new global::B();
+        iA_0_1 = (global::IA)b_0_2;
+        a_0_4 = new global::A();
+        iA_0_3 = (global::IA)a_0_4;
+        _0_0 = new global::IA[]{(global::IA)iA_0_1, (global::IA)iA_0_3, };
+        return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
         });
     }
@@ -10413,12 +10413,12 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::IA[] __0_0;
-        __0_0 = new global::IA[]{};
+        global::IA[] _0_0;
+        _0_0 = new global::IA[]{};
         TResult result;
         try
         {
-            result = func(__0_0, param);
+            result = func(_0_0, param);
         }
         finally
         {
@@ -10431,9 +10431,9 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::IA[] __0_0;
-        __0_0 = new global::IA[]{};
-        return new global::StrongInject.Owned<global::IA[]>(__0_0, () =>
+        global::IA[] _0_0;
+        _0_0 = new global::IA[]{};
+        return new global::StrongInject.Owned<global::IA[]>(_0_0, () =>
         {
         });
     }
@@ -10590,25 +10590,25 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::IA, global::IA[]> _Func_0_0;
-        _Func_0_0 = (param0_0) =>
+        global::System.Func<global::IA, global::IA[]> func_0_0;
+        func_0_0 = (param0_0) =>
         {
-            global::B _B_1_2;
-            global::IA _IA_1_1;
-            global::A _A_1_4;
-            global::IA _IA_1_3;
-            global::IA[] __1_0;
-            _B_1_2 = new global::B();
-            _IA_1_1 = (global::IA)_B_1_2;
-            _A_1_4 = new global::A();
-            _IA_1_3 = (global::IA)_A_1_4;
-            __1_0 = new global::IA[]{(global::IA)_IA_1_1, (global::IA)_IA_1_3, };
-            return __1_0;
+            global::B b_1_2;
+            global::IA iA_1_1;
+            global::A a_1_4;
+            global::IA iA_1_3;
+            global::IA[] _1_0;
+            b_1_2 = new global::B();
+            iA_1_1 = (global::IA)b_1_2;
+            a_1_4 = new global::A();
+            iA_1_3 = (global::IA)a_1_4;
+            _1_0 = new global::IA[]{(global::IA)iA_1_1, (global::IA)iA_1_3, };
+            return _1_0;
         };
         TResult result;
         try
         {
-            result = func(_Func_0_0, param);
+            result = func(func_0_0, param);
         }
         finally
         {
@@ -10621,22 +10621,22 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Func<global::IA, global::IA[]> _Func_0_0;
-        _Func_0_0 = (param0_0) =>
+        global::System.Func<global::IA, global::IA[]> func_0_0;
+        func_0_0 = (param0_0) =>
         {
-            global::B _B_1_2;
-            global::IA _IA_1_1;
-            global::A _A_1_4;
-            global::IA _IA_1_3;
-            global::IA[] __1_0;
-            _B_1_2 = new global::B();
-            _IA_1_1 = (global::IA)_B_1_2;
-            _A_1_4 = new global::A();
-            _IA_1_3 = (global::IA)_A_1_4;
-            __1_0 = new global::IA[]{(global::IA)_IA_1_1, (global::IA)_IA_1_3, };
-            return __1_0;
+            global::B b_1_2;
+            global::IA iA_1_1;
+            global::A a_1_4;
+            global::IA iA_1_3;
+            global::IA[] _1_0;
+            b_1_2 = new global::B();
+            iA_1_1 = (global::IA)b_1_2;
+            a_1_4 = new global::A();
+            iA_1_3 = (global::IA)a_1_4;
+            _1_0 = new global::IA[]{(global::IA)iA_1_1, (global::IA)iA_1_3, };
+            return _1_0;
         };
-        return new global::StrongInject.Owned<global::System.Func<global::IA, global::IA[]>>(_Func_0_0, () =>
+        return new global::StrongInject.Owned<global::System.Func<global::IA, global::IA[]>>(func_0_0, () =>
         {
         });
     }
@@ -10973,16 +10973,16 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        (global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[] __0_0;
-        __0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
+        (global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[] _0_0;
+        _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
         TResult result;
         try
         {
-            result = func(__0_0, param);
+            result = func(_0_0, param);
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(__0_0);
+            global::StrongInject.Helpers.Dispose(_0_0);
         }
 
         return result;
@@ -10992,11 +10992,11 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        (global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[] __0_0;
-        __0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
-        return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]>(__0_0, () =>
+        (global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[] _0_0;
+        _0_0 = this.Resolve<global::System.Int32, global::System.Object, global::System.String>();
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Object, global::System.Int32, global::System.String)[]>(_0_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(__0_0);
+            global::StrongInject.Helpers.Dispose(_0_0);
         });
     }
 }");
@@ -13530,18 +13530,18 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_1;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_2;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_3;
-        (global::System.Int32, global::System.Int32)[] __0_0;
-        _ValueTuple_0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        _ValueTuple_0_2 = global::Module1.M<global::System.Int32>();
-        _ValueTuple_0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        __0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_ValueTuple_0_1, ((global::System.Int32, global::System.Int32))_ValueTuple_0_2, ((global::System.Int32, global::System.Int32))_ValueTuple_0_3, };
+        (global::System.Int32, global::System.Int32) valueTuple_0_1;
+        (global::System.Int32, global::System.Int32) valueTuple_0_2;
+        (global::System.Int32, global::System.Int32) valueTuple_0_3;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        valueTuple_0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        valueTuple_0_2 = global::Module1.M<global::System.Int32>();
+        valueTuple_0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))valueTuple_0_1, ((global::System.Int32, global::System.Int32))valueTuple_0_2, ((global::System.Int32, global::System.Int32))valueTuple_0_3, };
         TResult result;
         try
         {
-            result = func(__0_0, param);
+            result = func(_0_0, param);
         }
         finally
         {
@@ -13554,15 +13554,15 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_1;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_2;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_3;
-        (global::System.Int32, global::System.Int32)[] __0_0;
-        _ValueTuple_0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        _ValueTuple_0_2 = global::Module1.M<global::System.Int32>();
-        _ValueTuple_0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        __0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_ValueTuple_0_1, ((global::System.Int32, global::System.Int32))_ValueTuple_0_2, ((global::System.Int32, global::System.Int32))_ValueTuple_0_3, };
-        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(__0_0, () =>
+        (global::System.Int32, global::System.Int32) valueTuple_0_1;
+        (global::System.Int32, global::System.Int32) valueTuple_0_2;
+        (global::System.Int32, global::System.Int32) valueTuple_0_3;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        valueTuple_0_1 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        valueTuple_0_2 = global::Module1.M<global::System.Int32>();
+        valueTuple_0_3 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))valueTuple_0_1, ((global::System.Int32, global::System.Int32))valueTuple_0_2, ((global::System.Int32, global::System.Int32))valueTuple_0_3, };
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0_0, () =>
         {
         });
     }
@@ -13618,20 +13618,20 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_1;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_2;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_3;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_4;
-        (global::System.Int32, global::System.Int32)[] __0_0;
-        _ValueTuple_0_1 = this.M();
-        _ValueTuple_0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        _ValueTuple_0_3 = global::Module1.M<global::System.Int32>();
-        _ValueTuple_0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        __0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_ValueTuple_0_1, ((global::System.Int32, global::System.Int32))_ValueTuple_0_2, ((global::System.Int32, global::System.Int32))_ValueTuple_0_3, ((global::System.Int32, global::System.Int32))_ValueTuple_0_4, };
+        (global::System.Int32, global::System.Int32) valueTuple_0_1;
+        (global::System.Int32, global::System.Int32) valueTuple_0_2;
+        (global::System.Int32, global::System.Int32) valueTuple_0_3;
+        (global::System.Int32, global::System.Int32) valueTuple_0_4;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        valueTuple_0_1 = this.M();
+        valueTuple_0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        valueTuple_0_3 = global::Module1.M<global::System.Int32>();
+        valueTuple_0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))valueTuple_0_1, ((global::System.Int32, global::System.Int32))valueTuple_0_2, ((global::System.Int32, global::System.Int32))valueTuple_0_3, ((global::System.Int32, global::System.Int32))valueTuple_0_4, };
         TResult result;
         try
         {
-            result = func(__0_0, param);
+            result = func(_0_0, param);
         }
         finally
         {
@@ -13644,17 +13644,17 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_1;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_2;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_3;
-        (global::System.Int32, global::System.Int32) _ValueTuple_0_4;
-        (global::System.Int32, global::System.Int32)[] __0_0;
-        _ValueTuple_0_1 = this.M();
-        _ValueTuple_0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
-        _ValueTuple_0_3 = global::Module1.M<global::System.Int32>();
-        _ValueTuple_0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
-        __0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))_ValueTuple_0_1, ((global::System.Int32, global::System.Int32))_ValueTuple_0_2, ((global::System.Int32, global::System.Int32))_ValueTuple_0_3, ((global::System.Int32, global::System.Int32))_ValueTuple_0_4, };
-        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(__0_0, () =>
+        (global::System.Int32, global::System.Int32) valueTuple_0_1;
+        (global::System.Int32, global::System.Int32) valueTuple_0_2;
+        (global::System.Int32, global::System.Int32) valueTuple_0_3;
+        (global::System.Int32, global::System.Int32) valueTuple_0_4;
+        (global::System.Int32, global::System.Int32)[] _0_0;
+        valueTuple_0_1 = this.M();
+        valueTuple_0_2 = global::Module2.M<global::System.Int32, global::System.Int32>();
+        valueTuple_0_3 = global::Module1.M<global::System.Int32>();
+        valueTuple_0_4 = global::Module3.M<global::System.Int32, global::System.Int32>();
+        _0_0 = new (global::System.Int32, global::System.Int32)[]{((global::System.Int32, global::System.Int32))valueTuple_0_1, ((global::System.Int32, global::System.Int32))valueTuple_0_2, ((global::System.Int32, global::System.Int32))valueTuple_0_3, ((global::System.Int32, global::System.Int32))valueTuple_0_4, };
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.Int32)[]>(_0_0, () =>
         {
         });
     }
@@ -14035,47 +14035,47 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::A _A_0_9;
-        global::A _A_0_8;
-        global::IA _IA_0_7;
-        global::IA _IA_0_6;
-        global::IA[] __0_5;
-        global::IA[] __0_4;
-        global::IA[] __0_3;
-        global::System.Collections.Generic.List<global::IA> _List_0_2;
-        global::B _B_0_11;
-        global::B _B_0_10;
-        global::System.Collections.Generic.List<global::IA> _List_0_1;
-        global::System.Collections.Generic.List<global::IA> _List_0_0;
-        _A_0_9 = new global::A();
-        _A_0_8 = this.Decorator1<global::A>(t: _A_0_9);
-        _IA_0_7 = (global::IA)_A_0_8;
-        _IA_0_6 = this.Decorator1<global::IA>(t: _IA_0_7);
-        __0_5 = new global::IA[]{(global::IA)_IA_0_6, };
-        __0_4 = this.Decorator3<global::IA>(a: __0_5);
-        __0_3 = this.Decorator1<global::IA[]>(t: __0_4);
-        _List_0_2 = this.ListFactory<global::IA>(a: __0_3);
+        global::A a_0_9;
+        global::A a_0_8;
+        global::IA iA_0_7;
+        global::IA iA_0_6;
+        global::IA[] _0_5;
+        global::IA[] _0_4;
+        global::IA[] _0_3;
+        global::System.Collections.Generic.List<global::IA> list_0_2;
+        global::B b_0_11;
+        global::B b_0_10;
+        global::System.Collections.Generic.List<global::IA> list_0_1;
+        global::System.Collections.Generic.List<global::IA> list_0_0;
+        a_0_9 = new global::A();
+        a_0_8 = this.Decorator1<global::A>(t: a_0_9);
+        iA_0_7 = (global::IA)a_0_8;
+        iA_0_6 = this.Decorator1<global::IA>(t: iA_0_7);
+        _0_5 = new global::IA[]{(global::IA)iA_0_6, };
+        _0_4 = this.Decorator3<global::IA>(a: _0_5);
+        _0_3 = this.Decorator1<global::IA[]>(t: _0_4);
+        list_0_2 = this.ListFactory<global::IA>(a: _0_3);
         try
         {
-            _B_0_11 = new global::B();
-            _B_0_10 = this.Decorator1<global::B>(t: _B_0_11);
-            _List_0_1 = this.Decorator2<global::IA>(a: _List_0_2, b: _B_0_10);
-            _List_0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: _List_0_1);
+            b_0_11 = new global::B();
+            b_0_10 = this.Decorator1<global::B>(t: b_0_11);
+            list_0_1 = this.Decorator2<global::IA>(a: list_0_2, b: b_0_10);
+            list_0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: list_0_1);
         }
         catch
         {
-            await global::StrongInject.Helpers.DisposeAsync(_List_0_2);
+            await global::StrongInject.Helpers.DisposeAsync(list_0_2);
             throw;
         }
 
         TResult result;
         try
         {
-            result = await func(_List_0_0, param);
+            result = await func(list_0_0, param);
         }
         finally
         {
-            await global::StrongInject.Helpers.DisposeAsync(_List_0_2);
+            await global::StrongInject.Helpers.DisposeAsync(list_0_2);
         }
 
         return result;
@@ -14085,42 +14085,42 @@ partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::A _A_0_9;
-        global::A _A_0_8;
-        global::IA _IA_0_7;
-        global::IA _IA_0_6;
-        global::IA[] __0_5;
-        global::IA[] __0_4;
-        global::IA[] __0_3;
-        global::System.Collections.Generic.List<global::IA> _List_0_2;
-        global::B _B_0_11;
-        global::B _B_0_10;
-        global::System.Collections.Generic.List<global::IA> _List_0_1;
-        global::System.Collections.Generic.List<global::IA> _List_0_0;
-        _A_0_9 = new global::A();
-        _A_0_8 = this.Decorator1<global::A>(t: _A_0_9);
-        _IA_0_7 = (global::IA)_A_0_8;
-        _IA_0_6 = this.Decorator1<global::IA>(t: _IA_0_7);
-        __0_5 = new global::IA[]{(global::IA)_IA_0_6, };
-        __0_4 = this.Decorator3<global::IA>(a: __0_5);
-        __0_3 = this.Decorator1<global::IA[]>(t: __0_4);
-        _List_0_2 = this.ListFactory<global::IA>(a: __0_3);
+        global::A a_0_9;
+        global::A a_0_8;
+        global::IA iA_0_7;
+        global::IA iA_0_6;
+        global::IA[] _0_5;
+        global::IA[] _0_4;
+        global::IA[] _0_3;
+        global::System.Collections.Generic.List<global::IA> list_0_2;
+        global::B b_0_11;
+        global::B b_0_10;
+        global::System.Collections.Generic.List<global::IA> list_0_1;
+        global::System.Collections.Generic.List<global::IA> list_0_0;
+        a_0_9 = new global::A();
+        a_0_8 = this.Decorator1<global::A>(t: a_0_9);
+        iA_0_7 = (global::IA)a_0_8;
+        iA_0_6 = this.Decorator1<global::IA>(t: iA_0_7);
+        _0_5 = new global::IA[]{(global::IA)iA_0_6, };
+        _0_4 = this.Decorator3<global::IA>(a: _0_5);
+        _0_3 = this.Decorator1<global::IA[]>(t: _0_4);
+        list_0_2 = this.ListFactory<global::IA>(a: _0_3);
         try
         {
-            _B_0_11 = new global::B();
-            _B_0_10 = this.Decorator1<global::B>(t: _B_0_11);
-            _List_0_1 = this.Decorator2<global::IA>(a: _List_0_2, b: _B_0_10);
-            _List_0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: _List_0_1);
+            b_0_11 = new global::B();
+            b_0_10 = this.Decorator1<global::B>(t: b_0_11);
+            list_0_1 = this.Decorator2<global::IA>(a: list_0_2, b: b_0_10);
+            list_0_0 = this.Decorator1<global::System.Collections.Generic.List<global::IA>>(t: list_0_1);
         }
         catch
         {
-            await global::StrongInject.Helpers.DisposeAsync(_List_0_2);
+            await global::StrongInject.Helpers.DisposeAsync(list_0_2);
             throw;
         }
 
-        return new global::StrongInject.AsyncOwned<global::System.Collections.Generic.List<global::IA>>(_List_0_0, async () =>
+        return new global::StrongInject.AsyncOwned<global::System.Collections.Generic.List<global::IA>>(list_0_0, async () =>
         {
-            await global::StrongInject.Helpers.DisposeAsync(_List_0_2);
+            await global::StrongInject.Helpers.DisposeAsync(list_0_2);
         });
     }
 }");
@@ -14244,13 +14244,13 @@ partial class Container
         }
     }
 
-    private global::IA _singleInstanceField0;
+    private global::IA _iAField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::IA GetSingleInstanceField0()
+    private global::IA GetIAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_iAField0, null))
+            return _iAField0;
         this._lock0.Wait();
         try
         {
@@ -14260,7 +14260,7 @@ partial class Container
             global::IA iA_0_0;
             iA_0_1 = this._ia;
             iA_0_0 = new global::Decorator(a: iA_0_1);
-            this._singleInstanceField0 = iA_0_0;
+            this._iAField0 = iA_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -14270,7 +14270,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _iAField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::IA>.RunAsync<TResult, TParam>(global::System.Func<global::IA, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -14278,7 +14278,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::IA iA_0_0;
-        iA_0_0 = GetSingleInstanceField0();
+        iA_0_0 = GetIAField0();
         TResult result;
         try
         {
@@ -14296,7 +14296,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::IA iA_0_0;
-        iA_0_0 = GetSingleInstanceField0();
+        iA_0_0 = GetIAField0();
         return new global::StrongInject.AsyncOwned<global::IA>(iA_0_0, async () =>
         {
         });
@@ -14356,16 +14356,16 @@ partial class Container
         }
     }
 
-    private global::IA _singleInstanceField0;
+    private global::IA _iAField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::IA _singleInstanceField1;
+    private global::IA _iAField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private global::IA GetSingleInstanceField1()
+    private global::IA GetIAField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_iAField1, null))
+            return _iAField1;
         this._lock1.Wait();
         try
         {
@@ -14373,7 +14373,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::IA iA_0_0;
             iA_0_0 = this.GetIA();
-            this._singleInstanceField1 = iA_0_0;
+            this._iAField1 = iA_0_0;
             this._disposeAction1 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(iA_0_0);
@@ -14384,13 +14384,13 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _iAField1;
     }
 
-    private global::IA GetSingleInstanceField0()
+    private global::IA GetIAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_iAField0, null))
+            return _iAField0;
         this._lock0.Wait();
         try
         {
@@ -14398,9 +14398,9 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::IA iA_0_1;
             global::IA iA_0_0;
-            iA_0_1 = GetSingleInstanceField1();
+            iA_0_1 = GetIAField1();
             iA_0_0 = new global::Decorator(a: iA_0_1);
-            this._singleInstanceField0 = iA_0_0;
+            this._iAField0 = iA_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -14410,7 +14410,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _iAField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::IA>.RunAsync<TResult, TParam>(global::System.Func<global::IA, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -14418,7 +14418,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::IA iA_0_0;
-        iA_0_0 = GetSingleInstanceField0();
+        iA_0_0 = GetIAField0();
         TResult result;
         try
         {
@@ -14436,7 +14436,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::IA iA_0_0;
-        iA_0_0 = GetSingleInstanceField0();
+        iA_0_0 = GetIAField0();
         return new global::StrongInject.AsyncOwned<global::IA>(iA_0_0, async () =>
         {
         });
@@ -16855,13 +16855,13 @@ partial class Container
         throw new global::StrongInject.StrongInjectException(""This container requires async disposal"");
     }
 
-    private global::A _singleInstanceField0;
+    private global::A _aField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::A GetSingleInstanceField0()
+    private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
         this._lock0.Wait();
         try
         {
@@ -16871,7 +16871,7 @@ partial class Container
             global::A a_0_0;
             a_0_1 = this._a;
             a_0_0 = this.M<global::A>(t: a_0_1);
-            this._singleInstanceField0 = a_0_0;
+            this._aField0 = a_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -16881,7 +16881,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _aField0;
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
@@ -16889,7 +16889,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::A a_0_0;
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         TResult result;
         try
         {
@@ -16907,19 +16907,19 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::A a_0_0;
-        a_0_0 = GetSingleInstanceField0();
+        a_0_0 = GetAField0();
         return new global::StrongInject.Owned<global::A>(a_0_0, () =>
         {
         });
     }
 
-    private global::StrongInject.IFactory<global::B> _singleInstanceField1;
+    private global::StrongInject.IFactory<global::B> _iFactoryField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private global::StrongInject.IFactory<global::B> GetSingleInstanceField1()
+    private global::StrongInject.IFactory<global::B> GetIFactoryField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_iFactoryField1, null))
+            return _iFactoryField1;
         this._lock1.Wait();
         try
         {
@@ -16928,10 +16928,10 @@ partial class Container
             global::A a_0_2;
             global::StrongInject.IFactory<global::B> iFactory_0_1;
             global::StrongInject.IFactory<global::B> iFactory_0_0;
-            a_0_2 = GetSingleInstanceField0();
+            a_0_2 = GetAField0();
             iFactory_0_1 = (global::StrongInject.IFactory<global::B>)a_0_2;
             iFactory_0_0 = this.M<global::StrongInject.IFactory<global::B>>(t: iFactory_0_1);
-            this._singleInstanceField1 = iFactory_0_0;
+            this._iFactoryField1 = iFactory_0_0;
             this._disposeAction1 = async () =>
             {
             };
@@ -16941,7 +16941,7 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _iFactoryField1;
     }
 
     TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
@@ -16951,7 +16951,7 @@ partial class Container
         global::StrongInject.IFactory<global::B> iFactory_0_2;
         global::B b_0_1;
         global::B b_0_0;
-        iFactory_0_2 = GetSingleInstanceField1();
+        iFactory_0_2 = GetIFactoryField1();
         b_0_1 = iFactory_0_2.Create();
         try
         {
@@ -16983,7 +16983,7 @@ partial class Container
         global::StrongInject.IFactory<global::B> iFactory_0_2;
         global::B b_0_1;
         global::B b_0_0;
-        iFactory_0_2 = GetSingleInstanceField1();
+        iFactory_0_2 = GetIFactoryField1();
         b_0_1 = iFactory_0_2.Create();
         try
         {
@@ -17015,7 +17015,7 @@ partial class Container
         var c_0_1 = default(global::C);
         var hasAwaitCompleted_c_0_7 = false;
         global::C c_0_0;
-        iFactory_0_6 = GetSingleInstanceField1();
+        iFactory_0_6 = GetIFactoryField1();
         b_0_5 = iFactory_0_6.Create();
         try
         {
@@ -17079,7 +17079,7 @@ partial class Container
         var c_0_1 = default(global::C);
         var hasAwaitCompleted_c_0_7 = false;
         global::C c_0_0;
-        iFactory_0_6 = GetSingleInstanceField1();
+        iFactory_0_6 = GetIFactoryField1();
         b_0_5 = iFactory_0_6.Create();
         try
         {
@@ -17152,7 +17152,7 @@ partial class Container
         global::D d_0_2;
         global::E e_0_1;
         global::E e_0_0;
-        iFactory_0_12 = GetSingleInstanceField1();
+        iFactory_0_12 = GetIFactoryField1();
         b_0_11 = iFactory_0_12.Create();
         try
         {
@@ -17237,7 +17237,7 @@ partial class Container
         global::D d_0_2;
         global::E e_0_1;
         global::E e_0_0;
-        iFactory_0_12 = GetSingleInstanceField1();
+        iFactory_0_12 = GetIFactoryField1();
         b_0_11 = iFactory_0_12.Create();
         try
         {
@@ -17315,7 +17315,7 @@ partial class Container
         global::D d_0_2;
         global::I i_0_1;
         global::I i_0_0;
-        iFactory_0_12 = GetSingleInstanceField1();
+        iFactory_0_12 = GetIFactoryField1();
         b_0_11 = iFactory_0_12.Create();
         try
         {
@@ -17400,7 +17400,7 @@ partial class Container
         global::D d_0_2;
         global::I i_0_1;
         global::I i_0_0;
-        iFactory_0_12 = GetSingleInstanceField1();
+        iFactory_0_12 = GetIFactoryField1();
         b_0_11 = iFactory_0_12.Create();
         try
         {
@@ -17467,7 +17467,7 @@ partial class Container
         global::B b_0_2;
         global::StrongInject.IAsyncFactory<global::C> iAsyncFactory_0_1;
         global::StrongInject.IAsyncFactory<global::C> iAsyncFactory_0_0;
-        iFactory_0_4 = GetSingleInstanceField1();
+        iFactory_0_4 = GetIFactoryField1();
         b_0_3 = iFactory_0_4.Create();
         try
         {
@@ -17503,7 +17503,7 @@ partial class Container
         global::B b_0_2;
         global::StrongInject.IAsyncFactory<global::C> iAsyncFactory_0_1;
         global::StrongInject.IAsyncFactory<global::C> iAsyncFactory_0_0;
-        iFactory_0_4 = GetSingleInstanceField1();
+        iFactory_0_4 = GetIFactoryField1();
         b_0_3 = iFactory_0_4.Create();
         try
         {
@@ -19016,13 +19016,13 @@ partial class Container
         });
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
@@ -19034,7 +19034,7 @@ partial class Container
             a_0_2 = this._a;
             iFactory_0_1 = (global::StrongInject.IFactory<global::B>)a_0_2;
             b_0_0 = iFactory_0_1.Create();
-            this._singleInstanceField0 = b_0_0;
+            this._bField0 = b_0_0;
             this._disposeAction0 = async () =>
             {
                 iFactory_0_1.Release(b_0_0);
@@ -19045,7 +19045,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
@@ -19053,7 +19053,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_0;
-        b_0_0 = GetSingleInstanceField0();
+        b_0_0 = GetBField0();
         TResult result;
         try
         {
@@ -19071,19 +19071,19 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_0;
-        b_0_0 = GetSingleInstanceField0();
+        b_0_0 = GetBField0();
         return new global::StrongInject.Owned<global::B>(b_0_0, () =>
         {
         });
     }
 
-    private global::C _singleInstanceField1;
+    private global::C _cField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private async global::System.Threading.Tasks.ValueTask<global::C> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::C> GetCField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_cField1, null))
+            return _cField1;
         await this._lock1.WaitAsync();
         try
         {
@@ -19095,7 +19095,7 @@ partial class Container
             var hasAwaitStarted_c_0_3 = false;
             var c_0_0 = default(global::C);
             var hasAwaitCompleted_c_0_3 = false;
-            b_0_2 = GetSingleInstanceField0();
+            b_0_2 = GetBField0();
             iAsyncFactory_0_1 = (global::StrongInject.IAsyncFactory<global::C>)b_0_2;
             c_0_3 = iAsyncFactory_0_1.CreateAsync();
             try
@@ -19119,7 +19119,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField1 = c_0_0;
+            this._cField1 = c_0_0;
             this._disposeAction1 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(c_0_0);
@@ -19130,7 +19130,7 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _cField1;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::C>.RunAsync<TResult, TParam>(global::System.Func<global::C, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -19140,7 +19140,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::C> c_0_0;
         var hasAwaitStarted_c_0_0 = false;
         var c_0_1 = default(global::C);
-        c_0_0 = GetSingleInstanceField1();
+        c_0_0 = GetCField1();
         try
         {
             hasAwaitStarted_c_0_0 = true;
@@ -19175,7 +19175,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::C> c_0_0;
         var hasAwaitStarted_c_0_0 = false;
         var c_0_1 = default(global::C);
-        c_0_0 = GetSingleInstanceField1();
+        c_0_0 = GetCField1();
         try
         {
             hasAwaitStarted_c_0_0 = true;
@@ -19196,13 +19196,13 @@ partial class Container
         });
     }
 
-    private global::D _singleInstanceField2;
+    private global::D _dField2;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction2;
-    private async global::System.Threading.Tasks.ValueTask<global::D> GetSingleInstanceField2()
+    private async global::System.Threading.Tasks.ValueTask<global::D> GetDField2()
     {
-        if (!object.ReferenceEquals(_singleInstanceField2, null))
-            return _singleInstanceField2;
+        if (!object.ReferenceEquals(_dField2, null))
+            return _dField2;
         await this._lock2.WaitAsync();
         try
         {
@@ -19213,7 +19213,7 @@ partial class Container
             var c_0_3 = default(global::C);
             global::StrongInject.IFactory<global::D> iFactory_0_1;
             global::D d_0_0;
-            c_0_2 = GetSingleInstanceField1();
+            c_0_2 = GetCField1();
             try
             {
                 hasAwaitStarted_c_0_2 = true;
@@ -19231,7 +19231,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField2 = d_0_0;
+            this._dField2 = d_0_0;
             this._disposeAction2 = async () =>
             {
                 iFactory_0_1.Release(d_0_0);
@@ -19242,7 +19242,7 @@ partial class Container
             this._lock2.Release();
         }
 
-        return _singleInstanceField2;
+        return _dField2;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::D>.RunAsync<TResult, TParam>(global::System.Func<global::D, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -19252,7 +19252,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> d_0_0;
         var hasAwaitStarted_d_0_0 = false;
         var d_0_1 = default(global::D);
-        d_0_0 = GetSingleInstanceField2();
+        d_0_0 = GetDField2();
         try
         {
             hasAwaitStarted_d_0_0 = true;
@@ -19287,7 +19287,7 @@ partial class Container
         global::System.Threading.Tasks.ValueTask<global::D> d_0_0;
         var hasAwaitStarted_d_0_0 = false;
         var d_0_1 = default(global::D);
-        d_0_0 = GetSingleInstanceField2();
+        d_0_0 = GetDField2();
         try
         {
             hasAwaitStarted_d_0_0 = true;
@@ -19316,7 +19316,7 @@ partial class Container
         var hasAwaitStarted_d_0_1 = false;
         var d_0_2 = default(global::D);
         global::E e_0_0;
-        d_0_1 = GetSingleInstanceField2();
+        d_0_1 = GetDField2();
         try
         {
             hasAwaitStarted_d_0_1 = true;
@@ -19353,7 +19353,7 @@ partial class Container
         var hasAwaitStarted_d_0_1 = false;
         var d_0_2 = default(global::D);
         global::E e_0_0;
-        d_0_1 = GetSingleInstanceField2();
+        d_0_1 = GetDField2();
         try
         {
             hasAwaitStarted_d_0_1 = true;
@@ -19383,7 +19383,7 @@ partial class Container
         var hasAwaitStarted_d_0_1 = false;
         var d_0_2 = default(global::D);
         global::I i_0_0;
-        d_0_1 = GetSingleInstanceField2();
+        d_0_1 = GetDField2();
         try
         {
             hasAwaitStarted_d_0_1 = true;
@@ -19420,7 +19420,7 @@ partial class Container
         var hasAwaitStarted_d_0_1 = false;
         var d_0_2 = default(global::D);
         global::I i_0_0;
-        d_0_1 = GetSingleInstanceField2();
+        d_0_1 = GetDField2();
         try
         {
             hasAwaitStarted_d_0_1 = true;
@@ -19448,7 +19448,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::StrongInject.IAsyncFactory<global::C> iAsyncFactory_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         iAsyncFactory_0_0 = (global::StrongInject.IAsyncFactory<global::C>)b_0_1;
         TResult result;
         try
@@ -19468,7 +19468,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::B b_0_1;
         global::StrongInject.IAsyncFactory<global::C> iAsyncFactory_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         iAsyncFactory_0_0 = (global::StrongInject.IAsyncFactory<global::C>)b_0_1;
         return new global::StrongInject.Owned<global::StrongInject.IAsyncFactory<global::C>>(iAsyncFactory_0_0, () =>
         {
@@ -21375,13 +21375,13 @@ partial class Container
         }
     }
 
-    private global::System.Int32 _singleInstanceField0;
+    private global::System.Int32 _int32Field0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_int32Field0, null))
+            return _int32Field0;
         await this._lock0.WaitAsync();
         try
         {
@@ -21406,7 +21406,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = int32_0_0;
+            this._int32Field0 = int32_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -21416,7 +21416,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _int32Field0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -21429,7 +21429,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_4;
         global::System.Int64 int64_0_3;
         global::System.Boolean boolean_0_0;
-        int32_0_1 = GetSingleInstanceField0();
+        int32_0_1 = GetInt32Field0();
         try
         {
             hasAwaitStarted_int32_0_1 = true;
@@ -21475,7 +21475,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_4;
         global::System.Int64 int64_0_3;
         global::System.Boolean boolean_0_0;
-        int32_0_1 = GetSingleInstanceField0();
+        int32_0_1 = GetInt32Field0();
         try
         {
             hasAwaitStarted_int32_0_1 = true;
@@ -21546,13 +21546,13 @@ partial class Container
         }
     }
 
-    private global::System.Int32 _singleInstanceField0;
+    private global::System.Int32 _int32Field0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_int32Field0, null))
+            return _int32Field0;
         await this._lock0.WaitAsync();
         try
         {
@@ -21577,7 +21577,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = int32_0_0;
+            this._int32Field0 = int32_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -21587,7 +21587,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _int32Field0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -21600,7 +21600,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_2;
         global::System.Int64 int64_0_1;
         global::System.Boolean boolean_0_0;
-        int32_0_3 = GetSingleInstanceField0();
+        int32_0_3 = GetInt32Field0();
         try
         {
             hasAwaitStarted_int32_0_3 = true;
@@ -21646,7 +21646,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_2;
         global::System.Int64 int64_0_1;
         global::System.Boolean boolean_0_0;
-        int32_0_3 = GetSingleInstanceField0();
+        int32_0_3 = GetInt32Field0();
         try
         {
             hasAwaitStarted_int32_0_3 = true;
@@ -21720,13 +21720,13 @@ partial class Container
         }
     }
 
-    private global::System.Int32 _singleInstanceField0;
+    private global::System.Int32 _int32Field0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_int32Field0, null))
+            return _int32Field0;
         await this._lock0.WaitAsync();
         try
         {
@@ -21751,7 +21751,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = int32_0_0;
+            this._int32Field0 = int32_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -21761,7 +21761,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _int32Field0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -21774,7 +21774,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_2;
         global::System.Int64 int64_0_1;
         global::System.Boolean boolean_0_0;
-        int32_0_3 = GetSingleInstanceField0();
+        int32_0_3 = GetInt32Field0();
         try
         {
             hasAwaitStarted_int32_0_3 = true;
@@ -21825,7 +21825,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_2;
         global::System.Int64 int64_0_1;
         global::System.Boolean boolean_0_0;
-        int32_0_3 = GetSingleInstanceField0();
+        int32_0_3 = GetInt32Field0();
         try
         {
             hasAwaitStarted_int32_0_3 = true;
@@ -21917,16 +21917,16 @@ partial class Container
         }
     }
 
-    private global::System.String _singleInstanceField0;
+    private global::System.String _stringField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private global::System.Int32 _singleInstanceField1;
+    private global::System.Int32 _int32Field1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
-    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetSingleInstanceField1()
+    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_int32Field1, null))
+            return _int32Field1;
         await this._lock1.WaitAsync();
         try
         {
@@ -21951,7 +21951,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField1 = int32_0_0;
+            this._int32Field1 = int32_0_0;
             this._disposeAction1 = async () =>
             {
             };
@@ -21961,13 +21961,13 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _int32Field1;
     }
 
-    private async global::System.Threading.Tasks.ValueTask<global::System.String> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::System.String> GetStringField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_stringField0, null))
+            return _stringField0;
         await this._lock0.WaitAsync();
         try
         {
@@ -21978,7 +21978,7 @@ partial class Container
             var int32_0_3 = default(global::System.Int32);
             global::System.Func<global::System.Int32> func_0_1;
             global::System.String string_0_0;
-            int32_0_2 = GetSingleInstanceField1();
+            int32_0_2 = GetInt32Field1();
             try
             {
                 hasAwaitStarted_int32_0_2 = true;
@@ -21999,7 +21999,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = string_0_0;
+            this._stringField0 = string_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -22009,7 +22009,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _stringField0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -22022,7 +22022,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_2;
         global::System.Int64 int64_0_1;
         global::System.Boolean boolean_0_0;
-        string_0_3 = GetSingleInstanceField0();
+        string_0_3 = GetStringField0();
         try
         {
             hasAwaitStarted_string_0_3 = true;
@@ -22066,7 +22066,7 @@ partial class Container
         global::System.Func<global::System.String> func_0_2;
         global::System.Int64 int64_0_1;
         global::System.Boolean boolean_0_0;
-        string_0_3 = GetSingleInstanceField0();
+        string_0_3 = GetStringField0();
         try
         {
             hasAwaitStarted_string_0_3 = true;
@@ -22138,13 +22138,13 @@ partial class Container
         }
     }
 
-    private global::System.Int32 _singleInstanceField0;
+    private global::System.Int32 _int32Field0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
-    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetSingleInstanceField0()
+    private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_int32Field0, null))
+            return _int32Field0;
         await this._lock0.WaitAsync();
         try
         {
@@ -22169,7 +22169,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = int32_0_0;
+            this._int32Field0 = int32_0_0;
             this._disposeAction0 = async () =>
             {
             };
@@ -22179,7 +22179,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _int32Field0;
     }
 
     async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Boolean>.RunAsync<TResult, TParam>(global::System.Func<global::System.Boolean, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
@@ -22195,7 +22195,7 @@ partial class Container
             var int32_1_3 = default(global::System.Int32);
             global::System.Func<global::System.String> func_1_1;
             global::System.Int64 int64_1_0;
-            int32_1_2 = GetSingleInstanceField0();
+            int32_1_2 = GetInt32Field0();
             try
             {
                 hasAwaitStarted_int32_1_2 = true;
@@ -22251,7 +22251,7 @@ partial class Container
             var int32_1_3 = default(global::System.Int32);
             global::System.Func<global::System.String> func_1_1;
             global::System.Int64 int64_1_0;
-            int32_1_2 = GetSingleInstanceField0();
+            int32_1_2 = GetInt32Field0();
             try
             {
                 hasAwaitStarted_int32_1_2 = true;
@@ -22476,13 +22476,13 @@ partial class Container
         }
     }
 
-    private global::INavigationService<global::ItemDetailViewModel> _singleInstanceField0;
+    private global::INavigationService<global::ItemDetailViewModel> _iNavigationServiceField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::INavigationService<global::ItemDetailViewModel> GetSingleInstanceField0()
+    private global::INavigationService<global::ItemDetailViewModel> GetINavigationServiceField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_iNavigationServiceField0, null))
+            return _iNavigationServiceField0;
         this._lock0.Wait();
         try
         {
@@ -22501,7 +22501,7 @@ partial class Container
                 return iViewOf_1_0;
             };
             iNavigationService_0_0 = this.CreateNavigationService<global::ItemDetailViewModel>(navigation: iNavigation_0_1, createView: func_0_2);
-            this._singleInstanceField0 = iNavigationService_0_0;
+            this._iNavigationServiceField0 = iNavigationService_0_0;
             this._disposeAction0 = () =>
             {
                 global::StrongInject.Helpers.Dispose(iNavigationService_0_0);
@@ -22512,16 +22512,16 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _iNavigationServiceField0;
     }
 
-    private global::INavigationService<global::NewItemViewModel> _singleInstanceField1;
+    private global::INavigationService<global::NewItemViewModel> _iNavigationServiceField1;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction1;
-    private global::INavigationService<global::NewItemViewModel> GetSingleInstanceField1()
+    private global::INavigationService<global::NewItemViewModel> GetINavigationServiceField1()
     {
-        if (!object.ReferenceEquals(_singleInstanceField1, null))
-            return _singleInstanceField1;
+        if (!object.ReferenceEquals(_iNavigationServiceField1, null))
+            return _iNavigationServiceField1;
         this._lock1.Wait();
         try
         {
@@ -22540,7 +22540,7 @@ partial class Container
                 return iViewOf_1_0;
             };
             iNavigationService_0_0 = this.CreateNavigationService<global::NewItemViewModel>(navigation: iNavigation_0_1, createView: func_0_2);
-            this._singleInstanceField1 = iNavigationService_0_0;
+            this._iNavigationServiceField1 = iNavigationService_0_0;
             this._disposeAction1 = () =>
             {
                 global::StrongInject.Helpers.Dispose(iNavigationService_0_0);
@@ -22551,16 +22551,16 @@ partial class Container
             this._lock1.Release();
         }
 
-        return _singleInstanceField1;
+        return _iNavigationServiceField1;
     }
 
-    private global::MockDataStore _singleInstanceField2;
+    private global::MockDataStore _mockDataStoreField2;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction2;
-    private global::MockDataStore GetSingleInstanceField2()
+    private global::MockDataStore GetMockDataStoreField2()
     {
-        if (!object.ReferenceEquals(_singleInstanceField2, null))
-            return _singleInstanceField2;
+        if (!object.ReferenceEquals(_mockDataStoreField2, null))
+            return _mockDataStoreField2;
         this._lock2.Wait();
         try
         {
@@ -22568,7 +22568,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::MockDataStore mockDataStore_0_0;
             mockDataStore_0_0 = new global::MockDataStore();
-            this._singleInstanceField2 = mockDataStore_0_0;
+            this._mockDataStoreField2 = mockDataStore_0_0;
             this._disposeAction2 = () =>
             {
             };
@@ -22578,16 +22578,16 @@ partial class Container
             this._lock2.Release();
         }
 
-        return _singleInstanceField2;
+        return _mockDataStoreField2;
     }
 
-    private global::NavigationService _singleInstanceField3;
+    private global::NavigationService _navigationServiceField3;
     private global::System.Threading.SemaphoreSlim _lock3 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction3;
-    private global::NavigationService GetSingleInstanceField3()
+    private global::NavigationService GetNavigationServiceField3()
     {
-        if (!object.ReferenceEquals(_singleInstanceField3, null))
-            return _singleInstanceField3;
+        if (!object.ReferenceEquals(_navigationServiceField3, null))
+            return _navigationServiceField3;
         this._lock3.Wait();
         try
         {
@@ -22597,7 +22597,7 @@ partial class Container
             global::NavigationService navigationService_0_0;
             iNavigation_0_1 = this.Navigation;
             navigationService_0_0 = new global::NavigationService(navigation: iNavigation_0_1);
-            this._singleInstanceField3 = navigationService_0_0;
+            this._navigationServiceField3 = navigationService_0_0;
             this._disposeAction3 = () =>
             {
             };
@@ -22607,7 +22607,7 @@ partial class Container
             this._lock3.Release();
         }
 
-        return _singleInstanceField3;
+        return _navigationServiceField3;
     }
 
     TResult global::StrongInject.IContainer<global::ItemsViewModel>.Run<TResult, TParam>(global::System.Func<global::ItemsViewModel, TParam, TResult> func, TParam param)
@@ -22621,8 +22621,8 @@ partial class Container
         global::MockDataStore mockDataStore_0_6;
         global::IDataStore<global::Item> iDataStore_0_5;
         global::ItemsViewModel itemsViewModel_0_0;
-        iNavigationService_0_1 = GetSingleInstanceField0();
-        iNavigationService_0_2 = GetSingleInstanceField1();
+        iNavigationService_0_1 = GetINavigationServiceField0();
+        iNavigationService_0_2 = GetINavigationServiceField1();
         func_0_3 = (param0_0) =>
         {
             global::ItemDetailViewModel itemDetailViewModel_1_0;
@@ -22636,14 +22636,14 @@ partial class Container
             global::NavigationService navigationService_0_4;
             global::INavigationService iNavigationService_1_3;
             global::NewItemViewModel newItemViewModel_1_0;
-            mockDataStore_0_2 = GetSingleInstanceField2();
+            mockDataStore_0_2 = GetMockDataStoreField2();
             iDataStore_1_1 = (global::IDataStore<global::Item>)mockDataStore_0_2;
-            navigationService_0_4 = GetSingleInstanceField3();
+            navigationService_0_4 = GetNavigationServiceField3();
             iNavigationService_1_3 = (global::INavigationService)navigationService_0_4;
             newItemViewModel_1_0 = new global::NewItemViewModel(dataStore: iDataStore_1_1, navigationService: iNavigationService_1_3);
             return newItemViewModel_1_0;
         };
-        mockDataStore_0_6 = GetSingleInstanceField2();
+        mockDataStore_0_6 = GetMockDataStoreField2();
         iDataStore_0_5 = (global::IDataStore<global::Item>)mockDataStore_0_6;
         itemsViewModel_0_0 = new global::ItemsViewModel(itemDetailNavigationService: iNavigationService_0_1, newItemNavigationService: iNavigationService_0_2, createItemDetailViewModel: func_0_3, createNewItemViewModel: func_0_4, dataStore: iDataStore_0_5);
         TResult result;
@@ -22669,8 +22669,8 @@ partial class Container
         global::MockDataStore mockDataStore_0_6;
         global::IDataStore<global::Item> iDataStore_0_5;
         global::ItemsViewModel itemsViewModel_0_0;
-        iNavigationService_0_1 = GetSingleInstanceField0();
-        iNavigationService_0_2 = GetSingleInstanceField1();
+        iNavigationService_0_1 = GetINavigationServiceField0();
+        iNavigationService_0_2 = GetINavigationServiceField1();
         func_0_3 = (param0_0) =>
         {
             global::ItemDetailViewModel itemDetailViewModel_1_0;
@@ -22684,14 +22684,14 @@ partial class Container
             global::NavigationService navigationService_0_4;
             global::INavigationService iNavigationService_1_3;
             global::NewItemViewModel newItemViewModel_1_0;
-            mockDataStore_0_2 = GetSingleInstanceField2();
+            mockDataStore_0_2 = GetMockDataStoreField2();
             iDataStore_1_1 = (global::IDataStore<global::Item>)mockDataStore_0_2;
-            navigationService_0_4 = GetSingleInstanceField3();
+            navigationService_0_4 = GetNavigationServiceField3();
             iNavigationService_1_3 = (global::INavigationService)navigationService_0_4;
             newItemViewModel_1_0 = new global::NewItemViewModel(dataStore: iDataStore_1_1, navigationService: iNavigationService_1_3);
             return newItemViewModel_1_0;
         };
-        mockDataStore_0_6 = GetSingleInstanceField2();
+        mockDataStore_0_6 = GetMockDataStoreField2();
         iDataStore_0_5 = (global::IDataStore<global::Item>)mockDataStore_0_6;
         itemsViewModel_0_0 = new global::ItemsViewModel(itemDetailNavigationService: iNavigationService_0_1, newItemNavigationService: iNavigationService_0_2, createItemDetailViewModel: func_0_3, createNewItemViewModel: func_0_4, dataStore: iDataStore_0_5);
         return new global::StrongInject.Owned<global::ItemsViewModel>(itemsViewModel_0_0, () =>
@@ -22743,13 +22743,13 @@ partial class Container
         }
     }
 
-    private global::B _singleInstanceField0;
+    private global::B _bField0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::B GetSingleInstanceField0()
+    private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_bField0, null))
+            return _bField0;
         this._lock0.Wait();
         try
         {
@@ -22757,7 +22757,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
-            this._singleInstanceField0 = b_0_0;
+            this._bField0 = b_0_0;
             this._disposeAction0 = () =>
             {
             };
@@ -22767,7 +22767,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _bField0;
     }
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
@@ -22777,7 +22777,7 @@ partial class Container
         global::B b_0_1;
         global::System.Func<global::C> func_0_2;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         func_0_2 = () =>
         {
             global::C c_1_0;
@@ -22804,7 +22804,7 @@ partial class Container
         global::B b_0_1;
         global::System.Func<global::C> func_0_2;
         global::A a_0_0;
-        b_0_1 = GetSingleInstanceField0();
+        b_0_1 = GetBField0();
         func_0_2 = () =>
         {
             global::C c_1_0;
@@ -23827,13 +23827,13 @@ partial class Container
         }
     }
 
-    private global::System.Int32 _singleInstanceField0;
+    private global::System.Int32 _int32Field0;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
-    private global::System.Int32 GetSingleInstanceField0()
+    private global::System.Int32 GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_singleInstanceField0, null))
-            return _singleInstanceField0;
+        if (!object.ReferenceEquals(_int32Field0, null))
+            return _int32Field0;
         this._lock0.Wait();
         try
         {
@@ -23864,7 +23864,7 @@ partial class Container
                 throw;
             }
 
-            this._singleInstanceField0 = int32_0_0;
+            this._int32Field0 = int32_0_0;
             this._disposeAction0 = () =>
             {
                 foreach (var disposeAction in disposeActions_func_0_1)
@@ -23876,7 +23876,7 @@ partial class Container
             this._lock0.Release();
         }
 
-        return _singleInstanceField0;
+        return _int32Field0;
     }
 
     TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
@@ -23884,7 +23884,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Int32 int32_0_0;
-        int32_0_0 = GetSingleInstanceField0();
+        int32_0_0 = GetInt32Field0();
         TResult result;
         try
         {
@@ -23902,7 +23902,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Int32 int32_0_0;
-        int32_0_0 = GetSingleInstanceField0();
+        int32_0_0 = GetInt32Field0();
         return new global::StrongInject.Owned<global::System.Int32>(int32_0_0, () =>
         {
         });
@@ -23955,32 +23955,32 @@ unsafe partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        delegate *<global::System.Int32, global::System.String>__0_2;
-        global::System.Int32 _Int32_0_1;
-        delegate *<ref global::System.Int32, global::System.String>__0_4;
-        global::System.String _String_0_3;
-        delegate *<global::System.Int32, ref global::System.String>__0_6;
-        global::System.Boolean _Boolean_0_5;
-        delegate *unmanaged[Cdecl]<global::System.Int32, global::System.String>__0_8;
-        global::System.Int16 _Int16_0_7;
-        delegate *unmanaged[Fastcall]<global::System.Int32, global::System.String>__0_10;
-        global::System.UInt16 _UInt16_0_9;
-        (global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16) _ValueTuple_0_0;
-        __0_2 = this.M<global::System.Int32, global::System.String>();
-        _Int32_0_1 = this.M(a: __0_2);
-        __0_4 = this.M1<global::System.Int32, global::System.String>();
-        _String_0_3 = this.M1(a: __0_4);
-        __0_6 = this.M2<global::System.Int32, global::System.String>();
-        _Boolean_0_5 = this.M2(a: __0_6);
-        __0_8 = this.M3<global::System.Int32, global::System.String>();
-        _Int16_0_7 = this.M3(a: __0_8);
-        __0_10 = this.M4<global::System.Int32, global::System.String>();
-        _UInt16_0_9 = this.M4(a: __0_10);
-        _ValueTuple_0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16>(a: _Int32_0_1, b: _String_0_3, c: _Boolean_0_5, d: _Int16_0_7, e: _UInt16_0_9);
+        delegate *<global::System.Int32, global::System.String>_0_2;
+        global::System.Int32 int32_0_1;
+        delegate *<ref global::System.Int32, global::System.String>_0_4;
+        global::System.String string_0_3;
+        delegate *<global::System.Int32, ref global::System.String>_0_6;
+        global::System.Boolean boolean_0_5;
+        delegate *unmanaged[Cdecl]<global::System.Int32, global::System.String>_0_8;
+        global::System.Int16 int16_0_7;
+        delegate *unmanaged[Fastcall]<global::System.Int32, global::System.String>_0_10;
+        global::System.UInt16 uInt16_0_9;
+        (global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16) valueTuple_0_0;
+        _0_2 = this.M<global::System.Int32, global::System.String>();
+        int32_0_1 = this.M(a: _0_2);
+        _0_4 = this.M1<global::System.Int32, global::System.String>();
+        string_0_3 = this.M1(a: _0_4);
+        _0_6 = this.M2<global::System.Int32, global::System.String>();
+        boolean_0_5 = this.M2(a: _0_6);
+        _0_8 = this.M3<global::System.Int32, global::System.String>();
+        int16_0_7 = this.M3(a: _0_8);
+        _0_10 = this.M4<global::System.Int32, global::System.String>();
+        uInt16_0_9 = this.M4(a: _0_10);
+        valueTuple_0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16>(a: int32_0_1, b: string_0_3, c: boolean_0_5, d: int16_0_7, e: uInt16_0_9);
         TResult result;
         try
         {
-            result = func(_ValueTuple_0_0, param);
+            result = func(valueTuple_0_0, param);
         }
         finally
         {
@@ -23993,29 +23993,29 @@ unsafe partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        delegate *<global::System.Int32, global::System.String>__0_2;
-        global::System.Int32 _Int32_0_1;
-        delegate *<ref global::System.Int32, global::System.String>__0_4;
-        global::System.String _String_0_3;
-        delegate *<global::System.Int32, ref global::System.String>__0_6;
-        global::System.Boolean _Boolean_0_5;
-        delegate *unmanaged[Cdecl]<global::System.Int32, global::System.String>__0_8;
-        global::System.Int16 _Int16_0_7;
-        delegate *unmanaged[Fastcall]<global::System.Int32, global::System.String>__0_10;
-        global::System.UInt16 _UInt16_0_9;
-        (global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16) _ValueTuple_0_0;
-        __0_2 = this.M<global::System.Int32, global::System.String>();
-        _Int32_0_1 = this.M(a: __0_2);
-        __0_4 = this.M1<global::System.Int32, global::System.String>();
-        _String_0_3 = this.M1(a: __0_4);
-        __0_6 = this.M2<global::System.Int32, global::System.String>();
-        _Boolean_0_5 = this.M2(a: __0_6);
-        __0_8 = this.M3<global::System.Int32, global::System.String>();
-        _Int16_0_7 = this.M3(a: __0_8);
-        __0_10 = this.M4<global::System.Int32, global::System.String>();
-        _UInt16_0_9 = this.M4(a: __0_10);
-        _ValueTuple_0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16>(a: _Int32_0_1, b: _String_0_3, c: _Boolean_0_5, d: _Int16_0_7, e: _UInt16_0_9);
-        return new global::StrongInject.Owned<(global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16)>(_ValueTuple_0_0, () =>
+        delegate *<global::System.Int32, global::System.String>_0_2;
+        global::System.Int32 int32_0_1;
+        delegate *<ref global::System.Int32, global::System.String>_0_4;
+        global::System.String string_0_3;
+        delegate *<global::System.Int32, ref global::System.String>_0_6;
+        global::System.Boolean boolean_0_5;
+        delegate *unmanaged[Cdecl]<global::System.Int32, global::System.String>_0_8;
+        global::System.Int16 int16_0_7;
+        delegate *unmanaged[Fastcall]<global::System.Int32, global::System.String>_0_10;
+        global::System.UInt16 uInt16_0_9;
+        (global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16) valueTuple_0_0;
+        _0_2 = this.M<global::System.Int32, global::System.String>();
+        int32_0_1 = this.M(a: _0_2);
+        _0_4 = this.M1<global::System.Int32, global::System.String>();
+        string_0_3 = this.M1(a: _0_4);
+        _0_6 = this.M2<global::System.Int32, global::System.String>();
+        boolean_0_5 = this.M2(a: _0_6);
+        _0_8 = this.M3<global::System.Int32, global::System.String>();
+        int16_0_7 = this.M3(a: _0_8);
+        _0_10 = this.M4<global::System.Int32, global::System.String>();
+        uInt16_0_9 = this.M4(a: _0_10);
+        valueTuple_0_0 = global::StrongInject.Modules.ValueTupleModule.CreateValueTuple<global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16>(a: int32_0_1, b: string_0_3, c: boolean_0_5, d: int16_0_7, e: uInt16_0_9);
+        return new global::StrongInject.Owned<(global::System.Int32, global::System.String, global::System.Boolean, global::System.Int16, global::System.UInt16)>(valueTuple_0_0, () =>
         {
         });
     }
@@ -24055,14 +24055,14 @@ unsafe partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Int32*__0_1;
-        global::System.Int32 _Int32_0_0;
-        __0_1 = this.M<global::System.Int32>();
-        _Int32_0_0 = this.M(a: __0_1);
+        global::System.Int32*_0_1;
+        global::System.Int32 int32_0_0;
+        _0_1 = this.M<global::System.Int32>();
+        int32_0_0 = this.M(a: _0_1);
         TResult result;
         try
         {
-            result = func(_Int32_0_0, param);
+            result = func(int32_0_0, param);
         }
         finally
         {
@@ -24075,11 +24075,11 @@ unsafe partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Int32*__0_1;
-        global::System.Int32 _Int32_0_0;
-        __0_1 = this.M<global::System.Int32>();
-        _Int32_0_0 = this.M(a: __0_1);
-        return new global::StrongInject.Owned<global::System.Int32>(_Int32_0_0, () =>
+        global::System.Int32*_0_1;
+        global::System.Int32 int32_0_0;
+        _0_1 = this.M<global::System.Int32>();
+        int32_0_0 = this.M(a: _0_1);
+        return new global::StrongInject.Owned<global::System.Int32>(int32_0_0, () =>
         {
         });
     }
@@ -24166,27 +24166,27 @@ unsafe partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Int32*[] __0_1;
-        global::System.Int32 _Int32_0_0;
-        __0_1 = this.M<global::System.Int32*[]>();
+        global::System.Int32*[] _0_1;
+        global::System.Int32 int32_0_0;
+        _0_1 = this.M<global::System.Int32*[]>();
         try
         {
-            _Int32_0_0 = this.M(a: __0_1);
+            int32_0_0 = this.M(a: _0_1);
         }
         catch
         {
-            global::StrongInject.Helpers.Dispose(__0_1);
+            global::StrongInject.Helpers.Dispose(_0_1);
             throw;
         }
 
         TResult result;
         try
         {
-            result = func(_Int32_0_0, param);
+            result = func(int32_0_0, param);
         }
         finally
         {
-            global::StrongInject.Helpers.Dispose(__0_1);
+            global::StrongInject.Helpers.Dispose(_0_1);
         }
 
         return result;
@@ -24196,22 +24196,22 @@ unsafe partial class Container
     {
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
-        global::System.Int32*[] __0_1;
-        global::System.Int32 _Int32_0_0;
-        __0_1 = this.M<global::System.Int32*[]>();
+        global::System.Int32*[] _0_1;
+        global::System.Int32 int32_0_0;
+        _0_1 = this.M<global::System.Int32*[]>();
         try
         {
-            _Int32_0_0 = this.M(a: __0_1);
+            int32_0_0 = this.M(a: _0_1);
         }
         catch
         {
-            global::StrongInject.Helpers.Dispose(__0_1);
+            global::StrongInject.Helpers.Dispose(_0_1);
             throw;
         }
 
-        return new global::StrongInject.Owned<global::System.Int32>(_Int32_0_0, () =>
+        return new global::StrongInject.Owned<global::System.Int32>(int32_0_0, () =>
         {
-            global::StrongInject.Helpers.Dispose(__0_1);
+            global::StrongInject.Helpers.Dispose(_0_1);
         });
     }
 }");

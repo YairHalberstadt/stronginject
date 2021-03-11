@@ -121,8 +121,7 @@ namespace StrongInject.Generator.Visitors
 
         private string GenerateName(InstanceSource source, State state)
         {
-            var name = source.OfType.Name;
-            return char.ToLowerInvariant(name[0]) + name.Substring(1) + "_" + state.InstanceSourcesScope.Depth + "_" + _variableCount++;
+            return source.OfType.ToLowerCaseIdentifier("") + "_" + state.InstanceSourcesScope.Depth + "_" + _variableCount++;
         }
 
         protected override void UpdateState(InstanceSource source, ref State state)
