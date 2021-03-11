@@ -97,7 +97,7 @@ namespace StrongInject.Generator
                     stringBuilder.Append(type.TypeParameters.Length);
                 }
             }
-            stringBuilder.Append(".generated.cs");
+            stringBuilder.Append(".g.cs");
             return stringBuilder.ToString();
         }
 
