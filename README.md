@@ -72,6 +72,8 @@ https://www.nuget.org/packages/StrongInject/
 
 ## How It Works
 
+[![StrongInject on DotNet Docs show](https://yt-embed.herokuapp.com/embed?v=8cyumKVEth0)](https://www.youtube.com/watch?v=8cyumKVEth0 "StrongInject on DotNet Docs show")
+
 To use StrongInject, you first need to tell StrongInject the top-level services you would like to resolve. You do this by adding a new class implementing `IContainer<T>`. This will be your container. If you want to resolve multiple top-level services, then you can implement `IContainer<T>` multiple times on one container, or create multiple containers. StrongInject will then check at compile time that you've registered everything you need with the container to enable it to resolve all the top-level services. If you haven't, the compilation will fail with an error explaining what's gone wrong.
 
 For example, if you want to resolve `MyApp` you might try doing this:
