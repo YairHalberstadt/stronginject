@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using static StrongInject.Generator.GenericResolutionHelpers;
 
@@ -161,17 +162,12 @@ namespace StrongInject.Generator
 
                     foreach (var factoryOfMethod in builder._factoryOfMethods)
                     {
-                        switch (factoryOfMethod.FactoryOfType)
-                        {
-                            case INamedTypeSymbol namedType:
-                                {
-                                    namedTypeBucketBuilders.GetOrCreate(
-                                        namedType.OriginalDefinition,
-                                        static _ => new BucketBuilder()).Add(factoryOfMethod);
-                                    break;
-                                }
-                            case var type: throw new NotImplementedException(type.ToString());
-                        }
+                        if (factoryOfMethod.FactoryOfType is not INamedTypeSymbol type)
+                            throw new InvalidOperationException("This location is thought to be unreachable");
+
+                        namedTypeBucketBuilders.GetOrCreate(
+                            type.OriginalDefinition,
+                            static _ => new BucketBuilder()).Add(factoryOfMethod);
                     }
 
                     return
