@@ -50,7 +50,8 @@ namespace StrongInject.Generator
                             x.AttributeClass is { } attribute &&
                             (attribute.Equals(wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default)
                             || attribute.Equals(wellKnownTypes.InstanceAttribute, SymbolEqualityComparer.Default)
-                            || attribute.Equals(wellKnownTypes.DecoratorFactoryAttribute, SymbolEqualityComparer.Default)))));
+                            || attribute.Equals(wellKnownTypes.DecoratorFactoryAttribute, SymbolEqualityComparer.Default)
+                            || attribute.Equals(wellKnownTypes.FactoryOfAttribute, SymbolEqualityComparer.Default)))));
 
                 foreach (var module in modules)
                 {

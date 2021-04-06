@@ -214,6 +214,7 @@ namespace StrongInject.Generator
             AppendSimpleRegistrations(registrations, attributes, module);
             AppendFactoryRegistrations(registrations, attributes, module);
             AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToCalculate);
+            AppendFactoryOfMethods(registrations, genericRegistrations, module, registrationsToCalculate);
             AppendInstanceFieldAndProperties(registrations, module, registrationsToCalculate);
             AppendDecoratorRegistrations(nonGenericDecorators, attributes, module);
             AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, registrationsToCalculate);
@@ -449,7 +450,7 @@ namespace StrongInject.Generator
                     registerAttribute.GetLocation(_cancellationToken)));
                 return false;
             }
-            else if (!module.HasAtMostInternalVisibility() && !type.IsPublic())
+            else if (!(module.HasAtMostInternalVisibility() || type.IsPublic()))
             {
                 _reportDiagnostic(WarnTypeNotPublic(
                     type,
@@ -595,51 +596,208 @@ namespace StrongInject.Generator
             }
 
             return null;
+        }
 
-            bool AllTypeParametersUsedInReturnType(IMethodSymbol method)
+        private static bool AllTypeParametersUsedInReturnType(IMethodSymbol method)
+        {
+            var usedParameters = new bool[method.TypeParameters.Length];
+            Visit(method.ReturnType);
+            return usedParameters.All(x => x);
+            void Visit(ITypeSymbol type)
             {
-                var usedParameters = new bool[method.TypeParameters.Length];
-                Visit(method.ReturnType);
-                return usedParameters.All(x => x);
-                void Visit(ITypeSymbol type)
+                switch (type)
                 {
-                    switch (type)
+                    case ITypeParameterSymbol typeParameterSymbol:
+
+                        if (SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringMethod, method))
+                        {
+                            usedParameters[typeParameterSymbol.Ordinal] = true;
+                        }
+                        break;
+
+                    case IArrayTypeSymbol { ElementType: var elementType }:
+
+                        Visit(elementType);
+                        break;
+
+                    case INamedTypeSymbol { TypeArguments: var typeArguments }:
+
+                        foreach (var typeArgument in typeArguments)
+                        {
+                            Visit(typeArgument);
+                        }
+
+                        break;
+                    case IFunctionPointerTypeSymbol { Signature: { ReturnType: var returnType, Parameters: var parameters } }:
+                        Visit(returnType);
+                        foreach (var parameter in parameters)
+                        {
+                            Visit(parameter.Type);
+                        }
+                        break;
+                    case IPointerTypeSymbol { PointedAtType: var pointedAtType }:
+                        Visit(pointedAtType);
+                        break;
+                    case IDynamicTypeSymbol:
+                        break;
+                    default: throw new NotImplementedException(type.ToString());
+                }
+            }
+        }
+
+        private void AppendFactoryOfMethods(
+            Dictionary<ITypeSymbol, InstanceSources> nonGenericRegistrations,
+            GenericRegistrationsResolver.Builder genericRegistrations,
+            INamedTypeSymbol module,
+            RegistrationsToCalculate registrationsToCalculate)
+        {
+            var methods = module.GetMembers().OfType<IMethodSymbol>();
+            foreach (var method in registrationsToCalculate switch
+            {
+                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
+                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
+                RegistrationsToCalculate.All => methods,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+            })
+            {
+                var instanceSources = CreateInstanceSourcesIfFactoryOfMethod(method);
+                foreach (var factoryOfMethod in instanceSources)
+                {
+                    if (factoryOfMethod.Underlying.IsOpenGeneric)
                     {
-                        case ITypeParameterSymbol typeParameterSymbol:
-
-                            if (SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringMethod, method))
-                            {
-                                usedParameters[typeParameterSymbol.Ordinal] = true;
-                            }
-                            break;
-
-                        case IArrayTypeSymbol { ElementType: var elementType }:
-
-                            Visit(elementType);
-                            break;
-
-                        case INamedTypeSymbol { TypeArguments: var typeArguments }:
-
-                            foreach(var typeArgument in typeArguments)
-                            {
-                                Visit(typeArgument);
-                            }
-
-                            break;
-                        case IFunctionPointerTypeSymbol { Signature: { ReturnType: var returnType, Parameters: var parameters } }:
-                            Visit(returnType);
-                            foreach (var parameter in parameters)
-                            {
-                                Visit(parameter.Type);
-                            }
-                            break;
-                        case IPointerTypeSymbol { PointedAtType: var pointedAtType }:
-                            Visit(pointedAtType);
-                            break;
-                        case IDynamicTypeSymbol:
-                            break;
-                        default: throw new NotImplementedException(type.ToString());
+                        genericRegistrations.Add(factoryOfMethod);
                     }
+                    else
+                    {
+                        nonGenericRegistrations.WithInstanceSource(factoryOfMethod.Underlying);
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<FactoryOfMethod> CreateInstanceSourcesIfFactoryOfMethod(IMethodSymbol method)
+        {
+            var attributes = method.GetAttributes().Where(x
+                => x.AttributeClass is { } attribute
+                && attribute.Equals(_wellKnownTypes.FactoryOfAttribute, SymbolEqualityComparer.Default))!;
+
+            foreach (var attribute in attributes)
+            {
+                var countConstructorArguments = attribute.ConstructorArguments.Length;
+                if (countConstructorArguments != 2)
+                {
+                    // Invalid code, ignore
+                    continue;
+                }
+
+                var typeConstant = attribute.ConstructorArguments[0];
+                if (typeConstant.Kind != TypedConstantKind.Type)
+                {
+                    // Invalid code, ignore
+                    continue;
+                }
+
+                var type = (ITypeSymbol)typeConstant.Value!;
+
+                var scope = attribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
+                    ? (Scope)scopeInt
+                    : Scope.InstancePerResolution;
+
+                if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
+                {
+                    bool isGeneric = method.TypeParameters.Length > 0;
+
+                    if (!isGeneric)
+                    {
+                        _reportDiagnostic(FactoryOfMethodMustBeGeneric(
+                            method,
+                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+
+                        continue;
+                    }
+
+                    if (!AllTypeParametersUsedInReturnType(method))
+                    {
+                        _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
+                            method,
+                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+
+                        continue;
+                    }
+
+                    bool anyPassedByRef = false;
+                    foreach (var param in method.Parameters)
+                    {
+                        if (param.RefKind != RefKind.None)
+                        {
+                            _reportDiagnostic(FactoryMethodParameterIsPassedByRef(
+                                method,
+                                param,
+                                param.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                            anyPassedByRef = true;
+                        }
+                    }
+                    if (anyPassedByRef)
+                        continue;
+
+                    var underlyingFactoryMethod = returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType)
+                        ? new FactoryMethod(method, taskOfType, scope, IsOpenGeneric: true, IsAsync: true)
+                        : new FactoryMethod(method, returnType, scope, IsOpenGeneric: true, IsAsync: false);
+
+                    if (type is INamedTypeSymbol { IsUnboundGenericType: true })
+                    {
+                        if (underlyingFactoryMethod.FactoryOfType is not ITypeParameterSymbol)
+                        {
+                            _reportDiagnostic(FactoryOfOpenGenericMustReturnSingleTypeParamater(
+                                method,
+                                type,
+                                attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                            continue;
+                        }
+
+                        yield return new FactoryOfMethod(underlyingFactoryMethod, type);
+                    }
+                    else
+                    {
+                        if (!GenericResolutionHelpers.CanConstructFromGenericMethodReturnType(
+                            _compilation,
+                            type,
+                            underlyingFactoryMethod.FactoryOfType,
+                            method,
+                            out var constructedFactoryMethod,
+                            out var constraintsDoNotMatch))
+                        {
+                            if (constraintsDoNotMatch)
+                            {
+                                _reportDiagnostic(CannotConstructFactoryOfTypeFromMethodAsConstraintsDoNotMatch(
+                                    method,
+                                    type,
+                                    attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                            }
+                            else
+                            {
+                                _reportDiagnostic(CannotConstructFactoryOfTypeFromMethod(
+                                    method,
+                                    type,
+                                    attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                            }
+                            continue;
+                        }
+                        yield return new FactoryOfMethod(
+                            underlyingFactoryMethod with
+                            {
+                                FactoryOfType = type,
+                                Method = constructedFactoryMethod,
+                                IsOpenGeneric = false,
+                            },
+                            type);
+                    }
+                }
+                else
+                {
+                    _reportDiagnostic(FactoryMethodReturnsVoid(
+                        method,
+                        attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
                 }
             }
         }
@@ -1370,6 +1528,67 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 typeSymbol);
+        }
+
+        private static Diagnostic FactoryOfMethodMustBeGeneric(IMethodSymbol methodSymbol, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0027",
+                    "Method marked with FactoryOfAttribute must be generic.",
+                    "Method '{0}' marked with FactoryOfAttribute must be generic.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                methodSymbol);
+        }
+
+        private static Diagnostic FactoryOfOpenGenericMustReturnSingleTypeParamater(IMethodSymbol methodSymbol, ITypeSymbol ofType, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0028",
+                    "Method marked with FactoryOfAttribute of open generic type must have a single type parameter, and return that type parameter.",
+                    "Method '{0}' marked with FactoryOfAttribute of open generic type '{1}' must have a single type parameter, and return that type parameter.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                methodSymbol,
+                ofType);
+        }
+
+        private static Diagnostic CannotConstructFactoryOfTypeFromMethod(IMethodSymbol methodSymbol, ITypeSymbol ofType, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0029",
+                    "FactoryOfAttribute Type cannot be constructed from the return type of method.",
+                    "FactoryOfAttribute Type '{0}' cannot be constructed from the return type '{1}' of method '{2}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                ofType,
+                methodSymbol.ReturnType,
+                methodSymbol);
+        }
+
+        private static Diagnostic CannotConstructFactoryOfTypeFromMethodAsConstraintsDoNotMatch(IMethodSymbol methodSymbol, ITypeSymbol ofType, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0030",
+                    "FactoryOfAttribute Type cannot be constructed from the return type of method as constraints do not match.",
+                    "FactoryOfAttribute Type '{0}' cannot be constructed from the return type '{1}' of method '{2}'  as constraints do not match.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                ofType,
+                methodSymbol.ReturnType,
+                methodSymbol);
         }
 
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)

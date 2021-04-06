@@ -2855,6 +2855,9 @@ partial class Container
                 // (1,1): Error SI0201: Missing Type 'StrongInject.DecoratorFactoryAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.FactoryOfAttribute'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.InstanceAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
@@ -24212,6 +24215,537 @@ unsafe partial class Container
         return new global::StrongInject.Owned<global::System.Int32>(int32_0_0, () =>
         {
             global::StrongInject.Helpers.Dispose(_0_1);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void TestFactoryOfNonGeneric()
+        {
+
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public partial class Container : IContainer<Dictionary<string, int>>, IContainer<Dictionary<string, object>>, IContainer<int> {
+    [FactoryOf(typeof(Dictionary<string, int>))] [FactoryOf(typeof(Dictionary<string, object>))] Dictionary<T1, T2> M1<T1, T2>() => default;
+    [FactoryOf(typeof(int))] T M2<T>() => default;
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.String, global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(dictionary_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>> global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.String, global::System.Int32>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>(dictionary_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.String, global::System.Object>();
+        TResult result;
+        try
+        {
+            result = func(dictionary_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>> global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.String, global::System.Object>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>(dictionary_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_0;
+        int32_0_0 = this.M2<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(int32_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_0;
+        int32_0_0 = this.M2<global::System.Int32>();
+        return new global::StrongInject.Owned<global::System.Int32>(int32_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void TestFactoryOfGeneric()
+        {
+
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public partial class Container : IContainer<Dictionary<string, int>>, IContainer<Dictionary<string, object>> {
+    [FactoryOf(typeof(Dictionary<,>))] T M1<T>() => default;
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>();
+        TResult result;
+        try
+        {
+            result = func(dictionary_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>> global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>(dictionary_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>();
+        TResult result;
+        try
+        {
+            result = func(dictionary_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>> global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>(dictionary_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void CannotResolveFactoryOfWhichDoesntMatch()
+        {
+
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public partial class Container : IContainer<Dictionary<string, int>>, IContainer<Dictionary<string, object>>, IContainer<IEnumerable<KeyValuePair<string, int>>> {
+    [FactoryOf(typeof(Dictionary<string, object>))] [FactoryOf(typeof(IEnumerable<>))] T M1<T>() => default;
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.Dictionary<string, int>': We have no source for instance of type 'System.Collections.Generic.Dictionary<string, int>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>> global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>();
+        TResult result;
+        try
+        {
+            result = func(dictionary_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>> global::StrongInject.IContainer<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object> dictionary_0_0;
+        dictionary_0_0 = this.M1<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.Dictionary<global::System.String, global::System.Object>>(dictionary_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(dictionary_0_0);
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>> iEnumerable_0_0;
+        iEnumerable_0_0 = this.M1<global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>>>();
+        TResult result;
+        try
+        {
+            result = func(iEnumerable_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(iEnumerable_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>>> global::StrongInject.IContainer<global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>> iEnumerable_0_0;
+        iEnumerable_0_0 = this.M1<global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>>>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<global::System.String, global::System.Int32>>>(iEnumerable_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(iEnumerable_0_0);
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void FactoryOfNonGenericMustBeResolvableFromMethod()
+        {
+
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public class Module {
+    [FactoryOf(typeof(Dictionary<string, object>))] [FactoryOf(typeof(Dictionary<string, List<int>>))] public static Dictionary<T1, List<T2>> M1<T1, T2>() where T2 : class => default;
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (6,6): Error SI0029: FactoryOfAttribute Type 'System.Collections.Generic.Dictionary<string, object>' cannot be constructed from the return type 'System.Collections.Generic.Dictionary<T1, System.Collections.Generic.List<T2>>' of method 'Container.M1<T1, T2>()'.
+                // FactoryOf(typeof(Dictionary<string, object>))
+                new DiagnosticResult("SI0029", @"FactoryOf(typeof(Dictionary<string, object>))", DiagnosticSeverity.Error).WithLocation(6, 6),
+                // (6,54): Error SI0030: FactoryOfAttribute Type 'System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>>' cannot be constructed from the return type 'System.Collections.Generic.Dictionary<T1, System.Collections.Generic.List<T2>>' of method 'Container.M1<T1, T2>()'  as constraints do not match.
+                // FactoryOf(typeof(Dictionary<string, List<int>>))
+                new DiagnosticResult("SI0030", @"FactoryOf(typeof(Dictionary<string, List<int>>))", DiagnosticSeverity.Error).WithLocation(6, 54));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
+        }
+
+        [Fact]
+        public void FactoryOfGenericMustHaveMethodReturnTypeParameter()
+        {
+
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public class Module {
+    [FactoryOf(typeof(Dictionary<,>))] public static Dictionary<T1, T2> M1<T1, T2>() => default;
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (6,6): Error SI0028: Method 'Module.M1<T1, T2>()' marked with FactoryOfAttribute of open generic type 'System.Collections.Generic.Dictionary<,>' must have a single type parameter, and return that type parameter.
+                // FactoryOf(typeof(Dictionary<,>))
+                new DiagnosticResult("SI0028", @"FactoryOf(typeof(Dictionary<,>))", DiagnosticSeverity.Error).WithLocation(6, 6));
+            comp.GetDiagnostics().Verify();
+            Assert.Empty(generated);
+        }
+
+        [Fact]
+        public void FactoryOfMethodCanReturnTask()
+        {
+
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+public partial class Container : IAsyncContainer<Dictionary<int, string>>, IAsyncContainer<int> {
+    [FactoryOf(typeof(Dictionary<,>))] [FactoryOf(typeof(int))] public static Task<T> M<T>() => default;
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>>.RunAsync<TResult, TParam>(global::System.Func<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Threading.Tasks.Task<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>> dictionary_0_1;
+        var hasAwaitStarted_dictionary_0_1 = false;
+        var dictionary_0_0 = default(global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>);
+        var hasAwaitCompleted_dictionary_0_1 = false;
+        dictionary_0_1 = global::Container.M<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>>();
+        try
+        {
+            hasAwaitStarted_dictionary_0_1 = true;
+            dictionary_0_0 = await dictionary_0_1;
+            hasAwaitCompleted_dictionary_0_1 = true;
+        }
+        catch
+        {
+            if (!hasAwaitStarted_dictionary_0_1)
+            {
+                dictionary_0_0 = await dictionary_0_1;
+            }
+            else if (!hasAwaitCompleted_dictionary_0_1)
+            {
+                throw;
+            }
+
+            await global::StrongInject.Helpers.DisposeAsync(dictionary_0_0);
+            throw;
+        }
+
+        TResult result;
+        try
+        {
+            result = await func(dictionary_0_0, param);
+        }
+        finally
+        {
+            await global::StrongInject.Helpers.DisposeAsync(dictionary_0_0);
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>>> global::StrongInject.IAsyncContainer<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Threading.Tasks.Task<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>> dictionary_0_1;
+        var hasAwaitStarted_dictionary_0_1 = false;
+        var dictionary_0_0 = default(global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>);
+        var hasAwaitCompleted_dictionary_0_1 = false;
+        dictionary_0_1 = global::Container.M<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>>();
+        try
+        {
+            hasAwaitStarted_dictionary_0_1 = true;
+            dictionary_0_0 = await dictionary_0_1;
+            hasAwaitCompleted_dictionary_0_1 = true;
+        }
+        catch
+        {
+            if (!hasAwaitStarted_dictionary_0_1)
+            {
+                dictionary_0_0 = await dictionary_0_1;
+            }
+            else if (!hasAwaitCompleted_dictionary_0_1)
+            {
+                throw;
+            }
+
+            await global::StrongInject.Helpers.DisposeAsync(dictionary_0_0);
+            throw;
+        }
+
+        return new global::StrongInject.AsyncOwned<global::System.Collections.Generic.Dictionary<global::System.Int32, global::System.String>>(dictionary_0_0, async () =>
+        {
+            await global::StrongInject.Helpers.DisposeAsync(dictionary_0_0);
+        });
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::System.Int32>.RunAsync<TResult, TParam>(global::System.Func<global::System.Int32, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Threading.Tasks.Task<global::System.Int32> int32_0_1;
+        var hasAwaitStarted_int32_0_1 = false;
+        var int32_0_0 = default(global::System.Int32);
+        int32_0_1 = global::Container.M<global::System.Int32>();
+        try
+        {
+            hasAwaitStarted_int32_0_1 = true;
+            int32_0_0 = await int32_0_1;
+        }
+        catch
+        {
+            if (!hasAwaitStarted_int32_0_1)
+            {
+                _ = int32_0_1.ContinueWith(failedTask => _ = failedTask.Exception, global::System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
+            }
+
+            throw;
+        }
+
+        TResult result;
+        try
+        {
+            result = await func(int32_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::System.Int32>> global::StrongInject.IAsyncContainer<global::System.Int32>.ResolveAsync()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Threading.Tasks.Task<global::System.Int32> int32_0_1;
+        var hasAwaitStarted_int32_0_1 = false;
+        var int32_0_0 = default(global::System.Int32);
+        int32_0_1 = global::Container.M<global::System.Int32>();
+        try
+        {
+            hasAwaitStarted_int32_0_1 = true;
+            int32_0_0 = await int32_0_1;
+        }
+        catch
+        {
+            if (!hasAwaitStarted_int32_0_1)
+            {
+                _ = int32_0_1.ContinueWith(failedTask => _ = failedTask.Exception, global::System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
+            }
+
+            throw;
+        }
+
+        return new global::StrongInject.AsyncOwned<global::System.Int32>(int32_0_0, async () =>
+        {
         });
     }
 }");
