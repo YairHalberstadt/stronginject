@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using StrongInject.Generator.Visitors;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 

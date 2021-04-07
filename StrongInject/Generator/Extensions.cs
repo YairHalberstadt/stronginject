@@ -36,13 +36,13 @@ namespace StrongInject.Generator
             return value;
         }
 
-        public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dic, TKey key, TValue defaultValue = default)
+        public static TValue? GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dic, TKey key, TValue? defaultValue = default)
         {
             if (dic.TryGetValue(key, out var value))
             {
                 return value;
             }
-            return defaultValue!;
+            return defaultValue;
         }
 
         public static void WithInstanceSource(this Dictionary<ITypeSymbol, InstanceSources> instanceSources, InstanceSource instanceSource)

@@ -24,6 +24,7 @@ namespace StrongInject.Generator
         INamedTypeSymbol RegisterDecoratorAttribute,
         INamedTypeSymbol FactoryAttribute,
         INamedTypeSymbol DecoratorFactoryAttribute,
+        INamedTypeSymbol FactoryOfAttribute,
         INamedTypeSymbol InstanceAttribute,
         INamedTypeSymbol ValueTask,
         INamedTypeSymbol ValueTask1,
@@ -60,6 +61,7 @@ namespace StrongInject.Generator
             var registerDecoratorAttribute = compilation.GetTypeOrReport(typeof(RegisterDecoratorAttribute), reportDiagnostic);
             var factoryAttribute = compilation.GetTypeOrReport(typeof(FactoryAttribute), reportDiagnostic);
             var decoratorFactoryAttribute = compilation.GetTypeOrReport(typeof(DecoratorFactoryAttribute), reportDiagnostic);
+            var factoryOfAttribute = compilation.GetTypeOrReport(typeof(FactoryOfAttribute), reportDiagnostic);
             var instanceAttribute = compilation.GetTypeOrReport(typeof(InstanceAttribute), reportDiagnostic);
             var valueTask1 = compilation.GetTypeOrReport(typeof(ValueTask<>), reportDiagnostic);
             var task1 = compilation.GetTypeOrReport(typeof(Task<>), reportDiagnostic);
@@ -84,6 +86,7 @@ namespace StrongInject.Generator
                 || registerDecoratorAttribute is null
                 || factoryAttribute is null
                 || decoratorFactoryAttribute is null
+                || factoryOfAttribute is null
                 || instanceAttribute is null
                 || valueTask is null
                 || valueTask1 is null
@@ -114,6 +117,7 @@ namespace StrongInject.Generator
                 RegisterDecoratorAttribute: registerDecoratorAttribute,
                 FactoryAttribute: factoryAttribute,
                 DecoratorFactoryAttribute: decoratorFactoryAttribute,
+                FactoryOfAttribute: factoryOfAttribute,
                 InstanceAttribute: instanceAttribute,
                 ValueTask: valueTask,
                 ValueTask1: valueTask1,

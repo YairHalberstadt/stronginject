@@ -2,9 +2,10 @@
 	<PropertyGroup>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
-		<WarningsAsErrors>true</WarningsAsErrors>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<NoWarn>CS1591</NoWarn>
 		<WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<AnalysisLevel>5</AnalysisLevel>
 		<StrongInjectSampleVersion>*-*</StrongInjectSampleVersion>
 		<StrongInjectExtensionsDependenInjectionSampleVersion>*-*</StrongInjectExtensionsDependenInjectionSampleVersion>

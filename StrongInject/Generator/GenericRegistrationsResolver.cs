@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using static StrongInject.Generator.GenericResolutionHelpers;
 
@@ -99,39 +100,42 @@ namespace StrongInject.Generator
         {
             private readonly List<Builder> _children = new();
             private readonly List<FactoryMethod> _factoryMethods = new();
+            private readonly List<FactoryOfMethod> _factoryOfMethods = new();
 
             public void Add(Builder child) => _children.Add(child);
             public void Add(FactoryMethod factoryMethod) => _factoryMethods.Add(factoryMethod);
+            public void Add(FactoryOfMethod factoryOfMethod) => _factoryOfMethods.Add(factoryOfMethod);
 
             public GenericRegistrationsResolver Build(Compilation compilation)
             {
                 var (namedTypeBuckets, otherTypesBucket, typeParameterBucket) = Partition(this, compilation);
-                return new(namedTypeBuckets, otherTypesBucket, typeParameterBucket);
+                return new(namedTypeBuckets,
+                    otherTypesBucket ?? new BucketBuilder().Build(compilation),
+                    typeParameterBucket ?? new BucketBuilder().Build(compilation));
 
-                static (Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket otherTypesBucket, Bucket typeParameterBucket) Partition(Builder builder, Compilation compilation)
+                static (Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket? otherTypesBucket, Bucket? typeParameterBucket) Partition(Builder builder, Compilation compilation)
                 {
-                    Dictionary<INamedTypeSymbol, (List<Bucket>? buckets, ImmutableArray<FactoryMethod>.Builder? factoryMethods)> namedTypeBucketsAndFactoryMethods = new(SymbolEqualityComparer.Default);
-                    List<Bucket>? otherTypesBuckets = null;
-                    List<Bucket>? typeParameterBuckets = null;
-                    ImmutableArray<FactoryMethod>.Builder? otherTypesFactoryMethods = null;
-                    ImmutableArray<FactoryMethod>.Builder? typeParameterFactoryMethods = null;
+                    Dictionary<INamedTypeSymbol, BucketBuilder> namedTypeBucketBuilders = new(SymbolEqualityComparer.Default);
+                    BucketBuilder? otherTypesBucketBuilder = null;
+                    BucketBuilder? typeParameterBucketBuilder = null;
 
                     foreach (var (childNamedTypeBuckets, childOtherTypesBucket, childTypeParameterBucket) in builder._children.Select(x => Partition(x, compilation)))
                     {
                         foreach (var (namedType, bucket) in childNamedTypeBuckets)
                         {
-                            namedTypeBucketsAndFactoryMethods.CreateOrUpdate(
+                            namedTypeBucketBuilders.GetOrCreate(
                                 namedType,
-                                bucket,
-                                static (_, b) => (new List<Bucket> { b }, null),
-                                static (_, b, l) =>
-                                {
-                                    l.buckets!.Add(b);
-                                    return l;
-                                });
+                                static _ => new BucketBuilder()).Add(bucket);
                         }
-                        (otherTypesBuckets ??= new()).Add(childOtherTypesBucket);
-                        (typeParameterBuckets ??= new()).Add(childTypeParameterBucket);
+                        if (childOtherTypesBucket != null)
+                        {
+                            (otherTypesBucketBuilder ??= new()).Add(childOtherTypesBucket);
+                        }
+
+                        if (childTypeParameterBucket != null)
+                        {
+                            (typeParameterBucketBuilder ??= new()).Add(childTypeParameterBucket);
+                        }
                     }
 
                     foreach (var factoryMethod in builder._factoryMethods)
@@ -140,57 +144,81 @@ namespace StrongInject.Generator
                         {
                             case INamedTypeSymbol namedType:
                                 {
-                                    namedTypeBucketsAndFactoryMethods.CreateOrUpdate(
+                                    namedTypeBucketBuilders.GetOrCreate(
                                         namedType.OriginalDefinition,
-                                        factoryMethod,
-                                        static (_, f) =>
-                                        {
-                                            var builder = ImmutableArray.CreateBuilder<FactoryMethod>();
-                                            builder.Add(f);
-                                            return (null, builder);
-                                        },
-                                        static (_, f, l) =>
-                                        {
-                                            (l.factoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(f);
-                                            return l;
-                                        });
+                                        static _ => new BucketBuilder()).Add(factoryMethod);
                                     break;
                                 }
 
                             case IArrayTypeSymbol or IFunctionPointerTypeSymbol or IPointerTypeSymbol:
-                                (otherTypesFactoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(factoryMethod);
+                                (otherTypesBucketBuilder ??= new()).Add(factoryMethod);
                                 break;
                             case ITypeParameterSymbol:
-                                (typeParameterFactoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>()).Add(factoryMethod);
+                                (typeParameterBucketBuilder ??= new()).Add(factoryMethod);
                                 break;
                             case var type: throw new NotImplementedException(type.ToString());
                         }
                     }
 
+                    foreach (var factoryOfMethod in builder._factoryOfMethods)
+                    {
+                        if (factoryOfMethod.FactoryOfType is not INamedTypeSymbol type)
+                            throw new InvalidOperationException("This location is thought to be unreachable");
+
+                        namedTypeBucketBuilders.GetOrCreate(
+                            type.OriginalDefinition,
+                            static _ => new BucketBuilder()).Add(factoryOfMethod);
+                    }
+
                     return
                     (
-                        namedTypeBucketsAndFactoryMethods.ToDictionary(
+                        namedTypeBucketBuilders.ToDictionary(
                             x => x.Key,
-                            x => new Bucket(
-                                x.Value.buckets ?? Enumerable.Empty<Bucket>(),
-                                x.Value.factoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
-                                compilation)),
-                        new Bucket(
-                            otherTypesBuckets ?? Enumerable.Empty<Bucket>(),
-                            otherTypesFactoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
-                            compilation),
-                        new Bucket(
-                            typeParameterBuckets ?? Enumerable.Empty<Bucket>(),
-                            typeParameterFactoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
-                            compilation)
+                            x => x.Value.Build(compilation)),
+                        otherTypesBucketBuilder?.Build(compilation),
+                        typeParameterBucketBuilder?.Build(compilation)
                     );
+                }
+            }
+
+            private class BucketBuilder
+            {
+                private List<Bucket>? _buckets;
+                private ImmutableArray<FactoryMethod>.Builder? _factoryMethods;
+                private ImmutableArray<FactoryOfMethod>.Builder? _factoryOfMethods;
+
+                public void Add(Bucket bucket)
+                {
+                    _buckets ??= new();
+                    _buckets.Add(bucket);
+                }
+
+                public void Add(FactoryMethod factoryMethod)
+                {
+                    _factoryMethods ??= ImmutableArray.CreateBuilder<FactoryMethod>();
+                    _factoryMethods.Add(factoryMethod);
+                }
+
+                public void Add(FactoryOfMethod factoryOfMethod)
+                {
+                    _factoryOfMethods ??= ImmutableArray.CreateBuilder<FactoryOfMethod>();
+                    _factoryOfMethods.Add(factoryOfMethod);
+                }
+
+                public Bucket Build(Compilation compilation)
+                {
+                    return new Bucket(
+                        _buckets ?? Enumerable.Empty<Bucket>(),
+                        _factoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
+                        _factoryOfMethods?.ToImmutable() ?? ImmutableArray<FactoryOfMethod>.Empty,
+                        compilation);
                 }
             }
         }
 
         private class Bucket
         {
-            public Bucket(IEnumerable<Bucket> childResolvers, ImmutableArray<FactoryMethod> factoryMethods, Compilation compilation)
+            public Bucket(IEnumerable<Bucket> childResolvers, ImmutableArray<FactoryMethod> factoryMethods, ImmutableArray<FactoryOfMethod> factoryOfMethods, Compilation compilation)
             {
                 var builder = ImmutableArray.CreateBuilder<Bucket>();
                 foreach (var childResolver in childResolvers)
@@ -206,18 +234,21 @@ namespace StrongInject.Generator
                 }
                 _childResolvers = builder.ToImmutable();
                 _factoryMethods = factoryMethods;
+                _factoryOfMethods = factoryOfMethods;
                 _compilation = compilation;
             }
 
             private readonly ImmutableArray<Bucket> _childResolvers;
             private readonly ImmutableArray<FactoryMethod> _factoryMethods;
+            private readonly ImmutableArray<FactoryOfMethod> _factoryOfMethods;
             private readonly Compilation _compilation;
 
             public bool TryResolve(ITypeSymbol type, out FactoryMethod instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
             {
                 instanceSource = null!;
                 List<FactoryMethod>? factoriesWhereConstraintsDoNotMatch = null;
-                foreach (var factoryMethod in _factoryMethods)
+
+                foreach (var factoryMethod in GetAllRelevantFactoryMethods(type))
                 {
                     if (CanConstructFromGenericFactoryMethod(type, factoryMethod, out var constructedFactoryMethod, out var constraintsDoNotMatch))
                     {
@@ -287,7 +318,7 @@ namespace StrongInject.Generator
 
             public void ResolveAll(ITypeSymbol type, HashSet<FactoryMethod> instanceSources)
             {
-                foreach (var factoryMethod in _factoryMethods)
+                foreach (var factoryMethod in GetAllRelevantFactoryMethods(type))
                 {
                     if (CanConstructFromGenericFactoryMethod(type, factoryMethod, out var constructedFactoryMethod, out _))
                     {
@@ -299,6 +330,16 @@ namespace StrongInject.Generator
                 {
                     childResolver.ResolveAll(type, instanceSources);
                 }
+            }
+
+            private IEnumerable<FactoryMethod> GetAllRelevantFactoryMethods(ITypeSymbol toConstruct)
+            {
+                return _factoryMethods.Concat(_factoryOfMethods.Where(x => IsRelevant(x, toConstruct)).Select(x => x.Underlying));
+            }
+
+            private static bool IsRelevant(FactoryOfMethod factoryOfMethod, ITypeSymbol toConstruct)
+            {
+                return factoryOfMethod.FactoryOfType.OriginalDefinition.Equals(toConstruct.OriginalDefinition, SymbolEqualityComparer.Default);
             }
 
             private bool CanConstructFromGenericFactoryMethod(ITypeSymbol toConstruct, FactoryMethod factoryMethod, out FactoryMethod constructedFactoryMethod, out bool constraintsDoNotMatch)
