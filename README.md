@@ -32,6 +32,7 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
     - [Instance fields and properties](#instance-fields-and-properties)
     - [Factories](#factories)
     - [Generic Factory Methods](#generic-factory-methods)
+      - [Factory Of Methods](#factory-of-methods)
     - [Decorators](#decorators)
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
     - [How StrongInject picks which registration to use](#how-stronginject-picks-which-registration-to-use)
@@ -461,6 +462,26 @@ public class ImmutableArrayModule
 ```
 
 Generic methods can also have constraints. StrongInject will ignore generic methods during resolution if the constraints do not match.
+
+##### Factory Of Methods
+
+Sometimes you have a generic factory method which you don't want to use for everything, but only for specific use cases. For example, you may want to use another IOC container to resolve specific types, but don't want to write a seperate factory method for each type. In such cases you can mark the method with any number of `FactoryOfAttribute`s, and it will act exactly like a normal factory method except it will only be used to resolve the types given in the `FactoryOfAttribute`s.
+
+```csharp
+public partial class AspNetCoreControllerContainer : IContainer<SomeAspNetCoreController>
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public AspNetCoreControllerContainer(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    [FactoryOf(typeof(ILogger<>), FactoryOf(typeof(IConfiguration))] private T GetService<T>() => _serviceProvider.GetRequiredService<T>();
+}
+```
+
+Here `GetService` will only be used to resolve `ILogger<T>` and `IConfiguration`.
 
 #### Decorators
 
