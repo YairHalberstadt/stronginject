@@ -2,7 +2,7 @@
 
 namespace StrongInject
 {
-    public static class ValueTaskExtensions
+    internal static class ValueTaskExtensions
     {
         public static ValueTask AsValueTask<T>(this ValueTask<T> valueTask)
         {

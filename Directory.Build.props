@@ -6,7 +6,9 @@
 		<NoWarn>CS1591</NoWarn>
 		<WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<AnalysisLevel>5</AnalysisLevel>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<AnalysisLevel>preview</AnalysisLevel>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<StrongInjectSampleVersion>*-*</StrongInjectSampleVersion>
 		<StrongInjectExtensionsDependenInjectionSampleVersion>*-*</StrongInjectExtensionsDependenInjectionSampleVersion>
 	</PropertyGroup>
