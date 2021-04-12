@@ -4,6 +4,16 @@ using System.Threading.Tasks;
 
 namespace StrongInject
 {
+    /// <summary>
+    /// A disposable wrapper for an instance of <typeparamref name="T"/>.
+    /// 
+    /// Make sure to dispose this once you are done using <see cref="Value"/>. This will dispose <see cref="Value"/> and all dependencies of it.
+    /// 
+    /// Do not dispose <see cref="Value"/> directly as that will not dispose its dependencies.
+    /// 
+    /// Do not use <see cref="Value"/> after this is disposed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public sealed class Owned<T> : IDisposable
     {
         private readonly Action _dispose;
@@ -27,6 +37,16 @@ namespace StrongInject
         }
     }
 
+    /// <summary>
+    /// An async disposable wrapper for an instance of <typeparamref name="T"/>.
+    /// 
+    /// Make sure to dispose this once you are done using <see cref="Value"/>. This will dispose <see cref="Value"/> and all dependencies of it.
+    /// 
+    /// Do not dispose <see cref="Value"/> directly as that will not dispose its dependencies.
+    /// 
+    /// Do not use <see cref="Value"/> after this is disposed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public sealed class AsyncOwned<T> : IAsyncDisposable
     {
         private readonly Func<ValueTask> _dispose;
