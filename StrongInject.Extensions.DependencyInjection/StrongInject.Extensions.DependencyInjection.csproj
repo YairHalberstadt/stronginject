@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>1.1.0</VersionPrefix>
+		<VersionPrefix>$(StrongInjectVersion)</VersionPrefix>
 		<PackageId>StrongInject.Extensions.DependencyInjection</PackageId>
 		<Description>Provides integration between Microsoft.Extensions.DependencyInjection and StrongInject</Description>
 	</PropertyGroup>

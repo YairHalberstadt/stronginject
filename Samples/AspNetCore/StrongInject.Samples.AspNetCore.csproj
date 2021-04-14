@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StrongInject.Extensions.DependencyInjection" Version="$(StrongInjectExtensionsDependenInjectionSampleVersion)" />
+    <PackageReference Include="StrongInject.Extensions.DependencyInjection" Version="$(StrongInjectSampleVersion)" />
   </ItemGroup>
 
 
