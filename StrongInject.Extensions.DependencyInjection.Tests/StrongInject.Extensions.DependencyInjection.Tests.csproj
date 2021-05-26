@@ -22,8 +22,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\StrongInject.Extensions.DependencyInjection\StrongInject.Extensions.DependencyInjection.csproj" />
-		<ProjectReference Include="..\StrongInject\StrongInject.csproj" OutputItemType="Analyzer">
-			<SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
-		</ProjectReference>
+		<ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" OutputItemType="Analyzer"/>
 	</ItemGroup>
 </Project>
