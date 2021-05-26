@@ -83,8 +83,8 @@ namespace StrongInject.Generator
 
                 var runMethodSource = new StringBuilder();
                 var runMethodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers(isAsync
-                    ? nameof(IAsyncContainer<object>.RunAsync)
-                    : nameof(IContainer<object>.Run))[0];
+                    ? "RunAsync"
+                    : "Run")[0];
                 if (isAsync)
                 {
                     runMethodSource.Append("async ");
@@ -116,8 +116,8 @@ namespace StrongInject.Generator
 
                 var resolveMethodSource = new StringBuilder();
                 var resolveMethodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers(isAsync
-                    ? nameof(IAsyncContainer<object>.ResolveAsync)
-                    : nameof(IContainer<object>.Resolve))[0];
+                    ? "ResolveAsync"
+                    : "Resolve")[0];
                 if (isAsync)
                 {
                     resolveMethodSource.Append("async ");
@@ -541,8 +541,8 @@ namespace StrongInject.Generator
                                 methodSource.Append(factoryName);
                                 methodSource.Append('.');
                                 methodSource.Append(isAsync
-                                    ? nameof(IAsyncFactory<object>.CreateAsync)
-                                    : nameof(IFactory<object>.Create));
+                                    ? "CreateAsync"
+                                    : "Create");
                                 methodSource.Append("();");
                                 break;
                             case Registration(_, _, _, var constructor, _) registration:
@@ -706,8 +706,8 @@ namespace StrongInject.Generator
             methodSource.Append(variableToInitializeName);
             methodSource.Append(").");
             methodSource.Append(isAsync
-                ? nameof(IRequiresAsyncInitialization.InitializeAsync)
-                : nameof(IRequiresInitialization.Initialize));
+                ? "InitializeAsync"
+                : "Initialize");
             methodSource.Append("();");
         }
 
@@ -757,8 +757,8 @@ namespace StrongInject.Generator
                     methodSource.Append(factoryName);
                     methodSource.Append('.');
                     methodSource.Append(isAsync
-                        ? nameof(IAsyncFactory<object>.ReleaseAsync)
-                        : nameof(IFactory<object>.Release));
+                        ? "ReleaseAsync"
+                        : "Release");
                     methodSource.Append('(');
                     methodSource.Append(variableName);
                     methodSource.Append(");");
@@ -771,8 +771,8 @@ namespace StrongInject.Generator
                     methodSource.Append(_wellKnownTypes.Helpers.FullName());
                     methodSource.Append('.');
                     methodSource.Append(isAsync
-                        ? nameof(Helpers.DisposeAsync)
-                        : nameof(Helpers.Dispose));
+                        ? "DisposeAsync"
+                        : "Dispose");
                     methodSource.Append('(');
                     methodSource.Append(variableName);
                     methodSource.Append(");");
@@ -807,7 +807,7 @@ namespace StrongInject.Generator
         private void GenerateDisposeMethods(bool anySync, bool anyAsync, StringBuilder file)
         {
             file.Append(@"private int _disposed = 0; private bool Disposed => _disposed != 0;");
-            var singleInstanceMethodsDisposalOrderings = _singleInstanceMethods is null
+            var singleInstanceMethodsDisposalOrderings = _singleInstanceMethods.Count == 0
                 ? Enumerable.Empty<(string name, string disposeFieldName, string lockName)>()
                 : PartialOrderingOfSingleInstanceDependenciesVisitor.GetPartialOrdering(_containerScope, _singleInstanceMethods.Keys.ToHashSet()).Select(x => _singleInstanceMethods[x]);
 

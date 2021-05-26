@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Samples.Xamari
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Samples.Wpf", "Samples\Wpf\StrongInject.Samples.Wpf.csproj", "{D05A0DBE-B2E8-48D7-A8D6-75DDF9F8EFB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Generator", "StrongInject.Generator\StrongInject.Generator.csproj", "{1684B68F-699F-457F-8891-99DC2569420B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		All|Any CPU = All|Any CPU
@@ -620,6 +622,56 @@ Global
 		{D05A0DBE-B2E8-48D7-A8D6-75DDF9F8EFB9}.Wpf|x64.Build.0 = Debug|Any CPU
 		{D05A0DBE-B2E8-48D7-A8D6-75DDF9F8EFB9}.Wpf|x86.ActiveCfg = Debug|Any CPU
 		{D05A0DBE-B2E8-48D7-A8D6-75DDF9F8EFB9}.Wpf|x86.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|Any CPU.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|Any CPU.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|iPhone.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|iPhone.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|x64.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|x64.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|x86.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.All|x86.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|Any CPU.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|Any CPU.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|iPhone.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|iPhone.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|x64.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|x64.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|x86.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|x86.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|x64.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Debug|x86.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|iPhone.Build.0 = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x64.ActiveCfg = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x64.Build.0 = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x86.ActiveCfg = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x86.Build.0 = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|Any CPU.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|Any CPU.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhone.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhone.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x64.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x64.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x86.ActiveCfg = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,23 +12,20 @@
 		<Description>compile time dependency injection for C#</Description>
 	</PropertyGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
-		<Compile Remove="Generator\**" />
-		<EmbeddedResource Remove="Generator\**" />
-		<None Remove="Generator\**" />
-	</ItemGroup>
-
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
 		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
 	</ItemGroup>
+	
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.1" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all"/>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Include="$(OutputPath)\netstandard2.0\StrongInject.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 
 </Project>

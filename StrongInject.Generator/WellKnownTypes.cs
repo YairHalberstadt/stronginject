@@ -1,7 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace StrongInject.Generator
 {
@@ -34,39 +32,40 @@ namespace StrongInject.Generator
     {
         public static bool TryCreate(Compilation compilation, Action<Diagnostic> reportDiagnostic, out WellKnownTypes wellKnownTypes)
         {
-            var iContainer = compilation.GetTypeOrReport(typeof(IContainer<>), reportDiagnostic);
+            var iContainer = compilation.GetTypeOrReport("StrongInject.IContainer`1", reportDiagnostic);
             var iAsyncContainer = compilation.GetTypeOrReport("StrongInject.IAsyncContainer`1", reportDiagnostic);
-            var iFactory = compilation.GetTypeOrReport(typeof(IFactory<>), reportDiagnostic);
-            var iAsyncFactory = compilation.GetTypeOrReport(typeof(IAsyncFactory<>), reportDiagnostic);
-            var iRequiresInitialization = compilation.GetTypeOrReport(typeof(IRequiresInitialization), reportDiagnostic);
-            var iRequiresAsyncInitialization = compilation.GetTypeOrReport(typeof(IRequiresAsyncInitialization), reportDiagnostic);
-            var iDisposable = compilation.GetTypeOrReport(typeof(IDisposable), reportDiagnostic);
+            var iFactory = compilation.GetTypeOrReport("StrongInject.IFactory`1", reportDiagnostic);
+            var iAsyncFactory = compilation.GetTypeOrReport("StrongInject.IAsyncFactory`1", reportDiagnostic);
+            var iRequiresInitialization = compilation.GetTypeOrReport("StrongInject.IRequiresInitialization", reportDiagnostic);
+            var iRequiresAsyncInitialization = compilation.GetTypeOrReport("StrongInject.IRequiresAsyncInitialization", reportDiagnostic);
+            var iDisposable = compilation.GetTypeOrReport("System.IDisposable", reportDiagnostic);
             var iAsyncDisposable = compilation.GetTypeOrReport("System.IAsyncDisposable", reportDiagnostic);
-            var action = compilation.GetTypeOrReport(typeof(Action), reportDiagnostic);
+            var action = compilation.GetTypeOrReport("System.Action", reportDiagnostic);
+            var concurrentBag = compilation.GetTypeOrReport("System.Collections.Concurrent.ConcurrentBag`1", reportDiagnostic);
             var concurrentBagOfAction = action is null
                 ? null
-                : compilation.GetTypeOrReport(typeof(ConcurrentBag<>), reportDiagnostic)?.Construct(action);
-            var valueTask = compilation.GetTypeOrReport(typeof(ValueTask), reportDiagnostic);
+                : concurrentBag?.Construct(action);
+            var valueTask = compilation.GetTypeOrReport("System.Threading.Tasks.ValueTask", reportDiagnostic);
             var funcOfTask = valueTask is null
                 ? null
-                : compilation.GetTypeOrReport(typeof(Func<>), reportDiagnostic)?.Construct(valueTask);
+                : compilation.GetTypeOrReport("System.Func`1", reportDiagnostic)?.Construct(valueTask);
             var concurrentBagOfFuncTask = funcOfTask is null
                 ? null
-                : compilation.GetTypeOrReport(typeof(ConcurrentBag<>), reportDiagnostic)?.Construct(funcOfTask);
-            var owned = compilation.GetTypeOrReport(typeof(Owned<>), reportDiagnostic);
+                : concurrentBag?.Construct(funcOfTask);
+            var owned = compilation.GetTypeOrReport("StrongInject.Owned`1", reportDiagnostic);
             var asyncOwned = compilation.GetTypeOrReport("StrongInject.AsyncOwned`1", reportDiagnostic);
-            var registerAttribute = compilation.GetTypeOrReport(typeof(RegisterAttribute), reportDiagnostic);
-            var registerModuleAttribute = compilation.GetTypeOrReport(typeof(RegisterModuleAttribute), reportDiagnostic);
-            var registerFactoryAttribute = compilation.GetTypeOrReport(typeof(RegisterFactoryAttribute), reportDiagnostic);
-            var registerDecoratorAttribute = compilation.GetTypeOrReport(typeof(RegisterDecoratorAttribute), reportDiagnostic);
-            var factoryAttribute = compilation.GetTypeOrReport(typeof(FactoryAttribute), reportDiagnostic);
-            var decoratorFactoryAttribute = compilation.GetTypeOrReport(typeof(DecoratorFactoryAttribute), reportDiagnostic);
-            var factoryOfAttribute = compilation.GetTypeOrReport(typeof(FactoryOfAttribute), reportDiagnostic);
-            var instanceAttribute = compilation.GetTypeOrReport(typeof(InstanceAttribute), reportDiagnostic);
-            var valueTask1 = compilation.GetTypeOrReport(typeof(ValueTask<>), reportDiagnostic);
-            var task1 = compilation.GetTypeOrReport(typeof(Task<>), reportDiagnostic);
-            var objectDisposedException = compilation.GetTypeOrReport(typeof(ObjectDisposedException), reportDiagnostic);
-            var helpers = compilation.GetTypeOrReport(typeof(Helpers), reportDiagnostic);
+            var registerAttribute = compilation.GetTypeOrReport("StrongInject.RegisterAttribute", reportDiagnostic);
+            var registerModuleAttribute = compilation.GetTypeOrReport("StrongInject.RegisterModuleAttribute", reportDiagnostic);
+            var registerFactoryAttribute = compilation.GetTypeOrReport("StrongInject.RegisterFactoryAttribute", reportDiagnostic);
+            var registerDecoratorAttribute = compilation.GetTypeOrReport("StrongInject.RegisterDecoratorAttribute", reportDiagnostic);
+            var factoryAttribute = compilation.GetTypeOrReport("StrongInject.FactoryAttribute", reportDiagnostic);
+            var decoratorFactoryAttribute = compilation.GetTypeOrReport("StrongInject.DecoratorFactoryAttribute", reportDiagnostic);
+            var factoryOfAttribute = compilation.GetTypeOrReport("StrongInject.FactoryOfAttribute", reportDiagnostic);
+            var instanceAttribute = compilation.GetTypeOrReport("StrongInject.InstanceAttribute", reportDiagnostic);
+            var valueTask1 = compilation.GetTypeOrReport("System.Threading.Tasks.ValueTask`1", reportDiagnostic);
+            var task1 = compilation.GetTypeOrReport("System.Threading.Tasks.Task`1", reportDiagnostic);
+            var objectDisposedException = compilation.GetTypeOrReport("System.ObjectDisposedException", reportDiagnostic);
+            var helpers = compilation.GetTypeOrReport("StrongInject.Helpers", reportDiagnostic);
 
             if (iContainer is null
                 || iAsyncContainer is null
