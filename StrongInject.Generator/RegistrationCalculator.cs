@@ -17,7 +17,7 @@ namespace StrongInject.Generator
             IReadOnlyDictionary<ITypeSymbol, InstanceSources> NonGenericRegistrations,
             GenericRegistrationsResolver.Builder GenericRegistrations,
             ImmutableArray<DecoratorSource> NonGenericDecorators,
-            ImmutableArray<DecoratorFactoryMethod> GenericDecorators) { }
+            ImmutableArray<DecoratorFactoryMethod> GenericDecorators);
 
         private enum RegistrationsToCalculate
         {
@@ -450,7 +450,8 @@ namespace StrongInject.Generator
                     registerAttribute.GetLocation(_cancellationToken)));
                 return false;
             }
-            else if (!(module.HasAtMostInternalVisibility() || type.IsPublic()))
+
+            if (!(module.HasAtMostInternalVisibility() || type.IsPublic()))
             {
                 _reportDiagnostic(WarnTypeNotPublic(
                     type,
@@ -470,7 +471,8 @@ namespace StrongInject.Generator
                 _reportDiagnostic(NoConstructor(registerAttribute, type, _cancellationToken));
                 return false;
             }
-            else if (applicableConstructors.Count == 1)
+
+            if (applicableConstructors.Count == 1)
             {
                 constructor = applicableConstructors[0];
             }
@@ -582,17 +584,13 @@ namespace StrongInject.Generator
                     {
                         return new FactoryMethod(method, taskOfType, scope, isGeneric, IsAsync: true);
                     }
-                    else
-                    {
-                        return new FactoryMethod(method, returnType, scope, isGeneric, IsAsync: false);
-                    }
+
+                    return new FactoryMethod(method, returnType, scope, isGeneric, IsAsync: false);
                 }
-                else
-                {
-                    _reportDiagnostic(FactoryMethodReturnsVoid(
-                        method,
-                        attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-                }
+
+                _reportDiagnostic(FactoryMethodReturnsVoid(
+                    method,
+                    attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
             }
 
             return null;
@@ -1087,7 +1085,8 @@ namespace StrongInject.Generator
                     _reportDiagnostic(DecoratorDoesNotHaveParameterOfDecoratedType(registerDecoratorAttribute, type, decoratedType, _cancellationToken));
                     continue;
                 }
-                else if (decoratedParameters.Count > 1)
+
+                if (decoratedParameters.Count > 1)
                 {
                     _reportDiagnostic(DecoratorHasMultipleParametersOfDecoratedType(registerDecoratorAttribute, type, decoratedType, _cancellationToken));
                     continue;
@@ -1181,7 +1180,8 @@ namespace StrongInject.Generator
                         _reportDiagnostic(DecoratorFactoryMethodDoesNotHaveParameterOfDecoratedType(attribute, method, decoratorOfType, _cancellationToken));
                         return null;
                     }
-                    else if (decoratedParameters.Count > 1)
+
+                    if (decoratedParameters.Count > 1)
                     {
                         _reportDiagnostic(DecoratorFactoryMethodHasMultipleParametersOfDecoratedType(attribute, method, decoratorOfType, _cancellationToken));
                         return null;
@@ -1196,49 +1196,13 @@ namespace StrongInject.Generator
 
                     return new DecoratorFactoryMethod(method, decoratorOfType, isGeneric, decoratedParameters[0].Ordinal, options.HasFlag(DecoratorOptions.Dispose), isAsync);
                 }
-                else
-                {
-                    _reportDiagnostic(FactoryMethodReturnsVoid(
-                        method,
-                        attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-                }
+
+                _reportDiagnostic(FactoryMethodReturnsVoid(
+                    method,
+                    attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
             }
 
             return null;
-
-            bool AllTypeParametersUsedInReturnType(IMethodSymbol method)
-            {
-                var usedParameters = new bool[method.TypeParameters.Length];
-                Visit(method.ReturnType);
-                return usedParameters.All(x => x);
-                void Visit(ITypeSymbol type)
-                {
-                    switch (type)
-                    {
-                        case ITypeParameterSymbol typeParameterSymbol:
-
-                            if (SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringMethod, method))
-                            {
-                                usedParameters[typeParameterSymbol.Ordinal] = true;
-                            }
-                            break;
-
-                        case IArrayTypeSymbol { ElementType: var elementType }:
-
-                            Visit(elementType);
-                            break;
-
-                        case INamedTypeSymbol { TypeArguments: var typeArguments }:
-
-                            foreach (var typeArgument in typeArguments)
-                            {
-                                Visit(typeArgument);
-                            }
-
-                            break;
-                    }
-                }
-            }
         }
 
         private static Diagnostic DoesNotHaveSuitableConversion(AttributeData registerAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)

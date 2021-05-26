@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StrongInject.Generator.Visitors;
 using System;
@@ -169,14 +168,7 @@ namespace StrongInject.Generator
                     runMethodSource.Append(variableCreationSource);
                     runMethodSource.Append(runMethodSymbol.TypeParameters[0].Name);
                     runMethodSource.Append(" result;try{result=");
-                    if (isAsync)
-                    {
-                        runMethodSource.Append("await func(");
-                    }
-                    else
-                    {
-                        runMethodSource.Append("func(");
-                    }
+                    runMethodSource.Append(isAsync ? "await func(" : "func(");
                     runMethodSource.Append(resultVariableName);
                     runMethodSource.Append(", param);}finally{");
                     runMethodSource.Append(disposalSource);
@@ -315,7 +307,7 @@ namespace StrongInject.Generator
         }
 
         private DisposalLowerer CreateDisposalLowerer(bool disposeAsynchronously)
-            => new DisposalLowerer(disposeAsynchronously, _wellKnownTypes, _reportDiagnostic, _containerDeclarationLocation);
+            => new(disposeAsynchronously, _wellKnownTypes, _reportDiagnostic, _containerDeclarationLocation);
 
         private void CreateVariables(
             ImmutableArray<Operation> operations,
@@ -485,10 +477,8 @@ namespace StrongInject.Generator
                         VariableName: var variableName,
                         Source:
                         {
-                            DelegateType: var delegateType,
                             IsAsync: var isAsync,
                             Parameters: var parameters,
-                            ReturnType: var returnType
                         } source,
                         InternalOperations: var internalOps,
                         InternalTargetName: var internalTargetName,
@@ -534,7 +524,7 @@ namespace StrongInject.Generator
 
                         switch (source)
                         {
-                            case FactorySource(var factoryOf, var underlying, var scope, var isAsync) registration:
+                            case FactorySource { IsAsync: var isAsync }:
                                 var factoryName = dependencies[0];
                                 methodSource.Append(variableName);
                                 methodSource.Append('=');
@@ -545,18 +535,18 @@ namespace StrongInject.Generator
                                     : "Create");
                                 methodSource.Append("();");
                                 break;
-                            case Registration(_, _, _, var constructor, _) registration:
+                            case Registration { Constructor: var constructor }:
                                 {
                                     GenerateMethodCall(variableName, constructor, dependencies);
                                     break;
                                 }
-                            case FactoryMethod(var method, _, _, _, _) registration:
+                            case FactoryMethod { Method: var method }:
                                 {
                                     GenerateMethodCall(variableName, method, dependencies);
 
                                     break;
                                 }
-                            case ArraySource(var arrayType, _, var sources):
+                            case ArraySource { ArrayType: var arrayType }:
                                 {
                                     methodSource.Append(variableName);
                                     methodSource.Append("=new ");
@@ -575,14 +565,14 @@ namespace StrongInject.Generator
                                     methodSource.Append("};");
                                     break;
                                 }
-                            case WrappedDecoratorInstanceSource(var decoratorSource, var instanceSource):
+                            case WrappedDecoratorInstanceSource { Decorator: var decoratorSource }:
                                 {
                                     switch (decoratorSource)
                                     {
-                                        case DecoratorRegistration(_, _, _, var constructor, _, _, _):
+                                        case DecoratorRegistration { Constructor: var constructor}:
                                             GenerateMethodCall(variableName, constructor, dependencies);
                                             break;
-                                        case DecoratorFactoryMethod(var method, var returnType, _, _, _, _) registration:
+                                        case DecoratorFactoryMethod { Method: var method }:
                                             GenerateMethodCall(variableName, method, dependencies);
                                             break;
                                         default: throw new NotImplementedException(decoratorSource.GetType().ToString());
@@ -670,7 +660,7 @@ namespace StrongInject.Generator
                     bool isFirst = true;
                     for (int i = 0; i < method.Parameters.Length; i++)
                     {
-                        IParameterSymbol? parameter = method.Parameters[i];
+                        var parameter = method.Parameters[i];
                         var name = dependencies[i];
                         if (name is not null)
                         {

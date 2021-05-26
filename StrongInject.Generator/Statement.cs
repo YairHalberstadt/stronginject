@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace StrongInject.Generator
 {
-    internal abstract record Statement();
+    internal abstract record Statement;
     internal sealed record DependencyCreationStatement(
         string VariableName,
         InstanceSource Source,
@@ -12,7 +12,7 @@ namespace StrongInject.Generator
         string VariableName,
         DelegateSource Source,
         ImmutableArray<Operation> InternalOperations,
-        string InternalTargetName) : Statement()
+        string InternalTargetName) : Statement
     {
         public string DisposeActionsName { get; } = "disposeActions_" + VariableName;
     }

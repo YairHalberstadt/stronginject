@@ -2,5 +2,5 @@
 
 namespace StrongInject.Generator
 {
-    internal record FactoryOfMethod(FactoryMethod Underlying, ITypeSymbol FactoryOfType){}
+    internal record FactoryOfMethod(FactoryMethod Underlying, ITypeSymbol FactoryOfType);
 }

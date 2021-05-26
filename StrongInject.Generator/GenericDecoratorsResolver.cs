@@ -23,8 +23,8 @@ namespace StrongInject.Generator
                 var list = decoratorFactoryMethod.DecoratedType switch
                 {
                     INamedTypeSymbol namedTypeSymbol => _namedTypeDecoratorFactories.GetOrCreate(namedTypeSymbol.OriginalDefinition, _ => new()),
-                    IArrayTypeSymbol arrayTypeSymbol => _arrayDecoratorFactories,
-                    ITypeParameterSymbol typeParameterSymbol => _typeParameterDecoratorFactories,
+                    IArrayTypeSymbol => _arrayDecoratorFactories,
+                    ITypeParameterSymbol => _typeParameterDecoratorFactories,
                     var typeSymbol => throw new InvalidOperationException($"Unexpected TypeSymbol {typeSymbol}"),
                 };
                 list.Add(decoratorFactoryMethod);
