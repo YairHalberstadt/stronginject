@@ -1,9 +1,8 @@
-﻿using StrongInject.Generator;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace StrongInject
+namespace StrongInject.Generator
 {
     internal class ImmutableSetInInsertionOrder<T> : IImmutableSet<T> where T : notnull
     {

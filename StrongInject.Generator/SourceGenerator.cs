@@ -32,10 +32,10 @@ namespace StrongInject.Generator
                 var modules = syntaxTree.GetRoot(cancellationToken).DescendantNodesAndSelf()
                     .OfType<ClassDeclarationSyntax>()
                     .Select(x => semanticModel.GetDeclaredSymbol(x, cancellationToken))
-                    .OfType<INamedTypeSymbol>()
+                    .Where(x => x != null)
                     .Select(x =>
                     {
-                        var isContainer = x.AllInterfaces.Any(x
+                        var isContainer = x!.AllInterfaces.Any(x
                             => x.OriginalDefinition.Equals(wellKnownTypes.IContainer, SymbolEqualityComparer.Default)
                                || x.OriginalDefinition.Equals(wellKnownTypes.IAsyncContainer,
                                    SymbolEqualityComparer.Default));

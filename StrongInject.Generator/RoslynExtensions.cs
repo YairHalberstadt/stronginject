@@ -6,28 +6,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace StrongInject.Generator
 {
     internal static class RoslynExtensions
     {
-        public static INamedTypeSymbol? GetType(this Compilation compilation, Type type) => compilation.GetTypeByMetadataName(type.FullName);
-        public static INamedTypeSymbol? GetTypeOrReport(this Compilation compilation, Type type, Action<Diagnostic> reportDiagnostic)
-        {
-            var typeSymbol = compilation.GetType(type);
-            if (typeSymbol is null)
-            {
-                reportDiagnostic(Diagnostic.Create(
-                    MissingTypeDescriptor,
-                    Location.None,
-                    type));
-            }
-            return typeSymbol;
-        }
-
         public static INamedTypeSymbol? GetTypeOrReport(this Compilation compilation, string metadataName, Action<Diagnostic> reportDiagnostic)
         {
             var typeSymbol = compilation.GetTypeByMetadataName(metadataName);
