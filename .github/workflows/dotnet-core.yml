@@ -86,8 +86,6 @@ jobs:
         dotnet-version: '5.0.x'
     - name: Setup MSbuild
       uses: microsoft/setup-msbuild@v1.0.2
-      with:
-        vs-version: '16.10'
     - name: Setup nuget
       uses: nuget/setup-nuget@v1
     - name: Install dependencies
