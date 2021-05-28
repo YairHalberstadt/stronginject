@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using StrongInject.Plugins;
+using System.Collections.Generic;
 
 namespace StrongInject.Generator.Visitors
 {

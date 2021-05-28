@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using StrongInject.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -8,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using static StrongInject.Plugins.ModuleContext;
 
 namespace StrongInject.Generator
 {
@@ -19,21 +21,16 @@ namespace StrongInject.Generator
             ImmutableArray<DecoratorSource> NonGenericDecorators,
             ImmutableArray<DecoratorFactoryMethod> GenericDecorators);
 
-        private enum RegistrationsToCalculate
-        {
-            Exported,
-            Inherited,
-            All,
-        }
-
         public RegistrationCalculator(
             Compilation compilation,
             WellKnownTypes wellKnownTypes,
+            IReadOnlyList<IRegistrationProvider> registrationProviders,
             Action<Diagnostic> reportDiagnostic,
             CancellationToken cancellationToken)
         {
             _compilation = compilation;
             _wellKnownTypes = wellKnownTypes;
+            _registrationProviders = registrationProviders;
             _reportDiagnostic = reportDiagnostic;
             _cancellationToken = cancellationToken;
         }
@@ -41,12 +38,13 @@ namespace StrongInject.Generator
         private readonly Dictionary<INamedTypeSymbol, RegistrationData> _registrations = new(SymbolEqualityComparer.Default);
         private readonly Compilation _compilation;
         private readonly WellKnownTypes _wellKnownTypes;
+        private readonly IReadOnlyList<IRegistrationProvider> _registrationProviders;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly CancellationToken _cancellationToken;
 
         public InstanceSourcesScope GetContainerRegistrations(INamedTypeSymbol container)
         {
-            var registrations = CalculateRegistrations(container, dependantModules: null, RegistrationsToCalculate.All);
+            var registrations = CalculateRegistrations(container, dependantModules: null, RegistrationsToInclude.All);
             return new(
                 registrations.NonGenericRegistrations,
                 registrations.GenericRegistrations.Build(_compilation),
@@ -57,7 +55,7 @@ namespace StrongInject.Generator
 
         private RegistrationData GetBaseClassRegistrations(INamedTypeSymbol baseClass, HashSet<INamedTypeSymbol>? dependantModules)
         {
-            return CalculateRegistrations(baseClass, dependantModules, RegistrationsToCalculate.Inherited);
+            return CalculateRegistrations(baseClass, dependantModules, RegistrationsToInclude.ExportedAndInherited);
         }
 
         public void ValidateModuleRegistrations(INamedTypeSymbol module)
@@ -88,13 +86,13 @@ namespace StrongInject.Generator
                         ImmutableArray<DecoratorFactoryMethod>.Empty);
                 }
 
-                registrations = CalculateRegistrations(module, dependantModules, RegistrationsToCalculate.Exported);
+                registrations = CalculateRegistrations(module, dependantModules, RegistrationsToInclude.ExportedOnly);
                 _registrations[module] = registrations;
             }
             return registrations;
         }
 
-        private RegistrationData CalculateRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules, RegistrationsToCalculate registrationsToCalculate)
+        private RegistrationData CalculateRegistrations(INamedTypeSymbol module, HashSet<INamedTypeSymbol>? dependantModules, RegistrationsToInclude registrationsToInclude)
         {
             _cancellationToken.ThrowIfCancellationRequested();
 
@@ -103,7 +101,7 @@ namespace StrongInject.Generator
             var genericDecorators = ImmutableArray.CreateBuilder<DecoratorFactoryMethod>();
             var nonGenericRegistrations = CalculateImportedModuleRegistrations(module, genericRegistrations, nonGenericDecorators, genericDecorators, dependantModules);
 
-            var thisModuleNonGenericRegistrations = CalculateThisModuleRegistrations(module, genericRegistrations, nonGenericDecorators, genericDecorators, registrationsToCalculate);
+            var thisModuleNonGenericRegistrations = CalculateThisModuleRegistrations(module, genericRegistrations, nonGenericDecorators, genericDecorators, registrationsToInclude);
 
             if (nonGenericRegistrations is not null)
             {
@@ -207,17 +205,18 @@ namespace StrongInject.Generator
             GenericRegistrationsResolver.Builder genericRegistrations,
             ImmutableArray<DecoratorSource>.Builder nonGenericDecorators,
             ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators,
-            RegistrationsToCalculate registrationsToCalculate)
+            RegistrationsToInclude registrationsToInclude)
         {
             var attributes = module.GetAttributes();
             var registrations = new Dictionary<ITypeSymbol, InstanceSources>(SymbolEqualityComparer.Default);
             AppendSimpleRegistrations(registrations, attributes, module);
             AppendFactoryRegistrations(registrations, attributes, module);
-            AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToCalculate);
-            AppendFactoryOfMethods(registrations, genericRegistrations, module, registrationsToCalculate);
-            AppendInstanceFieldAndProperties(registrations, module, registrationsToCalculate);
+            AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToInclude);
+            AppendFactoryOfMethods(registrations, genericRegistrations, module, registrationsToInclude);
+            AppendInstanceFieldAndProperties(registrations, module, registrationsToInclude);
             AppendDecoratorRegistrations(nonGenericDecorators, attributes, module);
-            AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, registrationsToCalculate);
+            AppendDecoratorFactoryMethods(nonGenericDecorators, genericDecorators, module, registrationsToInclude);
+            AppendRegistrationProviderRegistrations(registrations, genericRegistrations, nonGenericDecorators, genericDecorators, module, registrationsToInclude);
             return registrations;
         }
 
@@ -513,14 +512,14 @@ namespace StrongInject.Generator
             Dictionary<ITypeSymbol, InstanceSources> nonGenericRegistrations,
             GenericRegistrationsResolver.Builder genericRegistrations,
             INamedTypeSymbol module,
-            RegistrationsToCalculate registrationsToCalculate)
+            RegistrationsToInclude registrationsToInclude)
         {
             var methods = module.GetMembers().OfType<IMethodSymbol>();
-            foreach (var method in registrationsToCalculate switch {
-                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
-                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
-                RegistrationsToCalculate.All => methods,
-                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+            foreach (var method in registrationsToInclude switch {
+                RegistrationsToInclude.ExportedOnly => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
+                RegistrationsToInclude.ExportedAndInherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
+                RegistrationsToInclude.All => methods,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToInclude), (int)registrationsToInclude, typeof(RegistrationsToInclude))
             })
             {
                 var instanceSource = CreateInstanceSourceIfFactoryMethod(method, out var attribute);
@@ -556,44 +555,58 @@ namespace StrongInject.Generator
                     ? (Scope)scopeInt
                     : Scope.InstancePerResolution;
 
-                if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
-                {
-                    bool isGeneric = method.TypeParameters.Length > 0;
-                    if (isGeneric && !AllTypeParametersUsedInReturnType(method))
-                    {
-                        _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
-                            method,
-                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-
-                        return null;
-                    }
-
-                    foreach (var param in method.Parameters)
-                    {
-                        if (param.RefKind != RefKind.None)
-                        {
-                            _reportDiagnostic(FactoryMethodParameterIsPassedByRef(
-                                method,
-                                param,
-                                param.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-                            return null;
-                        }
-                    }
-
-                    if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
-                    {
-                        return new FactoryMethod(method, taskOfType, scope, isGeneric, IsAsync: true);
-                    }
-
-                    return new FactoryMethod(method, returnType, scope, isGeneric, IsAsync: false);
-                }
-
-                _reportDiagnostic(FactoryMethodReturnsVoid(
-                    method,
-                    attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                var diagnosticLocation = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
+                
+                return CreateFactoryMethod(method, scope, diagnosticLocation);
             }
 
             return null;
+        }
+
+        private FactoryMethod? CreateFactoryMethod(IMethodSymbol method, Scope scope, Location diagnosticLocation)
+        {
+            var returnType = method.ReturnType;
+            if (returnType.SpecialType is SpecialType.System_Void)
+            {
+                _reportDiagnostic(FactoryMethodReturnsVoid(
+                    method,
+                    diagnosticLocation));
+                return null;
+            }
+
+            bool isGeneric = method.TypeParameters.Length > 0;
+            if (isGeneric && !AllTypeParametersUsedInReturnType(method))
+            {
+                _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
+                    method,
+                    diagnosticLocation));
+
+                {
+                    return null;
+                }
+            }
+
+            foreach (var param in method.Parameters)
+            {
+                if (param.RefKind != RefKind.None)
+                {
+                    _reportDiagnostic(FactoryMethodParameterIsPassedByRef(
+                        method,
+                        param,
+                        param.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ??
+                        Location.None));
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
+            {
+                return new FactoryMethod(method, taskOfType, scope, isGeneric, IsAsync: true);
+            }
+
+            return new FactoryMethod(method, returnType, scope, isGeneric, IsAsync: false);
         }
 
         private static bool AllTypeParametersUsedInReturnType(IMethodSymbol method)
@@ -647,15 +660,15 @@ namespace StrongInject.Generator
             Dictionary<ITypeSymbol, InstanceSources> nonGenericRegistrations,
             GenericRegistrationsResolver.Builder genericRegistrations,
             INamedTypeSymbol module,
-            RegistrationsToCalculate registrationsToCalculate)
+            RegistrationsToInclude registrationsToInclude)
         {
             var methods = module.GetMembers().OfType<IMethodSymbol>();
-            foreach (var method in registrationsToCalculate switch
+            foreach (var method in registrationsToInclude switch
             {
-                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
-                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
-                RegistrationsToCalculate.All => methods,
-                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+                RegistrationsToInclude.ExportedOnly => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
+                RegistrationsToInclude.ExportedAndInherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
+                RegistrationsToInclude.All => methods,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToInclude), (int)registrationsToInclude, typeof(RegistrationsToInclude))
             })
             {
                 var instanceSources = CreateInstanceSourcesIfFactoryOfMethod(method);
@@ -803,15 +816,15 @@ namespace StrongInject.Generator
         private void AppendInstanceFieldAndProperties(
             Dictionary<ITypeSymbol, InstanceSources> registrations,
             INamedTypeSymbol module,
-            RegistrationsToCalculate registrationsToCalculate)
+            RegistrationsToInclude registrationsToInclude)
         {
             var fieldsAndProperties = module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol);
-            foreach (var fieldOrProperty in registrationsToCalculate switch
+            foreach (var fieldOrProperty in registrationsToInclude switch
             {
-                RegistrationsToCalculate.Exported => fieldsAndProperties.Where(x => IsPubliclyAccessibleStaticFieldOrProperty(x)),
-                RegistrationsToCalculate.Inherited => fieldsAndProperties.Where(x => IsPubliclyAccessibleStaticFieldOrProperty(x) || IsProtectedFieldOrProperty(x)),
-                RegistrationsToCalculate.All => fieldsAndProperties,
-                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+                RegistrationsToInclude.ExportedOnly => fieldsAndProperties.Where(x => IsPubliclyAccessibleStaticFieldOrProperty(x)),
+                RegistrationsToInclude.ExportedAndInherited => fieldsAndProperties.Where(x => IsPubliclyAccessibleStaticFieldOrProperty(x) || IsProtectedFieldOrProperty(x)),
+                RegistrationsToInclude.All => fieldsAndProperties,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToInclude), (int)registrationsToInclude, typeof(RegistrationsToInclude))
             })
             {
                 InstanceSource? instanceSource = CreateInstanceSourceIfInstanceFieldOrProperty(fieldOrProperty, out var attribute);
@@ -829,7 +842,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private InstanceSource ApplyOptions(InstanceSource instanceSource, Options options, Dictionary<ITypeSymbol, InstanceSources> registrations, HashSet<ITypeSymbol>? currentlyVisiting = null)
+        private TSource ApplyOptions<TSource>(TSource instanceSource, Options options, Dictionary<ITypeSymbol, InstanceSources> registrations, HashSet<ITypeSymbol>? currentlyVisiting = null) where TSource : InstanceSource
         {
             var useAsFactory = options.HasFlag(Options.UseAsFactory);
             if (useAsFactory && currentlyVisiting is null)
@@ -879,42 +892,48 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    registrations.WithInstanceSource(ApplyUseAsFactoryOption(ForwardedInstanceSource.Create(implementedInterface, instanceSource)));
+                    var forwardedInstanceSource = ForwardedInstanceSource.Create(implementedInterface, instanceSource);
+                    ApplyUseAsFactoryOption(forwardedInstanceSource);
+                    registrations.WithInstanceSource(forwardedInstanceSource);
 
                     currentlyVisiting?.Remove(implementedInterface);
                 }
             }
 
-            return ApplyUseAsFactoryOption(instanceSource);
+            ApplyUseAsFactoryOption(instanceSource);
 
-            InstanceSource ApplyUseAsFactoryOption(InstanceSource instanceSource)
+            return instanceSource;
+
+            void ApplyUseAsFactoryOption(InstanceSource instanceSource)
             {
-                if (useAsFactory)
+                if (!useAsFactory)
                 {
-                    var type = instanceSource.OfType;
-                    var isAsync = type.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
-                    var isFactory = isAsync || type.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default);
-                    if (isFactory)
-                    {
-                        var scope = (Scope)(((int)options) >> 24);
-                        var factoryTarget = ((INamedTypeSymbol)type).TypeArguments[0];
-                        InstanceSource factorySource = new FactorySource(factoryTarget, instanceSource, scope, isAsync);
-                        if (options.HasFlag(Options.ApplySameOptionsToFactoryTargets))
-                        {
-                            if (!currentlyVisiting!.Add(factoryTarget))
-                            {
-                                return instanceSource;
-                            }
-
-                            factorySource = ApplyOptions(factorySource, options, registrations, currentlyVisiting);
-                            currentlyVisiting.Remove(factoryTarget);
-                        }
-
-                        registrations.WithInstanceSource(factorySource);
-                    }
+                    return;
                 }
 
-                return instanceSource;
+                var type = instanceSource.OfType;
+                var isAsync = type.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
+                var isFactory = isAsync || type.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default);
+                if (!isFactory)
+                {
+                    return;
+                }
+
+                var scope = (Scope)(((int)options) >> 24);
+                var factoryTarget = ((INamedTypeSymbol)type).TypeArguments[0];
+                InstanceSource factorySource = new FactorySource(factoryTarget, instanceSource, scope, isAsync);
+                if (options.HasFlag(Options.ApplySameOptionsToFactoryTargets))
+                {
+                    if (!currentlyVisiting!.Add(factoryTarget))
+                    {
+                        return;
+                    }
+
+                    factorySource = ApplyOptions(factorySource, options, registrations, currentlyVisiting);
+                    currentlyVisiting.Remove(factoryTarget);
+                }
+
+                registrations.WithInstanceSource(factorySource);
             }
         }
 
@@ -1115,14 +1134,14 @@ namespace StrongInject.Generator
             ImmutableArray<DecoratorSource>.Builder nonGenericDecorators,
             ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators,
             INamedTypeSymbol module,
-            RegistrationsToCalculate registrationsToCalculate)
+            RegistrationsToInclude registrationsToInclude)
         {
             var methods = module.GetMembers().OfType<IMethodSymbol>();
-            foreach (var method in registrationsToCalculate switch {
-                RegistrationsToCalculate.Exported => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
-                RegistrationsToCalculate.Inherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
-                RegistrationsToCalculate.All => methods,
-                _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
+            foreach (var method in registrationsToInclude switch {
+                RegistrationsToInclude.ExportedOnly => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public),
+                RegistrationsToInclude.ExportedAndInherited => methods.Where(x => x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected()),
+                RegistrationsToInclude.All => methods,
+                _ => throw new InvalidEnumArgumentException(nameof(registrationsToInclude), (int)registrationsToInclude, typeof(RegistrationsToInclude))
             })
             {
                 var decoratorSource = CreateDecoratorSourceIfDecoratorFactoryMethod(method, out var attribute);
@@ -1205,6 +1224,54 @@ namespace StrongInject.Generator
             return null;
         }
 
+        private void AppendRegistrationProviderRegistrations(
+            Dictionary<ITypeSymbol, InstanceSources> registrations,
+            GenericRegistrationsResolver.Builder genericRegistrations,
+            ImmutableArray<DecoratorSource>.Builder nonGenericDecorators,
+            ImmutableArray<DecoratorFactoryMethod>.Builder genericDecorators,
+            INamedTypeSymbol module,
+            RegistrationsToInclude registrationsToInclude)
+        {
+            var context = new ModuleContext(module, registrationsToInclude);
+            foreach (var provider in _registrationProviders)
+            {
+                foreach (var registration in provider.GetRegistrationsForModule(context))
+                {
+                    switch (registration)
+                    {
+                        case Plugins.Registration.MethodRegistration
+                        {
+                            Method: var method,
+                            Options: var options,
+                            Scope: var scope,
+                            DiagnosticLocation: var location,
+                        }:
+                            {
+                                if (method.MethodKind == MethodKind.Constructor)
+                                {
+                                    // TODO: handle constructor
+                                }
+                                else
+                                {
+                                    var factoryMethod = CreateFactoryMethod(method, scope, location);
+                                    if (factoryMethod != null)
+                                    {
+                                        factoryMethod = ApplyOptions(factoryMethod, options, registrations);
+                                        registrations.WithInstanceSource(factoryMethod);
+                                    }
+                                    
+                                    // TODO: check method class is not generic
+                                    // TODO: check method has correct accessibility
+                                    // TODO: handle generic methods.
+                                }
+                            }
+                            break;
+                        // TODO: handle other registration types 
+                    }
+                }
+            }
+        }
+        
         private static Diagnostic DoesNotHaveSuitableConversion(AttributeData registerAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(

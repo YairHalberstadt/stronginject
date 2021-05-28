@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using StrongInject.Plugins;
 using System;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,8 @@ namespace StrongInject.Generator
     [Generator]
     internal class SourceGenerator : ISourceGenerator
     {
+        private IRegistrationProviderFactory[] _registrationProviderFactories = null!;
+
         public void Execute(GeneratorExecutionContext context)
         {
             var cancellationToken = context.CancellationToken;
@@ -21,8 +24,14 @@ namespace StrongInject.Generator
                 return;
             }
 
-            var registrationCalculator =
-                new RegistrationCalculator(compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
+            var registrationProviders = _registrationProviderFactories.Select(x => x.Create(context)).Where(x => x != null).ToList();
+
+            var registrationCalculator = new RegistrationCalculator(
+                compilation,
+                wellKnownTypes,
+                registrationProviders!,
+                reportDiagnostic,
+                cancellationToken);
 
             foreach (var syntaxTree in context.Compilation.SyntaxTrees)
             {
@@ -127,6 +136,21 @@ namespace StrongInject.Generator
 
         void ISourceGenerator.Initialize(GeneratorInitializationContext context)
         {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
+            {
+                foreach (var module in assembly.Modules)
+                {
+                    System.Runtime.CompilerServices.RuntimeHelpers.RunModuleConstructor(module.ModuleHandle);
+                }
+            }
+
+            _registrationProviderFactories = PluginCollection.RegistrationProviderFactories;
+
+            foreach (var factory in _registrationProviderFactories)
+            {
+                factory.Initialize(context);
+            }
         }
     }
 }

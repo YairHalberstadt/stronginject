@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StrongInject.Generator
+namespace StrongInject.Plugins
 {
     /// <summary>
     /// Provides options to configure a decorator registration

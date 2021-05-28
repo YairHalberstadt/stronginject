@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using StrongInject.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

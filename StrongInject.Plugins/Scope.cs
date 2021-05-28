@@ -1,4 +1,4 @@
-namespace StrongInject.Generator
+namespace StrongInject.Plugins
 {
     public enum Scope
     {
