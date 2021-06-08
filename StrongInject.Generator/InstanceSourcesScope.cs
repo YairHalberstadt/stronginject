@@ -46,7 +46,7 @@ namespace StrongInject.Generator
             Depth = depth;
         }
 
-        public bool TryGetSource(ITypeSymbol target, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
+        public bool TryGetSource(ITypeSymbol target, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<InstanceSource> sourcesNotMatchingConstraints)
         {
             if (!TryGetUnderlyingSource(target, out instanceSource, out isAmbiguous, out sourcesNotMatchingConstraints))
                 return false;
@@ -56,7 +56,7 @@ namespace StrongInject.Generator
             return true;
         }
 
-        private bool TryGetUnderlyingSource(ITypeSymbol target, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
+        private bool TryGetUnderlyingSource(ITypeSymbol target, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<InstanceSource> sourcesNotMatchingConstraints)
         {
             isAmbiguous = false;
             sourcesNotMatchingConstraints = Array.Empty<FactoryMethod>();

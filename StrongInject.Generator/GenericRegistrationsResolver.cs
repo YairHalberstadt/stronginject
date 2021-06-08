@@ -21,7 +21,7 @@ namespace StrongInject.Generator
             _typeParameterBuckets = typeParameterBuckets;
         }
 
-        public bool TryResolve(ITypeSymbol type, out FactoryMethod instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
+        public bool TryResolve(ITypeSymbol type, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<InstanceSource> sourcesNotMatchingConstraints)
         {
             instanceSource = null!;
             sourcesNotMatchingConstraints = Array.Empty<FactoryMethod>();
@@ -100,10 +100,14 @@ namespace StrongInject.Generator
             private readonly List<Builder> _children = new();
             private readonly List<FactoryMethod> _factoryMethods = new();
             private readonly List<FactoryOfMethod> _factoryOfMethods = new();
+            private readonly List<Registration> _registrations = new();
+            private readonly List<ForwardedInstanceSource> _forwardedInstanceSources = new();
 
             public void Add(Builder child) => _children.Add(child);
             public void Add(FactoryMethod factoryMethod) => _factoryMethods.Add(factoryMethod);
             public void Add(FactoryOfMethod factoryOfMethod) => _factoryOfMethods.Add(factoryOfMethod);
+            public void Add(Registration registration) => _registrations.Add(registration);
+            public void Add(ForwardedInstanceSource forwardedInstanceSource) => _forwardedInstanceSources.Add(forwardedInstanceSource);
 
             public GenericRegistrationsResolver Build(Compilation compilation)
             {
@@ -168,6 +172,20 @@ namespace StrongInject.Generator
                             type.OriginalDefinition,
                             static _ => new BucketBuilder()).Add(factoryOfMethod);
                     }
+                    
+                    foreach (var registration in builder._registrations)
+                    {
+                        namedTypeBucketBuilders.GetOrCreate(
+                            registration.Type.OriginalDefinition,
+                            static _ => new BucketBuilder()).Add(registration);
+                    }
+                    
+                    foreach (var forwardedInstanceSource in builder._forwardedInstanceSources)
+                    {
+                        namedTypeBucketBuilders.GetOrCreate(
+                            forwardedInstanceSource.AsType.OriginalDefinition,
+                            static _ => new BucketBuilder()).Add(forwardedInstanceSource);
+                    }
 
                     return
                     (
@@ -185,6 +203,8 @@ namespace StrongInject.Generator
                 private List<Bucket>? _buckets;
                 private ImmutableArray<FactoryMethod>.Builder? _factoryMethods;
                 private ImmutableArray<FactoryOfMethod>.Builder? _factoryOfMethods;
+                private ImmutableArray<Registration>.Builder? _registrations;
+                private ImmutableArray<ForwardedInstanceSource>.Builder? _forwardedInstanceSources;
 
                 public void Add(Bucket bucket)
                 {
@@ -203,6 +223,18 @@ namespace StrongInject.Generator
                     _factoryOfMethods ??= ImmutableArray.CreateBuilder<FactoryOfMethod>();
                     _factoryOfMethods.Add(factoryOfMethod);
                 }
+                
+                public void Add(Registration registration)
+                {
+                    _registrations ??= ImmutableArray.CreateBuilder<Registration>();
+                    _registrations.Add(registration);
+                }
+
+                public void Add(ForwardedInstanceSource forwardedInstanceSource)
+                {
+                    _forwardedInstanceSources ??= ImmutableArray.CreateBuilder<ForwardedInstanceSource>();
+                    _forwardedInstanceSources.Add(forwardedInstanceSource);
+                }
 
                 public Bucket Build(Compilation compilation)
                 {
@@ -210,6 +242,8 @@ namespace StrongInject.Generator
                         _buckets ?? Enumerable.Empty<Bucket>(),
                         _factoryMethods?.ToImmutable() ?? ImmutableArray<FactoryMethod>.Empty,
                         _factoryOfMethods?.ToImmutable() ?? ImmutableArray<FactoryOfMethod>.Empty,
+                        _registrations?.ToImmutable() ?? ImmutableArray<Registration>.Empty,
+                        _forwardedInstanceSources?.ToImmutable() ?? ImmutableArray<ForwardedInstanceSource>.Empty,
                         compilation);
                 }
             }
@@ -217,12 +251,18 @@ namespace StrongInject.Generator
 
         private class Bucket
         {
-            public Bucket(IEnumerable<Bucket> childResolvers, ImmutableArray<FactoryMethod> factoryMethods, ImmutableArray<FactoryOfMethod> factoryOfMethods, Compilation compilation)
+            public Bucket(
+                IEnumerable<Bucket> childResolvers,
+                ImmutableArray<FactoryMethod> factoryMethods,
+                ImmutableArray<FactoryOfMethod> factoryOfMethods,
+                ImmutableArray<Registration> registrations,
+                ImmutableArray<ForwardedInstanceSource> forwardedInstanceSources,
+                Compilation compilation)
             {
                 var builder = ImmutableArray.CreateBuilder<Bucket>();
                 foreach (var childResolver in childResolvers)
                 {
-                    if (childResolver._factoryMethods.IsDefaultOrEmpty)
+                    if (childResolver.IsEmpty)
                     {
                         builder.AddRange(childResolver._childResolvers);
                     }
@@ -234,18 +274,27 @@ namespace StrongInject.Generator
                 _childResolvers = builder.ToImmutable();
                 _factoryMethods = factoryMethods;
                 _factoryOfMethods = factoryOfMethods;
+                _registrations = registrations;
+                _forwardedInstanceSources = forwardedInstanceSources;
                 _compilation = compilation;
             }
 
             private readonly ImmutableArray<Bucket> _childResolvers;
             private readonly ImmutableArray<FactoryMethod> _factoryMethods;
             private readonly ImmutableArray<FactoryOfMethod> _factoryOfMethods;
+            private readonly ImmutableArray<Registration> _registrations;
+            private readonly ImmutableArray<ForwardedInstanceSource> _forwardedInstanceSources;
             private readonly Compilation _compilation;
 
-            public bool TryResolve(ITypeSymbol type, out FactoryMethod instanceSource, out bool isAmbiguous, out IEnumerable<FactoryMethod> sourcesNotMatchingConstraints)
+            private bool IsEmpty => _factoryMethods.IsDefaultOrEmpty
+                                   && _factoryOfMethods.IsDefaultOrEmpty
+                                   && _registrations.IsDefaultOrEmpty
+                                   && _forwardedInstanceSources.IsDefaultOrEmpty;
+            
+            public bool TryResolve(ITypeSymbol type, out InstanceSource instanceSource, out bool isAmbiguous, out IEnumerable<InstanceSource> sourcesNotMatchingConstraints)
             {
                 instanceSource = null!;
-                List<FactoryMethod>? factoriesWhereConstraintsDoNotMatch = null;
+                List<InstanceSource>? sourcesNotMatchingConstraintsTemp = null;
 
                 foreach (var factoryMethod in GetAllRelevantFactoryMethods(type))
                 {
@@ -259,20 +308,93 @@ namespace StrongInject.Generator
                         {
                             instanceSource = null!;
                             isAmbiguous = true;
-                            sourcesNotMatchingConstraints = Enumerable.Empty<FactoryMethod>();
+                            sourcesNotMatchingConstraints = Array.Empty<InstanceSource>();
                             return false;
                         }
                     }
                     else if (constraintsDoNotMatch)
                     {
-                        (factoriesWhereConstraintsDoNotMatch ??= new()).Add(factoryMethod);
+                        (sourcesNotMatchingConstraintsTemp ??= new()).Add(factoryMethod);
                     }
                 }
 
+                foreach (var registration in _registrations)
+                {
+                    if (registration.Type.OriginalDefinition.Equals(type.OriginalDefinition, SymbolEqualityComparer.Default))
+                    {
+                        var originalConstructor = registration.Constructor.OriginalDefinition;
+                        var constructor = ((INamedTypeSymbol)type).InstanceConstructors.First(
+                            x => SymbolEqualityComparer.Default.Equals(x.OriginalDefinition, originalConstructor));
+
+                        var updatedRegistration = registration with
+                        {
+                            Constructor = constructor, Type = ((INamedTypeSymbol)type)
+                        };
+                        if (instanceSource is null)
+                        {
+                            instanceSource = updatedRegistration;
+                        }
+                        else if (instanceSource != updatedRegistration)
+                        {
+                            instanceSource = null!;
+                            isAmbiguous = true;
+                            sourcesNotMatchingConstraints = Array.Empty<InstanceSource>();
+                            return false;
+                        }
+                    }
+                }
+                
+                foreach (var forwardedInstanceSource in _forwardedInstanceSources)
+                {
+                    if (forwardedInstanceSource.AsType.OriginalDefinition.Equals(type.OriginalDefinition, SymbolEqualityComparer.Default))
+                    {
+                        if (forwardedInstanceSource.Underlying is Registration registration)
+                        {
+                            var typeArguments = ((INamedTypeSymbol)type).TypeArguments;
+                            if (SatisfiesConstraints(registration.Type, typeArguments, _compilation))
+                            {
+                                var originalConstructor = registration.Constructor.OriginalDefinition;
+                                var constructedRegistrationType =
+                                    registration.Type.OriginalDefinition.Construct(typeArguments.ToArray());
+                                var constructor = constructedRegistrationType.InstanceConstructors.First(
+                                    x => SymbolEqualityComparer.Default.Equals(x.OriginalDefinition, originalConstructor));
+
+                                var updatedRegistration = registration with
+                                {
+                                    Constructor = constructor, Type = constructedRegistrationType
+                                };
+
+                                var updatedForwardedInstanceSource =
+                                    ForwardedInstanceSource.Create((INamedTypeSymbol)type, updatedRegistration);
+                                
+                                if (instanceSource is null)
+                                {
+                                    instanceSource = updatedForwardedInstanceSource;
+                                }
+                                else if (instanceSource != updatedForwardedInstanceSource)
+                                {
+                                    instanceSource = null!;
+                                    isAmbiguous = true;
+                                    sourcesNotMatchingConstraints = Array.Empty<InstanceSource>();
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                (sourcesNotMatchingConstraintsTemp ??= new()).Add(forwardedInstanceSource);
+                            }
+                        }
+                        else
+                        {
+                            throw new NotImplementedException(forwardedInstanceSource.Underlying.ToString());
+                        }
+                    }
+                }
+                
                 if (instanceSource is not null)
                 {
                     isAmbiguous = false;
-                    sourcesNotMatchingConstraints = Array.Empty<FactoryMethod>();
+                    sourcesNotMatchingConstraints = Array.Empty<InstanceSource>();
                     return true;
                 }
 
@@ -288,7 +410,7 @@ namespace StrongInject.Generator
                         {
                             instanceSource = null!;
                             isAmbiguous = true;
-                            sourcesNotMatchingConstraints = Enumerable.Empty<FactoryMethod>();
+                            sourcesNotMatchingConstraints = Array.Empty<InstanceSource>();
                             return false;
                         }
                     }
@@ -296,22 +418,22 @@ namespace StrongInject.Generator
                     {
                         instanceSource = null!;
                         isAmbiguous = true;
-                        sourcesNotMatchingConstraints = Enumerable.Empty<FactoryMethod>();
+                        sourcesNotMatchingConstraints = Array.Empty<InstanceSource>();
                         return false;
                     }
-                    (factoriesWhereConstraintsDoNotMatch ??= new()).AddRange(childSourcesNotMatchingConstraints);
+                    (sourcesNotMatchingConstraintsTemp ??= new()).AddRange(childSourcesNotMatchingConstraints);
                 }
 
                 if (instanceSource is not null)
                 {
                     isAmbiguous = false;
-                    sourcesNotMatchingConstraints = Array.Empty<FactoryMethod>();
+                    sourcesNotMatchingConstraints = Array.Empty<InstanceSource>();
                     return true;
                 }
 
                 instanceSource = null!;
                 isAmbiguous = false;
-                sourcesNotMatchingConstraints = factoriesWhereConstraintsDoNotMatch ?? Enumerable.Empty<FactoryMethod>();
+                sourcesNotMatchingConstraints = sourcesNotMatchingConstraintsTemp ?? Enumerable.Empty<InstanceSource>();
                 return false;
             }
 

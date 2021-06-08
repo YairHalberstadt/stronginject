@@ -543,7 +543,6 @@ namespace StrongInject.Generator
                             case FactoryMethod { Method: var method }:
                                 {
                                     GenerateMethodCall(variableName, method, dependencies);
-
                                     break;
                                 }
                             case ArraySource { ArrayType: var arrayType }:

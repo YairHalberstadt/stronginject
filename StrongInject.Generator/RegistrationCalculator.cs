@@ -211,7 +211,7 @@ namespace StrongInject.Generator
         {
             var attributes = module.GetAttributes();
             var registrations = new Dictionary<ITypeSymbol, InstanceSources>(SymbolEqualityComparer.Default);
-            AppendSimpleRegistrations(registrations, attributes, module);
+            AppendSimpleRegistrations(registrations, genericRegistrations, attributes, module);
             AppendFactoryRegistrations(registrations, attributes, module);
             AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToCalculate);
             AppendFactoryOfMethods(registrations, genericRegistrations, module, registrationsToCalculate);
@@ -221,7 +221,11 @@ namespace StrongInject.Generator
             return registrations;
         }
 
-        private void AppendSimpleRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes, ITypeSymbol module)
+        private void AppendSimpleRegistrations(
+            Dictionary<ITypeSymbol, InstanceSources> registrations,
+            GenericRegistrationsResolver.Builder genericRegistrations,
+            ImmutableArray<AttributeData> moduleAttributes,
+            ITypeSymbol module)
         {
             foreach (var registerAttribute in moduleAttributes
                 .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterAttribute, SymbolEqualityComparer.Default) ?? false)
@@ -303,13 +307,50 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    if (_compilation.ClassifyConversion(type, target) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
+                    if (type.IsUnboundGenericType)
                     {
-                        _reportDiagnostic(DoesNotHaveSuitableConversion(registerAttribute, type, target, _cancellationToken));
-                        continue;
-                    }
+                        if (!target.Equals(type, SymbolEqualityComparer.Default))
+                        {
+                            if (type.TypeParameters.Length != target.TypeParameters.Length ||
+                                !target.IsUnboundGenericType)
+                            {
+                                _reportDiagnostic(MismatchingNumberOfTypeParameters(registerAttribute, type, target,
+                                    _cancellationToken));
+                                continue;
+                            }
 
-                    registrations.WithInstanceSource(ForwardedInstanceSource.Create(target, registration));
+                            var constructedTarget = target.OriginalDefinition.Construct(type.OriginalDefinition.TypeArguments.ToArray());
+                            if (_compilation.ClassifyConversion(type.OriginalDefinition, constructedTarget) is not
+                                {IsImplicit: true, IsNumeric: false, IsUserDefined: false})
+                            {
+                                _reportDiagnostic(DoesNotHaveSuitableConversion(registerAttribute,
+                                    type.OriginalDefinition, constructedTarget, _cancellationToken));
+                                continue;
+                            }
+                        }
+
+                        switch (ForwardedInstanceSource.Create(target, registration))
+                        {
+                            case ForwardedInstanceSource fis:
+                                genericRegistrations.Add(fis);
+                                break;
+                            case Registration reg:
+                                genericRegistrations.Add(reg);
+                                break;
+                            case var x:
+                                throw new InvalidOperationException($"This location is thought to be unreachable: {x}");
+                        }
+                    }
+                    else
+                    {
+                        if (_compilation.ClassifyConversion(type, target) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
+                        {
+                            _reportDiagnostic(DoesNotHaveSuitableConversion(registerAttribute, type, target, _cancellationToken));
+                            continue;
+                        }
+                        
+                        registrations.WithInstanceSource(ForwardedInstanceSource.Create(target, registration));
+                    }
                 }
             }
         }
@@ -346,6 +387,13 @@ namespace StrongInject.Generator
                 }
                 if (!CheckValidType(registerFactoryAttribute, typeConstant, module, out var type))
                 {
+                    continue;
+                }
+                if (type.IsUnboundGenericType)
+                {
+                    _reportDiagnostic(UnboundGenericType(
+                        type,
+                        registerFactoryAttribute.GetLocation(_cancellationToken)));
                     continue;
                 }
                 if (type.IsAbstract)
@@ -435,13 +483,6 @@ namespace StrongInject.Generator
                 // we will report an error for this case anyway.
                 return false;
             }
-            if (type.IsUnboundGenericType)
-            {
-                _reportDiagnostic(UnboundGenericType(
-                    (ITypeSymbol)typedConstant.Value!,
-                    registerAttribute.GetLocation(_cancellationToken)));
-                return false;
-            }
 
             if (!type.IsAccessibleInternally())
             {
@@ -465,7 +506,10 @@ namespace StrongInject.Generator
         private bool TryGetConstructor(AttributeData registerAttribute, INamedTypeSymbol type, out IMethodSymbol constructor)
         {
             constructor = default!;
-            var applicableConstructors = type.InstanceConstructors.Where(x => x.DeclaredAccessibility == Accessibility.Public).ToList();
+            var applicableConstructors =
+                (type.IsUnboundGenericType ? type.OriginalDefinition : type)
+                .InstanceConstructors
+                .Where(x => x.DeclaredAccessibility == Accessibility.Public).ToList();
             if (applicableConstructors.Count == 0)
             {
                 _reportDiagnostic(NoConstructor(registerAttribute, type, _cancellationToken));
@@ -1040,6 +1084,13 @@ namespace StrongInject.Generator
                 {
                     continue;
                 }
+                if (type.IsUnboundGenericType)
+                {
+                    _reportDiagnostic(UnboundGenericType(
+                        type,
+                        registerDecoratorAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
                 if (type.IsAbstract)
                 {
                     _reportDiagnostic(TypeIsAbstract(
@@ -1061,6 +1112,13 @@ namespace StrongInject.Generator
                 }
                 if (!CheckValidType(registerDecoratorAttribute, decoratorOfConstant, module, out var decoratedType))
                 {
+                    continue;
+                }
+                if (type.IsUnboundGenericType)
+                {
+                    _reportDiagnostic(UnboundGenericType(
+                        type,
+                        registerDecoratorAttribute.GetLocation(_cancellationToken)));
                     continue;
                 }
 
@@ -1555,6 +1613,21 @@ namespace StrongInject.Generator
                 methodSymbol);
         }
 
+        private static Diagnostic MismatchingNumberOfTypeParameters(AttributeData registerAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0031",
+                    "Registered type does not have the same number of unbound type parameters as registered as type",
+                    "'{0}' does not have the same number of unbound type parameters as '{1}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
+                registeredType,
+                registeredAsType);
+        }
+        
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
         {
             return Diagnostic.Create(
