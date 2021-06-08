@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace StrongInject.Generator
@@ -134,9 +135,9 @@ namespace StrongInject.Generator
             }
         }
 
-        private static bool SatisfiesConstraints(IMethodSymbol method, ITypeSymbol[] typeArguments, Compilation compilation)
+        public static bool SatisfiesConstraints(ISymbol symbol, IReadOnlyList<ITypeSymbol> typeArguments, Compilation compilation)
         {
-            var typeParameters = method.TypeParameters;
+            var typeParameters = symbol.TypeParameters();
             for (int i = 0; i < typeParameters.Length; i++)
             {
                 var typeParameter = typeParameters[i];
@@ -157,7 +158,7 @@ namespace StrongInject.Generator
 
                 foreach (var typeConstraint in typeParameter.ConstraintTypes)
                 {
-                    var substitutedConstraintType = SubstituteType(compilation, typeConstraint, method, typeArguments);
+                    var substitutedConstraintType = SubstituteType(compilation, typeConstraint, symbol, typeArguments);
                     var conversion = compilation.ClassifyConversion(typeArgument, substitutedConstraintType);
                     if (typeArgument.IsNullableType() || conversion is not ({ IsIdentity: true } or { IsImplicit: true, IsReference: true } or { IsBoxing: true }))
                     {
@@ -203,7 +204,7 @@ namespace StrongInject.Generator
             return false;
         }
 
-        private static ITypeSymbol SubstituteType(Compilation compilation, ITypeSymbol type, IMethodSymbol method, ITypeSymbol[] typeArguments)
+        private static ITypeSymbol SubstituteType(Compilation compilation, ITypeSymbol type, ISymbol symbol, IReadOnlyList<ITypeSymbol> typeArguments)
         {
             return Visit(type);
 
@@ -212,7 +213,7 @@ namespace StrongInject.Generator
                 switch (type)
                 {
                     case ITypeParameterSymbol typeParameterSymbol:
-                        return SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringMethod, method)
+                        return SymbolEqualityComparer.Default.Equals(typeParameterSymbol.DeclaringSymbol(), symbol)
                             ? typeArguments[typeParameterSymbol.Ordinal]
                             : type;
                     case IArrayTypeSymbol { ElementType: var elementType, Rank: var rank } arrayTypeSymbol:

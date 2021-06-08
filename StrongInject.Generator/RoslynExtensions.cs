@@ -88,7 +88,7 @@ namespace StrongInject.Generator
                 IArrayTypeSymbol array => array.ElementType.IsAccessibleInternally(),
                 IPointerTypeSymbol pointer => pointer.PointedAtType.IsAccessibleInternally(),
                 INamedTypeSymbol named => named.DeclaredAccessibility is Accessibility.Public or Accessibility.ProtectedOrInternal or Accessibility.Internal 
-                    && named.TypeArguments.All(IsAccessibleInternally),
+                    && (named.IsUnboundGenericType || named.TypeArguments.All(IsAccessibleInternally)),
                 _ => false,
             };
         }
@@ -103,7 +103,7 @@ namespace StrongInject.Generator
             {
                 IArrayTypeSymbol array => array.ElementType.IsPublic(),
                 IPointerTypeSymbol pointer => pointer.PointedAtType.IsPublic(),
-                INamedTypeSymbol named => named.DeclaredAccessibility == Accessibility.Public && named.TypeArguments.All(IsPublic),
+                INamedTypeSymbol named => named.DeclaredAccessibility == Accessibility.Public && (named.IsUnboundGenericType || named.TypeArguments.All(IsPublic)),
                 _ => false,
             };
         }
@@ -355,6 +355,21 @@ namespace StrongInject.Generator
             {
                 return defaultIfInvalidIdentifier;
             }
+        }
+
+        public static ImmutableArray<ITypeParameterSymbol> TypeParameters(this ISymbol symbol)
+        {
+            return symbol switch
+            {
+                IMethodSymbol {TypeParameters: var tps} => tps,
+                INamedTypeSymbol {TypeParameters: var tps} => tps,
+                _ => throw new InvalidOperationException($"Symbol of kind '{symbol.Kind}' cannot have type parameters"),
+            };
+        }
+        
+        public static ISymbol? DeclaringSymbol(this ITypeParameterSymbol symbol)
+        {
+            return (ISymbol?)symbol.DeclaringMethod ?? symbol.DeclaringType;
         }
     }
 }

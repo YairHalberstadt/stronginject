@@ -103,17 +103,17 @@ namespace StrongInject.Generator
     }
     internal record ForwardedInstanceSource : InstanceSource
     {
-        private ForwardedInstanceSource(ITypeSymbol asType, InstanceSource underlying) : base(underlying.Scope, IsAsync: false, underlying.CanDecorate)
+        private ForwardedInstanceSource(INamedTypeSymbol asType, InstanceSource underlying) : base(underlying.Scope, IsAsync: false, underlying.CanDecorate)
             => (AsType, Underlying) = (asType, underlying);
 
-        public void Deconstruct(out ITypeSymbol AsType, out InstanceSource Underlying) => (AsType, Underlying) = (this.AsType, this.Underlying);
+        public void Deconstruct(out INamedTypeSymbol AsType, out InstanceSource Underlying) => (AsType, Underlying) = (this.AsType, this.Underlying);
 
-        public ITypeSymbol AsType { get; init; }
+        public INamedTypeSymbol AsType { get; init; }
         public InstanceSource Underlying { get; init; }
 
         public override ITypeSymbol OfType => AsType;
 
-        public static InstanceSource Create(ITypeSymbol asType, InstanceSource underlying)
+        public static InstanceSource Create(INamedTypeSymbol asType, InstanceSource underlying)
             => SymbolEqualityComparer.Default.Equals(underlying.OfType, asType)
                 ? underlying
                 : new ForwardedInstanceSource(asType, underlying is ForwardedInstanceSource forwardedUnderlying ? forwardedUnderlying.Underlying : underlying);

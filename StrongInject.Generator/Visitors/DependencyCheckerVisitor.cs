@@ -56,7 +56,16 @@ namespace StrongInject.Generator.Visitors
 
                     foreach (var sourceNotMatchingConstraints in sourcesNotMatchingConstraints)
                     {
-                        _reportDiagnostic(WarnFactoryMethodNotMatchingConstraint(_location, _target, type, sourceNotMatchingConstraints.Method));
+                        switch (sourceNotMatchingConstraints)
+                        {
+                            case FactoryMethod {Method: var method}:
+                                _reportDiagnostic(WarnFactoryMethodNotMatchingConstraint(_location, _target, type, method));
+                                break;
+                            case ForwardedInstanceSource { Underlying: Registration { Type: var registeredType } }:
+                                _reportDiagnostic(WarnRegistrationNotMatchingConstraint(_location, _target, type, registeredType));
+                                break;
+                            default: throw new NotImplementedException(sourceNotMatchingConstraints.ToString());
+                        }
                     }
                 }
                 return null;
@@ -536,6 +545,23 @@ namespace StrongInject.Generator.Visitors
                     target,
                     factoryMethodNotMatchingConstraints,
                     type);
+        }
+
+        private Diagnostic WarnRegistrationNotMatchingConstraint(Location location, ITypeSymbol target, ITypeSymbol type, ITypeSymbol registeredType)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1106",
+                    "Registration cannot be used to resolve instance of Type as the required type arguments do not satisfy the generic constraints",
+                    "Warning while resolving dependencies for '{0}': Registered type '{1}' cannot be used to resolve instance of type '{2}' as the required type arguments do not satisfy the generic constraints.",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true,
+                    PrintResolutionPath()),
+                location,
+                target,
+                registeredType,
+                type);
         }
 
         private Diagnostic InfoNoSourceForOptionalParameter(Location location, ITypeSymbol target, ITypeSymbol type)

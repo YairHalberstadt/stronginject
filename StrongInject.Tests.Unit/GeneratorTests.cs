@@ -24750,5 +24750,792 @@ partial class Container
     }
 }");
         }
+        
+        [Fact]
+        public void PreferFactoryOfFromParentModules()
+        {
+
+            string userSource = @"
+using StrongInject;
+
+public class ModuleB {
+    [FactoryOf(typeof(int))] public static T MA<T>() => default;
+}
+
+[RegisterModule(typeof(ModuleB))]
+public class ModuleA {
+    [FactoryOf(typeof(int))] public static T MB<T>() => default;
+}
+
+[RegisterModule(typeof(ModuleA))]
+public partial class Container : IContainer<int> {
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_0;
+        int32_0_0 = global::ModuleA.MB<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(int32_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_0;
+        int32_0_0 = global::ModuleA.MB<global::System.Int32>();
+        return new global::StrongInject.Owned<global::System.Int32>(int32_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void PreferFactoryOfGenericFromParentModules()
+        {
+
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+public class ModuleB {
+    [FactoryOf(typeof(List<>))] public static T MA<T>() => default;
+}
+
+[RegisterModule(typeof(ModuleB))]
+public class ModuleA {
+    [FactoryOf(typeof(List<>))] public static T MB<T>() => default;
+}
+
+[RegisterModule(typeof(ModuleA))]
+public partial class Container : IContainer<List<int>> {
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.List<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.List<global::System.Int32> list_0_0;
+        list_0_0 = global::ModuleA.MB<global::System.Collections.Generic.List<global::System.Int32>>();
+        TResult result;
+        try
+        {
+            result = func(list_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(list_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.Int32>> global::StrongInject.IContainer<global::System.Collections.Generic.List<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.List<global::System.Int32> list_0_0;
+        list_0_0 = global::ModuleA.MB<global::System.Collections.Generic.List<global::System.Int32>>();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.List<global::System.Int32>>(list_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(list_0_0);
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void CanRegisterGenericType()
+        {
+
+            string userSource = @"
+using StrongInject;
+
+public class A<T> {}
+
+[Register(typeof(A<>))]
+public partial class Container : IContainer<A<int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::A<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_0;
+        a_0_0 = new global::A<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A<global::System.Int32>> global::StrongInject.IContainer<global::A<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_0;
+        a_0_0 = new global::A<global::System.Int32>();
+        return new global::StrongInject.Owned<global::A<global::System.Int32>>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void CanRegisterGenericTypeAsBaseClass()
+        {
+
+            string userSource = @"
+using StrongInject;
+
+public class Base<T> {}
+public class Derived<T> : Base<T> {}
+
+[Register(typeof(Derived<>), typeof(Base<>))]
+public partial class Container : IContainer<Base<int>>, IContainer<Derived<int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (8,22): Error SI0102: Error while resolving dependencies for 'Derived<int>': We have no source for instance of type 'Derived<int>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32> derived_0_1;
+        global::Base<global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Int32>)derived_0_1;
+        TResult result;
+        try
+        {
+            result = func(base_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32> derived_0_1;
+        global::Base<global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Int32>)derived_0_1;
+        return new global::StrongInject.Owned<global::Base<global::System.Int32>>(base_0_0, () =>
+        {
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::Derived<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Derived<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::Derived<global::System.Int32>> global::StrongInject.IContainer<global::Derived<global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfRegisterGenericTypeAsBaseWithMismatchingNumberOfTypeArguments()
+        {
+
+            string userSource = @"
+using StrongInject;
+
+public class Base<T1, T2> {}
+public class Derived<T> : Base<T, int> {}
+
+[Register(typeof(Derived<>), typeof(Base<,>))]
+public partial class Container : IContainer<Base<int, int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,2): Error SI0031: 'Derived<>' does not have the same number of unbound type parameters as 'Base<,>'.
+                // Register(typeof(Derived<>), typeof(Base<,>))
+                new DiagnosticResult("SI0031", @"Register(typeof(Derived<>), typeof(Base<,>))", DiagnosticSeverity.Error).WithLocation(7, 2),
+                // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int>': We have no source for instance of type 'Base<int>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Int32, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Int32, global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfRegisterGenericTypeAsBaseWithTypeArgumentsInDifferentOrder()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Base<T1, T2> {}
+public class Derived<T1, T2> : Base<T2, T1> {}
+
+[Register(typeof(Derived<,>), typeof(Base<,>))]
+public partial class Container : IContainer<Base<int, int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,2): Error SI0001: 'Derived<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'Base<T1, T2>'.
+                // Register(typeof(Derived<,>), typeof(Base<,>))
+                new DiagnosticResult("SI0001", @"Register(typeof(Derived<,>), typeof(Base<,>))", DiagnosticSeverity.Error).WithLocation(7, 2),
+                // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int, int>': We have no source for instance of type 'Base<int, int>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Int32, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Int32, global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+        
+        [Fact]
+        public void CanRegisterGenericTypeAsBaseWithTypeArgumentsInCorrectOrder()
+        {
+            string userSource = @"
+using StrongInject;
+
+public interface IBase<T1, T2> {}
+public interface IIntermediate<T1, T2> : IBase<T2, T1> {}
+public class Derived<T1, T2> : IIntermediate<T2, T1> {}
+
+[Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))]
+public partial class Container : IContainer<IBase<int, int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (8,2): Error SI0001: 'Derived<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'IIntermediate<T1, T2>'.
+                // Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))
+                new DiagnosticResult("SI0001", @"Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))", DiagnosticSeverity.Error).WithLocation(8, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IBase<global::System.Int32, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::IBase<global::System.Int32, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32, global::System.Int32> derived_0_1;
+        global::IBase<global::System.Int32, global::System.Int32> iBase_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32, global::System.Int32>();
+        iBase_0_0 = (global::IBase<global::System.Int32, global::System.Int32>)derived_0_1;
+        TResult result;
+        try
+        {
+            result = func(iBase_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IBase<global::System.Int32, global::System.Int32>> global::StrongInject.IContainer<global::IBase<global::System.Int32, global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32, global::System.Int32> derived_0_1;
+        global::IBase<global::System.Int32, global::System.Int32> iBase_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32, global::System.Int32>();
+        iBase_0_0 = (global::IBase<global::System.Int32, global::System.Int32>)derived_0_1;
+        return new global::StrongInject.Owned<global::IBase<global::System.Int32, global::System.Int32>>(iBase_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfResolveGenericRegistrationWithNonMatchingConstraints()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Base<T1, T2> {}
+public class Derived<T1, T2> : Base<T1, T2>  where T1 : class {} 
+
+[Register(typeof(Derived<,>), typeof(Base<,>))]
+public partial class Container : IContainer<Base<int, int>>, IContainer<Base<object, int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int, int>': We have no source for instance of type 'Base<int, int>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22),
+                // (8,22): Warning SI1106: Warning while resolving dependencies for 'Base<int, int>': Registered type 'Derived<,>' cannot be used to resolve instance of type 'Base<int, int>' as the required type arguments do not satisfy the generic constraints.
+                // Container
+                new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(8, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Int32, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Int32, global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Object, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Object, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Object, global::System.Int32> derived_0_1;
+        global::Base<global::System.Object, global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Object, global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Object, global::System.Int32>)derived_0_1;
+        TResult result;
+        try
+        {
+            result = func(base_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Object, global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Object, global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Object, global::System.Int32> derived_0_1;
+        global::Base<global::System.Object, global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Object, global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Object, global::System.Int32>)derived_0_1;
+        return new global::StrongInject.Owned<global::Base<global::System.Object, global::System.Int32>>(base_0_0, () =>
+        {
+        });
+    }
+}");
+        } 
+        
+        [Fact]
+        public void CanResolveGenericRegistrationFromModule()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Base<T1, T2> {}
+public class Derived<T1, T2> : Base<T1, T2> {}
+
+[Register(typeof(Derived<,>))]
+public class ModuleA{}
+
+[Register(typeof(Derived<,>), typeof(Base<,>))]
+[RegisterModule(typeof(ModuleA))]
+public class ModuleB{}
+
+[RegisterModule(typeof(ModuleB))]
+public partial class Container : IContainer<Base<int, int>>, IContainer<Derived<int, int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Int32, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32, global::System.Int32> derived_0_1;
+        global::Base<global::System.Int32, global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32, global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Int32, global::System.Int32>)derived_0_1;
+        TResult result;
+        try
+        {
+            result = func(base_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Int32, global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Int32, global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32, global::System.Int32> derived_0_1;
+        global::Base<global::System.Int32, global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32, global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Int32, global::System.Int32>)derived_0_1;
+        return new global::StrongInject.Owned<global::Base<global::System.Int32, global::System.Int32>>(base_0_0, () =>
+        {
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::Derived<global::System.Int32, global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Derived<global::System.Int32, global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32, global::System.Int32> derived_0_0;
+        derived_0_0 = new global::Derived<global::System.Int32, global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(derived_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::Derived<global::System.Int32, global::System.Int32>> global::StrongInject.IContainer<global::Derived<global::System.Int32, global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32, global::System.Int32> derived_0_0;
+        derived_0_0 = new global::Derived<global::System.Int32, global::System.Int32>();
+        return new global::StrongInject.Owned<global::Derived<global::System.Int32, global::System.Int32>>(derived_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfMultipleGenericRegistrationsForType1()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class C<T> {}
+
+[Register(typeof(C<>))]
+public partial class Container : IContainer<C<int>>
+{
+    [Factory] C<T> GetC<T>() => new C<T>();
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,22): Error SI0106: Error while resolving dependencies for 'C<int>': We have multiple sources for instance of type 'C<int>' and no best source. Try adding a single registration for 'C<int>' directly to the container, and moving any existing registrations for 'C<int>' on the container to an imported module.
+                // Container
+                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::C<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::C<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::C<global::System.Int32>> global::StrongInject.IContainer<global::C<global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfMultipleGenericRegistrationsForType2()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Base<T> {}
+public class Derived<T> : Base<T> {}
+
+[Register(typeof(Base<>))]
+[Register(typeof(Derived<>), typeof(Base<>))]
+public partial class Container : IContainer<Base<int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (9,22): Error SI0106: Error while resolving dependencies for 'Base<int>': We have multiple sources for instance of type 'Base<int>' and no best source. Try adding a single registration for 'Base<int>' directly to the container, and moving any existing registrations for 'Base<int>' on the container to an imported module.
+                // Container
+                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(9, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+        
+        [Fact]
+        public void NoErrorIfMultipleEquivalentGenericRegistrationsForType()
+        {
+            string userSource = @"
+using StrongInject;
+
+public class Base<T> {}
+public class Derived<T> : Base<T> {}
+
+[Register(typeof(Derived<>), typeof(Derived<>), typeof(Base<>))]
+public class ModuleA {}
+
+[Register(typeof(Derived<>), typeof(Derived<>), typeof(Base<>))]
+public class ModuleB {}
+
+[RegisterModule(typeof(ModuleA))]
+[RegisterModule(typeof(ModuleB))]
+public partial class Container : IContainer<Base<int>>, IContainer<Derived<int>> {}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::Base<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Base<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32> derived_0_1;
+        global::Base<global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Int32>)derived_0_1;
+        TResult result;
+        try
+        {
+            result = func(base_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::Base<global::System.Int32>> global::StrongInject.IContainer<global::Base<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32> derived_0_1;
+        global::Base<global::System.Int32> base_0_0;
+        derived_0_1 = new global::Derived<global::System.Int32>();
+        base_0_0 = (global::Base<global::System.Int32>)derived_0_1;
+        return new global::StrongInject.Owned<global::Base<global::System.Int32>>(base_0_0, () =>
+        {
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::Derived<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::Derived<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32> derived_0_0;
+        derived_0_0 = new global::Derived<global::System.Int32>();
+        TResult result;
+        try
+        {
+            result = func(derived_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::Derived<global::System.Int32>> global::StrongInject.IContainer<global::Derived<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Derived<global::System.Int32> derived_0_0;
+        derived_0_0 = new global::Derived<global::System.Int32>();
+        return new global::StrongInject.Owned<global::Derived<global::System.Int32>>(derived_0_0, () =>
+        {
+        });
+    }
+}");
+        }
     }
 }
