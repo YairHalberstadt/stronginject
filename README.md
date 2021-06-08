@@ -232,6 +232,18 @@ If you do so, you will have to explicitly also register it as itself if that is 
 
 If there is a single public non-parameterless constructor, StrongInject will use that to construct the type. If there is no public non-parameterless constructor StrongInject will use the parameterless constructor if it exists and is public. Else it will report an error.
 
+You can register generic types as well:
+
+```csharp
+public class A<T> {}
+public interface IB<T1, T2> {}
+public class B<T1, T2> : IB<T1, T2> {}
+
+[Register(typeof(A<>))]
+[Register(typeof(B<,>), typeof(IB<,>))]
+public partial class Container : IContainer<A<int>>, IContainer<IB<string, object>> {}
+```
+
 #### Scope
 
 The scope of a registration determines how often a new instance is created, how long it lives, and who uses it.
