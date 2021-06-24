@@ -159,7 +159,7 @@ public class D
             diagnostics.Verify(
                 // (8,14): Error SI0101: Error while resolving dependencies for 'A': 'B' has a circular dependency
                 // Container
-                new DiagnosticResult("SI0101", @"Container").WithLocation(8, 14));
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(8, 14));
         }
 
         [Fact]
@@ -213,7 +213,7 @@ public class D
             diagnostics.Verify(
                 // (8,14): Error SI0101: Error while resolving dependencies for 'A': 'C' has a circular dependency
                 // Container
-                new DiagnosticResult("SI0101", @"Container").WithLocation(8, 14));
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(8, 14));
         }
 
         [Fact]
@@ -264,7 +264,7 @@ public class D
             diagnostics.Verify(
                 // (8,14): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
                 // Container
-                new DiagnosticResult("SI0101", @"Container").WithLocation(8, 14));
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(8, 14));
         }
 
         [Fact]
@@ -314,7 +314,7 @@ public class D
             diagnostics.Verify(
                 // (7,14): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'D'
                 // Container
-                new DiagnosticResult("SI0102", @"Container").WithLocation(7, 14));
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(7, 14));
         }
 
         [Fact]

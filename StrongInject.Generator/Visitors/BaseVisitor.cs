@@ -25,7 +25,8 @@ namespace StrongInject.Generator.Visitors
         }
         protected abstract bool ShouldVisitBeforeUpdateState(InstanceSource? source, State state);
         protected abstract bool ShouldVisitAfterUpdateState(InstanceSource source, State state);
-        protected abstract void AfterVisit(InstanceSource source, State state);
+        protected virtual void AfterVisit(InstanceSource source, State state) { }
+
         protected virtual InstanceSource? GetInstanceSource(ITypeSymbol type, State state, IParameterSymbol? parameterSymbol)
         {
             if (parameterSymbol is not null)

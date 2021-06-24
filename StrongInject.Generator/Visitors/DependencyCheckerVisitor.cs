@@ -10,14 +10,13 @@ namespace StrongInject.Generator.Visitors
     {
         private readonly HashSet<InstanceSource> _visited = new();
         private readonly ITypeSymbol _target;
-        protected readonly InstanceSourcesScope _containerScope;
+        private readonly InstanceSourcesScope _containerScope;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly Location _location;
-        private readonly HashSet<InstanceSource> _currentlyVisiting = new();
         private readonly List<InstanceSource> _resolutionPath = new();
         private bool _anyErrors;
 
-        protected DependencyCheckerVisitor(ITypeSymbol target, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
+        private DependencyCheckerVisitor(ITypeSymbol target, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
         {
             _target = target;
             _containerScope = containerScope;
@@ -28,7 +27,13 @@ namespace StrongInject.Generator.Visitors
         public static bool HasCircularOrMissingDependencies(ITypeSymbol target, bool isAsync, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
         {
             var visitor = new DependencyCheckerVisitor(target, containerScope, reportDiagnostic, location);
-            var state = new State { InstanceSourcesScope = containerScope, IsScopeAsync = isAsync };
+            var state = new State
+            {
+                InstanceSourcesScope = containerScope,
+                IsScopeAsync = isAsync,
+                CurrentlyVisitingSingletons = new(),
+                CurrentlyVisitingNonSingletons = new()
+            };
             visitor.VisitCore(visitor.GetInstanceSource(target, state, parameterSymbol: null), state);
             return visitor._anyErrors;
         }
@@ -73,6 +78,72 @@ namespace StrongInject.Generator.Visitors
             return instanceSource;
         }
 
+        protected override bool ShouldVisitBeforeUpdateState(InstanceSource? source, State state)
+        {
+            if (source is null)
+                return false;
+            if (_resolutionPath.Count == MAX_DEPENDENCY_TREE_DEPTH)
+            {
+                _reportDiagnostic(DependencyTreeTooDeep(_location, _target));
+                _anyErrors = true;
+                return false;
+            }
+            
+            _resolutionPath.Add(source);
+            return true;
+        }
+
+        protected override void UpdateState(InstanceSource source, ref State state)
+        {
+            if (source.Scope == Scope.SingleInstance)
+            {
+                // This is to allow the following case:
+                //
+                // NonSingletonA depends on SingletonB
+                // SingletonB depends on Func<NonSingletonA>
+                // Resolve NonSingletonA.
+                //
+                // Even though this should work fine, without clearing out non-singletons
+                // between each singleton we'd get an error.
+                //
+                // Clearing out non-singletons each time we visit a singleton is fine,
+                // since we'll still detect all cycles, just a bit later, but permits this one case.
+                state.CurrentlyVisitingNonSingletons = new();
+                
+                // Circular dependencies inside different scopes are not a problem since we assume any delegates are instantiated lazily.
+                // (Scope 0 represents the top level scope, and all other scopes represent dependencies resolved inside delegates.)
+                // However both checking dependencies and generating code for such cases is extremely complex.
+                // In the special case where a Singleton is included somewhere between the circular dependency,
+                // both are trivial ands require no special casing, so we allow only such cases.
+                if (state.InstanceSourcesScope.Depth != 0)
+                {
+                    state.CurrentlyVisitingSingletons = new();
+                }
+            }
+            base.UpdateState(source, ref state);
+        }
+
+        protected override bool ShouldVisitAfterUpdateState(InstanceSource source, State state)
+        {
+            if (!state.AddCurrentlyVisiting(source))
+            {
+                _reportDiagnostic(CircularDependency(_location, _target, source.OfType));
+                _anyErrors = true;
+                return false;
+            }
+            
+            if ((ReferenceEquals(state.InstanceSourcesScope, _containerScope)
+                 || ReferenceEquals(state.PreviousScope, _containerScope))
+                && !_visited.Add(source))
+            {
+                _resolutionPath.RemoveAt(_resolutionPath.Count - 1);
+                state.RemoveCurrentlyVisiting(source);
+                return false;
+            }
+
+            return true;
+        }
+        
         protected override void AfterVisit(InstanceSource source, State state)
         {
             if (source is { IsAsync: true, Scope: not Scope.SingleInstance } and not DelegateSource && !state.IsScopeAsync
@@ -82,33 +153,9 @@ namespace StrongInject.Generator.Visitors
                 _anyErrors = true;
             }
             _resolutionPath.RemoveAt(_resolutionPath.Count - 1);
-            _currentlyVisiting.Remove(source);
-            if (ReferenceEquals(state.InstanceSourcesScope, _containerScope) || ReferenceEquals(state.PreviousScope, _containerScope))
-                _visited.Add(source);
+            state.RemoveCurrentlyVisiting(source);
         }
-
-        protected override bool ShouldVisitBeforeUpdateState(InstanceSource? source, State state)
-        {
-            if (source is null)
-                return false;
-            if (ReferenceEquals(state.InstanceSourcesScope, _containerScope) && _visited.Contains(source))
-                return false;
-            if (_currentlyVisiting.Count == MAX_DEPENDENCY_TREE_DEPTH)
-            {
-                _reportDiagnostic(DependencyTreeTooDeep(_location, _target));
-                _anyErrors = true;
-                return false;
-            }
-            if (!_currentlyVisiting.Add(source))
-            {
-                _reportDiagnostic(CircularDependency(_location, _target, source.OfType));
-                _anyErrors = true;
-                return false;
-            }
-            _resolutionPath.Add(source);
-            return true;
-        }
-
+        
         public override void Visit(DelegateSource delegateSource, State state)
         {
             var (delegateType, returnType, delegateParameters, isAsync) = delegateSource;
@@ -174,18 +221,6 @@ namespace StrongInject.Generator.Visitors
             base.Visit(arraySource, state);
         }
 
-        protected override bool ShouldVisitAfterUpdateState(InstanceSource source, State state)
-        {
-            if (ReferenceEquals(state.InstanceSourcesScope, _containerScope) && !ReferenceEquals(state.PreviousScope, _containerScope) && _visited.Contains(source))
-            {
-                _resolutionPath.RemoveAt(_resolutionPath.Count - 1);
-                _currentlyVisiting.Remove(source);
-                return false;
-            }
-
-            return true;
-        }
-
         public struct State : IState
         {
             private InstanceSourcesScope _instanceSourcesScope;
@@ -212,6 +247,19 @@ namespace StrongInject.Generator.Visitors
                 }
             }
             public HashSet<IParameterSymbol>? UsedParams { get; set; }
+
+
+            public bool AddCurrentlyVisiting(InstanceSource source) =>
+                source.Scope == Scope.SingleInstance
+                    ? CurrentlyVisitingSingletons.Add(source)
+                    : CurrentlyVisitingNonSingletons.Add(source);
+            
+            public bool RemoveCurrentlyVisiting(InstanceSource source) =>
+                source.Scope == Scope.SingleInstance
+                    ? CurrentlyVisitingSingletons.Remove(source)
+                    : CurrentlyVisitingNonSingletons.Remove(source);            
+            public HashSet<InstanceSource> CurrentlyVisitingSingletons { get; set; }
+            public HashSet<InstanceSource> CurrentlyVisitingNonSingletons { get; set; }
         }
 
         private string? PrintResolutionPath()
