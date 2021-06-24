@@ -186,7 +186,7 @@ namespace StrongInject.Generator.Tests.Unit
         public DiagnosticSeverity Severity { get; }
         public List<DiagnosticResultLocation> Locations { get; } = new List<DiagnosticResultLocation>();
 
-        public DiagnosticResult(string code, string squiggledText, DiagnosticSeverity severity = DiagnosticSeverity.Error)
+        public DiagnosticResult(string code, string squiggledText, DiagnosticSeverity severity)
         {
             Id = code;
             SquiggledText = squiggledText;

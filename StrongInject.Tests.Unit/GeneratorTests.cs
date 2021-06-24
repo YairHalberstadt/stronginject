@@ -25537,5 +25537,466 @@ partial class Container
     }
 }");
         }
+        
+        [Fact]
+        public void DelegateCanBeRecursiveThroughASingleton1()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A), Scope.SingleInstance)]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A{ public A(Func<A> func){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (6,22): Warning SI1103: Warning while resolving dependencies for 'A': Return type 'A' of delegate 'System.Func<A>' has a single instance scope and so will always have the same value.
+                // Container
+                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _aField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetAField0()
+    {
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::System.Func<global::A> func_0_1;
+            global::A a_0_0;
+            func_0_1 = () =>
+            {
+                global::A a_1_0;
+                a_1_0 = GetAField0();
+                return a_1_0;
+            };
+            a_0_0 = new global::A(func: func_0_1);
+            this._aField0 = a_0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _aField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void DelegateCanBeRecursiveThroughASingleton2()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B))]
+public partial class Container : IContainer<B>
+{
+}
+
+public class A{ public A(Func<B> func){} }
+public class B{ public B(A a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _aField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetAField0()
+    {
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::System.Func<global::B> func_0_1;
+            global::A a_0_0;
+            func_0_1 = () =>
+            {
+                global::A a_1_1;
+                global::B b_1_0;
+                a_1_1 = GetAField0();
+                b_1_0 = new global::B(a: a_1_1);
+                return b_1_0;
+            };
+            a_0_0 = new global::A(func: func_0_1);
+            this._aField0 = a_0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _aField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::B b_0_0;
+        a_0_1 = GetAField0();
+        b_0_0 = new global::B(a: a_0_1);
+        TResult result;
+        try
+        {
+            result = func(b_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::B b_0_0;
+        a_0_1 = GetAField0();
+        b_0_0 = new global::B(a: a_0_1);
+        return new global::StrongInject.Owned<global::B>(b_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void DelegateCanBeRecursiveThroughASingleton3()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A{ public A(Func<B> func){} }
+public class B{ public B(A a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _aField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetAField0()
+    {
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::System.Func<global::B> func_0_1;
+            global::A a_0_0;
+            func_0_1 = () =>
+            {
+                global::A a_1_1;
+                global::B b_1_0;
+                a_1_1 = GetAField0();
+                b_1_0 = new global::B(a: a_1_1);
+                return b_1_0;
+            };
+            a_0_0 = new global::A(func: func_0_1);
+            this._aField0 = a_0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _aField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfSingletonIsRecursive1()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A{ public A(B b){} }
+public class B{ public B(A a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
+                // Container
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfSingletonIsRecursive2()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B))]
+public partial class Container : IContainer<Func<B>>
+{
+}
+
+public class A{ public A(B b){} }
+public class B{ public B(A a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,22): Error SI0101: Error while resolving dependencies for 'System.Func<B>': 'A' has a circular dependency
+                // Container
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::B>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::B>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::B>> global::StrongInject.IContainer<global::System.Func<global::B>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfFuncHasNonSingletonCircularDependency()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A{ public A(Func<B> func){} }
+public class B{ public B(A a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
+                // Container
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
     }
 }
