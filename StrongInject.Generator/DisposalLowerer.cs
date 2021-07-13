@@ -36,7 +36,7 @@ namespace StrongInject.Generator
                         FactorySource { IsAsync: var isAsync } => new Disposal.FactoryDisposal(variableToDisposeName, dependencies[0]!, isAsync),
                         FactoryMethod { FactoryOfType: var type } => ExactTypeNotKnown(type, variableToDisposeName),
                         Registration { Type: var type } => ExactTypeKnown(type, variableToDisposeName),
-                        WrappedDecoratorInstanceSource { Decorator: { dispose: var dispose } decorator } => dispose
+                        WrappedDecoratorInstanceSource { Decorator: { Dispose: var dispose } decorator } => dispose
                             ? decorator switch
                             {
                                 DecoratorFactoryMethod { DecoratedType: var type } => ExactTypeNotKnown(type, variableToDisposeName),

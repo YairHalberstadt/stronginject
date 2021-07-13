@@ -2,7 +2,7 @@
 
 namespace StrongInject.Generator
 {
-    abstract internal record DecoratorSource(int decoratedParameter, bool dispose, bool IsAsync)
+    abstract internal record DecoratorSource(int DecoratedParameter, bool Dispose, bool IsAsync)
     {
         public abstract ITypeSymbol OfType { get; }
     }
@@ -12,9 +12,9 @@ namespace StrongInject.Generator
         ITypeSymbol DecoratedType,
         bool RequiresInitialization,
         IMethodSymbol Constructor,
-        int decoratedParameter,
-        bool dispose,
-        bool IsAsync) : DecoratorSource(decoratedParameter, dispose, IsAsync)
+        int DecoratedParameter,
+        bool Dispose,
+        bool IsAsync) : DecoratorSource(DecoratedParameter, Dispose, IsAsync)
     {
         public override ITypeSymbol OfType => DecoratedType;
     }
@@ -23,9 +23,9 @@ namespace StrongInject.Generator
         IMethodSymbol Method,
         ITypeSymbol DecoratedType,
         bool IsOpenGeneric,
-        int decoratedParameter,
-        bool dispose,
-        bool IsAsync) : DecoratorSource(decoratedParameter, dispose, IsAsync)
+        int DecoratedParameter,
+        bool Dispose,
+        bool IsAsync) : DecoratorSource(DecoratedParameter, Dispose, IsAsync)
     {
         public override ITypeSymbol OfType => DecoratedType;
     }
