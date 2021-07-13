@@ -25998,5 +25998,467 @@ partial class Container
     }
 }");
         }
+        
+        [Fact]
+        public void CanRegisterGenericDecoratorOfInterface()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<>), typeof(IA<>))]
+[RegisterDecorator(typeof(DecA<>), typeof(IA<>))]
+public partial class Container : IContainer<IA<int>>
+{
+}
+
+public interface IA<T> {}
+public class A<T> : IA<T> { public A(){} }
+public class DecA<T> : IA<T> { public DecA(IA<T> a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::IA<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_2;
+        global::IA<global::System.Int32> iA_0_1;
+        global::IA<global::System.Int32> iA_0_0;
+        a_0_2 = new global::A<global::System.Int32>();
+        iA_0_1 = (global::IA<global::System.Int32>)a_0_2;
+        iA_0_0 = new global::DecA<global::System.Int32>(a: iA_0_1);
+        TResult result;
+        try
+        {
+            result = func(iA_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA<global::System.Int32>> global::StrongInject.IContainer<global::IA<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_2;
+        global::IA<global::System.Int32> iA_0_1;
+        global::IA<global::System.Int32> iA_0_0;
+        a_0_2 = new global::A<global::System.Int32>();
+        iA_0_1 = (global::IA<global::System.Int32>)a_0_2;
+        iA_0_0 = new global::DecA<global::System.Int32>(a: iA_0_1);
+        return new global::StrongInject.Owned<global::IA<global::System.Int32>>(iA_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void CanRegisterGenericDecoratorOfClass()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<>), typeof(ABase<>))]
+[RegisterDecorator(typeof(DecA<>), typeof(ABase<>))]
+public partial class Container : IContainer<ABase<int>>
+{
+}
+
+public class ABase<T> {}
+public class A<T> : ABase<T> { public A(){} }
+public class DecA<T> : ABase<T> { public DecA(ABase<T> a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::ABase<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::ABase<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_2;
+        global::ABase<global::System.Int32> aBase_0_1;
+        global::ABase<global::System.Int32> aBase_0_0;
+        a_0_2 = new global::A<global::System.Int32>();
+        aBase_0_1 = (global::ABase<global::System.Int32>)a_0_2;
+        aBase_0_0 = new global::DecA<global::System.Int32>(a: aBase_0_1);
+        TResult result;
+        try
+        {
+            result = func(aBase_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::ABase<global::System.Int32>> global::StrongInject.IContainer<global::ABase<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_2;
+        global::ABase<global::System.Int32> aBase_0_1;
+        global::ABase<global::System.Int32> aBase_0_0;
+        a_0_2 = new global::A<global::System.Int32>();
+        aBase_0_1 = (global::ABase<global::System.Int32>)a_0_2;
+        aBase_0_0 = new global::DecA<global::System.Int32>(a: aBase_0_1);
+        return new global::StrongInject.Owned<global::ABase<global::System.Int32>>(aBase_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfGenericDecoratorParameterHasIncorrectTypeArguments1()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<>), typeof(IA<>))]
+[RegisterDecorator(typeof(DecA<>), typeof(IA<>))]
+public partial class Container : IContainer<IA<int>>
+{
+}
+
+public interface IA<T> {}
+public class A<T> : IA<T> { public A(){} }
+public class DecA<T> : IA<T> { public DecA(IA<int> a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (5,2): Error SI0022: Decorator 'DecA<T>' does not have a constructor parameter of decorated type 'IA<T>'.
+                // RegisterDecorator(typeof(DecA<>), typeof(IA<>))
+                new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(DecA<>), typeof(IA<>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::IA<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_1;
+        global::IA<global::System.Int32> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32>();
+        iA_0_0 = (global::IA<global::System.Int32>)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(iA_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA<global::System.Int32>> global::StrongInject.IContainer<global::IA<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_1;
+        global::IA<global::System.Int32> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32>();
+        iA_0_0 = (global::IA<global::System.Int32>)a_0_1;
+        return new global::StrongInject.Owned<global::IA<global::System.Int32>>(iA_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfGenericDecoratorParameterHasIncorrectTypeArguments2()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<,>), typeof(IA<,>))]
+[RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))]
+public partial class Container : IContainer<IA<int, string>>
+{
+}
+
+public interface IA<T1, T2> {}
+public class A<T1, T2> : IA<T1, T2> { public A(){} }
+public class DecA<T1, T2> : IA<T1, T2> { public DecA(IA<T2, T1> a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (5,2): Error SI0022: Decorator 'DecA<T1, T2>' does not have a constructor parameter of decorated type 'IA<T1, T2>'.
+                // RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))
+                new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA<global::System.Int32, global::System.String>>.Run<TResult, TParam>(global::System.Func<global::IA<global::System.Int32, global::System.String>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32, global::System.String> a_0_1;
+        global::IA<global::System.Int32, global::System.String> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32, global::System.String>();
+        iA_0_0 = (global::IA<global::System.Int32, global::System.String>)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(iA_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA<global::System.Int32, global::System.String>> global::StrongInject.IContainer<global::IA<global::System.Int32, global::System.String>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32, global::System.String> a_0_1;
+        global::IA<global::System.Int32, global::System.String> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32, global::System.String>();
+        iA_0_0 = (global::IA<global::System.Int32, global::System.String>)a_0_1;
+        return new global::StrongInject.Owned<global::IA<global::System.Int32, global::System.String>>(iA_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfMismatchingNumberOfTypeArgumentsBetweenDecoratorAndDecoratedTypes()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<>), typeof(IA<>))]
+[RegisterDecorator(typeof(DecA<,>), typeof(IA<>))]
+public partial class Container : IContainer<IA<int>>
+{
+}
+
+public interface IA<T1> {}
+public class A<T1> : IA<T1> { public A(){} }
+public class DecA<T1, T2> : IA<T1> { public DecA(IA<T1> a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (5,2): Error SI0031: 'DecA<T1, T2>' does not have the same number of unbound type parameters as 'IA<>'.
+                // RegisterDecorator(typeof(DecA<,>), typeof(IA<>))
+                new DiagnosticResult("SI0031", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::IA<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_1;
+        global::IA<global::System.Int32> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32>();
+        iA_0_0 = (global::IA<global::System.Int32>)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(iA_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA<global::System.Int32>> global::StrongInject.IContainer<global::IA<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32> a_0_1;
+        global::IA<global::System.Int32> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32>();
+        iA_0_0 = (global::IA<global::System.Int32>)a_0_1;
+        return new global::StrongInject.Owned<global::IA<global::System.Int32>>(iA_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void ErrorIfNoConversionBetweenDecoratorAndDecoratedTypes()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<,>), typeof(IA<,>))]
+[RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))]
+public partial class Container : IContainer<IA<int, string>>
+{
+}
+
+public interface IA<T1, T2> {}
+public class A<T1, T2> : IA<T1, T2> { public A(){} }
+public class DecA<T1, T2> : IA<T2, T1> { public DecA(IA<T1, T2> a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (5,2): Error SI0001: 'DecA<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'IA<T1, T2>'.
+                // RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))
+                new DiagnosticResult("SI0001", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA<global::System.Int32, global::System.String>>.Run<TResult, TParam>(global::System.Func<global::IA<global::System.Int32, global::System.String>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32, global::System.String> a_0_1;
+        global::IA<global::System.Int32, global::System.String> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32, global::System.String>();
+        iA_0_0 = (global::IA<global::System.Int32, global::System.String>)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(iA_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IA<global::System.Int32, global::System.String>> global::StrongInject.IContainer<global::IA<global::System.Int32, global::System.String>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A<global::System.Int32, global::System.String> a_0_1;
+        global::IA<global::System.Int32, global::System.String> iA_0_0;
+        a_0_1 = new global::A<global::System.Int32, global::System.String>();
+        iA_0_0 = (global::IA<global::System.Int32, global::System.String>)a_0_1;
+        return new global::StrongInject.Owned<global::IA<global::System.Int32, global::System.String>>(iA_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void DetectsCircularDependencyInGenericDecorator()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register(typeof(A<>), typeof(IA<>))]
+[RegisterDecorator(typeof(DecA<>), typeof(IA<>))]
+public partial class Container : IContainer<IA<int>>
+{
+}
+
+public interface IA<T> {}
+public class A<T> : IA<T> { public A(){} }
+public class DecA<T> : IA<T> { public DecA(IA<T> a, IA<string> aString){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (6,22): Error SI0101: Error while resolving dependencies for 'IA<int>': 'IA<string>' has a circular dependency
+                // Container
+                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::IA<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::IA<global::System.Int32>> global::StrongInject.IContainer<global::IA<global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
     }
 }

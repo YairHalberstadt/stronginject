@@ -97,7 +97,7 @@ namespace StrongInject.Generator.Visitors
                 DecoratorFactoryMethod { Method: { Parameters: var prms } } => prms,
                 var decoratorSource => throw new NotImplementedException(decoratorSource.GetType().ToString()),
             };
-            var decoratedParameterOrdinal = wrappedDecoratorInstanceSource.Decorator.decoratedParameter;
+            var decoratedParameterOrdinal = wrappedDecoratorInstanceSource.Decorator.DecoratedParameter;
             foreach (var param in parameters)
             {
                 if (_exitFast)
