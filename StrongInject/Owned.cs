@@ -16,8 +16,7 @@ namespace StrongInject
     /// <typeparam name="T"></typeparam>
     public sealed class Owned<T> : IDisposable
     {
-        private readonly Action _dispose;
-        private int _disposed = 0;
+        private Action? _dispose;
 
         public Owned(T value, Action dispose)
         {
@@ -29,11 +28,7 @@ namespace StrongInject
 
         public void Dispose()
         {
-            var disposed = Interlocked.Exchange(ref _disposed, 1);
-            if (disposed == 0)
-            {
-                _dispose();
-            }
+            Interlocked.Exchange(ref _dispose, null)?.Invoke();
         }
     }
 
@@ -49,8 +44,7 @@ namespace StrongInject
     /// <typeparam name="T"></typeparam>
     public sealed class AsyncOwned<T> : IAsyncDisposable
     {
-        private readonly Func<ValueTask> _dispose;
-        private int _disposed = 0;
+        private Func<ValueTask>? _dispose;
 
         public AsyncOwned(T value, Func<ValueTask> dispose)
         {
@@ -62,12 +56,7 @@ namespace StrongInject
 
         public ValueTask DisposeAsync()
         {
-            var disposed = Interlocked.Exchange(ref _disposed, 1);
-            if (disposed == 0)
-            {
-                return _dispose();
-            }
-            return default;
+            return Interlocked.Exchange(ref _dispose, null)?.Invoke() ?? default;
         }
     }
 }
