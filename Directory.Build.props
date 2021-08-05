@@ -9,7 +9,7 @@
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<AnalysisLevel>preview</AnalysisLevel>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<StrongInjectVersion>1.2.0</StrongInjectVersion>
+		<StrongInjectVersion>1.2.1</StrongInjectVersion>
 		<StrongInjectSampleVersion>*-*</StrongInjectSampleVersion>
 	</PropertyGroup>
 
