@@ -1,6 +1,6 @@
 ![](https://github.com/yairhalberstadt/stronginject/workflows/.NET%20Core/badge.svg)
 [![Join the chat at https://gitter.im/stronginject/community](https://badges.gitter.im/stronginject/community.svg)](https://gitter.im/stronginject/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/StrongInject)](https://www.nuget.org/packages/StrongInject)
+[![NuGet (with prereleases)](https://img.shields.io/nuget/vpre/StrongInject)](https://www.nuget.org/packages/StrongInject)
 
 ![StrongInject](resources/logo-horizontal.png)
 
@@ -14,15 +14,15 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
 
 - [Aims](#aims)
 - [Requirements](#requirements)
-- [Nuget](#nuget)
+- [NuGet](#nuget)
 - [How It Works](#how-it-works)
 - [Usage](#usage)
   - [Sample Projects](#sample-projects)
-      - [Asp.Net Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
+      - [ASP.NET Core/Microsoft.Extensions.DependencyInjection](#aspnet-coremicrosoftextensionsdependencyinjection)
       - [Console Application](#console-application)
       - [Xamarin Application](#xamarin-application)
-      - [Wpf Application](#wpf-application)
-    - [Real World Projects Using Stronginject](#real-world-projects-using-stronginject)
+      - [WPF Application](#wpf-application)
+    - [Real World Projects Using StrongInject](#real-world-projects-using-stronginject)
   - [Declaring a container](#declaring-a-container)
   - [Using a container](#using-a-container)
   - [Registration](#registration)
@@ -63,9 +63,9 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
 
 [Visual Studio 16.8](https://visualstudio.microsoft.com/vs) or greater
 
-[.Net 5.0.102 sdk](https://dotnet.microsoft.com/download/dotnet/5.0) or greater
+[.NET 5.0.102 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) or greater
 
-## Nuget
+## NuGet
 
 https://www.nuget.org/packages/StrongInject/
 
@@ -108,7 +108,7 @@ What do I mean by a top-level service?
 
 When using an IOC container, sometimes you request an instance from the container directly. These are top-level services. Most of the time the container resolves something though, you never ask for it explicitly - instead it's needed as a dependency for something else, which may itself be a dependency or a top-level service etc.
 
-Ideally you want IOC containers to be non invasive - this means you write all your code as if there was no container, and then just use the container once to bootstrap your code. When writing code like this there should only ever be one top-level service. Sometimes this is not possible - for example when integrating with Asp.Net Core your controllers will usually need to be top-level services, but you should always try to minimize the number of top-level services where possible.
+Ideally you want IOC containers to be non invasive - this means you write all your code as if there was no container, and then just use the container once to bootstrap your code. When writing code like this there should only ever be one top-level service. Sometimes this is not possible - for example when integrating with ASP.NET Core your controllers will usually need to be top-level services, but you should always try to minimize the number of top-level services where possible.
 
 The next section will go into more detail about exactly how to register stuff with containers, and how to use them.
 
@@ -120,12 +120,12 @@ The [wiki](https://github.com/YairHalberstadt/stronginject/wiki) is currently a 
 
 Check out these sample projects to help you get started:
 
-##### [Asp.Net Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/AspNetCore)
+##### [ASP.NET Core/Microsoft.Extensions.DependencyInjection](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/AspNetCore)
 ##### [Console Application](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/Console)
 ##### [Xamarin Application](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/Xamarin)
-##### [Wpf Application](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/Wpf)
+##### [WPF Application](https://github.com/YairHalberstadt/stronginject/tree/main/Samples/Wpf)
 
-#### Real World Projects Using Stronginject
+#### Real World Projects Using StrongInject
 
 - [FluentLang](https://github.com/YairHalberstadt/fluentlang/blob/master/source/flc/DependencyInjection/FlcContainer.cs)
 
@@ -501,7 +501,7 @@ A decorator is a type which exposes a service by wrapping an underlying instance
 
 You can register a type as a decorator using the `[RegisterDecorator(type, decoratedType)]` attribute.
 
-Here is an example of how you could time how long a call took using the decorator pattern and stronginject.
+Here is an example of how you could time how long a call took using the decorator pattern and StrongInject.
 
 ```csharp
 using System;
@@ -1048,6 +1048,6 @@ Note that I will tend to be very available if you need any help whilst contribut
 
 ## Need Help?
 
-I tend to hang around on gitter so feel free to chat at https://gitter.im/stronginject/community.
+I tend to hang around on Gitter so feel free to chat at https://gitter.im/stronginject/community.
 
-You can also [open an issue](https://github.com/YairHalberstadt/stronginject/issues/new/choose), ask on [stackoverflow](https://stackoverflow.com/questions/ask), or tag [me](https://twitter.com/HalberstadtYair) on twitter.
+You can also [open an issue](https://github.com/YairHalberstadt/stronginject/issues/new/choose), ask on [Stack Overflow](https://stackoverflow.com/questions/ask), or tag [me](https://twitter.com/HalberstadtYair) on twitter.

@@ -64,7 +64,7 @@ Once an instance is no longer needed, StrongInject takes care of disposing it fo
 
 ## Getting Started
 
-1. Install the package from [Nuget](https://www.nuget.org/packages/StrongInject/)
+1. Install the package from [NuGet](https://www.nuget.org/packages/StrongInject/)
 2. Create a container for the type you want to resolve, and register any dependencies:
     ```csharp
     using StrongInject;

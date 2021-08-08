@@ -23,11 +23,11 @@ namespace StrongInject.Samples.AspNetCore
         public void ConfigureServices(IServiceCollection services)
         {
 #if DontAutoRegisterControllers
-            services.AddControllers().ResolveControllersThroughServiceProvider(); // Tells Asp.Net to resolve controllers through the ServiceProvider, rather than calling their constructors directly.
+            services.AddControllers().ResolveControllersThroughServiceProvider(); // Tells ASP.NET to resolve controllers through the ServiceProvider, rather than calling their constructors directly.
             services.AddTransientServiceUsingContainer<Container, WeatherForecastController>(); // register the controller with the ServiceProvider.
             services.AddTransientServiceUsingContainer<Container, UsersController>();
 #else
-            services.AddControllers().AddControllersAsServices(); // Tells Asp.Net to resolve controllers through the ServiceProvider, rather than calling their constructors directly, and then auto registers all controllers with the service provider.
+            services.AddControllers().AddControllersAsServices(); // Tells ASP.NET to resolve controllers through the ServiceProvider, rather than calling their constructors directly, and then auto registers all controllers with the service provider.
             services.ReplaceWithTransientServiceUsingContainer<Container, WeatherForecastController>(); // register the controller with the ServiceProvider, and remove the existing registration that was added automatically by AddControllersAsServices().
             services.ReplaceWithTransientServiceUsingContainer<Container, UsersController>();
 #endif

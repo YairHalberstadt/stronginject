@@ -8,7 +8,7 @@ It consists of a window showing a list of users which can be added to, edited, o
 
 ## Debugging
 
-The Wpf app is not built by the Debug/Release configurations as it can only be built on windows. To debug the app change the configuration to Wpf, and then run/debug as normal.
+The WPF app is not built by the Debug/Release configurations as it can only be built on windows. To debug the app change the configuration to WPF, and then run/debug as normal.
 
 ## Dependency Injection in WPF
 
