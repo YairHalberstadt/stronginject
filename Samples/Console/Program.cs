@@ -66,7 +66,7 @@ namespace StrongInject.Samples.ConsoleApp
                 }
                 catch (CreateTopicsException e)
                 {
-                    Console.WriteLine($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
+                    Console.WriteLine($"An error occurred creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
                 }
             }
 

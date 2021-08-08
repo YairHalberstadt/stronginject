@@ -5,13 +5,13 @@ namespace StrongInject.Generator
         /// <summary>
         /// Default scope.
         /// A single instance is shared between all dependencies created for a single resolution.
-        /// For example if 'A' debends on 'B' and 'C', and 'B' and 'C' both depend on an instance of 'D',
+        /// For example if 'A' depends on 'B' and 'C', and 'B' and 'C' both depend on an instance of 'D',
         /// then when 'A' is resolved 'B' and 'C' will share the same instance of 'D'.
         /// 
-        /// Note every SingleInstance dependency defines a seperate resolution, 
+        /// Note every SingleInstance dependency defines a separate resolution, 
         /// so if 'B' and/or 'C' are SingleInstance they would not share an instance of 'D'.
         /// 
-        /// Similiarly every lambda defines a seperate resolution, so if A depends on Func&lt;B&gt;,
+        /// Similarly every lambda defines a separate resolution, so if A depends on Func&lt;B&gt;,
         /// then each time Func&lt;B&gt; is invoked a fresh instance of both B and D will be created.
         /// </summary>
         InstancePerResolution = 0,

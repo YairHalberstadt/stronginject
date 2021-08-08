@@ -8,7 +8,7 @@ using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GeneratorTestsUpdator
+namespace GeneratorTestsUpdater
 {
     /// <summary>
     /// This is a hacky utility that allows you to update all failing <see cref="GeneratorTests"/> when the way the Source Generator generates code changes.

@@ -178,7 +178,7 @@ public class Program
 
 In some cases this isn't flexible enough, for example if you want to use StrongInject from another IOC container, or you need more fine grained control over the lifetime of `T`.
 
-For these cases you can call the `Resolve` method. This reurns an `Owned<T>` which is essentially a disposable wrapper over `T`. Make sure you call `Owned<T>.Dispose` once you're done using `Owned<T>.Value`.
+For these cases you can call the `Resolve` method. This returns an `Owned<T>` which is essentially a disposable wrapper over `T`. Make sure you call `Owned<T>.Dispose` once you're done using `Owned<T>.Value`.
 
 ```csharp
 using StrongInject;
@@ -262,17 +262,17 @@ public class B : IB {}
 public partial class Container : IContainer<A>, IContainer<IB> {}
 ```
 
-There are currently 3 diferent scopes:
+There are currently 3 different scopes:
 
 **Instance Per Resolution**
 
 This is the default scope.
 
-A single instance is shared between all dependencies created for a single resolution. For example if `A` debends on `B` and `C`, and `B` and `C` both depend on an instance of `D`, then when `A` is resolved `B` and `C` will share the same instance of `D`.
+A single instance is shared between all dependencies created for a single resolution. For example if `A` depends on `B` and `C`, and `B` and `C` both depend on an instance of `D`, then when `A` is resolved `B` and `C` will share the same instance of `D`.
 
-Note every SingleInstance dependency defines a seperate resolution, so if `B` and/or `C` are SingleInstance they would not share an instance of `D`.
+Note every SingleInstance dependency defines a separate resolution, so if `B` and/or `C` are SingleInstance they would not share an instance of `D`.
 
-Similiarly every lambda defines a seperate resolution, so if `A` depends on `Func<B>`, then each time `Func<B>` is invoked a fresh instance of both `B` and `D` will be created.
+Similarly every lambda defines a separate resolution, so if `A` depends on `Func<B>`, then each time `Func<B>` is invoked a fresh instance of both `B` and `D` will be created.
 
 **Instance Per Dependency**
 
@@ -477,7 +477,7 @@ Generic methods can also have constraints. StrongInject will ignore generic meth
 
 ##### Factory Of Methods
 
-Sometimes you have a generic factory method which you don't want to use for everything, but only for specific use cases. For example, you may want to use another IOC container to resolve specific types, but don't want to write a seperate factory method for each type. In such cases you can mark the method with any number of `FactoryOfAttribute`s, and it will act exactly like a normal factory method except it will only be used to resolve the types given in the `FactoryOfAttribute`s.
+Sometimes you have a generic factory method which you don't want to use for everything, but only for specific use cases. For example, you may want to use another IOC container to resolve specific types, but don't want to write a separate factory method for each type. In such cases you can mark the method with any number of `FactoryOfAttribute`s, and it will act exactly like a normal factory method except it will only be used to resolve the types given in the `FactoryOfAttribute`s.
 
 ```csharp
 public partial class AspNetCoreControllerContainer : IContainer<SomeAspNetCoreController>
@@ -747,7 +747,7 @@ public partial class Container : IContainer<A>
 
 This registers `AutofacFactory<B>` as all implemented interfaces, namely `IFactory<B>`. Since this is a factory, this also becomes a registration for `B` as well.
 
-`Create` is called once per resolution (equiavalent to Instance Per Resolution scope). This can be adjusted further by registering it as `[Instance(Options.AsImplementedInterfacesAndUseAsFactory | Options.FactoryTargetScopeShouldBeSingleInstance)` for example.
+`Create` is called once per resolution (equivalent to Instance Per Resolution scope). This can be adjusted further by registering it as `[Instance(Options.AsImplementedInterfacesAndUseAsFactory | Options.FactoryTargetScopeShouldBeSingleInstance)` for example.
 
 #### How StrongInject picks which registration to use
 
@@ -763,11 +763,11 @@ If just `ModuleA` and `ModuleB` define a registration for `SomeInterface` then t
 - If `Container` imports `ModuleA`, and `ModuleA` imports `ModuleB`, then `ModuleA`'s registration will be best.
 - If `Container` imports `ModuleB`, and `ModuleB` imports `ModuleA`, then `ModuleB`'s registration will be best.
 
-To fix errors as a result of multiple registrations for a type, the simplest thing to do is to add a single best registration directly to the container. If the container already has multiple registrations for the type, then move those registrations to a seperate module and import them.
+To fix errors as a result of multiple registrations for a type, the simplest thing to do is to add a single best registration directly to the container. If the container already has multiple registrations for the type, then move those registrations to a separate module and import them.
 
 ### Delegate Support
 
-StrongInject can automatically resolve non-void reurning delegates even if they're not registered. It tries to resolve the return type. The delegate parameters can be used in the resolution, and will override any existing resolutions.
+StrongInject can automatically resolve non-void returning delegates even if they're not registered. It tries to resolve the return type. The delegate parameters can be used in the resolution, and will override any existing resolutions.
 
 There are two reasons you might want to use delegate resolution:
 
@@ -854,7 +854,7 @@ You can resolve an instance of `T` asynchronously from an `IAsyncContainer<T>` b
 
 It is an error resolving `T` in an `IContainer<T>` if it depends on an asynchronous dependency.
 
-A type can implement both `IContainer<T1>` and `IAsyncContainer<T2>`. They will share single instance depdendencies.
+A type can implement both `IContainer<T1>` and `IAsyncContainer<T2>`. They will share single instance dependencies.
 
 Here is a full fledged example where data will be loaded from the database as part of resolution using `IRequiresAsyncInitialization`:
 
@@ -996,7 +996,7 @@ public class Module
 
 Once a call to `Run` or `RunAsync` is complete, any Instance Per Resolution or Instance Per Dependency instances created as part of the call to `Run` or `RunAsync` will be disposed.
 
-Similiarly when an `Owned<T>` is disposed, any Instance Per Resolution or Instance Per Dependency instances created as part of resolving `T` will be disposed.
+Similarly when an `Owned<T>` is disposed, any Instance Per Resolution or Instance Per Dependency instances created as part of resolving `T` will be disposed.
 
 In `RunAsync`/`ResolveAsync` if the types implement `IAsyncDisposable` it will be preferred over `IDisposable`. `Dispose` and `DisposeAsync` will not both be called, just `DisposeAsync`.
 In `Run`/`Resolve`, `IAsyncDisposable` will be ignored. Only `Dispose` will ever be called.

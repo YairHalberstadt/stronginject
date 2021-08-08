@@ -50,20 +50,20 @@ If this is registered as an instance of `IFactory<T>` or `IAsyncFactory<T>` eith
 
 Meant to be used in conjunction with `UseAsFactory`.
 If this is registered as `IFactory<T>`, then we will apply the same options as are used for this to T.
-This means that we are using `AsImplementedInterfaces`, and `T` implements an interface, we will register T as that inteface.
-Similiarly if T is an `IFactory<A>` we will register it as a factory of `A`, and so on recusively.
+This means that we are using `AsImplementedInterfaces`, and `T` implements an interface, we will register T as that interface.
+Similarly if T is an `IFactory<A>` we will register it as a factory of `A`, and so on recursively.
 
 #### AsImplementedInterfacesAndBaseClasses
 
-Equivalant to `AsImplementedInterfaces | AsBaseClasses`
+Equivalent to `AsImplementedInterfaces | AsBaseClasses`
 
 #### AsImplementedInterfacesAndUseAsFactory
 
-Equivalant to `AsImplementedInterfaces | UseAsFactory`
+Equivalent to `AsImplementedInterfaces | UseAsFactory`
 
 #### AsEverythingPossible
 
-Equivalant to `AsImplementedInterfaces | AsBaseClasses | UseAsFactory`
+Equivalent to `AsImplementedInterfaces | AsBaseClasses | UseAsFactory`
 
 ### Factory Target Scope Options
 
@@ -85,7 +85,7 @@ If this is registered as `IFactory<T>`, then `IFactory<T>.Create` will only ever
 
 #### DoNotDecorate
 
-Dont apply decorators to any instances resolved using this registration
+Don't apply decorators to any instances resolved using this registration
 
 ## Combining options
 

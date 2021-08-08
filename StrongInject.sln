@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{EB46F000-80AB-4A94-A684-080CE86F9113}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratorTestsUpdator", "Utilities\GeneratorTestsUpdator\GeneratorTestsUpdator.csproj", "{4EEDAEE4-1AAF-4918-9CA6-1EDA46256D01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeneratorTestsUpdater", "Utilities\GeneratorTestsUpdater\GeneratorTestsUpdater.csproj", "{4EEDAEE4-1AAF-4918-9CA6-1EDA46256D01}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Extensions.DependencyInjection", "StrongInject.Extensions.DependencyInjection\StrongInject.Extensions.DependencyInjection.csproj", "{228F3BDF-41E8-46B5-96AD-22764458E693}"
 EndProject

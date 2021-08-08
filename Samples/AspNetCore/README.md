@@ -16,7 +16,7 @@ It also demonstrates a number of other key features of StrongInject:
 
 1. Usages of Scopes to control lifetimes. For example Controllers should be `InstancePerDependency` whilst  caches should be `SingleInstance`.
 2. Passing `IServiceProvider` as a parameter to the container, and using it to resolve `ILogger<T>`, allowing for two way integration with other IOC containers.
-3. Whilst `StrongInject` supports async resolution, Microsoft.Extensions.DependencyInjection does not. `DatabaseUsersCache` can only be prepared asyncronously so a different technique is used where requests on it become asyncronous instead.
+3. Whilst `StrongInject` supports async resolution, Microsoft.Extensions.DependencyInjection does not. `DatabaseUsersCache` can only be prepared asynchronously so a different technique is used where requests on it become asynchronous instead.
 4. Usage of a generic factory method to register `ILogger<T>` for all `T` at once.
 
 ## Notes
