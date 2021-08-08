@@ -35,7 +35,7 @@ You can register a method returning `T` as a decorator of `T` if it has exactly 
 Decorators are not disposed by default, for a number of reasons:
 1. In many cases a decorator implements `IDisposable` as the interface requires it, but does not actually require disposal.
 2. In many cases a decorator will delegate to the underlying's `Dispose` method:
-   1. Since the underlying is disposed seperately, this can lead to double disposal.
+   1. Since the underlying is disposed separately, this can lead to double disposal.
    2. The underlying may be an `Instance` field or property, which should never be disposed.
 3. In many cases a `DecoratorFactory` may return the same instance as was passed in, also leading to issues 2.i and 2.ii.
 

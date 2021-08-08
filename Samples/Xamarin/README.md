@@ -28,6 +28,6 @@ This app demonstrates a number of key features and techniques using StrongInject
 
 1. The Shell is set only after the container is run, but many services in the container depend on the Shell. We use `Lazy<T>`, provided by the builtin `LazyModule` to allow this to work.
 2. We use factories to register generic types, as well as to register a static field.
-3. A marker inteface `IViewOf<T>` is used to help StrongInject link up the correct Page with the correct ViewModel.
+3. A marker interface `IViewOf<T>` is used to help StrongInject link up the correct Page with the correct ViewModel.
 4. Funcs are used to lazily create pages and ViewModels, rather than creating them all at startup.
 5. Funcs are used to parameterize a ViewModel, so that the `ItemsViewModel` can create a different `ItemDetailViewModel` for each `Item`.

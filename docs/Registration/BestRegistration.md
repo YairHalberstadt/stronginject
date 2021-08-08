@@ -25,4 +25,4 @@ If just ModuleA and ModuleB define a registration for SomeInterface then things 
 - If Container imports ModuleA, and ModuleA imports ModuleB, then ModuleA's registration will be the *best registration*.
 - If Container imports ModuleB, and ModuleB imports ModuleA, then ModuleB's registration will be the *best registration*.
 
-To fix errors as a result of multiple registrations for a type, the simplest thing to do is to add a single *best registration* directly to the container. If the container already has multiple registrations for the type, then move those registrations to a seperate module and import them.
+To fix errors as a result of multiple registrations for a type, the simplest thing to do is to add a single *best registration* directly to the container. If the container already has multiple registrations for the type, then move those registrations to a separate module and import them.

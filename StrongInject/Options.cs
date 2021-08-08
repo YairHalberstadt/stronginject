@@ -32,23 +32,23 @@ namespace StrongInject
         /// <summary>
         /// Meant to be used in conjunction with <see cref="UseAsFactory"/>.
         /// If this is registered as <see cref="IFactory{T}"/>, then we will apply the same options as are used for this to T.
-        /// This means that we are using <see cref="AsImplementedInterfaces"/>, and T implements an interface, we will register T as that inteface.
-        /// Similiarly if T is an <see cref="IFactory{A}"/> we will register it as a factory of A, and so on recusively.
+        /// This means that we are using <see cref="AsImplementedInterfaces"/>, and T implements an interface, we will register T as that interface.
+        /// Similarly if T is an <see cref="IFactory{A}"/> we will register it as a factory of A, and so on recursively.
         /// </summary>
         ApplySameOptionsToFactoryTargets = 1L << 3,
 
         /// <summary>
-        /// Equivalant to `<see cref="AsImplementedInterfaces"/> | <see cref="AsBaseClasses"/>`
+        /// Equivalent to `<see cref="AsImplementedInterfaces"/> | <see cref="AsBaseClasses"/>`
         /// </summary>
         AsImplementedInterfacesAndBaseClasses = AsImplementedInterfaces + AsBaseClasses,
 
         /// <summary>
-        /// Equivalant to `<see cref="AsImplementedInterfaces"/> | <see cref="UseAsFactory"/>`
+        /// Equivalent to `<see cref="AsImplementedInterfaces"/> | <see cref="UseAsFactory"/>`
         /// </summary>
         AsImplementedInterfacesAndUseAsFactory = AsImplementedInterfaces + UseAsFactory,
 
         /// <summary>
-        /// Equivalant to `<see cref="AsImplementedInterfaces"/> | <see cref="AsBaseClasses"/> | <see cref="UseAsFactory"/>`
+        /// Equivalent to `<see cref="AsImplementedInterfaces"/> | <see cref="AsBaseClasses"/> | <see cref="UseAsFactory"/>`
         /// </summary>
         AsEverythingPossible = AsImplementedInterfacesAndBaseClasses + UseAsFactory + ApplySameOptionsToFactoryTargets,
 
@@ -82,7 +82,7 @@ namespace StrongInject
         #region Other Options (bits 32 - 63)
 
         /// <summary>
-        /// Dont apply decorators to any instances resolved using this registration
+        /// Don't apply decorators to any instances resolved using this registration
         /// </summary>
         DoNotDecorate = 1L << 32
 
