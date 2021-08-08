@@ -34,7 +34,7 @@ Furthermore, if roslyn ever provides the capability to [run one source generator
 
 ## Why Async
 
-I don't know of any other .Net IOC container that supports async resolution.
+I don't know of any other .NET IOC container that supports async resolution.
 
 Usually you get some sort of explanation like [this](https://github.com/autofac/Autofac/issues/751#issuecomment-221132638).
 

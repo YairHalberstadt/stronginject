@@ -84,9 +84,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - name: Setup MSbuild
+    - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
-    - name: Setup nuget
+    - name: Setup NuGet
       uses: nuget/setup-nuget@v1
     - name: Install dependencies
       run: nuget restore
