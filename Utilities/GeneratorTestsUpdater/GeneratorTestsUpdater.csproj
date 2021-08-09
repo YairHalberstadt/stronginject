@@ -11,10 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\..\StrongInject.Tests.Unit\StrongInject.Tests.Unit.csproj" />
-	  <ProjectReference Include="..\..\StrongInject\StrongInject.csproj">
-		  <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
-	  </ProjectReference>
+    <ProjectReference Include="..\..\StrongInject.Tests.Unit\StrongInject.Tests.Unit.csproj" />
+    <ProjectReference Include="..\..\StrongInject\StrongInject.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

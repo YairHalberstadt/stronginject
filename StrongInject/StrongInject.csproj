@@ -1,31 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Configurations>Debug;Release;Wpf;All</Configurations>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Configurations>Debug;Release;Wpf;All</Configurations>
+  </PropertyGroup>
 
-	<PropertyGroup>
-		<VersionPrefix>$(StrongInjectVersion)</VersionPrefix>
-		<PackageId>StrongInject</PackageId>
-		<Description>compile time dependency injection for C#</Description>
-	</PropertyGroup>
+  <PropertyGroup>
+    <VersionPrefix>$(StrongInjectVersion)</VersionPrefix>
+    <PackageId>StrongInject</PackageId>
+    <Description>compile time dependency injection for C#</Description>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
-	</ItemGroup>
-	
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all"/>
-	</ItemGroup>
-	
-	<ItemGroup>
-		<None Include="$(OutputPath)\netstandard2.0\StrongInject.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-	</ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)\netstandard2.0\StrongInject.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
 
 </Project>
