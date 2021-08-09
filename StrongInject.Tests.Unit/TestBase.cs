@@ -15,6 +15,20 @@ namespace StrongInject.Generator.Tests.Unit
 {
     public abstract class TestBase
     {
+        private static readonly Lazy<string> _solutionFolder = new(() =>
+        {
+            var path = typeof(TestBase).Assembly.Location;
+
+            do
+            {
+                path = Path.GetDirectoryName(path)
+                    ?? throw new NotSupportedException("The test assembly must be located within the solution folder tree.");
+            }
+            while (!File.Exists(Path.Join(path, "StrongInject.sln")));
+
+            return path;
+        });
+
         private readonly ITestOutputHelper _outputHelper;
 
         public TestBase(ITestOutputHelper outputHelper)
@@ -44,15 +58,9 @@ namespace StrongInject.Generator.Tests.Unit
 
         protected Compilation RunGeneratorWithStrongInjectReference(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
-            var currentStrongInjectLocation = typeof(IContainer<>).Assembly.Location;
-            var start = currentStrongInjectLocation.LastIndexOf("\\stronginject\\");
-            if (start == -1)
-                start = currentStrongInjectLocation.LastIndexOf("/stronginject/");
-            var end = currentStrongInjectLocation.IndexOf("\\bin\\");
-            if (end == -1)
-                end = currentStrongInjectLocation.IndexOf("/bin/");
+            var configuration = typeof(IContainer<>).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()!.Configuration;
 
-            var location = currentStrongInjectLocation[..start] + "/stronginject/StrongInject" + currentStrongInjectLocation[end..].Replace("net5.0", "netstandard2.1");
+            var location = Path.Join(_solutionFolder.Value, "StrongInject/bin", configuration, "netstandard2.1/StrongInject.dll");
             var reference = MetadataReference.CreateFromFile(location);
             return RunGenerator(source, out diagnostics, out generatedFiles, reference);
         }
