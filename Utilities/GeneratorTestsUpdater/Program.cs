@@ -47,7 +47,7 @@ namespace GeneratorTestsUpdater
             {
                 var correctCodeRegex = new Regex(@", but\s*("".*"")\s* ((has a length of \d*)|(differs near ""))", RegexOptions.Singleline);
                 var originalCodeRegex = new Regex(@"""#pragma.*?(?<!"")""(?!"")", RegexOptions.Singleline);
-                var stackTraceRegex = new Regex(@"StrongInject.Generator.Tests.Unit.GeneratorTests.* (\d+)", RegexOptions.Singleline);
+                var stackTraceRegex = new Regex(@"StrongInject\.Generator\.Tests\.Unit\.GeneratorTests.* (\d+)", RegexOptions.Singleline);
                 if (message is ITestFailed { StackTraces: var stackTraces } testFailed)
                 {
                     var match = correctCodeRegex.Match(testFailed.Messages.FirstOrDefault() ?? "");
