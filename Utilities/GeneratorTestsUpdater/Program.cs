@@ -18,13 +18,13 @@ namespace GeneratorTestsUpdater
     {
         static void Main()
         {
-            var frontController = new XunitFrontController(AppDomainSupport.Denied, typeof(GeneratorTests).Assembly.Location);
-            var testDiscoveryVisitor = new TestDiscoverySink();
+            using var frontController = new XunitFrontController(AppDomainSupport.Denied, typeof(GeneratorTests).Assembly.Location);
+            using var testDiscoveryVisitor = new TestDiscoverySink();
             frontController.Find(typeof(GeneratorTests).FullName, true, testDiscoveryVisitor, TestFrameworkOptions.ForDiscovery());
             testDiscoveryVisitor.Finished.WaitOne();
 
-            var testSourceUpdater = new TestSourceUpdater();
-            var manualResetEvent = new ManualResetEvent(false);
+            using var testSourceUpdater = new TestSourceUpdater();
+            using var manualResetEvent = new ManualResetEvent(false);
             frontController.RunTests(testDiscoveryVisitor.TestCases, testSourceUpdater, TestFrameworkOptions.ForExecution());
             testSourceUpdater.Execution.TestAssemblyFinishedEvent += _ => manualResetEvent.Set();
             manualResetEvent.WaitOne();
