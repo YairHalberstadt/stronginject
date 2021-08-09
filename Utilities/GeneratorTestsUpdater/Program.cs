@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace GeneratorTestsUpdater
 {
     /// <summary>
-    /// This is a hacky utility that allows you to update all failing <see cref="GeneratorTests"/> when the way the Source Generator generates code changes.
+    /// This is a hacky utility that allows you to update all failing tests when the way the Source Generator generates code changes.
     /// It uses heuristics and happens to work for the current set of tests, but may need updating as more tests are added.
     /// </summary>
     class Program
@@ -20,7 +20,7 @@ namespace GeneratorTestsUpdater
         {
             using var frontController = new XunitFrontController(AppDomainSupport.Denied, typeof(GeneratorTests).Assembly.Location);
             using var testDiscoveryVisitor = new TestDiscoverySink();
-            frontController.Find(typeof(GeneratorTests).FullName, true, testDiscoveryVisitor, TestFrameworkOptions.ForDiscovery());
+            frontController.Find(true, testDiscoveryVisitor, TestFrameworkOptions.ForDiscovery());
             testDiscoveryVisitor.Finished.WaitOne();
 
             using var testSourceUpdater = new TestSourceUpdater();
@@ -33,21 +33,12 @@ namespace GeneratorTestsUpdater
 
         public class TestSourceUpdater : TestMessageSink
         {
-            private readonly string _targetFilePath;
-            private string _source;
-            private readonly string _originalSource;
-            public TestSourceUpdater()
-            {
-                var currentDirectory = Directory.GetCurrentDirectory();
-                _targetFilePath = Directory.GetCurrentDirectory()[..(currentDirectory.LastIndexOf("bin"))] + "../../StrongInject.Tests.Unit/GeneratorTests.cs";
-                _source = _originalSource = File.ReadAllText(_targetFilePath);
-            }
+            private readonly Dictionary<string, (string Original, string Updated)> _modifiedSourceByPath = new(StringComparer.OrdinalIgnoreCase);
 
             public override bool OnMessageWithTypes(IMessageSinkMessage message, HashSet<string> messageTypes)
             {
                 var correctCodeRegex = new Regex(@", but\s*("".*"")\s* ((has a length of \d*)|(differs near ""))", RegexOptions.Singleline);
                 var originalCodeRegex = new Regex(@"""#pragma.*?(?<!"")""(?!"")", RegexOptions.Singleline);
-                var stackTraceRegex = new Regex(@"StrongInject\.Generator\.Tests\.Unit\.GeneratorTests.* (\d+)", RegexOptions.Singleline);
                 if (message is ITestFailed { StackTraces: var stackTraces } testFailed)
                 {
                     var match = correctCodeRegex.Match(testFailed.Messages.FirstOrDefault() ?? "");
@@ -58,22 +49,39 @@ namespace GeneratorTestsUpdater
                         correctCode = Regex.Replace(correctCode, @"\r\n|\n\r|\n|\r", Environment.NewLine);
 
                         var stackTrace = stackTraces[0];
-                        var line = int.Parse(stackTraceRegex.Match(stackTrace).Groups[1].Value);
-                        var originalMethodLocation = _originalSource.IndexOf(testFailed.TestMethod.Method.Name);
-                        var part = _originalSource[originalMethodLocation..(_originalSource.IndexOfNth('\n', line + 1))];
-                        var count = originalCodeRegex.Matches(part).Count;
-                        var methodLocation = _source.IndexOf(testFailed.TestMethod.Method.Name);
-                        var sourceFromMethod = _source[methodLocation..];
-                        var originalCodeMatches = originalCodeRegex.Matches(sourceFromMethod);
-                        if (originalCodeMatches.Count == 0)
+                        var escapedMethodName = Regex.Escape(testFailed.TestClass.Class.Name + '.' + testFailed.TestMethod.Method.Name);
+                        var locationMatch = Regex.Match(stackTraces[0], escapedMethodName + @".* in (?<file>.*):line (?<line>\d+)", RegexOptions.Singleline);
+                        if (!locationMatch.Success)
+                            throw new NotImplementedException("Unable to parse file and line number from stack trace.");
+
+                        var filePath = locationMatch.Groups["file"].Value;
+                        var line = int.Parse(locationMatch.Groups["line"].Value);
+
+                        lock (_modifiedSourceByPath)
                         {
-                            Console.WriteLine($"Cannot fix test {testFailed.TestMethod.Method.Name} as can't find string beginning '#pragma'");
-                        }
-                        else
-                        {
-                            var originalCodeMatch = originalCodeMatches[count];
-                            _source = _source[..(methodLocation + originalCodeMatch.Index)] + correctCode + sourceFromMethod[(originalCodeMatch.Index + originalCodeMatch.Length)..];
-                            Console.WriteLine($"Fixed test {testFailed.TestMethod.Method.Name}");
+                            if (!_modifiedSourceByPath.TryGetValue(filePath, out var contents))
+                            {
+                                contents.Updated = contents.Original = File.ReadAllText(filePath);
+                            }
+
+                            var originalMethodLocation = contents.Original.IndexOf(testFailed.TestMethod.Method.Name);
+                            var part = contents.Original[originalMethodLocation..(contents.Original.IndexOfNth('\n', line + 1))];
+                            var count = originalCodeRegex.Matches(part).Count;
+                            var methodLocation = contents.Updated.IndexOf(testFailed.TestMethod.Method.Name);
+                            var sourceFromMethod = contents.Updated[methodLocation..];
+                            var originalCodeMatches = originalCodeRegex.Matches(sourceFromMethod);
+                            if (originalCodeMatches.Count == 0)
+                            {
+                                Console.WriteLine($"Cannot fix test {testFailed.TestMethod.Method.Name} as can't find string beginning '#pragma'");
+                            }
+                            else
+                            {
+                                var originalCodeMatch = originalCodeMatches[count];
+                                contents.Updated = contents.Updated[..(methodLocation + originalCodeMatch.Index)] + correctCode + sourceFromMethod[(originalCodeMatch.Index + originalCodeMatch.Length)..];
+                                _modifiedSourceByPath[filePath] = contents;
+
+                                Console.WriteLine($"Fixed test {testFailed.TestMethod.Method.Name}");
+                            }
                         }
                     }
                 }
@@ -82,7 +90,13 @@ namespace GeneratorTestsUpdater
 
             public void WriteFile()
             {
-                File.WriteAllText(_targetFilePath, _source);
+                lock (_modifiedSourceByPath)
+                {
+                    foreach (var (path, (_, updatedContents)) in  _modifiedSourceByPath)
+                        File.WriteAllText(path, updatedContents);
+
+                    _modifiedSourceByPath.Clear();
+                }
             }
         }
     }
