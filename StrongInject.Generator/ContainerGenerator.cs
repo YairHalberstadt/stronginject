@@ -356,6 +356,8 @@ namespace StrongInject.Generator
                                 : source.OfType,
                             variableName),
                         DelegateCreationStatement { VariableName: var variableName, Source: var source } => (source.OfType, variableName),
+                        OwnedCreationLocalFunctionStatement => (null, null),
+                        OwnedCreationStatement { VariableName: var variableName, Source: var source } => (source.OfType, variableName),
                         DependencyCreationStatement { VariableName: var variableName, Source: { OfType: var ofType } source } => (source.IsAsync
                             ? source switch
                             {
@@ -519,6 +521,44 @@ namespace StrongInject.Generator
                         methodSource.Append("return ");
                         methodSource.Append(internalTargetName);
                         methodSource.Append(";};");
+                        break;
+                    case OwnedCreationLocalFunctionStatement(var source, var isAsyncLocalFunction, var localFunctionName, var internalOperations, var internalTargetName):
+                        if (isAsyncLocalFunction)
+                            methodSource.Append("async ");
+
+                        methodSource.Append((isAsyncLocalFunction
+                            ? _wellKnownTypes.ValueTask1.Construct(source.OwnedType)
+                            : source.OwnedType).FullName());
+
+                        methodSource.Append(' ');
+                        methodSource.Append(localFunctionName);
+                        methodSource.Append("(){");
+
+                        CreateVariables(
+                            internalOperations,
+                            methodSource,
+                            instanceSourcesScope);
+
+                        methodSource.Append("return new ");
+                        methodSource.Append(source.OwnedType.FullName());
+                        methodSource.Append('(');
+                        methodSource.Append(internalTargetName);
+                        methodSource.Append(',');
+                        if (source.IsAsync)
+                            methodSource.Append("async");
+                        methodSource.Append("()=>{");
+
+                        EmitDisposals(methodSource, internalOperations);
+
+                        methodSource.Append("});}");
+                        break;
+                    case OwnedCreationStatement(var variableName, _, var isAsyncLocalFunction, var localFunctionName):
+                        methodSource.Append(variableName);
+                        methodSource.Append('=');
+                        if (isAsyncLocalFunction)
+                            methodSource.Append("await ");
+                        methodSource.Append(localFunctionName);
+                        methodSource.Append("();");
                         break;
                     case DependencyCreationStatement(var variableName, var source, var dependencies):
 

@@ -113,5 +113,10 @@ namespace StrongInject.Generator.Visitors
         {
             VisitCore(forwardedInstanceSource.Underlying, state);
         }
+
+        public virtual void Visit(OwnedSource ownedSource, State state)
+        {
+            VisitCore(GetInstanceSource(ownedSource.OwnedValueType, state, null), state);
+        }
     }
 }

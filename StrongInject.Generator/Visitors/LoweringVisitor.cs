@@ -162,6 +162,38 @@ namespace StrongInject.Generator.Visitors
                 }
                 _order.Add(targetOperation);
             }
+            else if (source is OwnedSource ownedSource)
+            {
+                var internalTarget = GetInstanceSource(ownedSource.OwnedValueType, state, null)!;
+                var internalOperations = LowerResolution(
+                    internalTarget,
+                    currentScope: state.InstanceSourcesScope,
+                    containerScope: _containerScope,
+                    disposalLowerer: _disposalLowerer.WithDisposeAsynchronously(ownedSource.IsAsync),
+                    isSingleInstanceCreation: false,
+                    isAsyncContext: ownedSource.IsAsync,
+                    singleInstanceVariablesInScope: _existingVariables.Where(x => x.Key.Scope == Scope.SingleInstance),
+                    targetName: out var internalTargetName);
+
+                var localFunctionName = _existingVariables.GetValueOrDefault(source).name;
+                if (localFunctionName is null)
+                {
+                    localFunctionName = "Create" + ownedSource.OwnedType.Name + ownedSource.OwnedValueType.Name + "_" + _variableCount++;
+
+                    var localFunctionStatementOperation = new Operation(
+                        new OwnedCreationLocalFunctionStatement(ownedSource, _isAsyncContext, localFunctionName, internalOperations, internalTargetName),
+                        disposal: null,
+                        dependencies: _emptyList,
+                        canDisposeLocally: false);
+
+                    _order.Add(localFunctionStatementOperation);
+                    _existingVariables.Add(source, (localFunctionStatementOperation, localFunctionName));
+                }
+
+                var ownedCreationStatement = new OwnedCreationStatement(state.Name, ownedSource, _isAsyncContext, localFunctionName);
+                targetOperation = CreateOperation(ownedCreationStatement, state.Name, state.OperationDependencies);
+                _order.Add(targetOperation);
+            }
             else
             {
                 var requiresInitialization = source is
@@ -238,6 +270,12 @@ namespace StrongInject.Generator.Visitors
                     VisitCore(dependency, state);
                 }
             }
+        }
+
+        public override void Visit(OwnedSource ownedSource, State state)
+        {
+            // OwnedSource is already about to be handled in AfterVisit like DelegateSource.
+            // Unlike DelegateSource, there is nothing to do until then.
         }
 
         private Operation CreateOperation(Statement statement, string variableToDisposeName, List<Operation> dependencies, AwaitStatement? awaitStatement = null)

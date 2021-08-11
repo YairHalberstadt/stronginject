@@ -19,6 +19,11 @@ namespace StrongInject.Generator
             _containerDeclarationLocation = containerDeclarationLocation;
         }
 
+        public DisposalLowerer WithDisposeAsynchronously(bool disposeAsynchronously)
+        {
+            return new(disposeAsynchronously, _wellKnownTypes, _reportDiagnostic, _containerDeclarationLocation);
+        }
+
         public Disposal? CreateDisposal(Statement statement, string variableToDisposeName)
         {
             return statement switch
@@ -47,7 +52,7 @@ namespace StrongInject.Generator
                         DelegateParameter or InstanceFieldOrProperty or ArraySource or ForwardedInstanceSource => null,
                         _ => throw new NotImplementedException(source.GetType().ToString()),
                     },
-                SingleInstanceReferenceStatement or InitializationStatement or DisposeActionsCreationStatement or AwaitStatement => null,
+                SingleInstanceReferenceStatement or InitializationStatement or DisposeActionsCreationStatement or AwaitStatement or OwnedCreationStatement => null,
                 _ => throw new NotImplementedException(statement.GetType().ToString()),
             };
 

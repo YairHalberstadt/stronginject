@@ -184,6 +184,19 @@ namespace StrongInject.Generator
             return false;
         }
 
+        public static bool IsWellKnownOwnedType(this ITypeSymbol type, WellKnownTypes wellKnownTypes, out bool isAsync, out ITypeSymbol valueType)
+        {
+            isAsync = type.OriginalDefinition.Equals(wellKnownTypes.AsyncOwned, SymbolEqualityComparer.Default);
+            if (isAsync || type.OriginalDefinition.Equals(wellKnownTypes.Owned, SymbolEqualityComparer.Default))
+            {
+                valueType = ((INamedTypeSymbol)type).TypeArguments[0];
+                return true;
+            }
+
+            valueType = null!;
+            return false;
+        }
+
         public static IEnumerable<AttributeData> Sort(this IEnumerable<AttributeData> attributes)
         {
             return attributes.OrderBy(x => x, AttributeComparer.Instance);

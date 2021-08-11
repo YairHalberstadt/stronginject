@@ -24,4 +24,17 @@ namespace StrongInject.Generator
         public string HasAwaitStartedVariableName { get; } = "hasAwaitStarted_" + VariableToAwaitName;
         public string HasAwaitCompletedVariableName { get; } = "hasAwaitCompleted_" + VariableToAwaitName;
     }
+
+    internal sealed record OwnedCreationStatement(
+        string VariableName,
+        OwnedSource Source,
+        bool IsAsyncLocalFunction,
+        string LocalFunctionName) : Statement;
+
+    internal sealed record OwnedCreationLocalFunctionStatement(
+        OwnedSource Source,
+        bool IsAsyncLocalFunction,
+        string LocalFunctionName,
+        ImmutableArray<Operation> InternalOperations,
+        string InternalTargetName) : Statement;
 }
