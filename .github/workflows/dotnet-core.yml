@@ -84,13 +84,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
     - name: Install dependencies
-      run: nuget restore
-    - name: Build All
-      run: msbuild .\StrongInject.sln /verbosity:minimal /t:Rebuild /p:Configuration=All
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Debug --no-restore
+    - name: Build WPF
+      run: dotnet build -c Wpf
     - name: Test
-      run: dotnet test -c Debug --verbosity normal
+      run: dotnet test -c Debug --no-restore --verbosity normal
