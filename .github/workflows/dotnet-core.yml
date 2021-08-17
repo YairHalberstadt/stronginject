@@ -90,7 +90,9 @@ jobs:
       uses: nuget/setup-nuget@v1
     - name: Install dependencies
       run: nuget restore
-    - name: Build All
-      run: msbuild .\StrongInject.sln /verbosity:minimal /t:Rebuild /p:Configuration=Wpf
+    - name: Build
+      run: dotnet build -c Debug --no-restore
+    - name: Build WPF
+      run: dotnet build -c Wpf --no-restore
     - name: Test
-      run: dotnet test -c Debug --verbosity normal
+      run: dotnet test -c Debug --no-restore --verbosity normal
