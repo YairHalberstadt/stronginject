@@ -84,12 +84,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
     - name: Install dependencies
-      run: nuget restore
+      run: dotnet restore
     - name: Build
       run: dotnet build -c Debug --no-restore
     - name: Build WPF
