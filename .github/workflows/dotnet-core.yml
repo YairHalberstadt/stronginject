@@ -89,6 +89,6 @@ jobs:
     - name: Build
       run: dotnet build -c Debug --no-restore
     - name: Build WPF
-      run: dotnet build -c Wpf --no-restore
+      run: dotnet build -c Wpf
     - name: Test
       run: dotnet test -c Debug --no-restore --verbosity normal
