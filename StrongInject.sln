@@ -633,7 +633,6 @@ Global
 		{1684B68F-699F-457F-8891-99DC2569420B}.All|x86.ActiveCfg = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.All|x86.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|Any CPU.ActiveCfg = Debug|Any CPU
-		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|Any CPU.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|iPhone.ActiveCfg = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|iPhone.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.AndroidApp|iPhoneSimulator.ActiveCfg = Debug|Any CPU
@@ -662,8 +661,6 @@ Global
 		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x64.Build.0 = Release|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x86.ActiveCfg = Release|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x86.Build.0 = Release|Any CPU
-		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|Any CPU.ActiveCfg = Debug|Any CPU
-		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|Any CPU.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhone.ActiveCfg = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhone.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhoneSimulator.ActiveCfg = Debug|Any CPU
@@ -672,6 +669,7 @@ Global
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x64.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x86.ActiveCfg = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x86.Build.0 = Debug|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|Any CPU.ActiveCfg = Wpf|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
