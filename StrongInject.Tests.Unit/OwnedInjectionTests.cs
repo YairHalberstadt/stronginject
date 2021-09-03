@@ -971,6 +971,98 @@ partial class Container
         }
 
         [Fact]
+        public void OwnedCanBeDecorated()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Register(typeof(A)), Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+    [DecoratorFactory]
+    public static Owned<T> DecorateOwned<T>(Owned<T> inner) => throw new NotImplementedException();
+}
+
+public record A(Owned<B> B);
+public record B : IDisposable { public void Dispose() { } }
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::StrongInject.Owned<global::B> owned_0_2;
+        global::StrongInject.Owned<global::B> owned_0_1;
+        global::A a_0_0;
+        global::StrongInject.Owned<global::B> CreateOwnedB_3()
+        {
+            global::B b_0_0;
+            b_0_0 = new global::B();
+            return new global::StrongInject.Owned<global::B>(b_0_0, () =>
+            {
+                ((global::System.IDisposable)b_0_0).Dispose();
+            });
+        }
+
+        owned_0_2 = CreateOwnedB_3();
+        owned_0_1 = global::Container.DecorateOwned<global::B>(inner: owned_0_2);
+        a_0_0 = new global::A(B: owned_0_1);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::StrongInject.Owned<global::B> owned_0_2;
+        global::StrongInject.Owned<global::B> owned_0_1;
+        global::A a_0_0;
+        global::StrongInject.Owned<global::B> CreateOwnedB_3()
+        {
+            global::B b_0_0;
+            b_0_0 = new global::B();
+            return new global::StrongInject.Owned<global::B>(b_0_0, () =>
+            {
+                ((global::System.IDisposable)b_0_0).Dispose();
+            });
+        }
+
+        owned_0_2 = CreateOwnedB_3();
+        owned_0_1 = global::Container.DecorateOwned<global::B>(inner: owned_0_2);
+        a_0_0 = new global::A(B: owned_0_1);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
         public void TryStatementShouldNotBeAddedForOwnedCreation()
         {
             string userSource = @"
