@@ -152,7 +152,7 @@ namespace StrongInject.Generator
                     var ops = LoweringVisitor.LowerResolution(
                         target: _containerScope[target],
                         containerScope: _containerScope,
-                        disposalLowerer: CreateDisposalLowerer(isAsync),
+                        disposalLowerer: CreateDisposalLowerer(new DisposalStyle(isAsync, DisposalStyleDeterminant.Container)),
                         isSingleInstanceCreation: false,
                         isAsyncContext: isAsync,
                         out var resultVariableName);
@@ -274,7 +274,7 @@ namespace StrongInject.Generator
                 var ops = LoweringVisitor.LowerResolution(
                     target: instanceSource,
                     containerScope: _containerScope,
-                    disposalLowerer: CreateDisposalLowerer(_implementsAsyncContainer),
+                    disposalLowerer: CreateDisposalLowerer(new DisposalStyle(_implementsAsyncContainer, DisposalStyleDeterminant.Container)),
                     isSingleInstanceCreation: true,
                     isAsyncContext: isAsync,
                     out var variableName);
@@ -306,8 +306,8 @@ namespace StrongInject.Generator
             return singleInstanceMethod.name;
         }
 
-        private DisposalLowerer CreateDisposalLowerer(bool disposeAsynchronously)
-            => new(disposeAsynchronously, _wellKnownTypes, _reportDiagnostic, _containerDeclarationLocation);
+        private DisposalLowerer CreateDisposalLowerer(DisposalStyle disposalStyle)
+            => new(disposalStyle, _wellKnownTypes, _reportDiagnostic, _containerDeclarationLocation);
 
         private void CreateVariables(
             ImmutableArray<Operation> operations,

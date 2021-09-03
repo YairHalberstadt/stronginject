@@ -169,7 +169,7 @@ namespace StrongInject.Generator.Visitors
                     internalTarget,
                     currentScope: state.InstanceSourcesScope,
                     containerScope: _containerScope,
-                    disposalLowerer: _disposalLowerer.WithDisposeAsynchronously(ownedSource.IsAsync),
+                    disposalLowerer: _disposalLowerer.WithDisposalStyle(new(ownedSource.IsAsync, DisposalStyleDeterminant.OwnedType)),
                     isSingleInstanceCreation: false,
                     isAsyncContext: ownedSource.IsAsync,
                     singleInstanceVariablesInScope: _existingVariables.Where(x => x.Key.Scope == Scope.SingleInstance),

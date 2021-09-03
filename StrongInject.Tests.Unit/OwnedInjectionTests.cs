@@ -1858,7 +1858,7 @@ public record B : IAsyncDisposable { public ValueTask DisposeAsync() => default;
 ";
             _ = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out _);
             generatorDiagnostics.Verify(
-                // (7,22): Warning SI1301: Cannot call asynchronous dispose for 'B' in implementation of synchronous container
+                // (7,22): Warning SI1301: Cannot call asynchronous dispose for 'B' using 'StrongInject.Owned<B>'; use 'StrongInject.AsyncOwned<B>' instead
                 // Container
                 new DiagnosticResult("SI1301", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
         }
