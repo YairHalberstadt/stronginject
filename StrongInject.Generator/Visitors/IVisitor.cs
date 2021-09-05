@@ -16,5 +16,6 @@ namespace StrongInject.Generator.Visitors
         void Visit(ArraySource arraySource, TState state);
         void Visit(WrappedDecoratorInstanceSource wrappedDecoratorInstanceSource, TState state);
         void Visit(ForwardedInstanceSource forwardedInstanceSource, TState state);
+        void Visit(OwnedSource ownedSource, TState state);
     }
 }

@@ -123,4 +123,16 @@ namespace StrongInject.Generator
             visitor.Visit(this, state);
         }
     }
+    internal record OwnedSource(
+        ITypeSymbol OwnedType,
+        ITypeSymbol OwnedValueType,
+        bool IsAsync) : InstanceSource(Scope.InstancePerDependency, IsAsync: IsAsync, CanDecorate: true)
+    {
+        public override ITypeSymbol OfType => OwnedType;
+
+        public override void Visit<TState>(IVisitor<TState> visitor, TState state)
+        {
+            visitor.Visit(this, state);
+        }
+    }
 }

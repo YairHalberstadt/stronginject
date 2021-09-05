@@ -6,24 +6,29 @@ namespace StrongInject.Generator
 {
     internal class DisposalLowerer
     {
-        private readonly bool _disposeAsynchronously;
+        private readonly DisposalStyle _disposalStyle;
         private readonly WellKnownTypes _wellKnownTypes;
         private readonly Action<Diagnostic> _reportDiagnostic;
         private readonly Location _containerDeclarationLocation;
 
-        public DisposalLowerer(bool disposeAsynchronously, WellKnownTypes wellKnownTypes, Action<Diagnostic> reportDiagnostic, Location containerDeclarationLocation)
+        public DisposalLowerer(DisposalStyle disposalStyle, WellKnownTypes wellKnownTypes, Action<Diagnostic> reportDiagnostic, Location containerDeclarationLocation)
         {
-            _disposeAsynchronously = disposeAsynchronously;
+            _disposalStyle = disposalStyle;
             _wellKnownTypes = wellKnownTypes;
             _reportDiagnostic = reportDiagnostic;
             _containerDeclarationLocation = containerDeclarationLocation;
+        }
+
+        public DisposalLowerer WithDisposalStyle(DisposalStyle disposalStyle)
+        {
+            return new(disposalStyle, _wellKnownTypes, _reportDiagnostic, _containerDeclarationLocation);
         }
 
         public Disposal? CreateDisposal(Statement statement, string variableToDisposeName)
         {
             return statement switch
             {
-                DelegateCreationStatement { InternalOperations: var ops, DisposeActionsName: var disposeActionsName } => _disposeAsynchronously
+                DelegateCreationStatement { InternalOperations: var ops, DisposeActionsName: var disposeActionsName } => _disposalStyle.IsAsync
                     ? ops.Any(x => x.Disposal is not null)
                         ? new Disposal.DelegateDisposal(disposeActionsName, _wellKnownTypes.ConcurrentBagOfFuncTask, IsAsync: true)
                         : null
@@ -47,7 +52,7 @@ namespace StrongInject.Generator
                         DelegateParameter or InstanceFieldOrProperty or ArraySource or ForwardedInstanceSource => null,
                         _ => throw new NotImplementedException(source.GetType().ToString()),
                     },
-                SingleInstanceReferenceStatement or InitializationStatement or DisposeActionsCreationStatement or AwaitStatement => null,
+                SingleInstanceReferenceStatement or InitializationStatement or DisposeActionsCreationStatement or AwaitStatement or OwnedCreationStatement => null,
                 _ => throw new NotImplementedException(statement.GetType().ToString()),
             };
 
@@ -57,14 +62,14 @@ namespace StrongInject.Generator
                 {
                     return ExactTypeKnown(subTypeOf, variableName);
                 }
-                return new Disposal.DisposalHelpers(variableName, _disposeAsynchronously);
+                return new Disposal.DisposalHelpers(variableName, _disposalStyle.IsAsync);
             }
 
             Disposal? ExactTypeKnown(ITypeSymbol type, string variableName)
             {
                 var isAsyncDisposable = type.AllInterfaces.Contains(_wellKnownTypes.IAsyncDisposable);
 
-                if (isAsyncDisposable && _disposeAsynchronously)
+                if (isAsyncDisposable && _disposalStyle.IsAsync)
                     return new Disposal.IDisposable(variableName, IsAsync: true);
 
                 if (type.AllInterfaces.Contains(_wellKnownTypes.IDisposable))
@@ -81,18 +86,36 @@ namespace StrongInject.Generator
             }
         }
 
-        private static Diagnostic WarnIAsyncDisposableInSynchronousResolution(ITypeSymbol type, Location location)
+        private Diagnostic WarnIAsyncDisposableInSynchronousResolution(ITypeSymbol type, Location location)
         {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI1301",
-                    "Cannot call asynchronous dispose for Type in implementation of synchronous container",
-                    "Cannot call asynchronous dispose for '{0}' in implementation of synchronous container",
-                    "StrongInject",
-                    DiagnosticSeverity.Warning,
-                    isEnabledByDefault: true),
-                location,
-                type);
+            return _disposalStyle.Determinant switch
+            {
+                DisposalStyleDeterminant.Container => Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        "SI1301",
+                        "Cannot call asynchronous dispose for Type in implementation of synchronous container",
+                        "Cannot call asynchronous dispose for '{0}' in implementation of synchronous container",
+                        "StrongInject",
+                        DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    type),
+
+                DisposalStyleDeterminant.OwnedType => Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        "SI1301",
+                        "Cannot call asynchronous dispose for Type using 'Owned<T>'; use 'AsyncOwned<T>' instead",
+                        "Cannot call asynchronous dispose for '{0}' using '{1}'; use '{2}' instead",
+                        "StrongInject",
+                        DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true),
+                    location,
+                    type,
+                    _wellKnownTypes.Owned.Construct(type),
+                    _wellKnownTypes.AsyncOwned.Construct(type)),
+
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

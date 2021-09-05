@@ -4,7 +4,7 @@ using Xunit;
 
 namespace StrongInject.Tests.Integration
 {
-    public partial class TestParralelismAndResolutionFailureBehaviour
+    public partial class TestParallelismAndResolutionFailureBehaviour
     {
         public class ActionDisposable<T> : IDisposable
         {

@@ -104,6 +104,12 @@ namespace StrongInject.Generator
                 return true;
             }
 
+            if (target.IsWellKnownOwnedType(_wellKnownTypes, out var isAsync, out var valueType))
+            {
+                instanceSource = new OwnedSource(target, valueType, isAsync);
+                return true;
+            }
+
             if (target is IArrayTypeSymbol { Rank: 1, ElementType: var elementType } arrayTypeSymbol )
             {
                 var elementSources = Enumerable.Empty<InstanceSource>();

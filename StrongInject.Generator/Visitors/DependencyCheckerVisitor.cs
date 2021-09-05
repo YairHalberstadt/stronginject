@@ -146,7 +146,7 @@ namespace StrongInject.Generator.Visitors
         
         protected override void AfterVisit(InstanceSource source, State state)
         {
-            if (source is { IsAsync: true, Scope: not Scope.SingleInstance } and not DelegateSource && !state.IsScopeAsync
+            if (source is { IsAsync: true, Scope: not Scope.SingleInstance } and not (DelegateSource or OwnedSource) && !state.IsScopeAsync
                 || source is { IsAsync: true, Scope: Scope.SingleInstance } && !state.IsCurrentOrAnyParentScopeAsync)
             {
                 _reportDiagnostic(RequiresAsyncResolution(_location, _target, source.OfType));
@@ -360,6 +360,12 @@ namespace StrongInject.Generator.Visitors
                         result.Append(forwardedType);
                         result.AppendLine("'");
                         //equivalent to: `result.AppendLine($"Casting instance of Type '{ type }' to '{ forwardedType }'");`
+                        break;
+                    case OwnedSource { OwnedType: var ownedType }:
+                        result.Append("Resolving '");
+                        result.Append(ownedType);
+                        result.AppendLine("'");
+                        //equivalent to: `result.AppendLine($"Resolving '{ ownedType }'");`
                         break;
                     default: throw new NotImplementedException(source.GetType().ToString());
 
