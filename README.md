@@ -840,6 +840,87 @@ public class Handler : IRequiresAsyncInitialization
 public class Container : IContainer<Server> {}
 ```
 
+### `Owned<T>` support
+
+Using `Owned<T>` instead of `T` gives a component the control over when the `T` instance and all its dependencies are released back to the container. You access the `T` instance using the `Owned<T>.Value` property, and you dispose the `Owned<T>` instance to release the `T` instance and its dependencies back to the container. It’s your responsibility to call `Owned<T>.Dispose()` when you’re ready. If you don’t, the `T` instance and all its dependencies will never be cleaned up, not even when the container itself is disposed.
+
+`Owned<T>` offers a clean alternative to disposing the `T` instance directly. Disposing `T` directly can lead to leaks where the dependencies of the `T` instance itself are not disposed or released back to the container soon enough. Advanced situations like pooling also require `Owned<T>` to release the `T` back to the pool without disposing it.
+
+Injecting `Owned<T>` or delegates returning `Owned<T>` is enabled out of the box, and so are the `AsyncOwned<T>` versions of these. `AsyncOwned<T>` will be required to be used instead of `Owned<T>` when the `T` in question or any of its dependencies require asynchronous disposal.
+
+The typical scenario is when you combine this with delegates by injecting `Func<Owned<Y>>` or `Func<X, Owned<Y>>` into a component. This enables the component to acquire and release `Y` instances as many times as it needs, possibly with varying parameters, and possibly overlapping with each other before releasing them back to the container. Here’s one such usage:
+
+```csharp
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using StrongInject;
+using System;
+using System.Threading.Tasks;
+
+[Register(typeof(SomeViewModel))]
+[Register(typeof(SomeDbContext))]
+public partial class Container : IContainer<SomeViewModel>
+{
+    [Factory]
+    public static SqlConnection CreateSqlConnection()
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class SomeViewModel
+{
+    private readonly Func<Owned<SomeDbContext>> dbContextFactory;
+
+    public SomeViewModel(Func<Owned<SomeDbContext>> dbContextFactory)
+    {
+        this.dbContextFactory = dbContextFactory;
+    }
+
+    public async Task SaveAsync(string newName)
+    {
+        // Using Func<Owned<SomeDbContext>> instead of Func<SomeDbContext> ensures that the context will not be
+        // disposed while this method is still using it, even if SomeViewModel is released back to the container.
+
+        // Using Func<Owned<SomeDbContext>> instead of Owned<SomeDbContext> gives the ability for SaveAsync to
+        // get a new SomeDbContext instance that is not being used anywhere else, so overlapping calls to SaveAsync
+        // are no problem.
+
+        using Owned<DbContext> dbContext = dbContextFactory.Invoke();
+
+        dbContext.Value.Set<SomeEntity>().Add(new SomeEntity { Name = newName });
+        await dbContext.Value.SaveChangesAsync();
+    }
+}
+
+public class SomeDbContext : DbContext
+{
+    public SomeDbContext(SqlConnection connection)
+        : base(new DbContextOptionsBuilder().UseSqlServer(connection).Options)
+    {
+    }
+}
+
+public class SomeEntity
+{
+    public string Name { get; set; }
+}
+```
+
+> ℹ **Coming from Castle Windsor?**
+>
+> Injecting a delegate such as `Func<…, Owned<T>>` is a concept which maps 1:1 with Castle Windsor’s _typed factories_ feature. Castle Windsor’s feature can auto-implement an interface you define, such as `IFactory<T>` with `T Resolve(…)` and `void Release(T)` methods.
+>
+> To convert to the equivalent feature in StrongInject:
+>
+> | Instead of this | Do this |
+> |-|-|
+> | Inject `IFactory<T>` | Inject `Func<Owned<T>>` |
+> | Call `IFactory<T>.Resolve()` | Invoke the `Func<Owned<T>>` delegate |
+> | Call `IFactory<T>.Release(instance)` | Call `Owned<T>.Dispose()` (prefer a `using` statement) |
+>
+> If the `IFactory<T>.Resolve` method takes parameters, such as `IFactory<T>.Resolve(A param1, B param2)`, inject `Func<A, B, Owned<T>>` instead.
+
 ### Post Constructor Initialization
 
 If your type implements `IRequiresInitialization`, `Initialize` will be called after construction.
