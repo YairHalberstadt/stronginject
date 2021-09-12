@@ -37,6 +37,7 @@ Logo kindly contributed by [@onelioubov](https://github.com/onelioubov) and [@kh
     - [Providing registrations at runtime or integrating with other IOC containers](#providing-registrations-at-runtime-or-integrating-with-other-ioc-containers)
     - [How StrongInject picks which registration to use](#how-stronginject-picks-which-registration-to-use)
   - [Delegate Support](#delegate-support)
+  - [`Owned<T>` support](#ownedt-support)
   - [Post Constructor Initialization](#post-constructor-initialization)
   - [Async Support](#async-support)
     - [Parallel Resolution](#parallel-resolution)
