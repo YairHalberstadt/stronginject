@@ -507,7 +507,7 @@ Here is an example of how you could time how long a call took using the decorato
 ```csharp
 using System;
 using System.Diagnostics;
-using StrongInject
+using StrongInject;
 
 public class Foo {}
 public interface IService
