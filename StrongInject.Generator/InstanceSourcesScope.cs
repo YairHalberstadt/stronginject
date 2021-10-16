@@ -106,7 +106,8 @@ namespace StrongInject.Generator
 
             if (target.IsWellKnownOwnedType(_wellKnownTypes, out var isAsync, out var valueType))
             {
-                instanceSource = new OwnedSource(target, valueType, isAsync);
+                var concreteOwnedType = (isAsync ? _wellKnownTypes.AsyncOwned : _wellKnownTypes.Owned).Construct(valueType);
+                instanceSource = new OwnedSource(concreteOwnedType, valueType, isAsync);
                 return true;
             }
 
