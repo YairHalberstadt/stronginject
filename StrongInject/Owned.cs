@@ -13,7 +13,6 @@ namespace StrongInject
     /// 
     /// Do not use <see cref="Value"/> after this is disposed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public sealed class Owned<T> : IDisposable
     {
         private Action? _dispose;
@@ -41,7 +40,6 @@ namespace StrongInject
     /// 
     /// Do not use <see cref="Value"/> after this is disposed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public sealed class AsyncOwned<T> : IAsyncDisposable
     {
         private Func<ValueTask>? _dispose;
