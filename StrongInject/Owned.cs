@@ -5,13 +5,18 @@ using System.Threading.Tasks;
 namespace StrongInject
 {
     /// <summary>
+    /// <para>
     /// A disposable wrapper for an instance of <typeparamref name="T"/>.
-    /// 
+    /// </para>
+    /// <para>
     /// Make sure to dispose this once you are done using <see cref="Value"/>. This will dispose <see cref="Value"/> and all dependencies of it.
-    /// 
+    /// </para>
+    /// <para>
     /// Do not dispose <see cref="Value"/> directly as that will not dispose its dependencies.
-    /// 
+    /// </para>
+    /// <para>
     /// Do not use <see cref="Value"/> after this is disposed.
+    /// </para>
     /// </summary>
     public sealed class Owned<T> : IDisposable
     {
@@ -32,13 +37,18 @@ namespace StrongInject
     }
 
     /// <summary>
+    /// <para>
     /// An async disposable wrapper for an instance of <typeparamref name="T"/>.
-    /// 
+    /// </para>
+    /// <para>
     /// Make sure to dispose this once you are done using <see cref="Value"/>. This will dispose <see cref="Value"/> and all dependencies of it.
-    /// 
+    /// </para>
+    /// <para>
     /// Do not dispose <see cref="Value"/> directly as that will not dispose its dependencies.
-    /// 
+    /// </para>
+    /// <para>
     /// Do not use <see cref="Value"/> after this is disposed.
+    /// </para>
     /// </summary>
     public sealed class AsyncOwned<T> : IAsyncDisposable
     {
