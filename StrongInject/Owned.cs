@@ -18,7 +18,13 @@ namespace StrongInject
     /// Do not use <see cref="Value"/> after this is disposed.
     /// </para>
     /// </summary>
-    public sealed class Owned<T> : IDisposable
+    public interface IOwned<out T> : IDisposable
+    {
+        T Value { get; }
+    }
+
+    /// <inheritdoc cref="IOwned{T}"/>
+    public sealed class Owned<T> : IOwned<T>
     {
         private Action? _dispose;
 
@@ -50,7 +56,13 @@ namespace StrongInject
     /// Do not use <see cref="Value"/> after this is disposed.
     /// </para>
     /// </summary>
-    public sealed class AsyncOwned<T> : IAsyncDisposable
+    public interface IAsyncOwned<out T> : IAsyncDisposable
+    {
+        T Value { get; }
+    }
+
+    /// <inheritdoc cref="IAsyncOwned{T}"/>
+    public sealed class AsyncOwned<T> : IAsyncOwned<T>
     {
         private Func<ValueTask>? _dispose;
 
