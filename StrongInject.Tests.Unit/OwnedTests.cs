@@ -11,7 +11,8 @@ namespace StrongInject.Generator.Tests.Unit
             var narrowerType = new Owned<string>("", dispose: () => { });
             IOwned<object> widerType = narrowerType;
 
-            // Rather than testing that the behavior is the same, just show that they are in fact the same object reference.
+            // This should survive any refactoring of the types or APIs.
+            // (E.g. Replacing IOwned with owned.Cast<object>() returning an Owned<object> wrapper would not be acceptable.)
             Assert.Same(narrowerType, widerType);
         }
 
@@ -21,7 +22,8 @@ namespace StrongInject.Generator.Tests.Unit
             var narrowerType = new AsyncOwned<string>("", dispose: () => ValueTask.CompletedTask);
             IAsyncOwned<object> widerType = narrowerType;
 
-            // Rather than testing that the behavior is the same, just show that they are in fact the same object reference.
+            // This should survive any refactoring of the types or APIs.
+            // (E.g. Replacing IOwned with owned.Cast<object>() returning an Owned<object> wrapper would not be acceptable.)
             Assert.Same(narrowerType, widerType);
         }
     }
