@@ -108,6 +108,12 @@ namespace StrongInject.Generator
             {
                 var concreteOwnedType = (isAsync ? _wellKnownTypes.AsyncOwned : _wellKnownTypes.Owned).Construct(valueType);
                 instanceSource = new OwnedSource(concreteOwnedType, valueType, isAsync);
+
+                if (target.TypeKind == TypeKind.Interface)
+                {
+                    instanceSource = ForwardedInstanceSource.Create((INamedTypeSymbol)target, instanceSource);
+                }
+
                 return true;
             }
 

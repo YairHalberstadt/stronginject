@@ -2076,8 +2076,9 @@ partial class Container
         global::A a_0_0;
         func_0_1 = () =>
         {
-            global::StrongInject.Owned<global::B> owned_1_0;
-            global::StrongInject.Owned<global::B> CreateOwnedB_1()
+            global::StrongInject.Owned<global::B> owned_1_1;
+            global::StrongInject.IOwned<global::B> iOwned_1_0;
+            global::StrongInject.Owned<global::B> CreateOwnedB_2()
             {
                 global::B b_1_0;
                 b_1_0 = new global::B();
@@ -2087,8 +2088,9 @@ partial class Container
                 });
             }
 
-            owned_1_0 = CreateOwnedB_1();
-            return owned_1_0;
+            owned_1_1 = CreateOwnedB_2();
+            iOwned_1_0 = (global::StrongInject.IOwned<global::B>)owned_1_1;
+            return iOwned_1_0;
         };
         a_0_0 = new global::A(B: func_0_1);
         TResult result;
@@ -2111,8 +2113,9 @@ partial class Container
         global::A a_0_0;
         func_0_1 = () =>
         {
-            global::StrongInject.Owned<global::B> owned_1_0;
-            global::StrongInject.Owned<global::B> CreateOwnedB_1()
+            global::StrongInject.Owned<global::B> owned_1_1;
+            global::StrongInject.IOwned<global::B> iOwned_1_0;
+            global::StrongInject.Owned<global::B> CreateOwnedB_2()
             {
                 global::B b_1_0;
                 b_1_0 = new global::B();
@@ -2122,8 +2125,9 @@ partial class Container
                 });
             }
 
-            owned_1_0 = CreateOwnedB_1();
-            return owned_1_0;
+            owned_1_1 = CreateOwnedB_2();
+            iOwned_1_0 = (global::StrongInject.IOwned<global::B>)owned_1_1;
+            return iOwned_1_0;
         };
         a_0_0 = new global::A(B: func_0_1);
         return new global::StrongInject.Owned<global::A>(a_0_0, () =>
@@ -2171,8 +2175,9 @@ partial class Container
         global::A a_0_0;
         func_0_1 = () =>
         {
-            global::StrongInject.AsyncOwned<global::B> asyncOwned_1_0;
-            global::StrongInject.AsyncOwned<global::B> CreateAsyncOwnedB_1()
+            global::StrongInject.AsyncOwned<global::B> asyncOwned_1_1;
+            global::StrongInject.IAsyncOwned<global::B> iAsyncOwned_1_0;
+            global::StrongInject.AsyncOwned<global::B> CreateAsyncOwnedB_2()
             {
                 global::B b_1_0;
                 b_1_0 = new global::B();
@@ -2182,8 +2187,9 @@ partial class Container
                 });
             }
 
-            asyncOwned_1_0 = CreateAsyncOwnedB_1();
-            return asyncOwned_1_0;
+            asyncOwned_1_1 = CreateAsyncOwnedB_2();
+            iAsyncOwned_1_0 = (global::StrongInject.IAsyncOwned<global::B>)asyncOwned_1_1;
+            return iAsyncOwned_1_0;
         };
         a_0_0 = new global::A(B: func_0_1);
         TResult result;
@@ -2206,8 +2212,9 @@ partial class Container
         global::A a_0_0;
         func_0_1 = () =>
         {
-            global::StrongInject.AsyncOwned<global::B> asyncOwned_1_0;
-            global::StrongInject.AsyncOwned<global::B> CreateAsyncOwnedB_1()
+            global::StrongInject.AsyncOwned<global::B> asyncOwned_1_1;
+            global::StrongInject.IAsyncOwned<global::B> iAsyncOwned_1_0;
+            global::StrongInject.AsyncOwned<global::B> CreateAsyncOwnedB_2()
             {
                 global::B b_1_0;
                 b_1_0 = new global::B();
@@ -2217,8 +2224,9 @@ partial class Container
                 });
             }
 
-            asyncOwned_1_0 = CreateAsyncOwnedB_1();
-            return asyncOwned_1_0;
+            asyncOwned_1_1 = CreateAsyncOwnedB_2();
+            iAsyncOwned_1_0 = (global::StrongInject.IAsyncOwned<global::B>)asyncOwned_1_1;
+            return iAsyncOwned_1_0;
         };
         a_0_0 = new global::A(B: func_0_1);
         return new global::StrongInject.Owned<global::A>(a_0_0, () =>
