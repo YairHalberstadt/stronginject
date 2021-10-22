@@ -478,14 +478,14 @@ namespace StrongInject.Generator
             }
         }
 
-        private bool CheckValidType(AttributeData registerAttribute, TypedConstant typedConstant, ITypeSymbol module, out INamedTypeSymbol type)
+        private bool CheckValidType(AttributeData attribute, TypedConstant typedConstant, ITypeSymbol module, out INamedTypeSymbol type)
         {
             type = (typedConstant.Value as INamedTypeSymbol)!;
             if (typedConstant.Value is null)
             {
                 _reportDiagnostic(InvalidType(
                     (ITypeSymbol)typedConstant.Value!,
-                    registerAttribute.GetLocation(_cancellationToken)));
+                    attribute.GetLocation(_cancellationToken)));
                 return false;
             }
             if (type.IsOrReferencesErrorType())
@@ -498,7 +498,7 @@ namespace StrongInject.Generator
             {
                 _reportDiagnostic(TypeDoesNotHaveAtLeastInternalAccessibility(
                     type,
-                    registerAttribute.GetLocation(_cancellationToken)));
+                    attribute.GetLocation(_cancellationToken)));
                 return false;
             }
 
@@ -507,7 +507,7 @@ namespace StrongInject.Generator
                 _reportDiagnostic(WarnTypeNotPublic(
                     type,
                     module,
-                    registerAttribute.GetLocation(_cancellationToken)));
+                    attribute.GetLocation(_cancellationToken)));
             }
 
             return true;
@@ -577,12 +577,11 @@ namespace StrongInject.Generator
                 _ => throw new InvalidEnumArgumentException(nameof(registrationsToCalculate), (int)registrationsToCalculate, typeof(RegistrationsToCalculate))
             })
             {
-                var instanceSource = CreateInstanceSourceIfFactoryMethod(method, out var attribute);
-                if (instanceSource is not null)
+                foreach (var instanceSource in CreateInstanceSourceIfFactoryMethod(method, module))
                 {
-                    if (instanceSource.IsOpenGeneric)
+                    if (instanceSource is FactoryMethod { IsOpenGeneric: true } factoryMethod)
                     {
-                        genericRegistrations.Add(instanceSource);
+                        genericRegistrations.Add(factoryMethod);
                     }
                     else
                     {
@@ -592,62 +591,103 @@ namespace StrongInject.Generator
             }
         }
 
-        private FactoryMethod? CreateInstanceSourceIfFactoryMethod(IMethodSymbol method, out AttributeData attribute)
+        private IEnumerable<InstanceSource> CreateInstanceSourceIfFactoryMethod(IMethodSymbol method, INamedTypeSymbol module)
         {
-            attribute = method.GetAttributes().FirstOrDefault(x
+            var attribute = method.GetAttributes().FirstOrDefault(x
                 => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default))!;
+                   && attribute.Equals(_wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default))!;
+
             if (attribute is not null)
             {
                 var countConstructorArguments = attribute.ConstructorArguments.Length;
-                if (countConstructorArguments != 1)
+                if (countConstructorArguments is not (1 or 2))
                 {
                     // Invalid code, ignore
-                    return null;
+                    yield break;
                 }
 
                 var scope = attribute.ConstructorArguments[0] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
                     ? (Scope)scopeInt
                     : Scope.InstancePerResolution;
 
-                if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
+                var asTypes = attribute.ConstructorArguments.Last()
+                    is { Kind: TypedConstantKind.Array, Values: { IsDefaultOrEmpty: false } types }
+                        ? types
+                        : ImmutableArray<TypedConstant>.Empty;
+
+                if (method.ReturnType.SpecialType == SpecialType.System_Void)
                 {
-                    bool isGeneric = method.TypeParameters.Length > 0;
-                    if (isGeneric && !AllTypeParametersUsedInReturnType(method))
-                    {
-                        _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
-                            method,
-                            attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                    _reportDiagnostic(FactoryMethodReturnsVoid(
+                        method,
+                        attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
 
-                        return null;
-                    }
-
-                    foreach (var param in method.Parameters)
-                    {
-                        if (param.RefKind != RefKind.None)
-                        {
-                            _reportDiagnostic(FactoryMethodParameterIsPassedByRef(
-                                method,
-                                param,
-                                param.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-                            return null;
-                        }
-                    }
-
-                    if (returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType))
-                    {
-                        return new FactoryMethod(method, taskOfType, scope, isGeneric, IsAsync: true);
-                    }
-
-                    return new FactoryMethod(method, returnType, scope, isGeneric, IsAsync: false);
+                    yield break;
                 }
 
-                _reportDiagnostic(FactoryMethodReturnsVoid(
-                    method,
-                    attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
-            }
+                bool isGeneric = method.TypeParameters.Length > 0;
+                if (isGeneric && !AllTypeParametersUsedInReturnType(method))
+                {
+                    _reportDiagnostic(NotAllTypeParametersUsedInReturnType(
+                        method,
+                        attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
 
-            return null;
+                    yield break;
+                }
+
+                if (isGeneric && !asTypes.IsEmpty)
+                {
+                    _reportDiagnostic(GenericFactoryMethodWithAsTypes(method, attribute.GetLocation(_cancellationToken)));
+                    yield break;
+                }
+
+                foreach (var param in method.Parameters)
+                {
+                    if (param.RefKind != RefKind.None)
+                    {
+                        _reportDiagnostic(FactoryMethodParameterIsPassedByRef(
+                            method,
+                            param,
+                            param.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None));
+                        yield break;
+                    }
+                }
+
+                var returnType = method.ReturnType;
+                var factoryMethod = returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType)
+                    ? new FactoryMethod(method, taskOfType, scope, isGeneric, IsAsync: true)
+                    : new FactoryMethod(method, returnType, scope, isGeneric, IsAsync: false);
+
+                if (asTypes.IsEmpty)
+                {
+                    yield return factoryMethod;
+                    yield break;
+                }
+
+                var factoryOfType = factoryMethod.FactoryOfType;
+
+                foreach (var asType in asTypes)
+                {
+                    if (!CheckValidType(attribute, asType, module, out var target))
+                    {
+                        // Invalid code, ignore
+                        continue;
+                    }
+
+                    if (target.IsUnboundGenericType)
+                    {
+                        _reportDiagnostic(FactoryMethodWithUnboundGenericAsTypes(method, target, attribute.GetLocation(_cancellationToken)));
+                        continue;
+                    }
+
+                    if (_compilation.ClassifyConversion(factoryOfType, target) is not { IsImplicit: true, IsNumeric: false, IsUserDefined: false })
+                    {
+                        _reportDiagnostic(FactoryMethodDoesNotHaveSuitableConversion(method, factoryOfType, target, attribute.GetLocation(_cancellationToken)));
+                        continue;
+                    }
+
+                    yield return ForwardedInstanceSource.Create(target, factoryMethod);
+                }
+            }
         }
 
         private static bool AllTypeParametersUsedInReturnType(IMethodSymbol method)
@@ -1455,7 +1495,7 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0014",
-                    "Factory Method returns void",
+                    "Factory method returns void",
                     "Factory method '{0}' returns void.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
@@ -1501,7 +1541,7 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0020",
-                    "All type parameters must be used in return type of generic Factory Method",
+                    "All type parameters must be used in return type of generic factory method",
                     "All type parameters must be used in return type of generic factory method '{0}'",
                     "StrongInject",
                     DiagnosticSeverity.Error,
@@ -1559,8 +1599,8 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0024",
-                    "Decorator Factory Method does not have a parameter of decorated type",
-                    "Decorator Factory '{0}' does not have a parameter of decorated type '{1}'.",
+                    "Decorator factory method does not have a parameter of decorated type",
+                    "Decorator factory '{0}' does not have a parameter of decorated type '{1}'.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
@@ -1574,8 +1614,8 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0025",
-                    "Decorator Factory Method has multiple constructor parameters of decorated type",
-                    "Decorator Factory '{0}' has multiple constructor parameters of decorated type '{1}'.",
+                    "Decorator Factory method has multiple constructor parameters of decorated type",
+                    "Decorator factory '{0}' has multiple constructor parameters of decorated type '{1}'.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
@@ -1674,6 +1714,51 @@ namespace StrongInject.Generator
                 registeredAsType);
         }
         
+        private static Diagnostic FactoryMethodDoesNotHaveSuitableConversion(IMethodSymbol method, ITypeSymbol returnType, INamedTypeSymbol registeredAsType, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0032",
+                    "Return type of factory method does not have an identity, implicit reference, boxing or nullable conversion to registered as type",
+                    "Return type '{0}' of '{1}' does not have an identity, implicit reference, boxing or nullable conversion to '{2}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                returnType,
+                method.Name,
+                registeredAsType);
+        }
+        
+        private static Diagnostic GenericFactoryMethodWithAsTypes(IMethodSymbol method, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0033",
+                    "Factory method cannot be registered as specific types since it is generic.",
+                    "Factory method '{0}' cannot be registered as specific types since it is generic.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                method.Name);
+        }
+        
+        private static Diagnostic FactoryMethodWithUnboundGenericAsTypes(IMethodSymbol method, INamedTypeSymbol asType, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0034",
+                    "Factory method cannot be registered as an instance of open generic type.",
+                    "Factory method '{0}' cannot be registered as an instance of open generic type '{1}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                method.Name,
+                asType);
+        }
+        
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
         {
             return Diagnostic.Create(
@@ -1694,7 +1779,7 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI1002",
-                    "Factory Method is not either public and static, or protected, and containing module is not a container, so will be ignored",
+                    "Factory method is not either public and static, or protected, and containing module is not a container, so will be ignored",
                     "Factory method '{0}' is not either public and static, or protected, and containing module '{1}' is not a container, so will be ignored.",
                     "StrongInject",
                     DiagnosticSeverity.Warning,
