@@ -28,7 +28,7 @@ namespace StrongInject
     {
         private Action? _dispose;
 
-        public Owned(T value, Action dispose)
+        public Owned(T value, Action? dispose)
         {
             Value = value;
             _dispose = dispose;
@@ -66,7 +66,7 @@ namespace StrongInject
     {
         private Func<ValueTask>? _dispose;
 
-        public AsyncOwned(T value, Func<ValueTask> dispose)
+        public AsyncOwned(T value, Func<ValueTask>? dispose)
         {
             Value = value;
             _dispose = dispose;

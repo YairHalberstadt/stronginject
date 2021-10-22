@@ -26,5 +26,30 @@ namespace StrongInject.Generator.Tests.Unit
             // (E.g. Replacing IOwned with owned.Cast<object>() returning an Owned<object> wrapper would not be acceptable.)
             Assert.Same(narrowerType, widerType);
         }
+
+        [Fact]
+        public static void OwnedCanBeUsedWithNullDisposeAction()
+        {
+            var owned = new Owned<string>("", dispose: null);
+
+            // If a check is ever added in the future to return null or throw if Value is accessed after disposal,
+            // the null action should not cause Owned<T> to think that disposal has already happened.
+            Assert.Equal("", owned.Value);
+
+            owned.Dispose();
+        }
+
+        [Fact]
+        public static void AsyncOwnedCanBeUsedWithNullDisposeAction()
+        {
+            var owned = new AsyncOwned<string>("", dispose: null);
+
+            // If a check is ever added in the future to return null or throw if Value is accessed after disposal,
+            // the null action should not cause Owned<T> to think that disposal has already happened.
+            Assert.Equal("", owned.Value);
+
+            // This should complete instantly since there is nothing to do.
+            Assert.True(owned.DisposeAsync().IsCompletedSuccessfully);
+        }
     }
 }
