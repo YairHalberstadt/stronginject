@@ -2038,5 +2038,202 @@ public record B : IRequiresAsyncInitialization { public ValueTask InitializeAsyn
                 // Container
                 new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
         }
+
+        [Fact]
+        public void IOwnedCanBeInjected()
+        {
+            string userSource = @"
+using System;
+using StrongInject;
+
+[Register(typeof(A)), Register(typeof(B))]
+public partial class Container : IContainer<A> { }
+
+public record A(Func<IOwned<B>> B);
+public record B : IDisposable { public void Dispose() { } };
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::StrongInject.IOwned<global::B>> func_0_1;
+        global::A a_0_0;
+        func_0_1 = () =>
+        {
+            global::StrongInject.Owned<global::B> owned_1_1;
+            global::StrongInject.IOwned<global::B> iOwned_1_0;
+            global::StrongInject.Owned<global::B> CreateOwnedB_2()
+            {
+                global::B b_1_0;
+                b_1_0 = new global::B();
+                return new global::StrongInject.Owned<global::B>(b_1_0, () =>
+                {
+                    ((global::System.IDisposable)b_1_0).Dispose();
+                });
+            }
+
+            owned_1_1 = CreateOwnedB_2();
+            iOwned_1_0 = (global::StrongInject.IOwned<global::B>)owned_1_1;
+            return iOwned_1_0;
+        };
+        a_0_0 = new global::A(B: func_0_1);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::StrongInject.IOwned<global::B>> func_0_1;
+        global::A a_0_0;
+        func_0_1 = () =>
+        {
+            global::StrongInject.Owned<global::B> owned_1_1;
+            global::StrongInject.IOwned<global::B> iOwned_1_0;
+            global::StrongInject.Owned<global::B> CreateOwnedB_2()
+            {
+                global::B b_1_0;
+                b_1_0 = new global::B();
+                return new global::StrongInject.Owned<global::B>(b_1_0, () =>
+                {
+                    ((global::System.IDisposable)b_1_0).Dispose();
+                });
+            }
+
+            owned_1_1 = CreateOwnedB_2();
+            iOwned_1_0 = (global::StrongInject.IOwned<global::B>)owned_1_1;
+            return iOwned_1_0;
+        };
+        a_0_0 = new global::A(B: func_0_1);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void IAsyncOwnedCanBeInjected()
+        {
+            string userSource = @"
+using System;
+using System.Threading.Tasks;
+using StrongInject;
+
+[Register(typeof(A)), Register(typeof(B))]
+public partial class Container : IContainer<A> { }
+
+public record A(Func<IAsyncOwned<B>> B);
+public record B : IAsyncDisposable { public ValueTask DisposeAsync() => default; };
+";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::StrongInject.IAsyncOwned<global::B>> func_0_1;
+        global::A a_0_0;
+        func_0_1 = () =>
+        {
+            global::StrongInject.AsyncOwned<global::B> asyncOwned_1_1;
+            global::StrongInject.IAsyncOwned<global::B> iAsyncOwned_1_0;
+            global::StrongInject.AsyncOwned<global::B> CreateAsyncOwnedB_2()
+            {
+                global::B b_1_0;
+                b_1_0 = new global::B();
+                return new global::StrongInject.AsyncOwned<global::B>(b_1_0, async () =>
+                {
+                    await ((global::System.IAsyncDisposable)b_1_0).DisposeAsync();
+                });
+            }
+
+            asyncOwned_1_1 = CreateAsyncOwnedB_2();
+            iAsyncOwned_1_0 = (global::StrongInject.IAsyncOwned<global::B>)asyncOwned_1_1;
+            return iAsyncOwned_1_0;
+        };
+        a_0_0 = new global::A(B: func_0_1);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::StrongInject.IAsyncOwned<global::B>> func_0_1;
+        global::A a_0_0;
+        func_0_1 = () =>
+        {
+            global::StrongInject.AsyncOwned<global::B> asyncOwned_1_1;
+            global::StrongInject.IAsyncOwned<global::B> iAsyncOwned_1_0;
+            global::StrongInject.AsyncOwned<global::B> CreateAsyncOwnedB_2()
+            {
+                global::B b_1_0;
+                b_1_0 = new global::B();
+                return new global::StrongInject.AsyncOwned<global::B>(b_1_0, async () =>
+                {
+                    await ((global::System.IAsyncDisposable)b_1_0).DisposeAsync();
+                });
+            }
+
+            asyncOwned_1_1 = CreateAsyncOwnedB_2();
+            iAsyncOwned_1_0 = (global::StrongInject.IAsyncOwned<global::B>)asyncOwned_1_1;
+            return iAsyncOwned_1_0;
+        };
+        a_0_0 = new global::A(B: func_0_1);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
     }
 }

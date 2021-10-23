@@ -14,7 +14,9 @@ namespace StrongInject.Generator
         INamedTypeSymbol IAsyncDisposable,
         INamedTypeSymbol ConcurrentBagOfAction,
         INamedTypeSymbol ConcurrentBagOfFuncTask,
+        INamedTypeSymbol IOwned,
         INamedTypeSymbol Owned,
+        INamedTypeSymbol IAsyncOwned,
         INamedTypeSymbol AsyncOwned,
         INamedTypeSymbol RegisterAttribute,
         INamedTypeSymbol RegisterModuleAttribute,
@@ -52,7 +54,9 @@ namespace StrongInject.Generator
             var concurrentBagOfFuncTask = funcOfTask is null
                 ? null
                 : concurrentBag?.Construct(funcOfTask);
+            var iOwned = compilation.GetTypeOrReport("StrongInject.IOwned`1", reportDiagnostic);
             var owned = compilation.GetTypeOrReport("StrongInject.Owned`1", reportDiagnostic);
+            var iAsyncOwned = compilation.GetTypeOrReport("StrongInject.IAsyncOwned`1", reportDiagnostic);
             var asyncOwned = compilation.GetTypeOrReport("StrongInject.AsyncOwned`1", reportDiagnostic);
             var registerAttribute = compilation.GetTypeOrReport("StrongInject.RegisterAttribute", reportDiagnostic);
             var registerModuleAttribute = compilation.GetTypeOrReport("StrongInject.RegisterModuleAttribute", reportDiagnostic);
@@ -77,7 +81,9 @@ namespace StrongInject.Generator
                 || iAsyncDisposable is null
                 || concurrentBagOfAction is null
                 || concurrentBagOfFuncTask is null
+                || iOwned is null
                 || owned is null
+                || iAsyncOwned is null
                 || asyncOwned is null
                 || registerAttribute is null
                 || registerModuleAttribute is null
@@ -108,7 +114,9 @@ namespace StrongInject.Generator
                 IAsyncDisposable: iAsyncDisposable,
                 ConcurrentBagOfAction: concurrentBagOfAction,
                 ConcurrentBagOfFuncTask: concurrentBagOfFuncTask,
+                IOwned: iOwned,
                 Owned: owned,
+                IAsyncOwned: iAsyncOwned,
                 AsyncOwned: asyncOwned,
                 RegisterAttribute: registerAttribute,
                 RegisterModuleAttribute: registerModuleAttribute,

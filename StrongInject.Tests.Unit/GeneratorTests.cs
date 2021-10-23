@@ -2831,7 +2831,13 @@ partial class Container
                 // (1,1): Error SI0201: Missing Type 'StrongInject.IRequiresAsyncInitialization'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.Owned`1[T]'. Are you missing an assembly reference?
+                // (1,1): Error SI0201: Missing Type 'StrongInject.IOwned`1'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.Owned`1'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.IAsyncOwned`1'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.AsyncOwned`1'. Are you missing an assembly reference?
