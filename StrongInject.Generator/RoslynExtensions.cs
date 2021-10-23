@@ -186,8 +186,12 @@ namespace StrongInject.Generator
 
         public static bool IsWellKnownOwnedType(this ITypeSymbol type, WellKnownTypes wellKnownTypes, out bool isAsync, out ITypeSymbol valueType)
         {
-            isAsync = type.OriginalDefinition.Equals(wellKnownTypes.AsyncOwned, SymbolEqualityComparer.Default);
-            if (isAsync || type.OriginalDefinition.Equals(wellKnownTypes.Owned, SymbolEqualityComparer.Default))
+            isAsync = type.OriginalDefinition.Equals(wellKnownTypes.AsyncOwned, SymbolEqualityComparer.Default)
+                || type.OriginalDefinition.Equals(wellKnownTypes.IAsyncOwned, SymbolEqualityComparer.Default);
+
+            if (isAsync
+                || type.OriginalDefinition.Equals(wellKnownTypes.Owned, SymbolEqualityComparer.Default)
+                || type.OriginalDefinition.Equals(wellKnownTypes.IOwned, SymbolEqualityComparer.Default))
             {
                 valueType = ((INamedTypeSymbol)type).TypeArguments[0];
                 return true;
