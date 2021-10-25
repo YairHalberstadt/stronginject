@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all"/>
+    <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
