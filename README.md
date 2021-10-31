@@ -292,7 +292,7 @@ using StrongInject;
 
 public class A {}
 
-[Register<A>(A)]
+[Register<A>()]
 public class Module {}
 
 [RegisterModule(typeof(Module))]
@@ -319,7 +319,7 @@ public class A
     public A(Dictionary<string, object> configuration){}
 }
 
-[Register<A>(A)]
+[Register<A>()]
 public partial class Container : IContainer<A>
 {
     [Instance] Dictionary<string, object> _configuration;
@@ -835,7 +835,6 @@ public class Handler : IRequiresAsyncInitialization
   public Handler(bool shouldFrob) => ...
   public async ValueTask InitializeAsync() => ...
 }
-
 
 [Register<Server>]
 [Register<Handler>]
