@@ -19,6 +19,8 @@ namespace StrongInject.Generator
         INamedTypeSymbol IAsyncOwned,
         INamedTypeSymbol AsyncOwned,
         INamedTypeSymbol RegisterAttribute,
+        INamedTypeSymbol RegisterAttribute_1,
+        INamedTypeSymbol RegisterAttribute_2,
         INamedTypeSymbol RegisterModuleAttribute,
         INamedTypeSymbol RegisterFactoryAttribute,
         INamedTypeSymbol RegisterDecoratorAttribute,
@@ -59,6 +61,8 @@ namespace StrongInject.Generator
             var iAsyncOwned = compilation.GetTypeOrReport("StrongInject.IAsyncOwned`1", reportDiagnostic);
             var asyncOwned = compilation.GetTypeOrReport("StrongInject.AsyncOwned`1", reportDiagnostic);
             var registerAttribute = compilation.GetTypeOrReport("StrongInject.RegisterAttribute", reportDiagnostic);
+            var registerAttribute_1 = compilation.GetTypeOrReport("StrongInject.RegisterAttribute`1", reportDiagnostic);
+            var registerAttribute_2 = compilation.GetTypeOrReport("StrongInject.RegisterAttribute`2", reportDiagnostic);
             var registerModuleAttribute = compilation.GetTypeOrReport("StrongInject.RegisterModuleAttribute", reportDiagnostic);
             var registerFactoryAttribute = compilation.GetTypeOrReport("StrongInject.RegisterFactoryAttribute", reportDiagnostic);
             var registerDecoratorAttribute = compilation.GetTypeOrReport("StrongInject.RegisterDecoratorAttribute", reportDiagnostic);
@@ -86,6 +90,8 @@ namespace StrongInject.Generator
                 || iAsyncOwned is null
                 || asyncOwned is null
                 || registerAttribute is null
+                || registerAttribute_1 is null
+                || registerAttribute_2 is null
                 || registerModuleAttribute is null
                 || registerFactoryAttribute is null
                 || registerDecoratorAttribute is null
@@ -119,6 +125,8 @@ namespace StrongInject.Generator
                 IAsyncOwned: iAsyncOwned,
                 AsyncOwned: asyncOwned,
                 RegisterAttribute: registerAttribute,
+                RegisterAttribute_1: registerAttribute_1,
+                RegisterAttribute_2: registerAttribute_2,
                 RegisterModuleAttribute: registerModuleAttribute,
                 RegisterFactoryAttribute: registerFactoryAttribute,
                 RegisterDecoratorAttribute: registerDecoratorAttribute,

@@ -53,5 +53,16 @@ namespace StrongInject.Generator
                 static (_, instanceSource) => InstanceSources.Create(instanceSource),
                 static (_, instanceSource, existing) => existing.Add(instanceSource));
         }
+
+        public static IEnumerable<TResult> SelectWhere<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, (bool, TResult)> whereSelector)
+        {
+            foreach (var item in source)
+            {
+                if (whereSelector(item) is (true, var result))
+                {
+                    yield return result;
+                }
+            }
+        }
     }
 }

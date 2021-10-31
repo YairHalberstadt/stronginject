@@ -245,33 +245,15 @@ namespace StrongInject.Generator
                     // Invalid code, ignore
                     continue;
                 }
-                if (!CheckValidType(registerAttribute, typeConstant, module, out var type))
+                if (!TryExtractType(registerAttribute, typeConstant, out var type))
                 {
                     continue;
                 }
-                if (type.IsAbstract)
-                {
-                    _reportDiagnostic(TypeIsAbstract(
-                        type!,
-                        registerAttribute.GetLocation(_cancellationToken)));
-                    continue;
-                }
-
-                if (!TryGetConstructor(registerAttribute, type, out var constructor))
-                {
-                    continue;
-                }
-
+                
                 var scope = countConstructorArguments is 3 && registerAttribute.ConstructorArguments[1] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
                     ? (Scope)scopeInt
                     : Scope.InstancePerResolution;
-
-                if (scope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
-                {
-                    _reportDiagnostic(StructWithSingleInstanceScope(registerAttribute, type, _cancellationToken));
-                    continue;
-                }
-
+                
                 var registeredAsConstant = registerAttribute.ConstructorArguments[countConstructorArguments - 1];
                 if (registeredAsConstant.Kind is not TypedConstantKind.Array)
                 {
@@ -280,8 +262,88 @@ namespace StrongInject.Generator
                 }
                 var registeredAsConstants = registeredAsConstant.Values;
                 var registeredAs = registeredAsConstants.IsDefaultOrEmpty
-                    ? new[] { typeConstant }
-                    : registeredAsConstants.Where(x => x.Kind == TypedConstantKind.Type).ToArray();
+                    ? new[] { type }
+                    : registeredAsConstants.SelectWhere(x => (TryExtractType(registerAttribute, x, out var type), type));
+                
+                AppendRegistrations(registerAttribute, type, scope, registeredAs);
+            }
+            
+            foreach (var registerAttribute in moduleAttributes
+                .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_1, SymbolEqualityComparer.Default) ?? false)
+                .Sort())
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+                var type = registerAttribute.AttributeClass!.TypeArguments[0];
+
+                if (type is not INamedTypeSymbol namedType)
+                {
+                    _reportDiagnostic(CannotRegisterNonNamedType(type, registerAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
+                
+                var scope = registerAttribute.ConstructorArguments[0] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
+                    ? (Scope)scopeInt
+                    : Scope.InstancePerResolution;
+                
+                var registeredAs =  new[] { namedType };
+                
+                AppendRegistrations(registerAttribute, namedType, scope, registeredAs);
+            }
+            
+            foreach (var registerAttribute in moduleAttributes
+                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_2, SymbolEqualityComparer.Default) ?? false)
+                         .Sort())
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+                var type = registerAttribute.AttributeClass!.TypeArguments[0];
+
+                if (type is not INamedTypeSymbol namedType)
+                {
+                    _reportDiagnostic(CannotRegisterNonNamedType(type, registerAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
+                
+                var scope = registerAttribute.ConstructorArguments[0] is { Kind: TypedConstantKind.Enum, Value: int scopeInt }
+                    ? (Scope)scopeInt
+                    : Scope.InstancePerResolution;
+                
+                var registeredAsType =  registerAttribute.AttributeClass!.TypeArguments[1];
+                if (registeredAsType is not INamedTypeSymbol registeredAsNamedType)
+                {
+                    // diagnostic is not the best, but I don't think this can actually occur in legal code, so not worth introducing a new diagnostic.
+                    _reportDiagnostic(CannotRegisterNonNamedType(registeredAsType, registerAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
+                var registeredAs = new[] { registeredAsNamedType };
+                
+                AppendRegistrations(registerAttribute, namedType, scope, registeredAs);
+            }
+
+            void AppendRegistrations(AttributeData registerAttribute, INamedTypeSymbol type, Scope scope, IEnumerable<INamedTypeSymbol> registeredAs)
+            {
+                if (!CheckValidType(registerAttribute, module, type))
+                {
+                    return;
+                }
+
+                if (type.IsAbstract)
+                {
+                    _reportDiagnostic(TypeIsAbstract(
+                        type!,
+                        registerAttribute.GetLocation(_cancellationToken)));
+                    return;
+                }
+
+                if (!TryGetConstructor(registerAttribute, type, out var constructor))
+                {
+                    return;
+                }
+
+                if (scope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
+                {
+                    _reportDiagnostic(StructWithSingleInstanceScope(registerAttribute, type, _cancellationToken));
+                    return;
+                }
 
                 var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
                 var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
@@ -289,6 +351,7 @@ namespace StrongInject.Generator
                 if (requiresInitialization && requiresAsyncInitialization)
                 {
                     _reportDiagnostic(TypeImplementsSyncAndAsyncRequiresInitialization(type, registerAttribute.GetLocation(_cancellationToken)));
+                    return;
                 }
 
                 ReportSuspiciousSimpleRegistrations(type, registerAttribute);
@@ -300,9 +363,9 @@ namespace StrongInject.Generator
                     constructor,
                     IsAsync: requiresAsyncInitialization);
 
-                foreach (var registeredAsTypeConstant in registeredAs)
+                foreach (var target in registeredAs)
                 {
-                    if (!CheckValidType(registerAttribute, registeredAsTypeConstant, module, out var target))
+                    if (!CheckValidType(registerAttribute, module, target))
                     {
                         continue;
                     }
@@ -317,7 +380,7 @@ namespace StrongInject.Generator
                                     _cancellationToken));
                                 continue;
                             }
-                            
+
                             if (!OpenGenericHasValidConversion(type, target, out var converted))
                             {
                                 _reportDiagnostic(DoesNotHaveSuitableConversion(registerAttribute,
@@ -345,7 +408,7 @@ namespace StrongInject.Generator
                             _reportDiagnostic(DoesNotHaveSuitableConversion(registerAttribute, type, target, _cancellationToken));
                             continue;
                         }
-                        
+
                         registrations.WithInstanceSource(ForwardedInstanceSource.Create(target, registration));
                     }
                 }
@@ -480,6 +543,16 @@ namespace StrongInject.Generator
 
         private bool CheckValidType(AttributeData attribute, TypedConstant typedConstant, ITypeSymbol module, out INamedTypeSymbol type)
         {
+            if (!TryExtractType(attribute, typedConstant, out type))
+            {
+                return false;
+            }
+
+            return CheckValidType(attribute, module, type);
+        }
+
+        private bool TryExtractType(AttributeData attribute, TypedConstant typedConstant, out INamedTypeSymbol type)
+        {
             type = (typedConstant.Value as INamedTypeSymbol)!;
             if (typedConstant.Value is null)
             {
@@ -488,6 +561,12 @@ namespace StrongInject.Generator
                     attribute.GetLocation(_cancellationToken)));
                 return false;
             }
+
+            return true;
+        }
+
+        private bool CheckValidType(AttributeData attribute, ITypeSymbol module, INamedTypeSymbol type)
+        {
             if (type.IsOrReferencesErrorType())
             {
                 // we will report an error for this case anyway.
@@ -1759,6 +1838,20 @@ namespace StrongInject.Generator
                 asType);
         }
         
+        private static Diagnostic CannotRegisterNonNamedType(ITypeSymbol type, Location location)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI0035",
+                    "Non Named Type cannot be registered.",
+                    "Type '{0}' cannot be registered.",
+                    "StrongInject",
+                    DiagnosticSeverity.Error,
+                    isEnabledByDefault: true),
+                location,
+                type);
+        }
+
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
         {
             return Diagnostic.Create(
