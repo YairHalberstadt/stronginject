@@ -27177,6 +27177,101 @@ partial class Container
         }
         
         [Fact]
+        public void Test1TPGenericRegisterAttributeSingleInstance()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<A>(Scope.SingleInstance)]
+partial class Container : IContainer<A>
+{
+}
+
+class A{}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _aField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetAField0()
+    {
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::A a_0_0;
+            a_0_0 = new global::A();
+            this._aField0 = a_0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _aField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
         public void Test1TPGenericRegisterAttributeNonNamedType()
         {
             string userSource = @"
@@ -27407,6 +27502,240 @@ partial class Container
         global::System.Char[] _0_0;
         _0_0 = new global::System.Char[]{};
         return new global::StrongInject.Owned<global::System.Char[]>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void Test2TPGenericRegisterAttributeSingleInstance()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<A, object>(Scope.SingleInstance)]
+partial class Container : IContainer<object>
+{
+}
+
+class A{}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _aField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetAField0()
+    {
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::A a_0_0;
+            a_0_0 = new global::A();
+            this._aField0 = a_0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _aField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Object>.Run<TResult, TParam>(global::System.Func<global::System.Object, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::System.Object object_0_0;
+        a_0_1 = GetAField0();
+        object_0_0 = (global::System.Object)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(object_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Object> global::StrongInject.IContainer<global::System.Object>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::System.Object object_0_0;
+        a_0_1 = GetAField0();
+        object_0_0 = (global::System.Object)a_0_1;
+        return new global::StrongInject.Owned<global::System.Object>(object_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void Test2TPGenericRegisterAttributeSingleInstanceSharesInstanceOfA()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<A, I1>(Scope.SingleInstance)]
+[Register<A, I2>(Scope.SingleInstance)]
+partial class Container : IContainer<I1>, IContainer<I2>
+{
+}
+
+class A : I1, I2 {}
+interface I1{}
+interface I2{}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _aField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetAField0()
+    {
+        if (!object.ReferenceEquals(_aField0, null))
+            return _aField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::A a_0_0;
+            a_0_0 = new global::A();
+            this._aField0 = a_0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _aField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::I1>.Run<TResult, TParam>(global::System.Func<global::I1, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::I1 i1_0_0;
+        a_0_1 = GetAField0();
+        i1_0_0 = (global::I1)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(i1_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::I1> global::StrongInject.IContainer<global::I1>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::I1 i1_0_0;
+        a_0_1 = GetAField0();
+        i1_0_0 = (global::I1)a_0_1;
+        return new global::StrongInject.Owned<global::I1>(i1_0_0, () =>
+        {
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::I2>.Run<TResult, TParam>(global::System.Func<global::I2, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::I2 i2_0_0;
+        a_0_1 = GetAField0();
+        i2_0_0 = (global::I2)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(i2_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::I2> global::StrongInject.IContainer<global::I2>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::I2 i2_0_0;
+        a_0_1 = GetAField0();
+        i2_0_0 = (global::I2)a_0_1;
+        return new global::StrongInject.Owned<global::I2>(i2_0_0, () =>
         {
         });
     }
