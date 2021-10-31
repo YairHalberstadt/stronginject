@@ -27746,6 +27746,302 @@ partial class Container
         });
     }
 }");
+        } 
+        
+        [Fact]
+        public void Test1TPGenericRegisterAttribute()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<A>]
+partial class Container : IContainer<A>
+{
+}
+
+class A{}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = new global::A();
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = new global::A();
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void Test1TPGenericRegisterAttributeNonNamedType()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<int[]>]
+partial class Container : IContainer<int[]>
+{
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (4,2): Error SI0035: Type 'int[]' cannot be registered.
+                // Register<int[]>
+                new DiagnosticResult("SI0035", @"Register<int[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
+                // (5,15): Warning SI1105: Warning while resolving dependencies for 'int[]': Resolving all registration of type 'int', but there are no such registrations.
+                // Container
+                new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32[]>.Run<TResult, TParam>(global::System.Func<global::System.Int32[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32[] _0_0;
+        _0_0 = new global::System.Int32[]{};
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Int32[]> global::StrongInject.IContainer<global::System.Int32[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32[] _0_0;
+        _0_0 = new global::System.Int32[]{};
+        return new global::StrongInject.Owned<global::System.Int32[]>(_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void Test2TPGenericRegisterAttribute()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<A, object>]
+partial class Container : IContainer<object>
+{
+}
+
+class A{}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Object>.Run<TResult, TParam>(global::System.Func<global::System.Object, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::System.Object object_0_0;
+        a_0_1 = new global::A();
+        object_0_0 = (global::System.Object)a_0_1;
+        TResult result;
+        try
+        {
+            result = func(object_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Object> global::StrongInject.IContainer<global::System.Object>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_1;
+        global::System.Object object_0_0;
+        a_0_1 = new global::A();
+        object_0_0 = (global::System.Object)a_0_1;
+        return new global::StrongInject.Owned<global::System.Object>(object_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void Test2TPGenericRegisterAttributeNonNamedType()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+[Register<int[], IEnumerable<int>>]
+partial class Container : IContainer<IEnumerable<int>>
+{
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (5,2): Error SI0035: Type 'int[]' cannot be registered.
+                // Register<int[], IEnumerable<int>>
+                new DiagnosticResult("SI0035", @"Register<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2),
+                // (6,15): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.IEnumerable<int>': We have no source for instance of type 'System.Collections.Generic.IEnumerable<int>'
+                // Container
+                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.IEnumerable<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.IEnumerable<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.IEnumerable<global::System.Int32>> global::StrongInject.IContainer<global::System.Collections.Generic.IEnumerable<global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+        }
+
+        [Fact]
+        public void Test2TPGenericRegisterAttributeAsNonNamedType()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<string, char[]>]
+partial class Container : IContainer<char[]>
+{
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (4,2): Error SI0035: Type 'char[]' cannot be registered.
+                // Register<string, char[]>
+                new DiagnosticResult("SI0035", @"Register<string, char[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
+                // (5,15): Warning SI1105: Warning while resolving dependencies for 'char[]': Resolving all registration of type 'char', but there are no such registrations.
+                // Container
+                new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
+            comp.GetDiagnostics().Verify(
+                // (4,11): Error CS0311: The type 'string' cannot be used as type parameter 'TImpl' in the generic type or method 'RegisterAttribute<TImpl, TService>'. There is no implicit reference conversion from 'string' to 'char[]'.
+                // string
+                new DiagnosticResult("CS0311", @"string", DiagnosticSeverity.Error).WithLocation(4, 11));
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Char[]>.Run<TResult, TParam>(global::System.Func<global::System.Char[], TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Char[] _0_0;
+        _0_0 = new global::System.Char[]{};
+        TResult result;
+        try
+        {
+            result = func(_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Char[]> global::StrongInject.IContainer<global::System.Char[]>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Char[] _0_0;
+        _0_0 = new global::System.Char[]{};
+        return new global::StrongInject.Owned<global::System.Char[]>(_0_0, () =>
+        {
+        });
+    }
+}");
         }
     }
 }
