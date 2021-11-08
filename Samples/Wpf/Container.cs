@@ -3,11 +3,11 @@ using StrongInject.Samples.Wpf.ViewModels;
 
 namespace StrongInject.Samples.Wpf
 {
-    [Register(typeof(MainWindow))]
-    [Register(typeof(MainWindowViewModel))]
-    [Register(typeof(UsersViewModel))]
-    [Register(typeof(UserViewModel), Scope.InstancePerDependency)]
-    [Register(typeof(MockDatabase), Scope.SingleInstance, typeof(IDatabase))]
+    [Register<MainWindow>]
+    [Register<MainWindowViewModel>]
+    [Register<UsersViewModel>]
+    [Register<UserViewModel>(Scope.InstancePerDependency)]
+    [Register<MockDatabase, IDatabase>(Scope.SingleInstance)]
     public partial class Container : IAsyncContainer<MainWindow>
     {
     }
