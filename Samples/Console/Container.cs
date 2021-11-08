@@ -5,7 +5,7 @@ namespace StrongInject.Samples.ConsoleApp
 {
 
     [RegisterModule(typeof(KafkaModule))]
-    [Register(typeof(JsonConfigLoader), Scope.SingleInstance, typeof(IConfigLoader))]
+    [Register<JsonConfigLoader, IConfigLoader>(Scope.SingleInstance)]
     public partial class Container : IAsyncContainer<App>
     {
         [Factory] private App CreateApp(IConsumer<User, Message> consumer, Cache<string, IProducer<User, Message>> producerCache, Config config)

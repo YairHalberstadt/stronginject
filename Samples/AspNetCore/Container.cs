@@ -6,13 +6,13 @@ using System;
 
 namespace StrongInject.Samples.AspNetCore
 {
-    [Register(typeof(WeatherForecastController), Scope.InstancePerResolution)]
-    [Register(typeof(WeatherForecastProvider), Scope.InstancePerDependency, typeof(IWeatherForecastProvider))]
-    [Register(typeof(WeatherSummarizer), Scope.SingleInstance, typeof(IWeatherSummarizer))]
-    [Register(typeof(UsersController), Scope.InstancePerResolution)]
-    [Register(typeof(DatabaseUsersCache), Scope.SingleInstance, typeof(IUsersCache))]
-    [Register(typeof(MockDatabase), Scope.SingleInstance, typeof(IDatabase))]
-    [RegisterDecorator(typeof(DatabaseDecorator), typeof(IDatabase))]
+    [Register<WeatherForecastController>(Scope.InstancePerResolution)]
+    [Register<WeatherForecastProvider, IWeatherForecastProvider>( Scope.InstancePerDependency)]
+    [Register<WeatherSummarizer, IWeatherSummarizer>(Scope.SingleInstance)]
+    [Register<UsersController>(Scope.InstancePerResolution)]
+    [Register<DatabaseUsersCache, IUsersCache>(Scope.SingleInstance)]
+    [Register<MockDatabase, IDatabase>(Scope.SingleInstance)]
+    [RegisterDecorator<DatabaseDecorator, IDatabase>]
     public partial class Container : IContainer<WeatherForecastController>, IContainer<UsersController>
     {
         private readonly IServiceProvider _serviceProvider;
