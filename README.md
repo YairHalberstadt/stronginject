@@ -500,7 +500,7 @@ Here `GetService` will only be used to resolve `ILogger<T>` and `IConfiguration`
 
 A decorator is a type which exposes a service by wrapping an underlying instance of the same service. Calls may pass straight through to the underlying service, or may be intercepted and custom behaviour applied. See https://en.wikipedia.org/wiki/Decorator_pattern.
 
-You can register a type as a decorator using the `[RegisterDecorator(type, decoratedType)]` attribute.
+You can register a type as a decorator using the `[RegisterDecorator<TDecorator, TDecorated>]` attribute (if you're not on C# 10 there's a non-generic version of this attribute which accepts types instead).
 
 Here is an example of how you could time how long a call took using the decorator pattern and StrongInject.
 
@@ -535,7 +535,7 @@ public class ServiceTimingDecorator : IService
 }
 
 [Register<Service, IService>]
-[RegisterDecorator(typeof(ServiceTimingDecorator), typeof(IService))]
+[RegisterDecorator<ServiceTimingDecorator, IService>]
 public class Container : IContainer<IService> {}
 ```
 

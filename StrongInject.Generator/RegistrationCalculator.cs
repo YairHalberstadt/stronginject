@@ -277,7 +277,7 @@ namespace StrongInject.Generator
 
                 if (type is not INamedTypeSymbol namedType)
                 {
-                    _reportDiagnostic(CannotRegisterNonNamedType(type, registerAttribute.GetLocation(_cancellationToken)));
+                    _reportDiagnostic(InvalidType(type, registerAttribute.GetLocation(_cancellationToken)));
                     continue;
                 }
                 
@@ -299,7 +299,7 @@ namespace StrongInject.Generator
 
                 if (type is not INamedTypeSymbol namedType)
                 {
-                    _reportDiagnostic(CannotRegisterNonNamedType(type, registerAttribute.GetLocation(_cancellationToken)));
+                    _reportDiagnostic(InvalidType(type, registerAttribute.GetLocation(_cancellationToken)));
                     continue;
                 }
                 
@@ -310,8 +310,7 @@ namespace StrongInject.Generator
                 var registeredAsType =  registerAttribute.AttributeClass!.TypeArguments[1];
                 if (registeredAsType is not INamedTypeSymbol registeredAsNamedType)
                 {
-                    // diagnostic is not the best, but I don't think this can actually occur in legal code, so not worth introducing a new diagnostic.
-                    _reportDiagnostic(CannotRegisterNonNamedType(registeredAsType, registerAttribute.GetLocation(_cancellationToken)));
+                    _reportDiagnostic(InvalidType(registeredAsType, registerAttribute.GetLocation(_cancellationToken)));
                     continue;
                 }
                 var registeredAs = new[] { registeredAsNamedType };
@@ -1208,21 +1207,80 @@ namespace StrongInject.Generator
                 }
 
                 var typeConstant = registerDecoratorAttribute.ConstructorArguments[0];
-                if (typeConstant.Kind != TypedConstantKind.Type)
+                var decoratorOfConstant = registerDecoratorAttribute.ConstructorArguments[1];
+                
+                if (typeConstant.Kind != TypedConstantKind.Type
+                    || decoratorOfConstant.Kind != TypedConstantKind.Type)
                 {
                     // Invalid code, ignore
                     continue;
                 }
-                if (!CheckValidType(registerDecoratorAttribute, typeConstant, module, out var type))
+                
+                if (!TryExtractType(registerDecoratorAttribute, typeConstant, out var type)
+                    || !TryExtractType(registerDecoratorAttribute, decoratorOfConstant, out var decoratedType))
                 {
                     continue;
                 }
+                
+                var options = DecoratorOptions.Default;
+                if (registerDecoratorAttribute.ConstructorArguments[2] is
+                    {Kind: TypedConstantKind.Enum, Value: long value})
+                {
+                    options = (DecoratorOptions)value;
+                }
+                
+                AppendDecorator(registerDecoratorAttribute, type, decoratedType, options);
+            }
+            
+            foreach (var registerDecoratorAttribute in moduleAttributes
+                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterDecoratorAttribute_2, SymbolEqualityComparer.Default) ?? false)
+                         .Sort())
+            {
+                _cancellationToken.ThrowIfCancellationRequested();
+                var countConstructorArguments = registerDecoratorAttribute.ConstructorArguments.Length;
+                if (countConstructorArguments != 1)
+                {
+                    // Invalid code, ignore
+                    continue;
+                }
+                
+                var type = registerDecoratorAttribute.AttributeClass!.TypeArguments[0];
+                var decoratedType = registerDecoratorAttribute.AttributeClass!.TypeArguments[1];
+                if (type is not INamedTypeSymbol namedType)
+                {
+                    _reportDiagnostic(InvalidType(type, registerDecoratorAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
+                if (decoratedType is not INamedTypeSymbol namedDecoratedType)
+                {
+                    _reportDiagnostic(InvalidType(decoratedType, registerDecoratorAttribute.GetLocation(_cancellationToken)));
+                    continue;
+                }
+
+                var options = DecoratorOptions.Default;
+                if (registerDecoratorAttribute.ConstructorArguments[0] is
+                    {Kind: TypedConstantKind.Enum, Value: long value})
+                {
+                    options = (DecoratorOptions)value;
+                }
+                
+                AppendDecorator(registerDecoratorAttribute, namedType, namedDecoratedType, options);
+            }
+
+            void AppendDecorator(AttributeData registerDecoratorAttribute, INamedTypeSymbol type, INamedTypeSymbol decoratedType, DecoratorOptions options)
+            {
+                if (!CheckValidType(registerDecoratorAttribute, module, type)
+                    || !CheckValidType(registerDecoratorAttribute, module, decoratedType))
+                {
+                    return;
+                }
+                
                 if (type.IsAbstract)
                 {
                     _reportDiagnostic(TypeIsAbstract(
                         type!,
                         registerDecoratorAttribute.GetLocation(_cancellationToken)));
-                    continue;
+                    return;
                 }
 
                 bool isUnboundGeneric = type.IsUnboundGenericType;
@@ -1233,18 +1291,7 @@ namespace StrongInject.Generator
 
                 if (!TryGetConstructor(registerDecoratorAttribute, type, out var constructor))
                 {
-                    continue;
-                }
-
-                var decoratorOfConstant = registerDecoratorAttribute.ConstructorArguments[1];
-                if (decoratorOfConstant.Kind != TypedConstantKind.Type)
-                {
-                    // Invalid code, ignore
-                    continue;
-                }
-                if (!CheckValidType(registerDecoratorAttribute, decoratorOfConstant, module, out var decoratedType))
-                {
-                    continue;
+                    return;
                 }
 
                 var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
@@ -1265,7 +1312,7 @@ namespace StrongInject.Generator
                             type,
                             decoratedType,
                             _cancellationToken));
-                        continue;
+                        return;
                     }
 
                     if (!OpenGenericHasValidConversion(type, decoratedType, out var converted))
@@ -1275,7 +1322,7 @@ namespace StrongInject.Generator
                             type,
                             converted,
                             _cancellationToken));
-                        continue;
+                        return;
                     }
 
                     decoratedParameterType = converted;
@@ -1287,7 +1334,7 @@ namespace StrongInject.Generator
                     {
                         _reportDiagnostic(DoesNotHaveSuitableConversion(registerDecoratorAttribute, type, decoratedType,
                             _cancellationToken));
-                        continue;
+                        return;
                     }
                 }
 
@@ -1297,21 +1344,14 @@ namespace StrongInject.Generator
                 {
                     _reportDiagnostic(DecoratorDoesNotHaveParameterOfDecoratedType(registerDecoratorAttribute, type,
                         decoratedParameterType, _cancellationToken));
-                    continue;
+                    return;
                 }
 
                 if (decoratedParameters.Count > 1)
                 {
                     _reportDiagnostic(DecoratorHasMultipleParametersOfDecoratedType(registerDecoratorAttribute,
                         type, decoratedParameterType, _cancellationToken));
-                    continue;
-                }
-
-                var options = DecoratorOptions.Default;
-                if (registerDecoratorAttribute.ConstructorArguments[2] is
-                    {Kind: TypedConstantKind.Enum, Value: long value})
-                {
-                    options = (DecoratorOptions)value;
+                    return;
                 }
 
                 var registration = new DecoratorRegistration(
@@ -1838,20 +1878,6 @@ namespace StrongInject.Generator
                 asType);
         }
         
-        private static Diagnostic CannotRegisterNonNamedType(ITypeSymbol type, Location location)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0035",
-                    "Non Named Type cannot be registered.",
-                    "Type '{0}' cannot be registered.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                location,
-                type);
-        }
-
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
         {
             return Diagnostic.Create(

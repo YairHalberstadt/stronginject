@@ -2861,6 +2861,9 @@ partial class Container
                 // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterDecoratorAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
+                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterDecoratorAttribute`2'. Are you missing an assembly reference?
+                // Missing Type.SI0201
+                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
                 // (1,1): Error SI0201: Missing Type 'StrongInject.FactoryAttribute'. Are you missing an assembly reference?
                 // Missing Type.SI0201
                 new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
@@ -27384,9 +27387,9 @@ partial class Container : IContainer<int[]>
 }";
             var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
             generatorDiagnostics.Verify(
-                // (4,2): Error SI0035: Type 'int[]' cannot be registered.
+                // (4,2): Error SI0003: 'int[]' is invalid in a registration.
                 // Register<int[]>
-                new DiagnosticResult("SI0035", @"Register<int[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
+                new DiagnosticResult("SI0003", @"Register<int[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
                 // (5,15): Warning SI1105: Warning while resolving dependencies for 'int[]': Resolving all registration of type 'int', but there are no such registrations.
                 // Container
                 new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
@@ -27511,9 +27514,9 @@ partial class Container : IContainer<IEnumerable<int>>
 }";
             var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
             generatorDiagnostics.Verify(
-                // (5,2): Error SI0035: Type 'int[]' cannot be registered.
+                // (5,2): Error SI0003: 'int[]' is invalid in a registration.
                 // Register<int[], IEnumerable<int>>
-                new DiagnosticResult("SI0035", @"Register<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2),
+                new DiagnosticResult("SI0003", @"Register<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2),
                 // (6,15): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.IEnumerable<int>': We have no source for instance of type 'System.Collections.Generic.IEnumerable<int>'
                 // Container
                 new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
@@ -27555,9 +27558,9 @@ partial class Container : IContainer<char[]>
 }";
             var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
             generatorDiagnostics.Verify(
-                // (4,2): Error SI0035: Type 'char[]' cannot be registered.
+                // (4,2): Error SI0003: 'char[]' is invalid in a registration.
                 // Register<string, char[]>
-                new DiagnosticResult("SI0035", @"Register<string, char[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
+                new DiagnosticResult("SI0003", @"Register<string, char[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
                 // (5,15): Warning SI1105: Warning while resolving dependencies for 'char[]': Resolving all registration of type 'char', but there are no such registrations.
                 // Container
                 new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
@@ -28372,5 +28375,251 @@ partial class Container
     }
 }");
         }
+        
+        [Fact]
+        public void TestGenericRegisterDecoratorAttribute()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<Impl, IInterface>]
+[RegisterDecorator<Dec, IInterface>]
+partial class Container : IContainer<IInterface>
+{
+}
+
+interface IInterface {}
+class Impl : IInterface {}
+class Dec : IInterface { public Dec(IInterface underlying){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IInterface>.Run<TResult, TParam>(global::System.Func<global::IInterface, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Impl impl_0_2;
+        global::IInterface iInterface_0_1;
+        global::IInterface iInterface_0_0;
+        impl_0_2 = new global::Impl();
+        iInterface_0_1 = (global::IInterface)impl_0_2;
+        iInterface_0_0 = new global::Dec(underlying: iInterface_0_1);
+        TResult result;
+        try
+        {
+            result = func(iInterface_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IInterface> global::StrongInject.IContainer<global::IInterface>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Impl impl_0_2;
+        global::IInterface iInterface_0_1;
+        global::IInterface iInterface_0_0;
+        impl_0_2 = new global::Impl();
+        iInterface_0_1 = (global::IInterface)impl_0_2;
+        iInterface_0_0 = new global::Dec(underlying: iInterface_0_1);
+        return new global::StrongInject.Owned<global::IInterface>(iInterface_0_0, () =>
+        {
+        });
+    }
+}");
+        } 
+        
+        [Fact]
+        public void TestGenericRegisterDecoratorAttributeNonNamedType()
+        {
+            string userSource = @"
+using StrongInject;
+using System.Collections.Generic;
+
+[RegisterDecorator<int[], IEnumerable<int>>]
+partial class Container : IContainer<IEnumerable<int>>
+{
+    [Factory] IEnumerable<int> GetEnumerable() => default;
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (5,2): Error SI0003: 'int[]' is invalid in a registration.
+                // RegisterDecorator<int[], IEnumerable<int>>
+                new DiagnosticResult("SI0003", @"RegisterDecorator<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Collections.Generic.IEnumerable<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::System.Collections.Generic.IEnumerable<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.IEnumerable<global::System.Int32> iEnumerable_0_0;
+        iEnumerable_0_0 = this.GetEnumerable();
+        TResult result;
+        try
+        {
+            result = func(iEnumerable_0_0, param);
+        }
+        finally
+        {
+            global::StrongInject.Helpers.Dispose(iEnumerable_0_0);
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Collections.Generic.IEnumerable<global::System.Int32>> global::StrongInject.IContainer<global::System.Collections.Generic.IEnumerable<global::System.Int32>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Collections.Generic.IEnumerable<global::System.Int32> iEnumerable_0_0;
+        iEnumerable_0_0 = this.GetEnumerable();
+        return new global::StrongInject.Owned<global::System.Collections.Generic.IEnumerable<global::System.Int32>>(iEnumerable_0_0, () =>
+        {
+            global::StrongInject.Helpers.Dispose(iEnumerable_0_0);
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void TestGenericRegisterDecoratorAttributeWithDecoratorOptions()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register<Impl, IInterface>]
+[RegisterDecorator<Dec1, IInterface>(DecoratorOptions.Default)]
+[RegisterDecorator<Dec2, IInterface>(DecoratorOptions.Dispose)]
+partial class Container : IContainer<IInterface>
+{
+}
+
+interface IInterface : IDisposable {}
+class Impl : IInterface
+{
+    public void Dispose(){}
+}
+
+class Dec1 : IInterface
+{
+    public Dec1(IInterface underlying){}
+    public void Dispose(){}
+}
+
+class Dec2 : IInterface
+{
+    public Dec2(IInterface underlying){}
+    public void Dispose(){}
+}";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IInterface>.Run<TResult, TParam>(global::System.Func<global::IInterface, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Impl impl_0_3;
+        global::IInterface iInterface_0_2;
+        global::IInterface iInterface_0_1;
+        global::IInterface iInterface_0_0;
+        impl_0_3 = new global::Impl();
+        try
+        {
+            iInterface_0_2 = (global::IInterface)impl_0_3;
+            iInterface_0_1 = new global::Dec1(underlying: iInterface_0_2);
+            iInterface_0_0 = new global::Dec2(underlying: iInterface_0_1);
+        }
+        catch
+        {
+            ((global::System.IDisposable)impl_0_3).Dispose();
+            throw;
+        }
+
+        TResult result;
+        try
+        {
+            result = func(iInterface_0_0, param);
+        }
+        finally
+        {
+            ((global::System.IDisposable)iInterface_0_0).Dispose();
+            ((global::System.IDisposable)impl_0_3).Dispose();
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::IInterface> global::StrongInject.IContainer<global::IInterface>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::Impl impl_0_3;
+        global::IInterface iInterface_0_2;
+        global::IInterface iInterface_0_1;
+        global::IInterface iInterface_0_0;
+        impl_0_3 = new global::Impl();
+        try
+        {
+            iInterface_0_2 = (global::IInterface)impl_0_3;
+            iInterface_0_1 = new global::Dec1(underlying: iInterface_0_2);
+            iInterface_0_0 = new global::Dec2(underlying: iInterface_0_1);
+        }
+        catch
+        {
+            ((global::System.IDisposable)impl_0_3).Dispose();
+            throw;
+        }
+
+        return new global::StrongInject.Owned<global::IInterface>(iInterface_0_0, () =>
+        {
+            ((global::System.IDisposable)iInterface_0_0).Dispose();
+            ((global::System.IDisposable)impl_0_3).Dispose();
+        });
+    }
+}");
+        } 
     }
 }
