@@ -24,6 +24,7 @@ namespace StrongInject.Generator
         INamedTypeSymbol RegisterModuleAttribute,
         INamedTypeSymbol RegisterFactoryAttribute,
         INamedTypeSymbol RegisterDecoratorAttribute,
+        INamedTypeSymbol RegisterDecoratorAttribute_2,
         INamedTypeSymbol FactoryAttribute,
         INamedTypeSymbol DecoratorFactoryAttribute,
         INamedTypeSymbol FactoryOfAttribute,
@@ -66,6 +67,7 @@ namespace StrongInject.Generator
             var registerModuleAttribute = compilation.GetTypeOrReport("StrongInject.RegisterModuleAttribute", reportDiagnostic);
             var registerFactoryAttribute = compilation.GetTypeOrReport("StrongInject.RegisterFactoryAttribute", reportDiagnostic);
             var registerDecoratorAttribute = compilation.GetTypeOrReport("StrongInject.RegisterDecoratorAttribute", reportDiagnostic);
+            var registerDecoratorAttribute_2 = compilation.GetTypeOrReport("StrongInject.RegisterDecoratorAttribute`2", reportDiagnostic);
             var factoryAttribute = compilation.GetTypeOrReport("StrongInject.FactoryAttribute", reportDiagnostic);
             var decoratorFactoryAttribute = compilation.GetTypeOrReport("StrongInject.DecoratorFactoryAttribute", reportDiagnostic);
             var factoryOfAttribute = compilation.GetTypeOrReport("StrongInject.FactoryOfAttribute", reportDiagnostic);
@@ -95,6 +97,7 @@ namespace StrongInject.Generator
                 || registerModuleAttribute is null
                 || registerFactoryAttribute is null
                 || registerDecoratorAttribute is null
+                || registerDecoratorAttribute_2 is null
                 || factoryAttribute is null
                 || decoratorFactoryAttribute is null
                 || factoryOfAttribute is null
@@ -130,6 +133,7 @@ namespace StrongInject.Generator
                 RegisterModuleAttribute: registerModuleAttribute,
                 RegisterFactoryAttribute: registerFactoryAttribute,
                 RegisterDecoratorAttribute: registerDecoratorAttribute,
+                RegisterDecoratorAttribute_2: registerDecoratorAttribute_2,
                 FactoryAttribute: factoryAttribute,
                 DecoratorFactoryAttribute: decoratorFactoryAttribute,
                 FactoryOfAttribute: factoryOfAttribute,
