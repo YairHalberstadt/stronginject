@@ -8,6 +8,7 @@ namespace StrongInject.Generator.Visitors
     internal class LoweringVisitor : BaseVisitor<LoweringVisitor.State>
     {
         private readonly Dictionary<InstanceSource, (Operation operation, string name)> _existingVariables = new();
+        private readonly Dictionary<DelegateSource, string> _currentlyVisitingDelegates;
         private int _variableCount = 0;
         private readonly InstanceSource _target;
         private readonly InstanceSourcesScope _containerScope;
@@ -23,7 +24,8 @@ namespace StrongInject.Generator.Visitors
             DisposalLowerer disposalLowerer,
             bool isSingleInstanceCreation,
             bool isAsyncContext,
-            IEnumerable<KeyValuePair<InstanceSource, (Operation operation, string name)>>? singleInstanceVariablesInScope)
+            IEnumerable<KeyValuePair<InstanceSource, (Operation operation, string name)>>? singleInstanceVariablesInScope,
+            Dictionary<DelegateSource, string> currentlyVisitingDelegates)
         {
             if (singleInstanceVariablesInScope != null)
             {
@@ -37,6 +39,7 @@ namespace StrongInject.Generator.Visitors
             _disposalLowerer = disposalLowerer;
             _isSingleInstanceCreation = isSingleInstanceCreation;
             _isAsyncContext = isAsyncContext;
+            _currentlyVisitingDelegates = currentlyVisitingDelegates;
         }
 
         public static ImmutableArray<Operation> LowerResolution(
@@ -52,7 +55,8 @@ namespace StrongInject.Generator.Visitors
                 disposalLowerer,
                 isSingleInstanceCreation,
                 isAsyncContext,
-                null,
+                singleInstanceVariablesInScope: null,
+                currentlyVisitingDelegates: new(),
                 out targetName);
 
         private static ImmutableArray<Operation> LowerResolution(
@@ -63,9 +67,10 @@ namespace StrongInject.Generator.Visitors
             bool isSingleInstanceCreation,
             bool isAsyncContext,
             IEnumerable<KeyValuePair<InstanceSource, (Operation operation, string name)>>? singleInstanceVariablesInScope,
+            Dictionary<DelegateSource, string> currentlyVisitingDelegates,
             out string targetName)
         {
-            var visitor = new LoweringVisitor(target, containerScope, disposalLowerer, isSingleInstanceCreation, isAsyncContext, singleInstanceVariablesInScope);
+            var visitor = new LoweringVisitor(target, containerScope, disposalLowerer, isSingleInstanceCreation, isAsyncContext, singleInstanceVariablesInScope, currentlyVisitingDelegates);
             var state = new State { InstanceSourcesScope = currentScope, Dependencies = new(), OperationDependencies = new() };
             visitor.VisitCore(target, state);
             targetName = state.Dependencies[0].name!;
@@ -85,9 +90,14 @@ namespace StrongInject.Generator.Visitors
                 state.OperationDependencies.Add(value.operation);
                 return false;
             }
+            if (source is DelegateSource ds && _currentlyVisitingDelegates.TryGetValue(ds, out var name))
+            {
+                state.Dependencies.Add((name, source));
+                return false;
+            }
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
             {
-                var name = GenerateName(source, state);
+                name = GenerateName(source, state);
                 var isAsync = RequiresAsyncVisitor.RequiresAsync(source, _containerScope);
                 var statement = new SingleInstanceReferenceStatement(name, source, isAsync);
                 Operation targetOperation;
@@ -143,6 +153,7 @@ namespace StrongInject.Generator.Visitors
             Operation targetOperation;
             if (source is DelegateSource delegateSource)
             {
+                _currentlyVisitingDelegates.Add(delegateSource, state.Name);
                 var order = LowerResolution(
                     target: GetInstanceSource(delegateSource.ReturnType, state, null)!,
                     currentScope: state.InstanceSourcesScope,
@@ -151,7 +162,9 @@ namespace StrongInject.Generator.Visitors
                     isSingleInstanceCreation: false,
                     isAsyncContext: delegateSource.IsAsync,
                     singleInstanceVariablesInScope: _existingVariables.Where(x => x.Key.Scope == Scope.SingleInstance),
+                    _currentlyVisitingDelegates,
                     targetName: out var targetName);
+                _currentlyVisitingDelegates.Remove(delegateSource);
                 var delegateCreationStatement = new DelegateCreationStatement(state.Name, delegateSource, order, targetName);
                 targetOperation = CreateOperation(delegateCreationStatement, state.Name, state.OperationDependencies);
                 if (targetOperation.Disposal is Disposal.DelegateDisposal { DisposeActionsType: var disposeActionsType })
@@ -173,6 +186,7 @@ namespace StrongInject.Generator.Visitors
                     isSingleInstanceCreation: false,
                     isAsyncContext: ownedSource.IsAsync,
                     singleInstanceVariablesInScope: _existingVariables.Where(x => x.Key.Scope == Scope.SingleInstance),
+                    _currentlyVisitingDelegates,
                     targetName: out var internalTargetName);
 
                 var localFunctionName = _existingVariables.GetValueOrDefault(source).name;

@@ -5447,6 +5447,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::A> func_0_0;
+        func_0_0 = null;
         func_0_0 = () =>
         {
             global::B b_1_1;
@@ -5472,6 +5473,7 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::A> func_0_0;
+        func_0_0 = null;
         func_0_0 = () =>
         {
             global::B b_1_1;
@@ -5527,10 +5529,11 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::B, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::A a_1_0;
-            a_1_0 = new global::A(b: param0_0);
+            a_1_0 = new global::A(b: param1_0);
             return a_1_0;
         };
         TResult result;
@@ -5550,10 +5553,11 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::B, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::A a_1_0;
-            a_1_0 = new global::A(b: param0_0);
+            a_1_0 = new global::A(b: param1_0);
             return a_1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(func_0_0, () =>
@@ -5602,10 +5606,11 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::B, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::A a_1_0;
-            a_1_0 = new global::A(b: param0_0);
+            a_1_0 = new global::A(b: param1_0);
             return a_1_0;
         };
         TResult result;
@@ -5625,10 +5630,11 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::B, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::A a_1_0;
-            a_1_0 = new global::A(b: param0_0);
+            a_1_0 = new global::A(b: param1_0);
             return a_1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::B, global::A>>(func_0_0, () =>
@@ -5679,10 +5685,11 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::System.String, global::B> func_0_1;
         global::A a_0_0;
-        func_0_1 = (param0_0, param0_1) =>
+        func_0_1 = null;
+        func_0_1 = (param1_0, param1_1) =>
         {
             global::B b_1_0;
-            b_1_0 = new global::B(i: param0_0, s: param0_1, i1: param0_0);
+            b_1_0 = new global::B(i: param1_0, s: param1_1, i1: param1_0);
             return b_1_0;
         };
         a_0_0 = new global::A(b: func_0_1);
@@ -5704,10 +5711,11 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::System.String, global::B> func_0_1;
         global::A a_0_0;
-        func_0_1 = (param0_0, param0_1) =>
+        func_0_1 = null;
+        func_0_1 = (param1_0, param1_1) =>
         {
             global::B b_1_0;
-            b_1_0 = new global::B(i: param0_0, s: param0_1, i1: param0_0);
+            b_1_0 = new global::B(i: param1_0, s: param1_1, i1: param1_0);
             return b_1_0;
         };
         a_0_0 = new global::A(b: func_0_1);
@@ -5758,17 +5766,19 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::System.String, global::B> func_1_1;
             global::A a_1_0;
-            func_1_1 = (param1_0) =>
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
             {
                 global::B b_2_0;
-                b_2_0 = new global::B(i: param0_0, s: param1_0);
+                b_2_0 = new global::B(i: param1_0, s: param2_0);
                 return b_2_0;
             };
-            a_1_0 = new global::A(a: param0_0, func: func_1_1);
+            a_1_0 = new global::A(a: param1_0, func: func_1_1);
             return a_1_0;
         };
         TResult result;
@@ -5788,17 +5798,19 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::System.String, global::B> func_1_1;
             global::A a_1_0;
-            func_1_1 = (param1_0) =>
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
             {
                 global::B b_2_0;
-                b_2_0 = new global::B(i: param0_0, s: param1_0);
+                b_2_0 = new global::B(i: param1_0, s: param2_0);
                 return b_2_0;
             };
-            a_1_0 = new global::A(a: param0_0, func: func_1_1);
+            a_1_0 = new global::A(a: param1_0, func: func_1_1);
             return a_1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>>(func_0_0, () =>
@@ -5846,16 +5858,19 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> func_1_0;
-            func_1_0 = (param1_0) =>
+            func_1_0 = null;
+            func_1_0 = (param2_0) =>
             {
                 global::System.Func<global::System.Int32, global::A> func_2_0;
-                func_2_0 = (param2_0) =>
+                func_2_0 = null;
+                func_2_0 = (param3_0) =>
                 {
                     global::A a_3_0;
-                    a_3_0 = new global::A(a: param2_0, b: param1_0, c: param0_0);
+                    a_3_0 = new global::A(a: param3_0, b: param2_0, c: param1_0);
                     return a_3_0;
                 };
                 return func_2_0;
@@ -5879,16 +5894,19 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Boolean, global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::System.String, global::System.Func<global::System.Int32, global::A>> func_1_0;
-            func_1_0 = (param1_0) =>
+            func_1_0 = null;
+            func_1_0 = (param2_0) =>
             {
                 global::System.Func<global::System.Int32, global::A> func_2_0;
-                func_2_0 = (param2_0) =>
+                func_2_0 = null;
+                func_2_0 = (param3_0) =>
                 {
                     global::A a_3_0;
-                    a_3_0 = new global::A(a: param2_0, b: param1_0, c: param0_0);
+                    a_3_0 = new global::A(a: param3_0, b: param2_0, c: param1_0);
                     return a_3_0;
                 };
                 return func_2_0;
@@ -5955,6 +5973,7 @@ partial class Container
         try
         {
             disposeActions_func_0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::B b_1_1;
@@ -6021,6 +6040,7 @@ partial class Container
         try
         {
             disposeActions_func_0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::B b_1_1;
@@ -6124,6 +6144,7 @@ partial class Container
         try
         {
             disposeActions_func_0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::B b_1_1;
@@ -6181,6 +6202,7 @@ partial class Container
         try
         {
             disposeActions_func_0_2 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Func<global::System.Threading.Tasks.ValueTask>>();
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::B b_1_1;
@@ -6270,14 +6292,15 @@ partial class Container
         global::System.Collections.Concurrent.ConcurrentBag<global::System.Action> disposeActions_func_0_0;
         global::System.Func<global::B, global::A> func_0_0;
         disposeActions_func_0_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::C c_1_1;
             global::A a_1_0;
             c_1_1 = new global::C();
             try
             {
-                a_1_0 = new global::A(b: param0_0, c: c_1_1);
+                a_1_0 = new global::A(b: param1_0, c: c_1_1);
             }
             catch
             {
@@ -6312,14 +6335,15 @@ partial class Container
         global::System.Collections.Concurrent.ConcurrentBag<global::System.Action> disposeActions_func_0_0;
         global::System.Func<global::B, global::A> func_0_0;
         disposeActions_func_0_0 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::C c_1_1;
             global::A a_1_0;
             c_1_1 = new global::C();
             try
             {
-                a_1_0 = new global::A(b: param0_0, c: c_1_1);
+                a_1_0 = new global::A(b: param1_0, c: c_1_1);
             }
             catch
             {
@@ -6383,10 +6407,11 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::System.String, global::A> func_0_0;
-        func_0_0 = (param0_0, param0_1) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0, param1_1) =>
         {
             global::A a_1_0;
-            a_1_0 = new global::A(s1: param0_1, s2: param0_1);
+            a_1_0 = new global::A(s1: param1_1, s2: param1_1);
             return a_1_0;
         };
         TResult result;
@@ -6406,10 +6431,11 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::System.String, global::A> func_0_0;
-        func_0_0 = (param0_0, param0_1) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0, param1_1) =>
         {
             global::A a_1_0;
-            a_1_0 = new global::A(s1: param0_1, s2: param0_1);
+            a_1_0 = new global::A(s1: param1_1, s2: param1_1);
             return a_1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::System.String, global::A>>(func_0_0, () =>
@@ -6460,13 +6486,15 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::System.Int32, global::A> func_1_0;
-            func_1_0 = (param1_0) =>
+            func_1_0 = null;
+            func_1_0 = (param2_0) =>
             {
                 global::A a_2_0;
-                a_2_0 = new global::A(a1: param1_0, a2: param1_0);
+                a_2_0 = new global::A(a1: param2_0, a2: param2_0);
                 return a_2_0;
             };
             return func_1_0;
@@ -6488,13 +6516,15 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Int32, global::System.Func<global::System.Int32, global::A>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::System.Int32, global::A> func_1_0;
-            func_1_0 = (param1_0) =>
+            func_1_0 = null;
+            func_1_0 = (param2_0) =>
             {
                 global::A a_2_0;
-                a_2_0 = new global::A(a1: param1_0, a2: param1_0);
+                a_2_0 = new global::A(a1: param2_0, a2: param2_0);
                 return a_2_0;
             };
             return func_1_0;
@@ -6594,7 +6624,8 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::B, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::A a_1_0;
             a_1_0 = GetAField0();
@@ -6617,7 +6648,8 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::B, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::A a_1_0;
             a_1_0 = GetAField0();
@@ -6670,9 +6702,10 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::A, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
-            return param0_0;
+            return param1_0;
         };
         TResult result;
         try
@@ -6691,9 +6724,10 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::A, global::A> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
-            return param0_0;
+            return param1_0;
         };
         return new global::StrongInject.Owned<global::System.Func<global::A, global::A>>(func_0_0, () =>
         {
@@ -6742,12 +6776,14 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::A, global::System.Func<global::A>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::A> func_1_0;
+            func_1_0 = null;
             func_1_0 = () =>
             {
-                return param0_0;
+                return param1_0;
             };
             return func_1_0;
         };
@@ -6768,12 +6804,14 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::A, global::System.Func<global::A>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::System.Func<global::A> func_1_0;
+            func_1_0 = null;
             func_1_0 = () =>
             {
-                return param0_0;
+                return param1_0;
             };
             return func_1_0;
         };
@@ -6836,7 +6874,7 @@ partial class Container
         }
 
         [Fact]
-        public void ErrorOnRecursiveFuncCall()
+        public void AllowDirectRecursiveFuncCallNoParameters()
         {
             string userSource = @"
 using System;
@@ -6853,10 +6891,7 @@ public class A
 }
 ";
             var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
-                // Container
-                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+            generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -6873,12 +6908,47 @@ partial class Container
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
     {
-        throw new global::System.NotImplementedException();
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::A> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = () =>
+        {
+            global::A a_1_0;
+            a_1_0 = new global::A(a: func_0_1);
+            return a_1_0;
+        };
+        a_0_0 = new global::A(a: func_0_1);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
     }
 
     global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
     {
-        throw new global::System.NotImplementedException();
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::A> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = () =>
+        {
+            global::A a_1_0;
+            a_1_0 = new global::A(a: func_0_1);
+            return a_1_0;
+        };
+        a_0_0 = new global::A(a: func_0_1);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
     }
 }");
         }
@@ -7117,12 +7187,13 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::Del del_0_0;
-        del_0_0 = async (param0_0) =>
+        del_0_0 = null;
+        del_0_0 = async (param1_0) =>
         {
             global::A a_1_0;
             global::System.Threading.Tasks.ValueTask a_1_1;
             var hasAwaitStarted_a_1_1 = false;
-            a_1_0 = new global::A(a: param0_0);
+            a_1_0 = new global::A(a: param1_0);
             a_1_1 = ((global::StrongInject.IRequiresAsyncInitialization)a_1_0).InitializeAsync();
             try
             {
@@ -7158,12 +7229,13 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::Del del_0_0;
-        del_0_0 = async (param0_0) =>
+        del_0_0 = null;
+        del_0_0 = async (param1_0) =>
         {
             global::A a_1_0;
             global::System.Threading.Tasks.ValueTask a_1_1;
             var hasAwaitStarted_a_1_1 = false;
-            a_1_0 = new global::A(a: param0_0);
+            a_1_0 = new global::A(a: param1_0);
             a_1_1 = ((global::StrongInject.IRequiresAsyncInitialization)a_1_0).InitializeAsync();
             try
             {
@@ -7229,12 +7301,13 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::Del del_0_0;
-        del_0_0 = async (param0_0) =>
+        del_0_0 = null;
+        del_0_0 = async (param1_0) =>
         {
             global::A a_1_0;
             global::System.Threading.Tasks.ValueTask a_1_1;
             var hasAwaitStarted_a_1_1 = false;
-            a_1_0 = new global::A(a: param0_0);
+            a_1_0 = new global::A(a: param1_0);
             a_1_1 = ((global::StrongInject.IRequiresAsyncInitialization)a_1_0).InitializeAsync();
             try
             {
@@ -7270,12 +7343,13 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::Del del_0_0;
-        del_0_0 = async (param0_0) =>
+        del_0_0 = null;
+        del_0_0 = async (param1_0) =>
         {
             global::A a_1_0;
             global::System.Threading.Tasks.ValueTask a_1_1;
             var hasAwaitStarted_a_1_1 = false;
-            a_1_0 = new global::A(a: param0_0);
+            a_1_0 = new global::A(a: param1_0);
             a_1_1 = ((global::StrongInject.IRequiresAsyncInitialization)a_1_0).InitializeAsync();
             try
             {
@@ -7364,12 +7438,13 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::Del del_0_1;
             global::B b_0_0;
-            del_0_1 = async (param0_0) =>
+            del_0_1 = null;
+            del_0_1 = async (param1_0) =>
             {
                 global::A a_1_0;
                 global::System.Threading.Tasks.ValueTask a_1_1;
                 var hasAwaitStarted_a_1_1 = false;
-                a_1_0 = new global::A(a: param0_0);
+                a_1_0 = new global::A(a: param1_0);
                 a_1_1 = ((global::StrongInject.IRequiresAsyncInitialization)a_1_0).InitializeAsync();
                 try
                 {
@@ -7625,9 +7700,10 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
-            return param0_0;
+            return param1_0;
         };
         TResult result;
         try
@@ -7646,9 +7722,10 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
-            return param0_0;
+            return param1_0;
         };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::System.Func<global::A>, global::System.Func<global::A>>>(func_0_0, async () =>
         {
@@ -10609,7 +10686,8 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::IA, global::IA[]> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::B b_1_2;
             global::IA iA_1_1;
@@ -10640,7 +10718,8 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::IA, global::IA[]> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
             global::B b_1_2;
             global::IA iA_1_1;
@@ -14185,9 +14264,10 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::IA, global::IA> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
-            return param0_0;
+            return param1_0;
         };
         TResult result;
         try
@@ -14206,9 +14286,10 @@ partial class Container
         if (Disposed)
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::IA, global::IA> func_0_0;
-        func_0_0 = (param0_0) =>
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
         {
-            return param0_0;
+            return param1_0;
         };
         return new global::StrongInject.AsyncOwned<global::System.Func<global::IA, global::IA>>(func_0_0, async () =>
         {
@@ -21452,6 +21533,7 @@ partial class Container
         {
             hasAwaitStarted_int32_0_1 = true;
             int32_0_2 = await int32_0_1;
+            func_0_4 = null;
             func_0_4 = () =>
             {
                 global::System.String string_1_0;
@@ -21498,6 +21580,7 @@ partial class Container
         {
             hasAwaitStarted_int32_0_1 = true;
             int32_0_2 = await int32_0_1;
+            func_0_4 = null;
             func_0_4 = () =>
             {
                 global::System.String string_1_0;
@@ -21623,6 +21706,7 @@ partial class Container
         {
             hasAwaitStarted_int32_0_3 = true;
             int32_0_4 = await int32_0_3;
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::System.String string_1_0;
@@ -21669,6 +21753,7 @@ partial class Container
         {
             hasAwaitStarted_int32_0_3 = true;
             int32_0_4 = await int32_0_3;
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::System.String string_1_0;
@@ -21797,10 +21882,12 @@ partial class Container
         {
             hasAwaitStarted_int32_0_3 = true;
             int32_0_4 = await int32_0_3;
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::System.Func<global::System.Int32> func_1_1;
                 global::System.String string_1_0;
+                func_1_1 = null;
                 func_1_1 = () =>
                 {
                     return int32_0_4;
@@ -21848,10 +21935,12 @@ partial class Container
         {
             hasAwaitStarted_int32_0_3 = true;
             int32_0_4 = await int32_0_3;
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 global::System.Func<global::System.Int32> func_1_1;
                 global::System.String string_1_0;
+                func_1_1 = null;
                 func_1_1 = () =>
                 {
                     return int32_0_4;
@@ -22001,6 +22090,7 @@ partial class Container
             {
                 hasAwaitStarted_int32_0_2 = true;
                 int32_0_3 = await int32_0_2;
+                func_0_1 = null;
                 func_0_1 = () =>
                 {
                     return int32_0_3;
@@ -22045,6 +22135,7 @@ partial class Container
         {
             hasAwaitStarted_string_0_3 = true;
             string_0_4 = await string_0_3;
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 return string_0_4;
@@ -22089,6 +22180,7 @@ partial class Container
         {
             hasAwaitStarted_string_0_3 = true;
             string_0_4 = await string_0_3;
+            func_0_2 = null;
             func_0_2 = () =>
             {
                 return string_0_4;
@@ -22206,6 +22298,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Threading.Tasks.ValueTask<global::System.Int64>> func_0_1;
         global::System.Boolean boolean_0_0;
+        func_0_1 = null;
         func_0_1 = async () =>
         {
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_1_2;
@@ -22218,10 +22311,12 @@ partial class Container
             {
                 hasAwaitStarted_int32_1_2 = true;
                 int32_1_3 = await int32_1_2;
+                func_1_1 = null;
                 func_1_1 = () =>
                 {
                     global::System.Func<global::System.Int32> func_2_1;
                     global::System.String string_2_0;
+                    func_2_1 = null;
                     func_2_1 = () =>
                     {
                         return int32_1_3;
@@ -22262,6 +22357,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Threading.Tasks.ValueTask<global::System.Int64>> func_0_1;
         global::System.Boolean boolean_0_0;
+        func_0_1 = null;
         func_0_1 = async () =>
         {
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_1_2;
@@ -22274,10 +22370,12 @@ partial class Container
             {
                 hasAwaitStarted_int32_1_2 = true;
                 int32_1_3 = await int32_1_2;
+                func_1_1 = null;
                 func_1_1 = () =>
                 {
                     global::System.Func<global::System.Int32> func_2_1;
                     global::System.String string_2_0;
+                    func_2_1 = null;
                     func_2_1 = () =>
                     {
                         return int32_1_3;
@@ -22510,11 +22608,12 @@ partial class Container
             global::System.Func<global::ItemDetailViewModel, global::IViewOf<global::ItemDetailViewModel>> func_0_2;
             global::INavigationService<global::ItemDetailViewModel> iNavigationService_0_0;
             iNavigation_0_1 = this.Navigation;
-            func_0_2 = (param0_0) =>
+            func_0_2 = null;
+            func_0_2 = (param1_0) =>
             {
                 global::ItemDetailPage itemDetailPage_1_1;
                 global::IViewOf<global::ItemDetailViewModel> iViewOf_1_0;
-                itemDetailPage_1_1 = new global::ItemDetailPage(itemDetailViewModel: param0_0);
+                itemDetailPage_1_1 = new global::ItemDetailPage(itemDetailViewModel: param1_0);
                 iViewOf_1_0 = (global::IViewOf<global::ItemDetailViewModel>)itemDetailPage_1_1;
                 return iViewOf_1_0;
             };
@@ -22549,11 +22648,12 @@ partial class Container
             global::System.Func<global::NewItemViewModel, global::IViewOf<global::NewItemViewModel>> func_0_2;
             global::INavigationService<global::NewItemViewModel> iNavigationService_0_0;
             iNavigation_0_1 = this.Navigation;
-            func_0_2 = (param0_0) =>
+            func_0_2 = null;
+            func_0_2 = (param1_0) =>
             {
                 global::NewItemPage newItemPage_1_1;
                 global::IViewOf<global::NewItemViewModel> iViewOf_1_0;
-                newItemPage_1_1 = new global::NewItemPage(newItemViewModel: param0_0);
+                newItemPage_1_1 = new global::NewItemPage(newItemViewModel: param1_0);
                 iViewOf_1_0 = (global::IViewOf<global::NewItemViewModel>)newItemPage_1_1;
                 return iViewOf_1_0;
             };
@@ -22641,12 +22741,14 @@ partial class Container
         global::ItemsViewModel itemsViewModel_0_0;
         iNavigationService_0_1 = GetINavigationServiceField0();
         iNavigationService_0_2 = GetINavigationServiceField1();
-        func_0_3 = (param0_0) =>
+        func_0_3 = null;
+        func_0_3 = (param1_0) =>
         {
             global::ItemDetailViewModel itemDetailViewModel_1_0;
-            itemDetailViewModel_1_0 = new global::ItemDetailViewModel(item: param0_0);
+            itemDetailViewModel_1_0 = new global::ItemDetailViewModel(item: param1_0);
             return itemDetailViewModel_1_0;
         };
+        func_0_4 = null;
         func_0_4 = () =>
         {
             global::MockDataStore mockDataStore_0_2;
@@ -22689,12 +22791,14 @@ partial class Container
         global::ItemsViewModel itemsViewModel_0_0;
         iNavigationService_0_1 = GetINavigationServiceField0();
         iNavigationService_0_2 = GetINavigationServiceField1();
-        func_0_3 = (param0_0) =>
+        func_0_3 = null;
+        func_0_3 = (param1_0) =>
         {
             global::ItemDetailViewModel itemDetailViewModel_1_0;
-            itemDetailViewModel_1_0 = new global::ItemDetailViewModel(item: param0_0);
+            itemDetailViewModel_1_0 = new global::ItemDetailViewModel(item: param1_0);
             return itemDetailViewModel_1_0;
         };
+        func_0_4 = null;
         func_0_4 = () =>
         {
             global::MockDataStore mockDataStore_0_2;
@@ -22796,6 +22900,7 @@ partial class Container
         global::System.Func<global::C> func_0_2;
         global::A a_0_0;
         b_0_1 = GetBField0();
+        func_0_2 = null;
         func_0_2 = () =>
         {
             global::C c_1_0;
@@ -22823,6 +22928,7 @@ partial class Container
         global::System.Func<global::C> func_0_2;
         global::A a_0_0;
         b_0_1 = GetBField0();
+        func_0_2 = null;
         func_0_2 = () =>
         {
             global::C c_1_0;
@@ -23861,6 +23967,7 @@ partial class Container
             global::System.Func<dynamic> func_0_1;
             global::System.Int32 int32_0_0;
             disposeActions_func_0_1 = new global::System.Collections.Concurrent.ConcurrentBag<global::System.Action>();
+            func_0_1 = null;
             func_0_1 = () =>
             {
                 dynamic dynamic_1_0;
@@ -25608,6 +25715,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Func<global::A> func_0_1;
             global::A a_0_0;
+            func_0_1 = null;
             func_0_1 = () =>
             {
                 global::A a_1_0;
@@ -25713,6 +25821,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Func<global::B> func_0_1;
             global::A a_0_0;
+            func_0_1 = null;
             func_0_1 = () =>
             {
                 global::A a_1_1;
@@ -25824,6 +25933,7 @@ partial class Container
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Func<global::B> func_0_1;
             global::A a_0_0;
+            func_0_1 = null;
             func_0_1 = () =>
             {
                 global::A a_1_1;
@@ -25967,9 +26077,9 @@ partial class Container
     }
 }");
         }
-        
+
         [Fact]
-        public void ErrorIfFuncHasNonSingletonCircularDependency()
+        public void AllowFuncWithDirectParameterlessCircularDependency()
         {
             string userSource = @"
 using StrongInject;
@@ -25984,10 +26094,7 @@ public partial class Container : IContainer<A>
 public class A{ public A(Func<B> func){} }
 public class B{ public B(A a){} }";
             var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
-                // Container
-                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+            generatorDiagnostics.Verify();
             comp.GetDiagnostics().Verify();
             var file = Assert.Single(generated);
             file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
@@ -26004,12 +26111,741 @@ partial class Container
 
     TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
     {
-        throw new global::System.NotImplementedException();
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::B> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = () =>
+        {
+            global::A a_1_1;
+            global::B b_1_0;
+            a_1_1 = new global::A(func: func_0_1);
+            b_1_0 = new global::B(a: a_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(func: func_0_1);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
     }
 
     global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
     {
-        throw new global::System.NotImplementedException();
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::B> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = () =>
+        {
+            global::A a_1_1;
+            global::B b_1_0;
+            a_1_1 = new global::A(func: func_0_1);
+            b_1_0 = new global::B(a: a_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(func: func_0_1);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+
+        [Fact]
+        public void AllowFuncWithDirectParameteredCircularDependency()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A{ public A(Func<int, B> func){} }
+public class B{ public B(int i, A a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::System.Int32, global::B> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = (param1_0) =>
+        {
+            global::A a_1_1;
+            global::B b_1_0;
+            a_1_1 = new global::A(func: func_0_1);
+            b_1_0 = new global::B(i: param1_0, a: a_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(func: func_0_1);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::System.Int32, global::B> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = (param1_0) =>
+        {
+            global::A a_1_1;
+            global::B b_1_0;
+            a_1_1 = new global::A(func: func_0_1);
+            b_1_0 = new global::B(i: param1_0, a: a_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(func: func_0_1);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void AllowFuncWithIndirectParameteredCircularDependency()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+    [Factory] int GetInt() => default;
+}
+
+public class A{ public A(int i, Func<int, B> func){} }
+public class B{ public B(int i, Func<int, A> func){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_1;
+        global::System.Func<global::System.Int32, global::B> func_0_2;
+        global::A a_0_0;
+        int32_0_1 = this.GetInt();
+        func_0_2 = null;
+        func_0_2 = (param1_0) =>
+        {
+            global::System.Func<global::System.Int32, global::A> func_1_1;
+            global::B b_1_0;
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
+            {
+                global::A a_2_0;
+                a_2_0 = new global::A(i: param2_0, func: func_0_2);
+                return a_2_0;
+            };
+            b_1_0 = new global::B(i: param1_0, func: func_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(i: int32_0_1, func: func_0_2);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_1;
+        global::System.Func<global::System.Int32, global::B> func_0_2;
+        global::A a_0_0;
+        int32_0_1 = this.GetInt();
+        func_0_2 = null;
+        func_0_2 = (param1_0) =>
+        {
+            global::System.Func<global::System.Int32, global::A> func_1_1;
+            global::B b_1_0;
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
+            {
+                global::A a_2_0;
+                a_2_0 = new global::A(i: param2_0, func: func_0_2);
+                return a_2_0;
+            };
+            b_1_0 = new global::B(i: param1_0, func: func_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(i: int32_0_1, func: func_0_2);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes1()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+    [Factory] int GetInt() => default;
+}
+
+public class A{ public A(int i, Func<string, B> func){} }
+public class B{ public B(string s, Func<int, A> func){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,22): Warning SI1107: Warning while resolving dependencies for 'A': Delegate 'System.Func<string, B>' has a circular dependency on itself, which means it will not see the updated values for types 'int' passed as parameters to intervening delegates 'System.Func<int, A>'.
+                // Container
+                new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_1;
+        global::System.Func<global::System.String, global::B> func_0_2;
+        global::A a_0_0;
+        int32_0_1 = this.GetInt();
+        func_0_2 = null;
+        func_0_2 = (param1_0) =>
+        {
+            global::System.Func<global::System.Int32, global::A> func_1_1;
+            global::B b_1_0;
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
+            {
+                global::A a_2_0;
+                a_2_0 = new global::A(i: param2_0, func: func_0_2);
+                return a_2_0;
+            };
+            b_1_0 = new global::B(s: param1_0, func: func_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(i: int32_0_1, func: func_0_2);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_1;
+        global::System.Func<global::System.String, global::B> func_0_2;
+        global::A a_0_0;
+        int32_0_1 = this.GetInt();
+        func_0_2 = null;
+        func_0_2 = (param1_0) =>
+        {
+            global::System.Func<global::System.Int32, global::A> func_1_1;
+            global::B b_1_0;
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
+            {
+                global::A a_2_0;
+                a_2_0 = new global::A(i: param2_0, func: func_0_2);
+                return a_2_0;
+            };
+            b_1_0 = new global::B(s: param1_0, func: func_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(i: int32_0_1, func: func_0_2);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes2()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>, IContainer<B>
+{
+    [Factory] int GetInt() => default;
+    [Factory] bool GetBool() => default;
+    [Factory] long GetLong() => default;
+    [Factory] string GetString() => default;
+}
+
+public class A{ public A(int i, bool b, Func<string, long, int, bool, B> func){} }
+public class B{ public B(string s, long l, int i, bool b, Func<bool, Func<int, A>> func){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,22): Warning SI1107: Warning while resolving dependencies for 'B': Delegate 'System.Func<bool, System.Func<int, A>>' has a circular dependency on itself, which means it will not see the updated values for types 'int, string, long' passed as parameters to intervening delegates 'System.Func<string, long, int, bool, B>'.
+                // Container
+                new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_1;
+        global::System.Boolean boolean_0_2;
+        global::System.Func<global::System.String, global::System.Int64, global::System.Int32, global::System.Boolean, global::B> func_0_3;
+        global::A a_0_0;
+        int32_0_1 = this.GetInt();
+        boolean_0_2 = this.GetBool();
+        func_0_3 = null;
+        func_0_3 = (param1_0, param1_1, param1_2, param1_3) =>
+        {
+            global::System.Func<global::System.Boolean, global::System.Func<global::System.Int32, global::A>> func_1_1;
+            global::B b_1_0;
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
+            {
+                global::System.Func<global::System.Int32, global::A> func_2_0;
+                func_2_0 = null;
+                func_2_0 = (param3_0) =>
+                {
+                    global::A a_3_0;
+                    a_3_0 = new global::A(i: param3_0, b: param2_0, func: func_0_3);
+                    return a_3_0;
+                };
+                return func_2_0;
+            };
+            b_1_0 = new global::B(s: param1_0, l: param1_1, i: param1_2, b: param1_3, func: func_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(i: int32_0_1, b: boolean_0_2, func: func_0_3);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Int32 int32_0_1;
+        global::System.Boolean boolean_0_2;
+        global::System.Func<global::System.String, global::System.Int64, global::System.Int32, global::System.Boolean, global::B> func_0_3;
+        global::A a_0_0;
+        int32_0_1 = this.GetInt();
+        boolean_0_2 = this.GetBool();
+        func_0_3 = null;
+        func_0_3 = (param1_0, param1_1, param1_2, param1_3) =>
+        {
+            global::System.Func<global::System.Boolean, global::System.Func<global::System.Int32, global::A>> func_1_1;
+            global::B b_1_0;
+            func_1_1 = null;
+            func_1_1 = (param2_0) =>
+            {
+                global::System.Func<global::System.Int32, global::A> func_2_0;
+                func_2_0 = null;
+                func_2_0 = (param3_0) =>
+                {
+                    global::A a_3_0;
+                    a_3_0 = new global::A(i: param3_0, b: param2_0, func: func_0_3);
+                    return a_3_0;
+                };
+                return func_2_0;
+            };
+            b_1_0 = new global::B(s: param1_0, l: param1_1, i: param1_2, b: param1_3, func: func_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(i: int32_0_1, b: boolean_0_2, func: func_0_3);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.String string_0_1;
+        global::System.Int64 int64_0_2;
+        global::System.Int32 int32_0_3;
+        global::System.Boolean boolean_0_4;
+        global::System.Func<global::System.Boolean, global::System.Func<global::System.Int32, global::A>> func_0_5;
+        global::B b_0_0;
+        string_0_1 = this.GetString();
+        int64_0_2 = this.GetLong();
+        int32_0_3 = this.GetInt();
+        boolean_0_4 = this.GetBool();
+        func_0_5 = null;
+        func_0_5 = (param1_0) =>
+        {
+            global::System.Func<global::System.Int32, global::A> func_1_0;
+            func_1_0 = null;
+            func_1_0 = (param2_0) =>
+            {
+                global::System.Func<global::System.String, global::System.Int64, global::System.Int32, global::System.Boolean, global::B> func_2_1;
+                global::A a_2_0;
+                func_2_1 = null;
+                func_2_1 = (param3_0, param3_1, param3_2, param3_3) =>
+                {
+                    global::B b_3_0;
+                    b_3_0 = new global::B(s: param3_0, l: param3_1, i: param3_2, b: param3_3, func: func_0_5);
+                    return b_3_0;
+                };
+                a_2_0 = new global::A(i: param2_0, b: param1_0, func: func_2_1);
+                return a_2_0;
+            };
+            return func_1_0;
+        };
+        b_0_0 = new global::B(s: string_0_1, l: int64_0_2, i: int32_0_3, b: boolean_0_4, func: func_0_5);
+        TResult result;
+        try
+        {
+            result = func(b_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.String string_0_1;
+        global::System.Int64 int64_0_2;
+        global::System.Int32 int32_0_3;
+        global::System.Boolean boolean_0_4;
+        global::System.Func<global::System.Boolean, global::System.Func<global::System.Int32, global::A>> func_0_5;
+        global::B b_0_0;
+        string_0_1 = this.GetString();
+        int64_0_2 = this.GetLong();
+        int32_0_3 = this.GetInt();
+        boolean_0_4 = this.GetBool();
+        func_0_5 = null;
+        func_0_5 = (param1_0) =>
+        {
+            global::System.Func<global::System.Int32, global::A> func_1_0;
+            func_1_0 = null;
+            func_1_0 = (param2_0) =>
+            {
+                global::System.Func<global::System.String, global::System.Int64, global::System.Int32, global::System.Boolean, global::B> func_2_1;
+                global::A a_2_0;
+                func_2_1 = null;
+                func_2_1 = (param3_0, param3_1, param3_2, param3_3) =>
+                {
+                    global::B b_3_0;
+                    b_3_0 = new global::B(s: param3_0, l: param3_1, i: param3_2, b: param3_3, func: func_0_5);
+                    return b_3_0;
+                };
+                a_2_0 = new global::A(i: param2_0, b: param1_0, func: func_2_1);
+                return a_2_0;
+            };
+            return func_1_0;
+        };
+        b_0_0 = new global::B(s: string_0_1, l: int64_0_2, i: int32_0_3, b: boolean_0_4, func: func_0_5);
+        return new global::StrongInject.Owned<global::B>(b_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes3()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<Func<int, A>>
+{
+    [Factory] bool GetBool() => default;
+    [Factory] long GetLong() => default;
+    [Factory] string GetString() => default;
+}
+
+public class A{ public A(int i, bool b, Func<string, long, int, bool, B> func){} }
+public class B{ public B(string s, long l, int i, bool b, Func<bool, Func<int, A>> func){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify(
+                // (7,22): Warning SI1107: Warning while resolving dependencies for 'System.Func<int, A>': Delegate 'System.Func<int, A>' has a circular dependency on itself, which means it will not see the updated values for types 'string, long, bool' passed as parameters to intervening delegates 'System.Func<string, long, int, bool, B>, System.Func<bool, System.Func<int, A>>'.
+                // Container
+                new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22),
+                // (7,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, A>': Parameter 'bool' of delegate 'System.Func<bool, System.Func<int, A>>' is not used in resolution of 'System.Func<int, A>'.
+                // Container
+                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::A>>.Run<TResult, TParam>(global::System.Func<global::System.Func<global::System.Int32, global::A>, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::System.Int32, global::A> func_0_0;
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
+        {
+            global::System.Boolean boolean_1_1;
+            global::System.Func<global::System.String, global::System.Int64, global::System.Int32, global::System.Boolean, global::B> func_1_2;
+            global::A a_1_0;
+            boolean_1_1 = this.GetBool();
+            func_1_2 = null;
+            func_1_2 = (param2_0, param2_1, param2_2, param2_3) =>
+            {
+                global::System.Func<global::System.Boolean, global::System.Func<global::System.Int32, global::A>> func_2_1;
+                global::B b_2_0;
+                func_2_1 = null;
+                func_2_1 = (param3_0) =>
+                {
+                    return func_0_0;
+                };
+                b_2_0 = new global::B(s: param2_0, l: param2_1, i: param2_2, b: param2_3, func: func_2_1);
+                return b_2_0;
+            };
+            a_1_0 = new global::A(i: param1_0, b: boolean_1_1, func: func_1_2);
+            return a_1_0;
+        };
+        TResult result;
+        try
+        {
+            result = func(func_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>> global::StrongInject.IContainer<global::System.Func<global::System.Int32, global::A>>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::System.Int32, global::A> func_0_0;
+        func_0_0 = null;
+        func_0_0 = (param1_0) =>
+        {
+            global::System.Boolean boolean_1_1;
+            global::System.Func<global::System.String, global::System.Int64, global::System.Int32, global::System.Boolean, global::B> func_1_2;
+            global::A a_1_0;
+            boolean_1_1 = this.GetBool();
+            func_1_2 = null;
+            func_1_2 = (param2_0, param2_1, param2_2, param2_3) =>
+            {
+                global::System.Func<global::System.Boolean, global::System.Func<global::System.Int32, global::A>> func_2_1;
+                global::B b_2_0;
+                func_2_1 = null;
+                func_2_1 = (param3_0) =>
+                {
+                    return func_0_0;
+                };
+                b_2_0 = new global::B(s: param2_0, l: param2_1, i: param2_2, b: param2_3, func: func_2_1);
+                return b_2_0;
+            };
+            a_1_0 = new global::A(i: param1_0, b: boolean_1_1, func: func_1_2);
+            return a_1_0;
+        };
+        return new global::StrongInject.Owned<global::System.Func<global::System.Int32, global::A>>(func_0_0, () =>
+        {
+        });
+    }
+}");
+        }
+        
+        [Fact]
+        public void AllowFuncWithMultipleDirectParameteredCircularDependencies()
+        {
+            string userSource = @"
+using StrongInject;
+using System;
+
+[Register(typeof(A))]
+[Register(typeof(B))]
+public partial class Container : IContainer<A>
+{
+}
+
+public class A{ public A(Func<int, B> func1, Func<int, B> func2){} }
+public class B{ public B(int i, A a){} }";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::System.Int32, global::B> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = (param1_0) =>
+        {
+            global::A a_1_1;
+            global::B b_1_0;
+            a_1_1 = new global::A(func1: func_0_1, func2: func_0_1);
+            b_1_0 = new global::B(i: param1_0, a: a_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(func1: func_0_1, func2: func_0_1);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::System.Func<global::System.Int32, global::B> func_0_1;
+        global::A a_0_0;
+        func_0_1 = null;
+        func_0_1 = (param1_0) =>
+        {
+            global::A a_1_1;
+            global::B b_1_0;
+            a_1_1 = new global::A(func1: func_0_1, func2: func_0_1);
+            b_1_0 = new global::B(i: param1_0, a: a_1_1);
+            return b_1_0;
+        };
+        a_0_0 = new global::A(func1: func_0_1, func2: func_0_1);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
     }
 }");
         }

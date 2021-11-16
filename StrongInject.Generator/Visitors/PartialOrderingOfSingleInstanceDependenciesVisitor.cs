@@ -19,7 +19,7 @@ namespace StrongInject.Generator.Visitors
             IEnumerable<InstanceSource> results = Array.Empty<InstanceSource>();
             foreach (var source in usedSingleInstanceSources)
             {
-                visitor.VisitCore(source, new State { InstanceSourcesScope = containerScope });
+                visitor.VisitCore(source, new State(containerScope));
                 if (visitor._results is { } visitResults)
                     results = visitResults.Concat(results);
                 visitor._results = null;

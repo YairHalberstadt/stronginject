@@ -488,7 +488,9 @@ namespace StrongInject.Generator
                     }:
                         var isDisposed = operation.Disposal is not null;
                         var disposeAsynchronously = operation.Disposal is { IsAsync: true };
-
+                        // definitely assign the delegate variable so it can be referenced inside the delegate 
+                        methodSource.Append(variableName);
+                        methodSource.Append("=null;");
                         methodSource.Append(variableName);
                         methodSource.Append(isAsync ? "=async(" : "=(");
 
