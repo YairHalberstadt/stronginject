@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StrongInject\StrongInject.csproj" />
-    <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" OutputItemType="Analyzer"/>
+    <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
 </Project>

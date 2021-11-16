@@ -35,6 +35,22 @@ namespace StrongInject.Generator
             }
             return value;
         }
+        
+        public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value, out TValue? existingValue)
+        {
+            if (!dic.TryGetValue(key, out existingValue))
+            {
+                dic[key] = value;
+                return true;
+            }
+            return false;
+        }
+        
+        public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value, out TValue existingValue)
+        {
+            dic.TryGetValue(key, out existingValue);
+            dic[key] = value;
+        }
 
         public static TValue? GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dic, TKey key, TValue? defaultValue = default)
         {

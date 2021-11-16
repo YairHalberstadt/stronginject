@@ -47,6 +47,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.Owned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.Owned<global::B> owned_1_0;
@@ -94,6 +95,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.Owned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.Owned<global::B> owned_1_0;
@@ -1228,6 +1230,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.AsyncOwned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.AsyncOwned<global::B> asyncOwned_1_0;
@@ -1263,6 +1266,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.AsyncOwned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.AsyncOwned<global::B> asyncOwned_1_0;
@@ -1412,6 +1416,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Threading.Tasks.Task<global::StrongInject.Owned<global::B>>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = async () =>
         {
             global::StrongInject.Owned<global::B> owned_1_0;
@@ -1473,6 +1478,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Threading.Tasks.Task<global::StrongInject.Owned<global::B>>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = async () =>
         {
             global::StrongInject.Owned<global::B> owned_1_0;
@@ -1563,6 +1569,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Threading.Tasks.Task<global::StrongInject.AsyncOwned<global::B>>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = async () =>
         {
             global::StrongInject.AsyncOwned<global::B> asyncOwned_1_0;
@@ -1624,6 +1631,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::System.Threading.Tasks.Task<global::StrongInject.AsyncOwned<global::B>>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = async () =>
         {
             global::StrongInject.AsyncOwned<global::B> asyncOwned_1_0;
@@ -1832,13 +1840,14 @@ partial class Container
         global::System.Func<global::C, global::StrongInject.Owned<global::B>> func_0_1;
         global::StrongInject.Owned<global::B> owned_0_2;
         global::A a_0_0;
-        func_0_1 = (param0_0) =>
+        func_0_1 = null;
+        func_0_1 = (param1_0) =>
         {
             global::StrongInject.Owned<global::B> owned_1_0;
             global::StrongInject.Owned<global::B> CreateOwnedB_1()
             {
                 global::B b_1_0;
-                b_1_0 = new global::B(C: param0_0);
+                b_1_0 = new global::B(C: param1_0);
                 return new global::StrongInject.Owned<global::B>(b_1_0, () =>
                 {
                 });
@@ -1889,13 +1898,14 @@ partial class Container
         global::System.Func<global::C, global::StrongInject.Owned<global::B>> func_0_1;
         global::StrongInject.Owned<global::B> owned_0_2;
         global::A a_0_0;
-        func_0_1 = (param0_0) =>
+        func_0_1 = null;
+        func_0_1 = (param1_0) =>
         {
             global::StrongInject.Owned<global::B> owned_1_0;
             global::StrongInject.Owned<global::B> CreateOwnedB_1()
             {
                 global::B b_1_0;
-                b_1_0 = new global::B(C: param0_0);
+                b_1_0 = new global::B(C: param1_0);
                 return new global::StrongInject.Owned<global::B>(b_1_0, () =>
                 {
                 });
@@ -2074,6 +2084,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.IOwned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.Owned<global::B> owned_1_1;
@@ -2111,6 +2122,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.IOwned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.Owned<global::B> owned_1_1;
@@ -2173,6 +2185,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.IAsyncOwned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.AsyncOwned<global::B> asyncOwned_1_1;
@@ -2210,6 +2223,7 @@ partial class Container
             throw new global::System.ObjectDisposedException(nameof(Container));
         global::System.Func<global::StrongInject.IAsyncOwned<global::B>> func_0_1;
         global::A a_0_0;
+        func_0_1 = null;
         func_0_1 = () =>
         {
             global::StrongInject.AsyncOwned<global::B> asyncOwned_1_1;

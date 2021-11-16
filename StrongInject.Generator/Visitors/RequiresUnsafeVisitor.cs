@@ -13,7 +13,7 @@ namespace StrongInject.Generator.Visitors
         public static bool RequiresUnsafe(ITypeSymbol target, InstanceSourcesScope containerScope)
         {
             var visitor = new RequiresUnsafeVisitor(containerScope);
-            var state = new State { InstanceSourcesScope = containerScope };
+            var state = new State(containerScope);
             visitor.VisitCore(visitor.GetInstanceSource(target, state, parameterSymbol: null), state);
             return visitor._requiresUnsafe;
         }
