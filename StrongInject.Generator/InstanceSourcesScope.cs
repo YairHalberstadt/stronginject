@@ -198,18 +198,53 @@ namespace StrongInject.Generator
             switch (instanceSource)
             {
                 case DelegateSource { Parameters: var parameters }:
+                    var newDepth = Depth + 1; 
                     var delegateParameters = _delegateParameters is null
                         ? new Dictionary<ITypeSymbol, DelegateParameter>(SymbolEqualityComparer.Default)
                         : new Dictionary<ITypeSymbol, DelegateParameter>(_delegateParameters);
                     foreach (var param in parameters)
                     {
-                        delegateParameters[param.Type] = new DelegateParameter(param, "param" + Depth + "_" + param.Ordinal);
+                        delegateParameters[param.Type] = new DelegateParameter(param, "param" + newDepth + "_" + param.Ordinal, newDepth);
                     }
-                    return new InstanceSourcesScope(_containerScope, delegateParameters, Depth + 1);
+                    return new InstanceSourcesScope(_containerScope, delegateParameters, newDepth);
                 case { Scope: Scope.SingleInstance }:
                     return _containerScope;
                 default:
                     return this;
+            }
+        }
+
+        /// <summary>
+        /// Returns all DelegateParameters that were provided by scopes in between this and ancestor.
+        /// </summary>
+        public IEnumerable<DelegateParameter> GetInterveningDelegateParameters(InstanceSourcesScope ancestor)
+        {
+            if (!ReferenceEquals(_containerScope, ancestor._containerScope))
+            {
+                throw new InvalidOperationException("ancestor parameter is not an ancestor of this");
+            }
+
+            if (_delegateParameters is null)
+            {
+                return Array.Empty<DelegateParameter>();
+            }
+
+            if (ancestor._delegateParameters is null)
+            {
+                return _delegateParameters.Values;
+            }
+
+            return GetInterveningDelegateParametersInternal();
+
+            IEnumerable<DelegateParameter> GetInterveningDelegateParametersInternal()
+            {
+                foreach (var parameter in _delegateParameters.Values)
+                {
+                    if (parameter.Depth > ancestor.Depth && parameter.Depth < Depth)
+                    {
+                        yield return parameter;
+                    }
+                }
             }
         }
     }

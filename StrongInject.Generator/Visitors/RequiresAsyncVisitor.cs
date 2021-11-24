@@ -13,7 +13,7 @@ namespace StrongInject.Generator.Visitors
         public static bool RequiresAsync(InstanceSource source, InstanceSourcesScope containerScope)
         {
             var visitor = new RequiresAsyncVisitor(containerScope);
-            visitor.VisitCore(source, new State { InstanceSourcesScope = containerScope });
+            visitor.VisitCore(source, new State(containerScope));
             return visitor._requiresAsync;
         }
 

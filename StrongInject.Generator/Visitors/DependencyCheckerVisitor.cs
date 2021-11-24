@@ -27,13 +27,7 @@ namespace StrongInject.Generator.Visitors
         public static bool HasCircularOrMissingDependencies(ITypeSymbol target, bool isAsync, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
         {
             var visitor = new DependencyCheckerVisitor(target, containerScope, reportDiagnostic, location);
-            var state = new State
-            {
-                InstanceSourcesScope = containerScope,
-                IsScopeAsync = isAsync,
-                CurrentlyVisitingSingletons = new(),
-                CurrentlyVisitingNonSingletons = new()
-            };
+            var state = new State(containerScope, isAsync);
             visitor.VisitCore(visitor.GetInstanceSource(target, state, parameterSymbol: null), state);
             return visitor._anyErrors;
         }
@@ -95,41 +89,39 @@ namespace StrongInject.Generator.Visitors
 
         protected override void UpdateState(InstanceSource source, ref State state)
         {
-            if (source.Scope == Scope.SingleInstance)
+            if (source.Scope == Scope.SingleInstance && state.InstanceSourcesScope.Depth != 0)
             {
-                // This is to allow the following case:
-                //
-                // NonSingletonA depends on SingletonB
-                // SingletonB depends on Func<NonSingletonA>
-                // Resolve NonSingletonA.
-                //
-                // Even though this should work fine, without clearing out non-singletons
-                // between each singleton we'd get an error.
-                //
-                // Clearing out non-singletons each time we visit a singleton is fine,
-                // since we'll still detect all cycles, just a bit later, but permits this one case.
-                state.CurrentlyVisitingNonSingletons = new();
-                
-                // Circular dependencies inside different scopes are not a problem since we assume any delegates are instantiated lazily.
-                // (Scope 0 represents the top level scope, and all other scopes represent dependencies resolved inside delegates.)
-                // However both checking dependencies and generating code for such cases is extremely complex.
-                // In the special case where a Singleton is included somewhere between the circular dependency,
-                // both are trivial ands require no special casing, so we allow only such cases.
-                if (state.InstanceSourcesScope.Depth != 0)
-                {
-                    state.CurrentlyVisitingSingletons = new();
-                }
+                // We don't care about circular dependencies between different scopes,
+                // since we assume the delegate is instantiated lazily.
+                // However we still need to track what we are currently visiting so we can warn if we
+                // can't generate correct code for the delegate.
+                // When the circular dependency crosses the boundary of a singleton this is always possible,
+                // so there's no need to track what we were visiting before the singleton.
+                state.ResetCurrentlyVisiting();
             }
             base.UpdateState(source, ref state);
         }
 
         protected override bool ShouldVisitAfterUpdateState(InstanceSource source, State state)
         {
-            if (!state.AddCurrentlyVisiting(source))
+            if (!state.AddCurrentlyVisiting(source, state.InstanceSourcesScope, out var existingScope))
             {
-                _reportDiagnostic(CircularDependency(_location, _target, source.OfType));
-                _anyErrors = true;
-                return false;
+                if (source is DelegateSource delegateSource)
+                {
+                    var interveningDelegateParameters = state.InstanceSourcesScope.GetInterveningDelegateParameters(existingScope).ToList();
+                    if (interveningDelegateParameters.Count > 0)
+                    {
+                        _reportDiagnostic(WarnCircularDependencyWithInterveningDelegateParameter(_location, _target, delegateSource.DelegateType, interveningDelegateParameters));
+                    }
+                    return false;
+                }
+
+                if (state.InstanceSourcesScope.Depth == existingScope.Depth)
+                {
+                    _reportDiagnostic(CircularDependency(_location, _target, source.OfType));
+                    _anyErrors = true;
+                    return false;
+                }
             }
             
             if ((ReferenceEquals(state.InstanceSourcesScope, _containerScope)
@@ -223,8 +215,19 @@ namespace StrongInject.Generator.Visitors
 
         public struct State : IState
         {
+            public State(InstanceSourcesScope scope, bool isAsync)
+            {
+                _instanceSourcesScope = scope;
+                _isAsync = isAsync;
+                _currentlyVisiting = new();
+                PreviousScope = null;
+                IsCurrentOrAnyParentScopeAsync = isAsync;
+                UsedParams = null;
+            }
+            
             private InstanceSourcesScope _instanceSourcesScope;
             private bool _isAsync;
+            private Dictionary<InstanceSource, InstanceSourcesScope> _currentlyVisiting;
 
             public InstanceSourcesScope? PreviousScope { get; private set; }
             public InstanceSourcesScope InstanceSourcesScope
@@ -249,17 +252,15 @@ namespace StrongInject.Generator.Visitors
             public HashSet<IParameterSymbol>? UsedParams { get; set; }
 
 
-            public bool AddCurrentlyVisiting(InstanceSource source) =>
-                source.Scope == Scope.SingleInstance
-                    ? CurrentlyVisitingSingletons.Add(source)
-                    : CurrentlyVisitingNonSingletons.Add(source);
-            
-            public bool RemoveCurrentlyVisiting(InstanceSource source) =>
-                source.Scope == Scope.SingleInstance
-                    ? CurrentlyVisitingSingletons.Remove(source)
-                    : CurrentlyVisitingNonSingletons.Remove(source);            
-            public HashSet<InstanceSource> CurrentlyVisitingSingletons { get; set; }
-            public HashSet<InstanceSource> CurrentlyVisitingNonSingletons { get; set; }
+            public bool AddCurrentlyVisiting(InstanceSource source, InstanceSourcesScope scope, out InstanceSourcesScope existingScope)
+            {
+                _currentlyVisiting.AddOrUpdate(source, scope, out existingScope);
+                return existingScope is null;
+            }
+
+            public bool RemoveCurrentlyVisiting(InstanceSource source) => _currentlyVisiting.Remove(source);
+
+            public void ResetCurrentlyVisiting() => _currentlyVisiting = new();
         }
 
         private string? PrintResolutionPath()
@@ -616,6 +617,26 @@ namespace StrongInject.Generator.Visitors
                 target,
                 registeredType,
                 type);
+        }
+
+        private Diagnostic WarnCircularDependencyWithInterveningDelegateParameter(Location location, ITypeSymbol target, ITypeSymbol delegateType, List<DelegateParameter> interveningDelegateParameters)
+        {
+            return Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    "SI1107",
+                    "Registration cannot be used to resolve instance of Type as the required type arguments do not satisfy the generic constraints",
+                    "Warning while resolving dependencies for '{0}': Delegate '{1}' has a circular dependency on itself, which means it will not see the updated values for types '{2}' passed as parameters to intervening delegates '{3}'.",
+                    "StrongInject",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true,
+                    PrintResolutionPath()),
+                location,
+                target,
+                delegateType,
+                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.Type)),
+#pragma warning disable RS1024
+                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.ContainingType).Distinct(SymbolEqualityComparer.Default)));
+#pragma warning restore RS1024
         }
 
         private Diagnostic InfoNoSourceForOptionalParameter(Location location, ITypeSymbol target, ITypeSymbol type)

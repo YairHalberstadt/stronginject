@@ -13,7 +13,7 @@ namespace StrongInject.Generator.Visitors
         public static List<InstanceSource> CalculateVariables(InstanceSource source, InstanceSourcesScope currentScope, InstanceSourcesScope containerScope)
         {
             var visitor = new SingleInstanceVariablesToCreateEarlyVisitor(containerScope);
-            visitor.VisitCore(source, new State { InstanceSourcesScope = currentScope });
+            visitor.VisitCore(source, new State(currentScope));
             return visitor._singleInstanceVariablesToCreateEarly;
         }
 
