@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.Collections.Generic;
 
 namespace StrongInject.Generator
 {
@@ -145,6 +146,31 @@ namespace StrongInject.Generator
                 Helpers: helpers);
 
             return true;
+        }
+        
+        public IEnumerable<INamedTypeSymbol> GetClassAttributes()
+        {
+            return new[]
+            { 
+                RegisterAttribute,
+                RegisterAttribute_1,
+                RegisterAttribute_2,
+                RegisterDecoratorAttribute,
+                RegisterDecoratorAttribute_2,
+                RegisterFactoryAttribute,
+                RegisterModuleAttribute,
+            };
+        }
+
+        public IEnumerable<INamedTypeSymbol> GetMemberAttributes()
+        {
+            return new[]
+            {
+                FactoryAttribute,
+                FactoryOfAttribute,
+                DecoratorFactoryAttribute,
+                InstanceAttribute,
+            };
         }
     }
 }

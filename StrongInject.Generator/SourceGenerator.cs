@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -21,9 +23,12 @@ namespace StrongInject.Generator
                 return;
             }
 
+            var classAttributes = wellKnownTypes.GetClassAttributes();
+            var memberAttributes = wellKnownTypes.GetMemberAttributes();
+            
             var registrationCalculator =
                 new RegistrationCalculator(compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
-
+            
             foreach (var syntaxTree in context.Compilation.SyntaxTrees)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -36,28 +41,18 @@ namespace StrongInject.Generator
                     .Select(x =>
                     {
                         var isContainer = x!.AllInterfaces.Any(x
-                            => x.OriginalDefinition.Equals(wellKnownTypes.IContainer, SymbolEqualityComparer.Default)
-                               || x.OriginalDefinition.Equals(wellKnownTypes.IAsyncContainer,
-                                   SymbolEqualityComparer.Default));
+                            => x.OriginalDefinition.Equals(wellKnownTypes.IContainer)
+                               || x.OriginalDefinition.Equals(wellKnownTypes.IAsyncContainer));
                         return (type: x, isContainer);
                     })
                     .Where(x =>
                         x.isContainer
                         || x.type.GetAttributes().Any(x =>
                             x.AttributeClass is { } attribute &&
-                            (attribute.Equals(wellKnownTypes.RegisterAttribute, SymbolEqualityComparer.Default)
-                             || attribute.Equals(wellKnownTypes.RegisterModuleAttribute, SymbolEqualityComparer.Default)
-                             || attribute.Equals(wellKnownTypes.RegisterFactoryAttribute,
-                                 SymbolEqualityComparer.Default)
-                             || attribute.Equals(wellKnownTypes.RegisterDecoratorAttribute,
-                                 SymbolEqualityComparer.Default)))
+                            classAttributes.Contains(attribute))
                         || x.type.GetMembers().Any(x => x.GetAttributes().Any(x =>
                             x.AttributeClass is { } attribute &&
-                            (attribute.Equals(wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default)
-                             || attribute.Equals(wellKnownTypes.InstanceAttribute, SymbolEqualityComparer.Default)
-                             || attribute.Equals(wellKnownTypes.DecoratorFactoryAttribute,
-                                 SymbolEqualityComparer.Default)
-                             || attribute.Equals(wellKnownTypes.FactoryOfAttribute, SymbolEqualityComparer.Default)))));
+                            memberAttributes.Contains(attribute))));
 
                 foreach (var module in modules)
                 {

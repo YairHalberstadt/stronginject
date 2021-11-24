@@ -52,28 +52,37 @@ namespace StrongInject.Generator.Tests.Unit
                     MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location)!, "System.Runtime.dll")),
                 }),
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true));
+        
+        protected static Compilation CreateCompilationWithStrongInjectReference(string source)
+        {
+            var configuration = typeof(IContainer<>).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()!.Configuration;
+            var location = Path.Join(_solutionFolder.Value, "StrongInject/bin", configuration, "netstandard2.1/StrongInject.dll");
+            var reference = MetadataReference.CreateFromFile(location);
+            return CreateCompilation(source, reference);
+        }
 
         protected static GeneratorDriver CreateDriver(Compilation compilation, params ISourceGenerator[] generators)
             => CSharpGeneratorDriver.Create(generators, parseOptions: (CSharpParseOptions)compilation.SyntaxTrees.First().Options);
 
         protected Compilation RunGeneratorWithStrongInjectReference(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
-            var configuration = typeof(IContainer<>).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()!.Configuration;
-
-            var location = Path.Join(_solutionFolder.Value, "StrongInject/bin", configuration, "netstandard2.1/StrongInject.dll");
-            var reference = MetadataReference.CreateFromFile(location);
-            return RunGenerator(source, out diagnostics, out generatedFiles, reference);
+            var compilation = CreateCompilationWithStrongInjectReference(source);
+            return runGenerator(compilation, out diagnostics, out generatedFiles);
         }
         protected Compilation RunGenerator(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles, params MetadataReference[] metadataReferences)
         {
             var compilation = CreateCompilation(source, metadataReferences);
+            return runGenerator(compilation, out diagnostics, out generatedFiles);
+        }
+        
+        protected Compilation runGenerator(Compilation compilation, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
+        {
             CreateDriver(compilation, new SourceGenerator()).RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out var duplicatedDiagnostics);
             diagnostics = duplicatedDiagnostics.Distinct().ToImmutableArray();
             var generatedTrees = updatedCompilation.SyntaxTrees.Where(x => !compilation.SyntaxTrees.Any(y => y.Equals(x))).ToImmutableArray();
             foreach (var generated in generatedTrees)
             {
-                _outputHelper.WriteLine($@"{generated.FilePath}:
-{generated.GetText()}");
+                _outputHelper.WriteLine($"{generated.FilePath}:\n{generated.GetText()}");
             }
             generatedFiles = generatedTrees.Select(x => x.GetText().ToString()).ToImmutableArray();
             return updatedCompilation;

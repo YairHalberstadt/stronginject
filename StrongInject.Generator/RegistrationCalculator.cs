@@ -38,7 +38,7 @@ namespace StrongInject.Generator
             _cancellationToken = cancellationToken;
         }
 
-        private readonly Dictionary<INamedTypeSymbol, RegistrationData> _registrations = new(SymbolEqualityComparer.Default);
+        private readonly Dictionary<INamedTypeSymbol, RegistrationData> _registrations = new();
         private readonly Compilation _compilation;
         private readonly WellKnownTypes _wellKnownTypes;
         private readonly Action<Diagnostic> _reportDiagnostic;
@@ -50,7 +50,12 @@ namespace StrongInject.Generator
             return new(
                 registrations.NonGenericRegistrations,
                 registrations.GenericRegistrations.Build(_compilation),
-                registrations.NonGenericDecorators.GroupBy(x => x.OfType).ToDictionary(x => x.Key, x => x.Distinct().ToImmutableArray()),
+                registrations.NonGenericDecorators
+                    .GroupBy(
+                        x => x.OfType)
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Distinct().ToImmutableArray()),
                 new GenericDecoratorsResolver(_compilation, registrations.GenericDecorators.Distinct().ToImmutableArray()),
                 _wellKnownTypes);
         }
@@ -78,7 +83,7 @@ namespace StrongInject.Generator
         {
             if (!_registrations.TryGetValue(module, out var registrations))
             {
-                if (!(dependantModules ??= new(SymbolEqualityComparer.Default)).Add(module))
+                if (!(dependantModules ??= new()).Add(module))
                 {
                     _reportDiagnostic(RecursiveModuleRegistration(module, _cancellationToken));
                     return new RegistrationData(
@@ -133,7 +138,7 @@ namespace StrongInject.Generator
         {
             Dictionary<ITypeSymbol, InstanceSources>? importedModuleRegistrations = null;
             foreach (var registerModuleAttribute in module.GetAttributes()
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterModuleAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterModuleAttribute) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -166,8 +171,8 @@ namespace StrongInject.Generator
                 }
                 var exclusionListConstants = exclusionListConstant.Values;
                 var exclusionList = exclusionListConstants.IsDefault
-                    ? new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default)
-                    : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
+                    ? new HashSet<ITypeSymbol>()
+                    : exclusionListConstants.Select(x => x.Value).OfType<INamedTypeSymbol>().ToHashSet<ITypeSymbol>();
 
                 var moduleRegistrations = GetRegistrations(importedModule, dependantModules);
 
@@ -183,7 +188,7 @@ namespace StrongInject.Generator
 
             void AddModuleRegistrations(RegistrationData moduleRegistrations, ISet<ITypeSymbol> exclusionList)
             {
-                importedModuleRegistrations ??= new(SymbolEqualityComparer.Default);
+                importedModuleRegistrations ??= new();
                 foreach (var (type, instanceSources) in moduleRegistrations.NonGenericRegistrations)
                 {
                     if (exclusionList.Contains(type))
@@ -210,7 +215,7 @@ namespace StrongInject.Generator
             RegistrationsToCalculate registrationsToCalculate)
         {
             var attributes = module.GetAttributes();
-            var registrations = new Dictionary<ITypeSymbol, InstanceSources>(SymbolEqualityComparer.Default);
+            var registrations = new Dictionary<ITypeSymbol, InstanceSources>();
             AppendSimpleRegistrations(registrations, genericRegistrations, attributes, module);
             AppendFactoryRegistrations(registrations, attributes, module);
             AppendFactoryMethods(registrations, genericRegistrations, module, registrationsToCalculate);
@@ -228,7 +233,7 @@ namespace StrongInject.Generator
             ITypeSymbol module)
         {
             foreach (var registerAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterAttribute) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -269,7 +274,7 @@ namespace StrongInject.Generator
             }
             
             foreach (var registerAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_1, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_1) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -291,7 +296,7 @@ namespace StrongInject.Generator
             }
             
             foreach (var registerAttribute in moduleAttributes
-                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_2, SymbolEqualityComparer.Default) ?? false)
+                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_2) ?? false)
                          .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -371,7 +376,7 @@ namespace StrongInject.Generator
 
                     if (type.IsUnboundGenericType)
                     {
-                        if (!target.Equals(type, SymbolEqualityComparer.Default))
+                        if (!target.Equals(type))
                         {
                             if (HasEqualNumberOfTypeArguments(type, target))
                             {
@@ -430,8 +435,8 @@ namespace StrongInject.Generator
         private void ReportSuspiciousSimpleRegistrations(INamedTypeSymbol type, AttributeData registerAttribute)
         {
             if (type.AllInterfaces.FirstOrDefault(x 
-                => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default)
-                || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default)) is { } factoryType)
+                => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory)
+                || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory)) is { } factoryType)
             {
                 _reportDiagnostic(WarnSimpleRegistrationImplementingFactory(type, factoryType, registerAttribute.GetLocation(_cancellationToken)));
             }
@@ -440,7 +445,7 @@ namespace StrongInject.Generator
         private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes, ITypeSymbol module)
         {
             foreach (var registerFactoryAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterFactoryAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterFactoryAttribute) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -512,8 +517,8 @@ namespace StrongInject.Generator
 
                 bool any = false;
                 foreach (var factoryType in type.AllInterfaces.Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default)))
+                    => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory)
+                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory)))
                 {
                     any = true;
 
@@ -525,7 +530,7 @@ namespace StrongInject.Generator
                         continue;
                     }
 
-                    bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
+                    bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory);
 
                     var factoryRegistration = new FactorySource(factoryOf, ForwardedInstanceSource.Create(factoryType, registration), factoryTargetScope, isAsync);
 
@@ -673,7 +678,7 @@ namespace StrongInject.Generator
         {
             var attribute = method.GetAttributes().FirstOrDefault(x
                 => x.AttributeClass is { } attribute
-                   && attribute.Equals(_wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default))!;
+                   && attribute.Equals(_wellKnownTypes.FactoryAttribute))!;
 
             if (attribute is not null)
             {
@@ -849,7 +854,7 @@ namespace StrongInject.Generator
         {
             var attributes = method.GetAttributes().Where(x
                 => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.FactoryOfAttribute, SymbolEqualityComparer.Default))!;
+                && attribute.Equals(_wellKnownTypes.FactoryOfAttribute))!;
 
             foreach (var attribute in attributes)
             {
@@ -1006,7 +1011,7 @@ namespace StrongInject.Generator
             var useAsFactory = options.HasFlag(Options.UseAsFactory);
             if (useAsFactory && currentlyVisiting is null)
             {
-                currentlyVisiting = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default) { instanceSource.OfType };
+                currentlyVisiting = new HashSet<ITypeSymbol> { instanceSource.OfType };
             }
 
             if (currentlyVisiting?.Count > 20)
@@ -1064,8 +1069,8 @@ namespace StrongInject.Generator
                 if (useAsFactory)
                 {
                     var type = instanceSource.OfType;
-                    var isAsync = type.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory, SymbolEqualityComparer.Default);
-                    var isFactory = isAsync || type.OriginalDefinition.Equals(_wellKnownTypes.IFactory, SymbolEqualityComparer.Default);
+                    var isAsync = type.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory);
+                    var isFactory = isAsync || type.OriginalDefinition.Equals(_wellKnownTypes.IFactory);
                     if (isFactory)
                     {
                         var scope = (Scope)(((int)options) >> 24);
@@ -1114,7 +1119,7 @@ namespace StrongInject.Generator
         {
             attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
                 => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.InstanceAttribute, SymbolEqualityComparer.Default))!;
+                && attribute.Equals(_wellKnownTypes.InstanceAttribute))!;
             if (attribute is not null)
             {
                 if (fieldOrProperty is IFieldSymbol { Type: var fieldType })
@@ -1149,7 +1154,7 @@ namespace StrongInject.Generator
             {
                 var attribute = method.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.FactoryAttribute, SymbolEqualityComparer.Default));
+                    && attribute.Equals(_wellKnownTypes.FactoryAttribute));
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
@@ -1164,7 +1169,7 @@ namespace StrongInject.Generator
             {
                 var attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.InstanceAttribute, SymbolEqualityComparer.Default));
+                    && attribute.Equals(_wellKnownTypes.InstanceAttribute));
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
@@ -1179,7 +1184,7 @@ namespace StrongInject.Generator
             {
                 var attribute = method.GetAttributes().FirstOrDefault(x
                     => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute, SymbolEqualityComparer.Default));
+                    && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute));
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
@@ -1195,7 +1200,7 @@ namespace StrongInject.Generator
             ITypeSymbol module)
         {
             foreach (var registerDecoratorAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterDecoratorAttribute, SymbolEqualityComparer.Default) ?? false)
+                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterDecoratorAttribute) ?? false)
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -1233,7 +1238,7 @@ namespace StrongInject.Generator
             }
             
             foreach (var registerDecoratorAttribute in moduleAttributes
-                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterDecoratorAttribute_2, SymbolEqualityComparer.Default) ?? false)
+                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterDecoratorAttribute_2) ?? false)
                          .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -1339,7 +1344,7 @@ namespace StrongInject.Generator
                 }
 
                 var decoratedParameters = constructor.Parameters
-                    .Where(x => x.Type.Equals(decoratedParameterType, SymbolEqualityComparer.Default)).ToList();
+                    .Where(x => x.Type.Equals(decoratedParameterType)).ToList();
                 if (decoratedParameters.Count == 0)
                 {
                     _reportDiagnostic(DecoratorDoesNotHaveParameterOfDecoratedType(registerDecoratorAttribute, type,
@@ -1407,7 +1412,7 @@ namespace StrongInject.Generator
         {
             attribute = method.GetAttributes().FirstOrDefault(x
                 => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute, SymbolEqualityComparer.Default))!;
+                && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute))!;
             if (attribute is not null)
             {
                 if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
@@ -1437,7 +1442,7 @@ namespace StrongInject.Generator
                     var isAsync = returnType.IsWellKnownTaskType(_wellKnownTypes, out var taskOfType);
                     var decoratorOfType = isAsync ? taskOfType : returnType;
 
-                    var decoratedParameters = method.Parameters.Where(x => x.Type.Equals(decoratorOfType, SymbolEqualityComparer.Default)).ToList();
+                    var decoratedParameters = method.Parameters.Where(x => x.Type.Equals(decoratorOfType)).ToList();
                     if (decoratedParameters.Count == 0)
                     {
                         _reportDiagnostic(DecoratorFactoryMethodDoesNotHaveParameterOfDecoratedType(attribute, method, decoratorOfType, _cancellationToken));

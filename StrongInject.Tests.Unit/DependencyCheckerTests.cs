@@ -43,7 +43,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -90,7 +90,7 @@ public class D
 }
 public class E {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
             var registrations = new RegistrationCalculator(comp, wellKnownTypes, x => Assert.False(true, x.ToString()), default).GetModuleRegistrations(comp.AssertGetTypeByMetadataName("Container"));
@@ -139,7 +139,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
@@ -193,7 +193,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
@@ -244,7 +244,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
@@ -294,7 +294,7 @@ public class D
     public D(C c){}
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
@@ -342,7 +342,7 @@ public class D
 {
 }
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));
@@ -395,7 +395,7 @@ public class C {}
 public class D {}
 public class E {}
 ";
-            Compilation comp = CreateCompilation(userSource, MetadataReference.CreateFromFile(typeof(IAsyncContainer<>).Assembly.Location));
+            Compilation comp = CreateCompilationWithStrongInjectReference(userSource);
             Assert.Empty(comp.GetDiagnostics());
             var diagnostics = new List<Diagnostic>();
             Assert.True(WellKnownTypes.TryCreate(comp, x => Assert.False(true, x.ToString()), out var wellKnownTypes));

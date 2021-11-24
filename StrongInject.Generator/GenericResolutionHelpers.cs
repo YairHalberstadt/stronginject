@@ -102,7 +102,7 @@ namespace StrongInject.Generator
                             }
 
                             if (callingConvention != toConstructCallingConvention
-                                || !unmanagedCallingConventionTypes.SequenceEqual<INamedTypeSymbol, INamedTypeSymbol>(toConstructUnmanagedCallingConventionTypes, SymbolEqualityComparer.Default)
+                                || !unmanagedCallingConventionTypes.SequenceEqual(toConstructUnmanagedCallingConventionTypes)
                                 || refKind != toConstructRefKind
                                 || parameters.Length != toConstructParameters.Length
                                 || !CanConstructFrom(toConstructReturnType, returnType, method, ref typeArguments))

@@ -151,9 +151,7 @@ namespace StrongInject.Generator.Visitors
         public override void Visit(DelegateSource delegateSource, State state)
         {
             var (delegateType, returnType, delegateParameters, isAsync) = delegateSource;
-#pragma warning disable RS1024 // Compare symbols correctly
-            foreach (var paramsWithType in delegateParameters.GroupBy(x => x.Type, (IEqualityComparer<ITypeSymbol>)SymbolEqualityComparer.Default))
-#pragma warning restore RS1024 // Compare symbols correctly
+            foreach (var paramsWithType in delegateParameters.GroupBy(x => x.Type))
             {
                 if (paramsWithType.Count() > 1)
                 {
@@ -180,7 +178,7 @@ namespace StrongInject.Generator.Visitors
                 _reportDiagnostic(WarnDelegateReturnTypeIsSingleInstance(_location, _target, delegateType, returnType));
             }
 
-            var usedByDelegateParams = state.UsedParams ??= new(SymbolEqualityComparer.Default);
+            var usedByDelegateParams = state.UsedParams ??= new();
             state.IsScopeAsync = isAsync;
             VisitCore(returnTypeSource, state);
 
@@ -634,9 +632,7 @@ namespace StrongInject.Generator.Visitors
                 target,
                 delegateType,
                 string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.Type)),
-#pragma warning disable RS1024
-                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.ContainingType).Distinct(SymbolEqualityComparer.Default)));
-#pragma warning restore RS1024
+                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.ContainingType).Distinct()));
         }
 
         private Diagnostic InfoNoSourceForOptionalParameter(Location location, ITypeSymbol target, ITypeSymbol type)

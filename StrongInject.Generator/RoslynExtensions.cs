@@ -174,8 +174,8 @@ namespace StrongInject.Generator
 
         public static bool IsWellKnownTaskType(this ITypeSymbol type, WellKnownTypes wellKnownTypes, out ITypeSymbol taskOfType)
         {
-            if (type.OriginalDefinition.Equals(wellKnownTypes.Task1, SymbolEqualityComparer.Default)
-                || type.OriginalDefinition.Equals(wellKnownTypes.ValueTask1, SymbolEqualityComparer.Default))
+            if (type.OriginalDefinition.Equals(wellKnownTypes.Task1)
+                || type.OriginalDefinition.Equals(wellKnownTypes.ValueTask1))
             {
                 taskOfType = ((INamedTypeSymbol)type).TypeArguments[0];
                 return true;
@@ -186,12 +186,12 @@ namespace StrongInject.Generator
 
         public static bool IsWellKnownOwnedType(this ITypeSymbol type, WellKnownTypes wellKnownTypes, out bool isAsync, out ITypeSymbol valueType)
         {
-            isAsync = type.OriginalDefinition.Equals(wellKnownTypes.AsyncOwned, SymbolEqualityComparer.Default)
-                || type.OriginalDefinition.Equals(wellKnownTypes.IAsyncOwned, SymbolEqualityComparer.Default);
+            isAsync = type.OriginalDefinition.Equals(wellKnownTypes.AsyncOwned)
+                || type.OriginalDefinition.Equals(wellKnownTypes.IAsyncOwned);
 
             if (isAsync
-                || type.OriginalDefinition.Equals(wellKnownTypes.Owned, SymbolEqualityComparer.Default)
-                || type.OriginalDefinition.Equals(wellKnownTypes.IOwned, SymbolEqualityComparer.Default))
+                || type.OriginalDefinition.Equals(wellKnownTypes.Owned)
+                || type.OriginalDefinition.Equals(wellKnownTypes.IOwned))
             {
                 valueType = ((INamedTypeSymbol)type).TypeArguments[0];
                 return true;

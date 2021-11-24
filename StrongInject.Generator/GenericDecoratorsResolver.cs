@@ -15,7 +15,7 @@ namespace StrongInject.Generator
 
         public GenericDecoratorsResolver(Compilation compilation, IEnumerable<DecoratorSource> decoratorFactoryMethods)
         {
-            _namedTypeDecoratorSources = new Dictionary<INamedTypeSymbol, List<DecoratorSource>>(SymbolEqualityComparer.Default);
+            _namedTypeDecoratorSources = new Dictionary<INamedTypeSymbol, List<DecoratorSource>>();
             _arrayDecoratorSources = new List<DecoratorSource>();
             _typeParameterDecoratorSources = new List<DecoratorSource>();
 
@@ -55,7 +55,7 @@ namespace StrongInject.Generator
                                 var constructed = decoratorRegistration.Type.Construct(namedType.TypeArguments.ToArray());
                                 var originalConstructor = decoratorRegistration.Constructor;
                                 var constructor = constructed.InstanceConstructors.First(
-                                    x => SymbolEqualityComparer.Default.Equals(x.OriginalDefinition, originalConstructor));
+                                    x => x.OriginalDefinition.Equals(originalConstructor));
 
                                 yield return decoratorRegistration with
                                 {

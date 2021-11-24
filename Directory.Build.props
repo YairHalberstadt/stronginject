@@ -3,7 +3,7 @@
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<NoWarn>CS1591</NoWarn>
+		<NoWarn>CS1591;RS1024</NoWarn>
 		<WarningsNotAsErrors>AD0001</WarningsNotAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>

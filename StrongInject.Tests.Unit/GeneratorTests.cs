@@ -2808,81 +2808,6 @@ partial class Container
         }
 
         [Fact]
-        public void ReportMissingTypes()
-        {
-            string userSource = @"";
-            var comp = RunGenerator(userSource, out var generatorDiagnostics, out _);
-            generatorDiagnostics.Verify(
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IContainer`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IAsyncContainer`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IFactory`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IAsyncFactory`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IRequiresInitialization'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IRequiresAsyncInitialization'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IOwned`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.Owned`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.IAsyncOwned`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.AsyncOwned`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterAttribute`1'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterAttribute`2'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterModuleAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterFactoryAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterDecoratorAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.RegisterDecoratorAttribute`2'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.FactoryAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.DecoratorFactoryAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.FactoryOfAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.InstanceAttribute'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1),
-                // (1,1): Error SI0201: Missing Type 'StrongInject.Helpers'. Are you missing an assembly reference?
-                // Missing Type.SI0201
-                new DiagnosticResult("SI0201", @"<UNKNOWN>", DiagnosticSeverity.Error).WithLocation(1, 1));
-            comp.GetDiagnostics().Verify();
-        }
-
-        [Fact]
         public void ErrorIfInstanceUsedAsFactoryDuplicatesContainerRegistration()
         {
             string userSource = @"
@@ -28831,6 +28756,177 @@ partial class Container
         });
     }
 }");
-        } 
+        }
+        
+        [Fact]
+        public void TestNullableEnabledRegistrationCode()
+        {
+            string userSource = @"
+using StrongInject;
+
+[Register<A>]
+#nullable enable
+[Register<B>]
+[Register<C>(Scope.SingleInstance)]
+partial class Container : IContainer<A?>, IContainer<B?>, IContainer<C>
+{
+}
+
+record A(B b, C? c);
+#nullable disable
+record B(C c);
+record C();";
+            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+            generatorDiagnostics.Verify();
+            comp.GetDiagnostics().Verify();
+            var file = Assert.Single(generated);
+            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::C _cField0;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::C GetCField0()
+    {
+        if (!object.ReferenceEquals(_cField0, null))
+            return _cField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::C c_0_0;
+            c_0_0 = new global::C();
+            this._cField0 = c_0_0;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _cField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::C c_0_2;
+        global::B b_0_1;
+        global::A a_0_0;
+        c_0_2 = GetCField0();
+        b_0_1 = new global::B(c: c_0_2);
+        a_0_0 = new global::A(b: b_0_1, c: c_0_2);
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::C c_0_2;
+        global::B b_0_1;
+        global::A a_0_0;
+        c_0_2 = GetCField0();
+        b_0_1 = new global::B(c: c_0_2);
+        a_0_0 = new global::A(b: b_0_1, c: c_0_2);
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::B>.Run<TResult, TParam>(global::System.Func<global::B, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::C c_0_1;
+        global::B b_0_0;
+        c_0_1 = GetCField0();
+        b_0_0 = new global::B(c: c_0_1);
+        TResult result;
+        try
+        {
+            result = func(b_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::B> global::StrongInject.IContainer<global::B>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::C c_0_1;
+        global::B b_0_0;
+        c_0_1 = GetCField0();
+        b_0_0 = new global::B(c: c_0_1);
+        return new global::StrongInject.Owned<global::B>(b_0_0, () =>
+        {
+        });
+    }
+
+    TResult global::StrongInject.IContainer<global::C>.Run<TResult, TParam>(global::System.Func<global::C, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::C c_0_0;
+        c_0_0 = GetCField0();
+        TResult result;
+        try
+        {
+            result = func(c_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::C> global::StrongInject.IContainer<global::C>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::C c_0_0;
+        c_0_0 = GetCField0();
+        return new global::StrongInject.Owned<global::C>(c_0_0, () =>
+        {
+        });
+    }
+}");
+        }
     }
 }

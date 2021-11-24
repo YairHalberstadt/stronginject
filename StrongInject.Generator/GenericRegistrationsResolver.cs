@@ -118,7 +118,7 @@ namespace StrongInject.Generator
 
                 static (Dictionary<INamedTypeSymbol, Bucket> namedTypeBuckets, Bucket? otherTypesBucket, Bucket? typeParameterBucket) Partition(Builder builder, Compilation compilation)
                 {
-                    Dictionary<INamedTypeSymbol, BucketBuilder> namedTypeBucketBuilders = new(SymbolEqualityComparer.Default);
+                    Dictionary<INamedTypeSymbol, BucketBuilder> namedTypeBucketBuilders = new();
                     BucketBuilder? otherTypesBucketBuilder = null;
                     BucketBuilder? typeParameterBucketBuilder = null;
 
@@ -320,11 +320,11 @@ namespace StrongInject.Generator
 
                 foreach (var registration in _registrations)
                 {
-                    if (registration.Type.OriginalDefinition.Equals(type.OriginalDefinition, SymbolEqualityComparer.Default))
+                    if (registration.Type.OriginalDefinition.Equals(type.OriginalDefinition))
                     {
                         var originalConstructor = registration.Constructor.OriginalDefinition;
                         var constructor = ((INamedTypeSymbol)type).InstanceConstructors.First(
-                            x => SymbolEqualityComparer.Default.Equals(x.OriginalDefinition, originalConstructor));
+                            x => x.OriginalDefinition.Equals(originalConstructor));
 
                         var updatedRegistration = registration with
                         {
@@ -346,7 +346,7 @@ namespace StrongInject.Generator
                 
                 foreach (var forwardedInstanceSource in _forwardedInstanceSources)
                 {
-                    if (forwardedInstanceSource.AsType.OriginalDefinition.Equals(type.OriginalDefinition, SymbolEqualityComparer.Default))
+                    if (forwardedInstanceSource.AsType.OriginalDefinition.Equals(type.OriginalDefinition))
                     {
                         if (forwardedInstanceSource.Underlying is Registration registration)
                         {
@@ -357,7 +357,7 @@ namespace StrongInject.Generator
                                 var constructedRegistrationType =
                                     registration.Type.OriginalDefinition.Construct(typeArguments.ToArray());
                                 var constructor = constructedRegistrationType.InstanceConstructors.First(
-                                    x => SymbolEqualityComparer.Default.Equals(x.OriginalDefinition, originalConstructor));
+                                    x => x.OriginalDefinition.Equals(originalConstructor));
 
                                 var updatedRegistration = registration with
                                 {
@@ -460,7 +460,7 @@ namespace StrongInject.Generator
 
             private static bool IsRelevant(FactoryOfMethod factoryOfMethod, ITypeSymbol toConstruct)
             {
-                return factoryOfMethod.FactoryOfType.OriginalDefinition.Equals(toConstruct.OriginalDefinition, SymbolEqualityComparer.Default);
+                return factoryOfMethod.FactoryOfType.OriginalDefinition.Equals(toConstruct.OriginalDefinition);
             }
 
             private bool CanConstructFromGenericFactoryMethod(ITypeSymbol toConstruct, FactoryMethod factoryMethod, out FactoryMethod constructedFactoryMethod, out bool constraintsDoNotMatch)
