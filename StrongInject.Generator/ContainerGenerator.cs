@@ -53,9 +53,9 @@ namespace StrongInject.Generator
 
             _containerInterfaces = _container.AllInterfaces
                 .Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.IContainer, SymbolEqualityComparer.Default)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncContainer, SymbolEqualityComparer.Default))
-                .Select(x => (containerInterface: x, isAsync: x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncContainer, SymbolEqualityComparer.Default)))
+                    => x.OriginalDefinition.Equals(_wellKnownTypes.IContainer)
+                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncContainer))
+                .Select(x => (containerInterface: x, isAsync: x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncContainer)))
                 .ToList();
 
             foreach (var (_, isAsync) in _containerInterfaces)
@@ -422,9 +422,9 @@ namespace StrongInject.Generator
                                 {
                                     FactorySource => true,
                                     FactoryMethod { Method: { ReturnType: var returnType } }
-                                        => returnType.OriginalDefinition.Equals(_wellKnownTypes.ValueTask1, SymbolEqualityComparer.Default),
+                                        => returnType.OriginalDefinition.Equals(_wellKnownTypes.ValueTask1),
                                     WrappedDecoratorInstanceSource { Decorator: DecoratorFactoryMethod { Method: { ReturnType: var returnType } } }
-                                        => returnType.OriginalDefinition.Equals(_wellKnownTypes.ValueTask1, SymbolEqualityComparer.Default),
+                                        => returnType.OriginalDefinition.Equals(_wellKnownTypes.ValueTask1),
                                     _ => throw new NotImplementedException(source.GetType().ToString())
                                 },
                                 _ => throw new NotImplementedException(operation.Statement.GetType().ToString()),

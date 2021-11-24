@@ -200,7 +200,7 @@ namespace StrongInject.Generator
                 case DelegateSource { Parameters: var parameters }:
                     var newDepth = Depth + 1; 
                     var delegateParameters = _delegateParameters is null
-                        ? new Dictionary<ITypeSymbol, DelegateParameter>(SymbolEqualityComparer.Default)
+                        ? new Dictionary<ITypeSymbol, DelegateParameter>()
                         : new Dictionary<ITypeSymbol, DelegateParameter>(_delegateParameters);
                     foreach (var param in parameters)
                     {
