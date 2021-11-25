@@ -84,7 +84,7 @@ using StrongInject;
 public class MyService {}
 public class MyApp { public MyApp(MyService myService) {} }
 
-[Register<MyApp>]
+[Register(typeof(MyApp))]
 public partial class MyContainer : IContainer<MyApp> {}
 ```
 
@@ -98,8 +98,8 @@ using StrongInject;
 public class MyService {}
 public class MyApp { public MyApp(MyService myService) {} }
 
-[Register<MyApp>]
-[Register<MyService>]
+[Register(typeof(MyApp))]
+[Register(typeof(MyService))]
 public partial class MyContainer : IContainer<MyApp> {}
 ```
 
@@ -138,7 +138,7 @@ using StrongInject;
 
 public class A {}
 
-[Register<A>]
+[Register(typeof(A))]
 public partial class Container : IContainer<A> {}
 ```
 
@@ -152,14 +152,16 @@ using StrongInject;
 public class A {}
 public class B {}
 
-[Register<A>]
-[Register<B>]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
 ### Using a container
 
 There are two ways to use a container - using the `Run` methods or the `Resolve` methods.
+
+Either way you'll find it easier if you use the extension methods defined in `StrongInject.ContainerExtensions` rather than those defined directly on the container, so make sure you're `using StrongInject;`
 
 The `Run` method on `IContainer<T>` takes a `Func<T, TResult>`. It resolves an instance of `T`, calls the func, disposes of any dependencies which require disposal, and then returns the result of the func. This ensures that you can't forget to dispose any dependencies, but you must make sure not to leak those objects out of the delegate. There are also overloads that allow you to pass in a void returning lambda.
 
@@ -178,8 +180,6 @@ In some cases this isn't flexible enough, for example if you want to use StrongI
 For these cases you can call the `Resolve` method. This returns an `Owned<T>` which is essentially a disposable wrapper over `T`. Make sure you call `Owned<T>.Dispose` once you're done using `Owned<T>.Value`.
 
 ```csharp
-using StrongInject;
-
 public class Program
 {
   public static void Main()
@@ -203,16 +203,14 @@ using StrongInject;
 public class A {}
 public class B {}
 
-[Register<A>]
-[Register<B>]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<A>, IContainer<B> {}
 ```
 
-If you're not on C# 10 you can use the non-generic versions of the RegisterAttribute: `[Register(typeof(A))]`
-
 All the dependencies of the container type parameter must be registered or you will get a compile time error.
 
-By default `[Register<A>]` will register a type `A` as itself. You can however register a type as any base type or implemented interface:
+By default `[Register(typeof(A))]` will register a type `A` as itself. You can however register a type as any base type or implemented interface:
 
 ```csharp
 using StrongInject;
@@ -229,7 +227,7 @@ public partial class Container : IContainer<BaseBase> {}
 
 If you do so, you will have to explicitly also register it as itself if that is desired: `[Register(typeof(A), typeof(A), typeof(IA), typeof(IBase), typeof(BaseBase))]`
 
-If you're registering a type as a single service, you can use the generic version of the attribute: `[Register<A, IA>]`
+If you're on C# preview language version a type, you can use the generic versions of the attribute: `[Register<A>]` and `[Register<A, IA>]`.
 
 If there is a single public non-parameterless constructor, StrongInject will use that to construct the type. If there is no public non-parameterless constructor StrongInject will use the parameterless constructor if it exists and is public. Else it will report an error.
 
@@ -258,8 +256,8 @@ public class A {}
 public interface IB {}
 public class B : IB {}
 
-[Register<A>(Scope.SingleInstance)]
-[Register<B, IB>(Scope.InstancePerResolution)]
+[Register(typeof(A), Scope.SingleInstance)]
+[Register(typeof(B), Scope.InstancePerResolution, typeof(IB))]
 public partial class Container : IContainer<A>, IContainer<IB> {}
 ```
 
@@ -292,7 +290,7 @@ using StrongInject;
 
 public class A {}
 
-[Register<A>()]
+[Register(typeof(A))]
 public class Module {}
 
 [RegisterModule(typeof(Module))]
@@ -319,7 +317,7 @@ public class A
     public A(Dictionary<string, object> configuration){}
 }
 
-[Register<A>()]
+[Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
     [Instance] Dictionary<string, object> _configuration;
@@ -343,7 +341,7 @@ public class StringEqualityComparerModule
     [Instance] public static IEqualityComparer<string> StringEqualityComparer = StringComparer.CurrentCultureIgnoreCase;
 }
 
-[Register<A>]
+[Register(typeof(A))]
 [RegisterModule(typeof(StringEqualityComparerModule))]
 public partial class Container : IContainer<A>
 {
@@ -366,7 +364,7 @@ public class StringEqualityComparerModule
     [Instance(Options.AsImplementedInterfaces)] public static StringComparer StringEqualityComparer = StringComparer.CurrentCultureIgnoreCase;
 }
 
-[Register<A>]
+[Register(typeof(A))]
 [RegisterModule(typeof(StringEqualityComparerModule))]
 public partial class Container : IContainer<A>
 {
@@ -386,8 +384,8 @@ public interface IInterface {}
 public class A : IInterface {}
 public class B : IInterface {}
 
-[Register<A>]
-[Register<B>]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<IInterface[]>
 {
     [Factory] private IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
@@ -410,8 +408,8 @@ public class Module
     [Factory] public static IInterface[] CreateInterfaceArray(A a, B b) => new IInterface[] { a, b };
 }
 
-[Register<A>]
-[Register<B>]
+[Register(typeof(A))]
+[Register(typeof(B))]
 [RegisterModule(typeof(Module))]
 public partial class Container : IContainer<IInterface[]>
 {
@@ -447,8 +445,8 @@ public record InterfaceArrayFactory(A A, B B) : IFactory<IInterface[]>
     }
 }
 
-[Register<A>]
-[Register<B>]
+[Register(typeof(A))]
+[Register(typeof(B))]
 [RegisterFactory(typeof(InterfaceArrayFactory))]
 public partial class Container : IContainer<IInterface[]> { }
 ```
@@ -500,7 +498,7 @@ Here `GetService` will only be used to resolve `ILogger<T>` and `IConfiguration`
 
 A decorator is a type which exposes a service by wrapping an underlying instance of the same service. Calls may pass straight through to the underlying service, or may be intercepted and custom behaviour applied. See https://en.wikipedia.org/wiki/Decorator_pattern.
 
-You can register a type as a decorator using the `[RegisterDecorator<TDecorator, TDecorated>]` attribute (if you're not on C# 10 there's a non-generic version of this attribute which accepts types instead).
+You can register a type as a decorator using the `[RegisterDecorator(type, decoratedType)]` attribute. (If you're on the preview language version, you can use the generic `[RegisterDecorator<TDecorator, TDecorated>]`.)
 
 Here is an example of how you could time how long a call took using the decorator pattern and StrongInject.
 
@@ -534,8 +532,8 @@ public class ServiceTimingDecorator : IService
     }
 }
 
-[Register<Service, IService>]
-[RegisterDecorator<ServiceTimingDecorator, IService>]
+[Register(typeof(Service), typeof(IService))]
+[RegisterDecorator(typeof(ServiceTimingDecorator), typeof(IService))]
 public class Container : IContainer<IService> {}
 ```
 
@@ -550,7 +548,7 @@ Instances provided by [delegate parameters](#delegate-support) are never decorat
 You can also define decorator factory methods, and even generic decorator factory methods via the `[DecoratorFactoryAttribute]`:
 
 ```csharp
-[Register<Service, IService>]
+[Register(typeof(Service), typeof(IService))]
 public class Container : IContainer<IService>
 {
     [DecoratorFactory] IService CreateDecorator(IService service) => new ServiceTimingDecorator(service);
@@ -614,8 +612,8 @@ public class Service2 : IService2
     }
 }
 
-[Register<Service1, IService1>]
-[Register<Service2, IService2>]
+[Register(typeof(Service1), typeof(IService1))]
+[Register(typeof(Service2), typeof(IService2))]
 public partial class Container : IContainer<IService1>, IContainer<IService2>
 {
     private readonly IInterceptor _interceptor = new Interceptor();
@@ -680,7 +678,7 @@ public class A
 
 public class Configuration {}
 
-[Register<A>]
+[Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
     [Instance] Configuration _configuration;
@@ -697,8 +695,8 @@ public interface IInterface { }
 public class A : IInterface { }
 public class B : IInterface { }
 
-[Register<A>]
-[Register<B>]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public partial class Container : IContainer<IInterface>
 {
     private readonly bool _useB;
@@ -738,7 +736,7 @@ public class AutofacFactory<T>(Autofac.IContainer autofacContainer) : IFactory<T
     }
 }
 
-[Register<A>]
+[Register(typeof(A))]
 public partial class Container : IContainer<A>
 {
     [Instance(Options.AsImplementedInterfacesAndUseAsFactory)] private readonly AutofacFactory<B> _autofacFactory;
@@ -785,8 +783,8 @@ public class A
 
 public class B{}
 
-[Register<A>]
-[Register<B>]
+[Register(typeof(A))]
+[Register(typeof(B))]
 public class Container : IContainer<A> {}
 ```
 
@@ -810,8 +808,8 @@ public class Handler
   public Handler(bool shouldFrob) => ...
 }
 
-[Register<Server>]
-[Register<Handler>]
+[Register(typeof(Server))]
+[Register(typeof(Handler))]
 public class Container : IContainer<Server> {}
 ```
 
@@ -836,8 +834,8 @@ public class Handler : IRequiresAsyncInitialization
   public async ValueTask InitializeAsync() => ...
 }
 
-[Register<Server>]
-[Register<Handler>]
+[Register(typeof(Server))]
+[Register(typeof(Handler))]
 public class Container : IContainer<Server> {}
 ```
 
@@ -858,8 +856,8 @@ using StrongInject;
 using System;
 using System.Threading.Tasks;
 
-[Register<SomeViewModel>]
-[Register<SomeDbContext>]
+[Register(typeof(SomeViewModel))]
+[Register(typeof(SomeDbContext))]
 public partial class Container : IContainer<SomeViewModel>
 {
     [Factory]
@@ -979,7 +977,7 @@ public class PasswordChecker : IRequiresAsyncInitialization, IAsyncDisposable
     }
 }
 
-[Register<PasswordChecker>(Scope.SingleInstance)]
+[Register(typeof(PasswordChecker), Scope.SingleInstance)]
 public partial class Container : IAsyncContainer<PasswordChecker>
 {
     private readonly IDb _db;
@@ -1024,8 +1022,8 @@ public class A : IInterface {}
 public class B : IInterface {}
 public interface IInterface {}
 
-[Register<A, IInterface>]
-[Register<B, IInterface>]
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(B), typeof(IInterface))]
 public class Container : IContainer<IInterface[]>
 ```
 
@@ -1039,8 +1037,8 @@ Note that duplicate registrations will be deduplicated, so in the following case
 public class A : IInterface {}
 public interface IInterface {}
 
-[Register<A, IInterface>]
-[Register<A, IInterface>]
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(A), typeof(IInterface))]
 public class Container : IContainer<IInterface[]>
 ```
 
@@ -1050,8 +1048,8 @@ The array will contain 1 item, but in this case:
 public class A : IInterface {}
 public interface IInterface {}
 
-[Register<A, IInterface>]
-[Register<A, IInterface>(Scope.SingleInstance)]
+[Register(typeof(A), typeof(IInterface))]
+[Register(typeof(A), Scope.SingleInstance, typeof(IInterface))]
 public class Container : IContainer<IInterface[]>
 ```
 
@@ -1067,7 +1065,7 @@ An example of where this can be useful is for providing a default instance of an
 public class DefaultImplementation : IInterface {}
 public interface IInterface {}
 
-[Register<DefaultImplementation>]
+[Register(typeof(DefaultImplementation))]
 public class Module
 {
   [Decorator] GetIInterface(IInterface? impl = null, DefaultImplementation defaultImpl) => impl ?? defaultImpl;
