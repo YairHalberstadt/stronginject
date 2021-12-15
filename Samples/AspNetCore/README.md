@@ -10,7 +10,7 @@ The users controller is reached at https://localhost:44383/users and returns a l
 
 ## Learning Points
 
-This app demonstrates how to integrate StrongInject with Microsoft.Extensions.DependencyInjection using the StrongInject.Extensions.DependencyInjection package.
+This app demonstrates how to integrate StrongInject with Microsoft.Extensions.DependencyInjection using the StrongInject.Extensions.DependencyInjection package.AspNetCore.
 
 It also demonstrates a number of other key features of StrongInject:
 
