@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30218.91
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject", "StrongInject\StrongInject.csproj", "{90BC5444-D833-4B63-9BE9-E974B23C4CA4}"
 EndProject
@@ -42,7 +42,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Samples.Xamari
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Samples.Wpf", "Samples\Wpf\StrongInject.Samples.Wpf.csproj", "{D05A0DBE-B2E8-48D7-A8D6-75DDF9F8EFB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Generator", "StrongInject.Generator\StrongInject.Generator.csproj", "{1684B68F-699F-457F-8891-99DC2569420B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrongInject.Generator", "StrongInject.Generator\StrongInject.Generator.csproj", "{1684B68F-699F-457F-8891-99DC2569420B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrongInject.Extensions.DependencyInjection.AspNetCore", "StrongInject.Extensions.DependencyInjection.AspNetCore\StrongInject.Extensions.DependencyInjection.AspNetCore.csproj", "{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -661,6 +663,7 @@ Global
 		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x64.Build.0 = Release|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x86.ActiveCfg = Release|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Release|x86.Build.0 = Release|Any CPU
+		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|Any CPU.ActiveCfg = Wpf|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhone.ActiveCfg = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhone.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|iPhoneSimulator.ActiveCfg = Debug|Any CPU
@@ -669,7 +672,56 @@ Global
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x64.Build.0 = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x86.ActiveCfg = Debug|Any CPU
 		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|x86.Build.0 = Debug|Any CPU
-		{1684B68F-699F-457F-8891-99DC2569420B}.Wpf|Any CPU.ActiveCfg = Wpf|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|Any CPU.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|iPhone.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|iPhone.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|x64.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|x64.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|x86.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.All|x86.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|Any CPU.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|iPhone.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|iPhone.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|x64.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|x64.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|x86.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.AndroidApp|x86.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|x64.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Debug|x86.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|iPhone.Build.0 = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|x64.ActiveCfg = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|x64.Build.0 = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|x86.ActiveCfg = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Release|x86.Build.0 = Release|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|Any CPU.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|iPhone.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|iPhone.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|x64.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|x64.Build.0 = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|x86.ActiveCfg = Debug|Any CPU
+		{E0D8491B-FF17-48B1-B79B-E5B539E79DF6}.Wpf|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

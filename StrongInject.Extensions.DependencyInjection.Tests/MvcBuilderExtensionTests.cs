@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StrongInject.Extensions.DependencyInjection.AspNetCore;
 using System;
 using System.Threading.Tasks;
 using Xunit;
