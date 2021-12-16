@@ -11,14 +11,6 @@ on:
         description: Should this be a release or a preview package for Stronginject
         required: true
         default: 'false'
-      is_stronginject_extensions_dependencyinjection_release:
-        description: Should this be a release or a preview package for Stronginject.Extensions.DependencyInjection
-        required: true
-        default: 'false'
-      is_stronginject_extensions_dependencyinjection_aspnetcore_release:
-        description: Should this be a release or a preview package for Stronginject.Extensions.DependencyInjection.AspNetCore
-        required: true
-        default: 'false'
 
 jobs:
   build-test-push-release:
@@ -46,23 +38,14 @@ jobs:
     
     - name: Pack Preview StrongInject
       run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+           dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+           dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
       if: github.event.inputs.is_stronginject_release != 'true'
-    - name: Pack Preview StrongInject.Extensions.DependencyInjection
-      run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-      if: github.event.inputs.is_stronginject_extensions_dependencyinjection_release != 'true'
-    - name: Pack Release StrongInject.Extensions.DependencyInjection.AspNetCore
-      run: dotnet pack StrongInject.Extensions.DependencyInjection.AspNetCore/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out
-      if: github.event.inputs.is_stronginject_extensions_dependencyinjection_aspnetcore_release != 'true'
     - name: Pack Release StrongInject
       run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out
+           dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out
+           dotnet pack StrongInject.Extensions.DependencyInjection.AspNetCore/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out
       if: github.event.inputs.is_stronginject_release == 'true'
-    - name: Pack Release StrongInject.Extensions.DependencyInjection
-      run: dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out
-      if: github.event.inputs.is_stronginject_extensions_dependencyinjection_release == 'true'
-    - name: Pack Release StrongInject.Extensions.DependencyInjection.AspNetCore
-      run: dotnet pack StrongInject.Extensions.DependencyInjection.AspNetCore/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out
-      if: github.event.inputs.is_stronginject_extensions_dependencyinjection_aspnetcore_release != 'true'
-    
     - name: Push
       if: ${{ success() && github.ref == 'refs/heads/main' }}
       run: |
