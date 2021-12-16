@@ -37,14 +37,16 @@ jobs:
         format: YYYYMMDD-HHmmSS
     
     - name: Pack Preview StrongInject
-      run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-           dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-           dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+      run: |
+        dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+        dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+        dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
       if: github.event.inputs.is_stronginject_release != 'true'
     - name: Pack Release StrongInject
-      run: dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out
-           dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out
-           dotnet pack StrongInject.Extensions.DependencyInjection.AspNetCore/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out
+      run: |
+        dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out
+        dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out
+        dotnet pack StrongInject.Extensions.DependencyInjection.AspNetCore/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out
       if: github.event.inputs.is_stronginject_release == 'true'
     - name: Push
       if: ${{ success() && github.ref == 'refs/heads/main' }}
