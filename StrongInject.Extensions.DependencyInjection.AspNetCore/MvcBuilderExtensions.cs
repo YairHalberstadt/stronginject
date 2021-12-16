@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace StrongInject.Extensions.DependencyInjection
+namespace StrongInject.Extensions.DependencyInjection.AspNetCore
 {
     public static class MvcBuilderExtensions
     {
