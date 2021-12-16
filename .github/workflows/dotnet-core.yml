@@ -40,7 +40,7 @@ jobs:
       run: |
         dotnet pack StrongInject/StrongInject.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
         dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
-        dotnet pack StrongInject.Extensions.DependencyInjection/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
+        dotnet pack StrongInject.Extensions.DependencyInjection.AspNetCore/StrongInject.Extensions.DependencyInjection.AspNetCore.csproj -c Release --include-source -o out --version-suffix "CI-${{ steps.current-time.outputs.formattedTime }}"
       if: github.event.inputs.is_stronginject_release != 'true'
     - name: Pack Release StrongInject
       run: |
