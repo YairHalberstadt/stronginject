@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StrongInject.Extensions.DependencyInjection;
+using StrongInject.Extensions.DependencyInjection.AspNetCore;
 using StrongInject.Samples.AspNetCore.Controllers;
 
 namespace StrongInject.Samples.AspNetCore
