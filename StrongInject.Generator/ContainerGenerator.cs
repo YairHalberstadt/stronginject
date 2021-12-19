@@ -241,34 +241,53 @@ namespace StrongInject.Generator
                 var index = _singleInstanceMethods.Count;
 
                 var singleInstanceFieldName = "_" + type.ToLowerCaseIdentifier("singleInstance") + "Field" + index;
-                var name = "Get" + type.ToIdentifier("SingleInstance") + "Field" + index;
-                var disposeFieldName = "_disposeAction" + index;
+                var singleInstanceFieldSetName = singleInstanceFieldName + "Set";
                 var lockName = "_lock" + index;
+                var disposeFieldName = "_disposeAction" + index;
+                var name = "Get" + type.ToIdentifier("SingleInstance") + "Field" + index;
                 singleInstanceMethod = (name, disposeFieldName, lockName);
                 _singleInstanceMethods.Add(instanceSource, singleInstanceMethod);
-                _containerMembersSource.Append("private " + type.FullName() + ' ' + singleInstanceFieldName + ';');
-                _containerMembersSource.Append("private global::System.Threading.SemaphoreSlim _lock" + index + "=new global::System.Threading.SemaphoreSlim(1);");
+                
+                _containerMembersSource.Append("private ");
+                _containerMembersSource.Append(type.FullName());
+                _containerMembersSource.Append(' ');
+                _containerMembersSource.Append(singleInstanceFieldName);
+                _containerMembersSource.Append(';');
+                
+                _containerMembersSource.Append("private bool ");
+                _containerMembersSource.Append(singleInstanceFieldSetName);
+                _containerMembersSource.Append(';');
+
+                _containerMembersSource.Append("private global::System.Threading.SemaphoreSlim ");
+                _containerMembersSource.Append(lockName );
+                _containerMembersSource.Append("=new global::System.Threading.SemaphoreSlim(1);");
+                
                 _containerMembersSource.Append((_implementsAsyncContainer
-                    ? "private global::System.Func<global::System.Threading.Tasks.ValueTask>"
-                    : "private global::System.Action") + " _disposeAction" + index + ';');
+                    ? "private global::System.Func<global::System.Threading.Tasks.ValueTask> "
+                    : "private global::System.Action "));
+                _containerMembersSource.Append(disposeFieldName);
+                _containerMembersSource.Append(';');
+                
                 var methodSource = new StringBuilder();
                 methodSource.Append(isAsync ? "private async " : "private ");
                 methodSource.Append(isAsync ? _wellKnownTypes.ValueTask1.Construct(type).FullName() : type.FullName());
                 methodSource.Append(' ');
                 methodSource.Append(name);
-                methodSource.Append("(){if(!object." + nameof(ReferenceEquals) + '(');
-                methodSource.Append(singleInstanceFieldName);
-                methodSource.Append(",null");
-                methodSource.Append("))");
-                methodSource.Append("return ");
-                methodSource.Append(singleInstanceFieldName);
-                methodSource.Append(';');
+                methodSource.Append("(){");
+                
+                CheckFieldSet(methodSource, singleInstanceFieldSetName, singleInstanceFieldName);
+                
                 if (isAsync)
                     methodSource.Append("await ");
                 methodSource.Append("this.");
                 methodSource.Append(lockName);
                 methodSource.Append(isAsync ? ".WaitAsync();" : ".Wait();");
-                methodSource.Append("try{if(this.Disposed)");
+
+                methodSource.Append("try{");
+                
+                CheckFieldSet(methodSource, singleInstanceFieldSetName, singleInstanceFieldName);
+                
+                methodSource.Append("if(this.Disposed)");
                 ThrowObjectDisposedException(methodSource);
 
                 var ops = LoweringVisitor.LowerResolution(
@@ -288,6 +307,11 @@ namespace StrongInject.Generator
                 methodSource.Append('=');
                 methodSource.Append(variableName);
                 methodSource.Append(';');
+                
+                methodSource.Append("this.");
+                methodSource.Append(singleInstanceFieldSetName);
+                methodSource.Append("=true;");
+                
                 methodSource.Append("this.");
                 methodSource.Append(disposeFieldName);
                 methodSource.Append('=');
@@ -296,6 +320,7 @@ namespace StrongInject.Generator
                 methodSource.Append("() => {");
                 EmitDisposals(methodSource, ops);
                 methodSource.Append("};");
+                
                 methodSource.Append("}finally{this.");
                 methodSource.Append(lockName);
                 methodSource.Append(".Release();}return ");
@@ -304,6 +329,16 @@ namespace StrongInject.Generator
                 _containerMembersSource.Append(methodSource);
             }
             return singleInstanceMethod.name;
+
+            static void CheckFieldSet(StringBuilder methodSource, string singleInstanceFieldSetName, string singleInstanceFieldName)
+            {
+                methodSource.Append("if(this.");
+                methodSource.Append(singleInstanceFieldSetName);
+                methodSource.Append(')');
+                methodSource.Append("return this.");
+                methodSource.Append(singleInstanceFieldName);
+                methodSource.Append(';');
+            }
         }
 
         private DisposalLowerer CreateDisposalLowerer(DisposalStyle disposalStyle)
