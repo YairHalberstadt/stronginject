@@ -33,16 +33,6 @@ namespace StrongInject.Generator
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
 
-        public static IEnumerable<INamedTypeSymbol> GetBaseTypesAndThis(this INamedTypeSymbol? namedType)
-        {
-            var current = namedType;
-            while (current != null)
-            {
-                yield return current;
-                current = current.BaseType;
-            }
-        }
-
         public static IEnumerable<INamedTypeSymbol> GetBaseTypes(this ITypeSymbol? namedType)
         {
             var current = namedType?.BaseType;
@@ -160,13 +150,6 @@ namespace StrongInject.Generator
         public static string NameWithGenerics(this ITypeSymbol type)
         {
             return type.ToDisplayString(new SymbolDisplayFormat(genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
-        }
-
-        public static IEnumerable<INamedTypeSymbol> AllInterfacesAndSelf(this ITypeSymbol type)
-        {
-            if (type.TypeKind != TypeKind.Interface)
-                return type.AllInterfaces;
-            return type.AllInterfaces.Prepend((INamedTypeSymbol)type);
         }
 
         public static Location GetLocation(this AttributeData attributeData, CancellationToken cancellationToken)
@@ -306,13 +289,8 @@ namespace StrongInject.Generator
             return !IsNullableTypeOrTypeParameter(typeArgument);
         }
 
-        public static bool IsNullableTypeOrTypeParameter(this ITypeSymbol? type)
+        public static bool IsNullableTypeOrTypeParameter(this ITypeSymbol type)
         {
-            if (type is null)
-            {
-                return false;
-            }
-
             if (type.TypeKind == TypeKind.TypeParameter)
             {
                 var constraintTypes = ((ITypeParameterSymbol)type).ConstraintTypes;

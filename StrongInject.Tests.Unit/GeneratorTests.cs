@@ -4,18 +4,18 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace StrongInject.Generator.Tests.Unit
-{
-    public class GeneratorTests : TestBase
-    {
-        public GeneratorTests(ITestOutputHelper outputHelper) : base(outputHelper)
-        {
-        }
+namespace StrongInject.Generator.Tests.Unit;
 
-        [Fact]
-        public void InstancePerResolutionDependencies()
-        {
-            string userSource = @"
+public class GeneratorTests : TestBase
+{
+    public GeneratorTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
+    [Fact]
+    public void InstancePerResolutionDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -40,11 +40,11 @@ public class D
     public D(C c){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -97,12 +97,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstancePerResolutionDependenciesWithCasts()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstancePerResolutionDependenciesWithCasts()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -128,11 +128,11 @@ public class D
 }
 public interface IC {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -189,12 +189,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstancePerResolutionDependenciesWithRequiresInitialization()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstancePerResolutionDependenciesWithRequiresInitialization()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -227,11 +227,11 @@ public class E : IRequiresAsyncInitialization
     ValueTask IRequiresAsyncInitialization.InitializeAsync() => new ValueTask();
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -388,12 +388,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstancePerResolutionDependenciesWithFactories()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstancePerResolutionDependenciesWithFactories()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -430,14 +430,14 @@ public class D : IAsyncFactory<DFactoryTarget>
 }
 public class DFactoryTarget {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Register(typeof(C))
-                new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+            // Register(typeof(C))
+            new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -716,12 +716,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstancePerDependencyDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstancePerDependencyDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), Scope.InstancePerDependency)]
@@ -746,11 +746,11 @@ public class D
     public D(C c){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -811,12 +811,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstancePerDependencyDependenciesWithCasts()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstancePerDependencyDependenciesWithCasts()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -842,11 +842,11 @@ public class D
 }
 public interface IC {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -915,12 +915,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstancePerDependencyDependenciesWithRequiresInitialization()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstancePerDependencyDependenciesWithRequiresInitialization()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -953,11 +953,11 @@ public class E : IRequiresAsyncInitialization
     ValueTask IRequiresAsyncInitialization.InitializeAsync() => new ValueTask();
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1118,12 +1118,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstancePerDependencyDependenciesWithFactories()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstancePerDependencyDependenciesWithFactories()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -1160,14 +1160,14 @@ public class D : IAsyncFactory<DFactoryTarget>
 }
 public class DFactoryTarget {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Register(typeof(C))
-                new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+            // Register(typeof(C))
+            new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1610,12 +1610,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void SingleInstanceDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void SingleInstanceDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), Scope.SingleInstance)]
@@ -1640,11 +1640,11 @@ public class D
     public D(C c){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1676,18 +1676,22 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::D _dField1;
+    private bool _dField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private global::D GetDField1()
     {
-        if (!object.ReferenceEquals(_dField1, null))
-            return _dField1;
+        if (this._dField1Set)
+            return this._dField1;
         this._lock1.Wait();
         try
         {
+            if (this._dField1Set)
+                return this._dField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_1;
@@ -1695,6 +1699,7 @@ partial class Container
             c_0_1 = new global::C();
             d_0_0 = new global::D(c: c_0_1);
             this._dField1 = d_0_0;
+            this._dField1Set = true;
             this._disposeAction1 = async () =>
             {
             };
@@ -1709,11 +1714,13 @@ partial class Container
 
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_2;
@@ -1725,6 +1732,7 @@ partial class Container
             b_0_1 = new global::B(c: c_0_2, d: d_0_3);
             a_0_0 = new global::A(b: b_0_1, c: c_0_2);
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -1766,12 +1774,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void SingleInstanceDependenciesWihCasts()
-        {
-            string userSource = @"
+    [Fact]
+    public void SingleInstanceDependenciesWihCasts()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -1797,11 +1805,11 @@ public class D
 }
 public interface IC {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1823,20 +1831,24 @@ partial class Container
     }
 
     private global::C _cField0;
+    private bool _cField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::C GetCField0()
     {
-        if (!object.ReferenceEquals(_cField0, null))
-            return _cField0;
+        if (this._cField0Set)
+            return this._cField0;
         this._lock0.Wait();
         try
         {
+            if (this._cField0Set)
+                return this._cField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
             this._cField0 = c_0_0;
+            this._cField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -1894,12 +1906,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void SingleInstanceDependenciesWithRequiresInitialization()
-        {
-            string userSource = @"
+    [Fact]
+    public void SingleInstanceDependenciesWithRequiresInitialization()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -1932,11 +1944,11 @@ public class E : IRequiresAsyncInitialization
     ValueTask IRequiresAsyncInitialization.InitializeAsync() => new ValueTask();
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -1968,18 +1980,22 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::C _cField1;
+    private bool _cField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private async global::System.Threading.Tasks.ValueTask<global::C> GetCField1()
     {
-        if (!object.ReferenceEquals(_cField1, null))
-            return _cField1;
+        if (this._cField1Set)
+            return this._cField1;
         await this._lock1.WaitAsync();
         try
         {
+            if (this._cField1Set)
+                return this._cField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
@@ -2003,6 +2019,7 @@ partial class Container
             }
 
             this._cField1 = c_0_0;
+            this._cField1Set = true;
             this._disposeAction1 = async () =>
             {
             };
@@ -2017,11 +2034,13 @@ partial class Container
 
     private async global::System.Threading.Tasks.ValueTask<global::A> GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::C> c_0_2;
@@ -2084,6 +2103,7 @@ partial class Container
             }
 
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -2159,12 +2179,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void SingleInstanceDependenciesWithFactories()
-        {
-            string userSource = @"
+    [Fact]
+    public void SingleInstanceDependenciesWithFactories()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -2201,14 +2221,14 @@ public class D : IAsyncFactory<DFactoryTarget>
 }
 public class DFactoryTarget {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Register(typeof(C), Scope.InstancePerResolution, typeof(C))
-                new DiagnosticResult("SI1001", @"Register(typeof(C), Scope.InstancePerResolution, typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+            // Register(typeof(C), Scope.InstancePerResolution, typeof(C))
+            new DiagnosticResult("SI1001", @"Register(typeof(C), Scope.InstancePerResolution, typeof(C))", DiagnosticSeverity.Warning).WithLocation(9, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -2260,24 +2280,30 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::BFactoryTarget _bFactoryTargetField1;
+    private bool _bFactoryTargetField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private global::B _bField2;
+    private bool _bField2Set;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction2;
     private global::CFactoryTarget _cFactoryTargetField3;
+    private bool _cFactoryTargetField3Set;
     private global::System.Threading.SemaphoreSlim _lock3 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction3;
     private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetCFactoryTargetField3()
     {
-        if (!object.ReferenceEquals(_cFactoryTargetField3, null))
-            return _cFactoryTargetField3;
+        if (this._cFactoryTargetField3Set)
+            return this._cFactoryTargetField3;
         await this._lock3.WaitAsync();
         try
         {
+            if (this._cFactoryTargetField3Set)
+                return this._cFactoryTargetField3;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_2;
@@ -2311,6 +2337,7 @@ partial class Container
             }
 
             this._cFactoryTargetField3 = cFactoryTarget_0_0;
+            this._cFactoryTargetField3Set = true;
             this._disposeAction3 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(cFactoryTarget_0_0);
@@ -2326,11 +2353,13 @@ partial class Container
 
     private async global::System.Threading.Tasks.ValueTask<global::B> GetBField2()
     {
-        if (!object.ReferenceEquals(_bField2, null))
-            return _bField2;
+        if (this._bField2Set)
+            return this._bField2;
         await this._lock2.WaitAsync();
         try
         {
+            if (this._bField2Set)
+                return this._bField2;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> cFactoryTarget_0_5;
@@ -2386,6 +2415,7 @@ partial class Container
             }
 
             this._bField2 = b_0_0;
+            this._bField2Set = true;
             this._disposeAction2 = async () =>
             {
                 await iAsyncFactory_0_3.ReleaseAsync(dFactoryTarget_0_2);
@@ -2401,11 +2431,13 @@ partial class Container
 
     private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetBFactoryTargetField1()
     {
-        if (!object.ReferenceEquals(_bFactoryTargetField1, null))
-            return _bFactoryTargetField1;
+        if (this._bFactoryTargetField1Set)
+            return this._bFactoryTargetField1;
         await this._lock1.WaitAsync();
         try
         {
+            if (this._bFactoryTargetField1Set)
+                return this._bFactoryTargetField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::B> b_0_2;
@@ -2455,6 +2487,7 @@ partial class Container
             }
 
             this._bFactoryTargetField1 = bFactoryTarget_0_0;
+            this._bFactoryTargetField1Set = true;
             this._disposeAction1 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(bFactoryTarget_0_0);
@@ -2470,11 +2503,13 @@ partial class Container
 
     private async global::System.Threading.Tasks.ValueTask<global::A> GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> bFactoryTarget_0_1;
@@ -2517,6 +2552,7 @@ partial class Container
             }
 
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -2648,12 +2684,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void MultipleResolvesShareSingleInstanceDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void MultipleResolvesShareSingleInstanceDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -2679,11 +2715,11 @@ public class D
 }
 public interface IC {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -2705,20 +2741,24 @@ partial class Container
     }
 
     private global::C _cField0;
+    private bool _cField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::C GetCField0()
     {
-        if (!object.ReferenceEquals(_cField0, null))
-            return _cField0;
+        if (this._cField0Set)
+            return this._cField0;
         this._lock0.Wait();
         try
         {
+            if (this._cField0Set)
+                return this._cField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
             this._cField0 = c_0_0;
+            this._cField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -2805,12 +2845,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfInstanceUsedAsFactoryDuplicatesContainerRegistration()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfInstanceUsedAsFactoryDuplicatesContainerRegistration()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -2844,14 +2884,14 @@ public class InstanceFactory : IAsyncFactory<IC>, IAsyncFactory<D>
     ValueTask<D> IAsyncFactory<D>.CreateAsync() => throw null;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (9,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'D' and no best source. Try adding a single registration for 'D' directly to the container, and moving any existing registrations for 'D' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(9, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'D' and no best source. Try adding a single registration for 'D' directly to the container, and moving any existing registrations for 'D' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(9, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -2873,12 +2913,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CorrectDisposal()
-        {
-            string userSource = @"
+    [Fact]
+    public void CorrectDisposal()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 using System;
@@ -2928,17 +2968,17 @@ public class G : IDisposable, IAsyncDisposable { public G(H h) {} void IDisposab
 public class H { public H(I i) {} }
 public class I : IDisposable { public I(int i) {} public void Dispose() {} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (10,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
-                // Register(typeof(C))
-                new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(10, 2));
-            comp.GetDiagnostics().Verify(
-                // (18,57): Warning CS0649: Field 'Container._factory' is never assigned to, and will always have its default value null
-                // _factory
-                new DiagnosticResult("CS0649", @"_factory", DiagnosticSeverity.Warning).WithLocation(18, 57));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (10,2): Warning SI1001: 'C' implements 'StrongInject.IAsyncFactory<CFactoryTarget>'. Did you mean to use FactoryRegistration instead?
+            // Register(typeof(C))
+            new DiagnosticResult("SI1001", @"Register(typeof(C))", DiagnosticSeverity.Warning).WithLocation(10, 2));
+        comp.GetDiagnostics().Verify(
+            // (18,57): Warning CS0649: Field 'Container._factory' is never assigned to, and will always have its default value null
+            // _factory
+            new DiagnosticResult("CS0649", @"_factory", DiagnosticSeverity.Warning).WithLocation(18, 57));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -2990,21 +3030,26 @@ partial class Container
     }
 
     private global::BFactoryTarget _bFactoryTargetField0;
+    private bool _bFactoryTargetField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::B _bField1;
+    private bool _bField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private global::CFactoryTarget _cFactoryTargetField2;
+    private bool _cFactoryTargetField2Set;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction2;
     private async global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> GetCFactoryTargetField2()
     {
-        if (!object.ReferenceEquals(_cFactoryTargetField2, null))
-            return _cFactoryTargetField2;
+        if (this._cFactoryTargetField2Set)
+            return this._cFactoryTargetField2;
         await this._lock2.WaitAsync();
         try
         {
+            if (this._cFactoryTargetField2Set)
+                return this._cFactoryTargetField2;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_2;
@@ -3038,6 +3083,7 @@ partial class Container
             }
 
             this._cFactoryTargetField2 = cFactoryTarget_0_0;
+            this._cFactoryTargetField2Set = true;
             this._disposeAction2 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(cFactoryTarget_0_0);
@@ -3053,11 +3099,13 @@ partial class Container
 
     private async global::System.Threading.Tasks.ValueTask<global::B> GetBField1()
     {
-        if (!object.ReferenceEquals(_bField1, null))
-            return _bField1;
+        if (this._bField1Set)
+            return this._bField1;
         await this._lock1.WaitAsync();
         try
         {
+            if (this._bField1Set)
+                return this._bField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::CFactoryTarget> cFactoryTarget_0_5;
@@ -3113,6 +3161,7 @@ partial class Container
             }
 
             this._bField1 = b_0_0;
+            this._bField1Set = true;
             this._disposeAction1 = async () =>
             {
                 ((global::System.IDisposable)b_0_0).Dispose();
@@ -3129,11 +3178,13 @@ partial class Container
 
     private async global::System.Threading.Tasks.ValueTask<global::BFactoryTarget> GetBFactoryTargetField0()
     {
-        if (!object.ReferenceEquals(_bFactoryTargetField0, null))
-            return _bFactoryTargetField0;
+        if (this._bFactoryTargetField0Set)
+            return this._bFactoryTargetField0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._bFactoryTargetField0Set)
+                return this._bFactoryTargetField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::B> b_0_2;
@@ -3183,6 +3234,7 @@ partial class Container
             }
 
             this._bFactoryTargetField0 = bFactoryTarget_0_0;
+            this._bFactoryTargetField0Set = true;
             this._disposeAction0 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(bFactoryTarget_0_0);
@@ -3197,15 +3249,18 @@ partial class Container
     }
 
     private global::I _iField3;
+    private bool _iField3Set;
     private global::System.Threading.SemaphoreSlim _lock3 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction3;
     private async global::System.Threading.Tasks.ValueTask<global::I> GetIField3()
     {
-        if (!object.ReferenceEquals(_iField3, null))
-            return _iField3;
+        if (this._iField3Set)
+            return this._iField3;
         await this._lock3.WaitAsync();
         try
         {
+            if (this._iField3Set)
+                return this._iField3;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::StrongInject.IAsyncFactory<global::System.Int32> iAsyncFactory_0_2;
@@ -3239,6 +3294,7 @@ partial class Container
             }
 
             this._iField3 = i_0_0;
+            this._iField3Set = true;
             this._disposeAction3 = async () =>
             {
                 ((global::System.IDisposable)i_0_0).Dispose();
@@ -3574,12 +3630,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposeOfClassImplementingIDisposableAndIRequiresAsyncInitialization()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposeOfClassImplementingIDisposableAndIRequiresAsyncInitialization()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -3596,11 +3652,11 @@ partial class Container : IAsyncContainer<A>
     
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -3695,12 +3751,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void GeneratesContainerInNamespace()
-        {
-            string userSource = @"
+    [Fact]
+    public void GeneratesContainerInNamespace()
+    {
+        string userSource = @"
 using StrongInject;
 
 namespace N.O.P
@@ -3715,11 +3771,11 @@ namespace N.O.P
     }
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 namespace N.O.P
 {
     partial class Container
@@ -3763,12 +3819,12 @@ namespace N.O.P
         }
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void GeneratesContainerInNestedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void GeneratesContainerInNestedType()
+    {
+        string userSource = @"
 using StrongInject;
 
 namespace N.O.P
@@ -3789,11 +3845,11 @@ namespace N.O.P
     }
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 namespace N.O.P
 {
     partial class Outer1
@@ -3843,12 +3899,12 @@ namespace N.O.P
         }
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void GeneratesContainerInGenericNestedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void GeneratesContainerInGenericNestedType()
+    {
+        string userSource = @"
 using StrongInject;
 
 namespace N.O.P
@@ -3869,11 +3925,11 @@ namespace N.O.P
     }
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 namespace N.O.P
 {
     partial class Outer1<T>
@@ -3923,12 +3979,12 @@ namespace N.O.P
         }
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void GeneratesThrowingImplementationForContainerWithMissingDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void GeneratesThrowingImplementationForContainerWithMissingDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -3937,14 +3993,14 @@ partial class Container : IAsyncContainer<A>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,15): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,15): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -3966,12 +4022,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfConstructorParameterPassedByRef()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfConstructorParameterPassedByRef()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -3986,17 +4042,17 @@ public class A
 }
 public class B{}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
-                // Register(typeof(A))
-                new DiagnosticResult("SI0019", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
-                // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
+            // Register(typeof(A))
+            new DiagnosticResult("SI0019", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
+            // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4018,12 +4074,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfFactoryConstructorParameterPassedByRef()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfFactoryConstructorParameterPassedByRef()
+    {
+        string userSource = @"
 using StrongInject;
 
 [RegisterFactory(typeof(A))]
@@ -4039,17 +4095,17 @@ public class A : IFactory<int>
 }
 public class B{}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
-                // RegisterFactory(typeof(A))
-                new DiagnosticResult("SI0019", @"RegisterFactory(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
-                // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Error SI0019: parameter 'ref B' of constructor 'A.A(ref B)' is passed as 'Ref'.
+            // RegisterFactory(typeof(A))
+            new DiagnosticResult("SI0019", @"RegisterFactory(typeof(A))", DiagnosticSeverity.Error).WithLocation(4, 2),
+            // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4071,12 +4127,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfAsyncTypeRequiredByContainer1()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncTypeRequiredByContainer1()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -4090,14 +4146,14 @@ public class A : IRequiresAsyncInitialization
     public ValueTask InitializeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0102: Error while resolving dependencies for 'A': 'A' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0102: Error while resolving dependencies for 'A': 'A' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4119,12 +4175,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfAsyncTypeRequiredByContainer2()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncTypeRequiredByContainer2()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -4140,14 +4196,14 @@ public class B : IRequiresAsyncInitialization
     public ValueTask InitializeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4169,12 +4225,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfAsyncTypeRequiredByContainer3()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncTypeRequiredByContainer3()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -4188,18 +4244,18 @@ public class A : IAsyncFactory<int>
     public ValueTask<int> CreateAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0103: Error while resolving dependencies for 'int': 'int' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0103: Error while resolving dependencies for 'int': 'int' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+    }
 
-        [Fact]
-        public void ErrorIfAsyncTypeRequiredByContainer4()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncTypeRequiredByContainer4()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -4214,18 +4270,18 @@ public class A : IFactory<int>, IRequiresAsyncInitialization
     public ValueTask InitializeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0103: Error while resolving dependencies for 'int': 'StrongInject.IFactory<int>' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0103: Error while resolving dependencies for 'int': 'StrongInject.IFactory<int>' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+    }
 
-        [Fact]
-        public void ErrorIfAsyncTypeRequiredByContainer5()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncTypeRequiredByContainer5()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<int>
@@ -4233,18 +4289,18 @@ public partial class Container : IContainer<int>
     [Instance(Options.UseAsFactory)] public IAsyncFactory<int> _instanceProvider;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0103: Error while resolving dependencies for 'int': 'int' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            comp.GetDiagnostics().Verify();
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0103: Error while resolving dependencies for 'int': 'int' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        comp.GetDiagnostics().Verify();
+    }
 
-        [Fact]
-        public void ErrorIfAsyncTypeRequiredByContainer6()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncTypeRequiredByContainer6()
+    {
+        string userSource = @"
 using StrongInject;
 
 [RegisterFactory(typeof(A))]
@@ -4260,18 +4316,18 @@ public class A : IFactory<int>
 }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0103: Error while resolving dependencies for 'int': 'B' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify();
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0103: Error while resolving dependencies for 'int': 'B' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify();
+    }
 
-        [Fact]
-        public void ErrorIfAsyncTypeRequiredByContainer7()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncTypeRequiredByContainer7()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -4288,18 +4344,18 @@ public class C : IAsyncFactory<B>
     public ValueTask<B> CreateAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+    }
 
-        [Fact]
-        public void CanGenerateSynchronousContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanGenerateSynchronousContainer()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -4311,11 +4367,11 @@ public partial class Container : IContainer<A>
 public class A { public A(B b){} }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4360,12 +4416,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanGenerateSynchronousContainerWithRequiresInitialization()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanGenerateSynchronousContainerWithRequiresInitialization()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -4377,11 +4433,11 @@ public partial class Container : IContainer<A>
 public class A : IRequiresInitialization { public A(B b){} public void Initialize() {}}
 public class B : IRequiresInitialization { public void Initialize() {} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4430,12 +4486,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanGenerateSynchronousContainerWithFactories()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanGenerateSynchronousContainerWithFactories()
+    {
+        string userSource = @"
 using StrongInject;
 
 [RegisterFactory(typeof(A))]
@@ -4447,11 +4503,11 @@ public partial class Container : IContainer<int>
 public class A : IFactory<int> { public A(B b){} public int Create() => default; }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4506,12 +4562,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanGenerateSynchronousContainerWithInstanceProviders()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanGenerateSynchronousContainerWithInstanceProviders()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -4524,14 +4580,14 @@ public partial class Container : IContainer<A>
 public class A { public A(B b, int i){} }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify(
-                // (8,52): Warning CS0649: Field 'Container._instanceProvider' is never assigned to, and will always have its default value null
-                // _instanceProvider
-                new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 52));
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify(
+            // (8,52): Warning CS0649: Field 'Container._instanceProvider' is never assigned to, and will always have its default value null
+            // _instanceProvider
+            new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 52));
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4604,12 +4660,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanGenerateSynchronousContainerWithSingleInstanceDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanGenerateSynchronousContainerWithSingleInstanceDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -4621,11 +4677,11 @@ public partial class Container : IContainer<A>
 public class A { public A(B b){} }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4647,20 +4703,24 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -4706,12 +4766,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void SynchronousAndAsynchronousResolvesCanShareSingleInstanceDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void SynchronousAndAsynchronousResolvesCanShareSingleInstanceDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -4728,11 +4788,11 @@ public class B {}
 public class C : IRequiresAsyncInitialization { public C(B b, D d) {} public ValueTask InitializeAsync() => default; }
 public class D : IRequiresAsyncInitialization { public ValueTask InitializeAsync() => default; }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -4769,20 +4829,24 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -4829,15 +4893,18 @@ partial class Container
     }
 
     private global::D _dField1;
+    private bool _dField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private async global::System.Threading.Tasks.ValueTask<global::D> GetDField1()
     {
-        if (!object.ReferenceEquals(_dField1, null))
-            return _dField1;
+        if (this._dField1Set)
+            return this._dField1;
         await this._lock1.WaitAsync();
         try
         {
+            if (this._dField1Set)
+                return this._dField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::D d_0_0;
@@ -4861,6 +4928,7 @@ partial class Container
             }
 
             this._dField1 = d_0_0;
+            this._dField1Set = true;
             this._disposeAction1 = async () =>
             {
             };
@@ -4978,12 +5046,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposalOfSingleInstanceDependency()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposalOfSingleInstanceDependency()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -4996,11 +5064,11 @@ public partial class Container : IContainer<A>
 public class A { public A(B b){} }
 public class B : IDisposable { public void Dispose(){} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5022,20 +5090,24 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)b_0_0).Dispose();
@@ -5082,12 +5154,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposalOfMultipleSingleInstanceDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposalOfMultipleSingleInstanceDependencies()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5102,11 +5174,11 @@ public class A { public A(B b){} }
 public class B : IDisposable { public B(C c){} public void Dispose(){} }
 public class C : IDisposable { public void Dispose(){} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5138,23 +5210,28 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::C _cField1;
+    private bool _cField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction1;
     private global::C GetCField1()
     {
-        if (!object.ReferenceEquals(_cField1, null))
-            return _cField1;
+        if (this._cField1Set)
+            return this._cField1;
         this._lock1.Wait();
         try
         {
+            if (this._cField1Set)
+                return this._cField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
             this._cField1 = c_0_0;
+            this._cField1Set = true;
             this._disposeAction1 = () =>
             {
                 ((global::System.IDisposable)c_0_0).Dispose();
@@ -5170,11 +5247,13 @@ partial class Container
 
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_1;
@@ -5182,6 +5261,7 @@ partial class Container
             c_0_1 = GetCField1();
             b_0_0 = new global::B(c: c_0_1);
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)b_0_0).Dispose();
@@ -5228,12 +5308,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DoesNotDisposeUnusedSingleInstanceDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void DoesNotDisposeUnusedSingleInstanceDependencies()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5248,11 +5328,11 @@ public class A : IDisposable { public A(A a){} public void Dispose(){} }
 public class B : IDisposable { public void Dispose(){} }
 public class C : IDisposable { public void Dispose(){} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5274,20 +5354,24 @@ partial class Container
     }
 
     private global::C _cField0;
+    private bool _cField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::C GetCField0()
     {
-        if (!object.ReferenceEquals(_cField0, null))
-            return _cField0;
+        if (this._cField0Set)
+            return this._cField0;
         this._lock0.Wait();
         try
         {
+            if (this._cField0Set)
+                return this._cField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
             this._cField0 = c_0_0;
+            this._cField0Set = true;
             this._disposeAction0 = () =>
             {
                 ((global::System.IDisposable)c_0_0).Dispose();
@@ -5330,12 +5414,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveFuncWithoutParameters()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveFuncWithoutParameters()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5351,11 +5435,11 @@ public class A
 }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5412,12 +5496,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveFuncWithParametersWhereParameterTypeIsRegistered()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveFuncWithParametersWhereParameterTypeIsRegistered()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5433,11 +5517,11 @@ public class A
 }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5490,12 +5574,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveFuncWithParametersWhereParameterTypeIsNotRegistered()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveFuncWithParametersWhereParameterTypeIsNotRegistered()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5510,11 +5594,11 @@ public class A
 }
 public class B {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5567,12 +5651,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveFuncUsedAsParameter()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveFuncUsedAsParameter()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5588,11 +5672,11 @@ public class A
 }
 public class B { public B(int i, string s, int i1){} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5649,12 +5733,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveFuncUsedInsideFuncResolution()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveFuncUsedInsideFuncResolution()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5670,11 +5754,11 @@ public class A
 }
 public class B { public B(int i, string s){} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5743,12 +5827,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveFuncOfFuncOfFunc()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveFuncOfFuncOfFunc()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -5762,11 +5846,11 @@ public class A
     public A(int a, string b, bool c){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -5843,12 +5927,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposesOfFuncDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposesOfFuncDependencies()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 using StrongInject.Modules;
@@ -5870,11 +5954,11 @@ public class B : IDisposable
     public void Dispose(){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6013,12 +6097,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposesOfFuncDependenciesAsynchronously()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposesOfFuncDependenciesAsynchronously()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 using StrongInject.Modules;
@@ -6041,11 +6125,11 @@ public class B : IAsyncDisposable
     public ValueTask DisposeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6166,12 +6250,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposesOfFuncDependenciesButNotParameters()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposesOfFuncDependenciesButNotParameters()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6194,11 +6278,11 @@ public class C : IDisposable
     public void Dispose(){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6289,12 +6373,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningOnUnusedParameters1()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningOnUnusedParameters1()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6308,14 +6392,14 @@ public class A
     public A(string s1, string s2){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, string, A>': Parameter 'int' of delegate 'System.Func<int, string, A>' is not used in resolution of 'A'.
-                // Container
-                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, string, A>': Parameter 'int' of delegate 'System.Func<int, string, A>' is not used in resolution of 'A'.
+            // Container
+            new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6368,12 +6452,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningOnUnusedParameters2()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningOnUnusedParameters2()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6387,14 +6471,14 @@ public class A
     public A(int a1, int a2){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, System.Func<int, A>>': Parameter 'int' of delegate 'System.Func<int, System.Func<int, A>>' is not used in resolution of 'System.Func<int, A>'.
-                // Container
-                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, System.Func<int, A>>': Parameter 'int' of delegate 'System.Func<int, System.Func<int, A>>' is not used in resolution of 'System.Func<int, A>'.
+            // Container
+            new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6459,12 +6543,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningOnSingleInstanceReturnType()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningOnSingleInstanceReturnType()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6484,17 +6568,17 @@ public class B
     public B(){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Warning SI1103: Warning while resolving dependencies for 'System.Func<B, A>': Return type 'A' of delegate 'System.Func<B, A>' has a single instance scope and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22),
-                // (7,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<B, A>': Parameter 'B' of delegate 'System.Func<B, A>' is not used in resolution of 'A'.
-                // Container
-                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Warning SI1103: Warning while resolving dependencies for 'System.Func<B, A>': Return type 'A' of delegate 'System.Func<B, A>' has a single instance scope and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22),
+            // (7,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<B, A>': Parameter 'B' of delegate 'System.Func<B, A>' is not used in resolution of 'A'.
+            // Container
+            new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6516,15 +6600,18 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_1;
@@ -6532,6 +6619,7 @@ partial class Container
             b_0_1 = new global::B();
             a_0_0 = new global::A(b: b_0_1);
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -6585,12 +6673,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningOnDirectDelegateParameterReturnType()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningOnDirectDelegateParameterReturnType()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6603,14 +6691,14 @@ public class A
     public A(){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<A, A>': Return type 'A' of delegate 'System.Func<A, A>' is provided as a parameter to the delegate and so will be returned unchanged.
-                // Container
-                new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<A, A>': Return type 'A' of delegate 'System.Func<A, A>' is provided as a parameter to the delegate and so will be returned unchanged.
+            // Container
+            new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6659,12 +6747,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningOnIndirectDelegateParameterReturnType()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningOnIndirectDelegateParameterReturnType()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6677,14 +6765,14 @@ public class A
     public A(){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Warning SI1102: Warning while resolving dependencies for 'System.Func<A, System.Func<A>>': Return type 'A' of delegate 'System.Func<A>' is provided as a parameter to another delegate and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1102", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Warning SI1102: Warning while resolving dependencies for 'System.Func<A, System.Func<A>>': Return type 'A' of delegate 'System.Func<A>' is provided as a parameter to another delegate and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1102", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6745,12 +6833,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorOnMultipleParametersWithSameType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorOnMultipleParametersWithSameType()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6764,17 +6852,17 @@ public class A
     public A(int a){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0104: Error while resolving dependencies for 'System.Func<int, int, A>': delegate 'System.Func<int, int, A>' has multiple parameters of type 'int'.
-                // Container
-                new DiagnosticResult("SI0104", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22),
-                // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, int, A>': Parameter 'int' of delegate 'System.Func<int, int, A>' is not used in resolution of 'A'.
-                // Container
-                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0104: Error while resolving dependencies for 'System.Func<int, int, A>': delegate 'System.Func<int, int, A>' has multiple parameters of type 'int'.
+            // Container
+            new DiagnosticResult("SI0104", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22),
+            // (6,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, int, A>': Parameter 'int' of delegate 'System.Func<int, int, A>' is not used in resolution of 'A'.
+            // Container
+            new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6796,12 +6884,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AllowDirectRecursiveFuncCallNoParameters()
-        {
-            string userSource = @"
+    [Fact]
+    public void AllowDirectRecursiveFuncCallNoParameters()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -6815,11 +6903,11 @@ public class A
     public A(Func<A> a){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6876,12 +6964,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfSyncFuncRequiresAsyncResolution()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfSyncFuncRequiresAsyncResolution()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 using System.Threading.Tasks;
@@ -6897,14 +6985,14 @@ public class A : IRequiresAsyncInitialization
     public ValueTask InitializeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Error SI0103: Error while resolving dependencies for 'System.Func<A>': 'A' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Error SI0103: Error while resolving dependencies for 'System.Func<A>': 'A' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6926,12 +7014,65 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorOnParameterPassedAsRef()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfTypeRequiresBothSyncAndAsyncInitialization()
+    {
+        string userSource = @"
+using StrongInject;
+using System.Threading.Tasks;
+
+[Register(typeof(A))]
+public partial class Container : IAsyncContainer<A>
+{
+}
+
+public class A : IRequiresInitialization, IRequiresAsyncInitialization
+{
+    public A(){}
+    public ValueTask InitializeAsync() => default;
+    public void Initialize(){}
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,2): Error SI0013: 'A' implements both IRequiresInitialization and IRequiresAsyncInitialization
+            // Register(typeof(A))
+            new DiagnosticResult("SI0013", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(5, 2),
+            // (6,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    async global::System.Threading.Tasks.ValueTask<TResult> global::StrongInject.IAsyncContainer<global::A>.RunAsync<TResult, TParam>(global::System.Func<global::A, TParam, global::System.Threading.Tasks.ValueTask<TResult>> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    async global::System.Threading.Tasks.ValueTask<global::StrongInject.AsyncOwned<global::A>> global::StrongInject.IAsyncContainer<global::A>.ResolveAsync()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+    }
+
+    [Fact]
+    public void ErrorOnParameterPassedAsRef()
+    {
+        string userSource = @"
 using StrongInject;
 
 public delegate A Del(ref int i);
@@ -6945,14 +7086,14 @@ public class A
     public A(int a){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0105: Error while resolving dependencies for 'Del': parameter 'ref int' of delegate 'Del' is passed as 'Ref'.
-                // Container
-                new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0105: Error while resolving dependencies for 'Del': parameter 'ref int' of delegate 'Del' is passed as 'Ref'.
+            // Container
+            new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -6974,12 +7115,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorOnParameterPassedAsIn()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorOnParameterPassedAsIn()
+    {
+        string userSource = @"
 using StrongInject;
 
 public delegate A Del(in int i);
@@ -6993,14 +7134,14 @@ public class A
     public A(int a){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0105: Error while resolving dependencies for 'Del': parameter 'in int' of delegate 'Del' is passed as 'In'.
-                // Container
-                new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0105: Error while resolving dependencies for 'Del': parameter 'in int' of delegate 'Del' is passed as 'In'.
+            // Container
+            new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7022,12 +7163,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorOnParameterPassedAsOut()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorOnParameterPassedAsOut()
+    {
+        string userSource = @"
 using StrongInject;
 
 public delegate A Del(out int i);
@@ -7041,14 +7182,14 @@ public class A
     public A(int a){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0105: Error while resolving dependencies for 'Del': parameter 'out int' of delegate 'Del' is passed as 'Out'.
-                // Container
-                new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0105: Error while resolving dependencies for 'Del': parameter 'out int' of delegate 'Del' is passed as 'Out'.
+            // Container
+            new DiagnosticResult("SI0105", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7070,12 +7211,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DelegateReturningTaskCanResolveDependenciesAsynchronously()
-        {
-            string userSource = @"
+    [Fact]
+    public void DelegateReturningTaskCanResolveDependenciesAsynchronously()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -7091,11 +7232,11 @@ public class A : IRequiresAsyncInitialization
     public ValueTask InitializeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7184,12 +7325,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DelegateReturningValueTaskCanResolveDependenciesAsynchronously()
-        {
-            string userSource = @"
+    [Fact]
+    public void DelegateReturningValueTaskCanResolveDependenciesAsynchronously()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -7205,11 +7346,11 @@ public class A : IRequiresAsyncInitialization
     public ValueTask InitializeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7298,12 +7439,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void SingleInstanceDependencyCanDependOnDelegate()
-        {
-            string userSource = @"
+    [Fact]
+    public void SingleInstanceDependencyCanDependOnDelegate()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -7324,11 +7465,11 @@ public class B
     public B(Del d){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7350,15 +7491,18 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::Del del_0_1;
@@ -7390,6 +7534,7 @@ partial class Container
             };
             b_0_0 = new global::B(d: del_0_1);
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -7431,12 +7576,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void PreferInstanceUsedAsFactoryToProvideDelegate()
-        {
-            string userSource = @"
+    [Fact]
+    public void PreferInstanceUsedAsFactoryToProvideDelegate()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -7451,14 +7596,14 @@ public class A
     public A(){}
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (8,64): Warning CS0649: Field 'Container._instanceProvider' is never assigned to, and will always have its default value null
-                // _instanceProvider
-                new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 64));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (8,64): Warning CS0649: Field 'Container._instanceProvider' is never assigned to, and will always have its default value null
+            // _instanceProvider
+            new DiagnosticResult("CS0649", @"_instanceProvider", DiagnosticSeverity.Warning).WithLocation(8, 64));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7505,12 +7650,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void PreferFactoryToProvideDelegate()
-        {
-            string userSource = @"
+    [Fact]
+    public void PreferFactoryToProvideDelegate()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -7528,11 +7673,11 @@ public class B : IFactory<Func<A>>
     public Func<A> Create() => null;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7583,12 +7728,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void PreferDelegateParameterToProvideDelegate()
-        {
-            string userSource = @"
+    [Fact]
+    public void PreferDelegateParameterToProvideDelegate()
+    {
+        string userSource = @"
 using System;
 using StrongInject;
 
@@ -7601,14 +7746,14 @@ public class A
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<System.Func<A>, System.Func<A>>': Return type 'System.Func<A>' of delegate 'System.Func<System.Func<A>, System.Func<A>>' is provided as a parameter to the delegate and so will be returned unchanged.
-                // Container
-                new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<System.Func<A>, System.Func<A>>': Return type 'System.Func<A>' of delegate 'System.Func<System.Func<A>, System.Func<A>>' is provided as a parameter to the delegate and so will be returned unchanged.
+            // Container
+            new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7657,26 +7802,26 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CannotResolveVoidReturningDelegate()
-        {
-            string userSource = @"
+    [Fact]
+    public void CannotResolveVoidReturningDelegate()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
 public partial class Container : IContainer<Action<int>>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error while resolving dependencies for 'Action<int>': We have no source for instance of type 'Action<int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0102: Error while resolving dependencies for 'Action<int>': We have no source for instance of type 'Action<int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7698,12 +7843,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanImportFactoryMethodFromModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanImportFactoryMethodFromModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -7720,11 +7865,11 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7771,12 +7916,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void FactoryMethodCanBeSingleInstance()
-        {
-            string userSource = @"
+    [Fact]
+    public void FactoryMethodCanBeSingleInstance()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -7793,11 +7938,11 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7819,15 +7964,18 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_1;
@@ -7835,6 +7983,7 @@ partial class Container
             b_0_1 = new global::B();
             a_0_0 = global::Module.M(b: b_0_1);
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(a_0_0);
@@ -7877,12 +8026,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void PublicFactoryInInternalModuleUsed()
-        {
-            string userSource = @"
+    [Fact]
+    public void PublicFactoryInInternalModuleUsed()
+    {
+        string userSource = @"
 using StrongInject;
 
 internal class Module
@@ -7899,14 +8048,14 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (11,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
-                // RegisterModule(typeof(Module))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(11, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (11,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+            // RegisterModule(typeof(Module))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(11, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -7953,12 +8102,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void NonPublicFactoryMethodIgnored()
-        {
-            string userSource = @"
+    [Fact]
+    public void NonPublicFactoryMethodIgnored()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -7975,17 +8124,17 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1002: Factory method 'Module.M(B)' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // Factory
-                new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1002: Factory method 'Module.M(B)' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // Factory
+            new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8007,12 +8156,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void NonStaticFactoryMethodIgnored()
-        {
-            string userSource = @"
+    [Fact]
+    public void NonStaticFactoryMethodIgnored()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -8029,17 +8178,17 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1002: Factory method 'Module.M(B)' is not static, and containing module 'Module' is not a container, so will be ignored.
-                // Factory
-                new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1002: Factory method 'Module.M(B)' is not static, and containing module 'Module' is not a container, so will be ignored.
+            // Factory
+            new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8061,12 +8210,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanUseNonPublicStaticFactoryMethodDefinedInContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanUseNonPublicStaticFactoryMethodDefinedInContainer()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(B))]
@@ -8078,11 +8227,11 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8129,12 +8278,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfPrivateInstanceFactoryMethodDefinedInContainerDuplicatesExistingRegistration()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfPrivateInstanceFactoryMethodDefinedInContainerDuplicatesExistingRegistration()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(B))]
@@ -8147,14 +8296,14 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8176,12 +8325,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfPublicStaticFactoryMethodDefinedInContainerOverridesExistingRegistration()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfPublicStaticFactoryMethodDefinedInContainerOverridesExistingRegistration()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(B))]
@@ -8194,14 +8343,14 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8223,12 +8372,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfMultipleFactoryMethodsDefinedByContainerForSameType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfMultipleFactoryMethodsDefinedByContainerForSameType()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(B))]
@@ -8243,14 +8392,14 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8272,12 +8421,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfInstanceUsedAsFactoryAndFactoryMethodDefinedByContainerForSameType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfInstanceUsedAsFactoryAndFactoryMethodDefinedByContainerForSameType()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(B))]
@@ -8292,14 +8441,14 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8321,12 +8470,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfFactoryMethodReturnsVoid()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfFactoryMethodReturnsVoid()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(B))]
@@ -8339,14 +8488,14 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (8,6): Error SI0014: Factory method 'Container.M(B)' returns void.
-                // Factory
-                new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (8,6): Error SI0014: Factory method 'Container.M(B)' returns void.
+            // Factory
+            new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8387,12 +8536,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfPublicStaticFactoryMethodInContainerReturnsVoid()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfPublicStaticFactoryMethodInContainerReturnsVoid()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(B))]
@@ -8405,14 +8554,14 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (8,6): Error SI0014: Factory method 'Container.M(B)' returns void.
-                // Factory
-                new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (8,6): Error SI0014: Factory method 'Container.M(B)' returns void.
+            // Factory
+            new DiagnosticResult("SI0014", @"Factory", DiagnosticSeverity.Error).WithLocation(8, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8453,12 +8602,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfFactoryMethodFromModuleOverridesExisingRegistration()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfFactoryMethodFromModuleOverridesExisingRegistration()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -8476,14 +8625,14 @@ public class B{}
 public partial class Container : IContainer<A>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (16,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (16,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8505,12 +8654,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfFactoryMethodTakesParameterByRef()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfFactoryMethodTakesParameterByRef()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -8521,19 +8670,19 @@ public class Module
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,23): Error SI0018: parameter 'ref B' of factory method 'Module.M(ref B)' is passed as 'Ref'.
-                // ref B b
-                new DiagnosticResult("SI0018", @"ref B b", DiagnosticSeverity.Error).WithLocation(7, 23));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,23): Error SI0018: parameter 'ref B' of factory method 'Module.M(ref B)' is passed as 'Ref'.
+            // ref B b
+            new DiagnosticResult("SI0018", @"ref B b", DiagnosticSeverity.Error).WithLocation(7, 23));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void CanResolveAsyncFactoryMethod()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveAsyncFactoryMethod()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -8551,11 +8700,11 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8650,12 +8799,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfAsyncFactoryMethodUsedInSyncContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfAsyncFactoryMethodUsedInSyncContainer()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -8673,14 +8822,14 @@ public partial class Container : IContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (13,22): Error SI0103: Error while resolving dependencies for 'A': 'A' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(13, 22));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (13,22): Error SI0103: Error while resolving dependencies for 'A': 'A' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(13, 22));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8702,12 +8851,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfNotAllGenericFactoryMethodTypeParametersUsedInReturnType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfNotAllGenericFactoryMethodTypeParametersUsedInReturnType()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -8724,17 +8873,17 @@ public partial class Container : IAsyncContainer<A>
 
 public class A{}
 public class B{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Error SI0020: All type parameters must be used in return type of generic factory method 'Module.M<T>(B)'
-                // Factory
-                new DiagnosticResult("SI0020", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6),
-                // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Error SI0020: All type parameters must be used in return type of generic factory method 'Module.M<T>(B)'
+            // Factory
+            new DiagnosticResult("SI0020", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6),
+            // (12,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(12, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8756,12 +8905,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfFactoryMethodIsRecursive()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfFactoryMethodIsRecursive()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IAsyncContainer<A>
@@ -8771,14 +8920,14 @@ public partial class Container : IAsyncContainer<A>
 }
 
 public class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
-                // Container
-                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
+            // Container
+            new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8800,12 +8949,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfFactoryMethodRequiresAsyncResolutionInSyncContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfFactoryMethodRequiresAsyncResolutionInSyncContainer()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -8821,14 +8970,14 @@ public class B : IRequiresAsyncInitialization
 {
     public ValueTask InitializeAsync() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0103: Error while resolving dependencies for 'A': 'B' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8850,12 +8999,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void FactoryMethodRequiringAsyncResolutionCanBeSingleInstance()
-        {
-            string userSource = @"
+    [Fact]
+    public void FactoryMethodRequiringAsyncResolutionCanBeSingleInstance()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -8871,11 +9020,11 @@ public class B : IRequiresAsyncInitialization
 {
     public ValueTask InitializeAsync() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -8897,15 +9046,18 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private async global::System.Threading.Tasks.ValueTask<global::A> GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_1;
@@ -8931,6 +9083,7 @@ partial class Container
             }
 
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(a_0_0);
@@ -9007,12 +9160,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestAsyncFactory()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestAsyncFactory()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -9022,11 +9175,11 @@ public partial class Container : IAsyncContainer<A>
 }
 
 public class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9117,12 +9270,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestAsyncGenericFactory()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestAsyncGenericFactory()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -9132,11 +9285,11 @@ public partial class Container : IAsyncContainer<A>
 }
 
 public class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9227,12 +9380,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarnOnInstanceRequiringAsyncDisposalInSyncResolution()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnOnInstanceRequiringAsyncDisposalInSyncResolution()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -9247,14 +9400,14 @@ public class A : IAsyncDisposable
     public ValueTask DisposeAsync() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Warning SI1301: Cannot call asynchronous dispose for 'A' in implementation of synchronous container
-                // Container
-                new DiagnosticResult("SI1301", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Warning SI1301: Cannot call asynchronous dispose for 'A' in implementation of synchronous container
+            // Container
+            new DiagnosticResult("SI1301", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9295,12 +9448,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void NoErrorIfMultipleDependenciesRegisteredForATypeButNoneUsed()
-        {
-            string userSource = @"
+    [Fact]
+    public void NoErrorIfMultipleDependenciesRegisteredForATypeButNoneUsed()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), typeof(A), typeof(IInterface))]
@@ -9313,11 +9466,11 @@ public interface IInterface {}
 public class A : IInterface {}
 public class B : IInterface {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9387,12 +9540,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanImportInstanceFieldFromModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanImportInstanceFieldFromModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9408,11 +9561,11 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9453,12 +9606,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanImportInstancePropertyFromModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanImportInstancePropertyFromModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9474,11 +9627,11 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9519,12 +9672,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningIfInstanceFieldIsNotStatic()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningIfInstanceFieldIsNotStatic()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9540,17 +9693,17 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1004: Instance field 'Module.Instance' is not static, and containing module 'Module' is not a container, so will be ignored.
-                // Instance
-                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1004: Instance field 'Module.Instance' is not static, and containing module 'Module' is not a container, so will be ignored.
+            // Instance
+            new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9572,12 +9725,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningIfInstancePropertyIsNotStatic()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningIfInstancePropertyIsNotStatic()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9593,17 +9746,17 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1004: Instance property 'Module.Instance' is not static, and containing module 'Module' is not a container, so will be ignored.
-                // Instance
-                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1004: Instance property 'Module.Instance' is not static, and containing module 'Module' is not a container, so will be ignored.
+            // Instance
+            new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9625,12 +9778,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningIfInstanceFieldIsNotPublic()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningIfInstanceFieldIsNotPublic()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9646,17 +9799,17 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1004: Instance field 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // Instance
-                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1004: Instance field 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // Instance
+            new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9678,12 +9831,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void PublicInstancePropertyOnInternalModuleIsUsed()
-        {
-            string userSource = @"
+    [Fact]
+    public void PublicInstancePropertyOnInternalModuleIsUsed()
+    {
+        string userSource = @"
 using StrongInject;
 
 internal class Module
@@ -9699,14 +9852,14 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (10,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
-                // RegisterModule(typeof(Module))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(10, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (10,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+            // RegisterModule(typeof(Module))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(10, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9747,12 +9900,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningIfInstancePropertyIsNotPublic()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningIfInstancePropertyIsNotPublic()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9768,17 +9921,17 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1004: Instance property 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // Instance
-                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1004: Instance property 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // Instance
+            new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9800,12 +9953,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfInstancePropertyIsWriteOnly()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfInstancePropertyIsWriteOnly()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9821,17 +9974,17 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Error SI0021: Instance property 'Module.Instance' is write only.
-                // Instance
-                new DiagnosticResult("SI0021", @"Instance", DiagnosticSeverity.Error).WithLocation(6, 6),
-                // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Error SI0021: Instance property 'Module.Instance' is write only.
+            // Instance
+            new DiagnosticResult("SI0021", @"Instance", DiagnosticSeverity.Error).WithLocation(6, 6),
+            // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9853,12 +10006,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningIfInstancePropertyGetMethodIsNotPublic()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningIfInstancePropertyGetMethodIsNotPublic()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -9874,17 +10027,17 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1004: Instance property 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // Instance
-                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1004: Instance property 'Module.Instance' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // Instance
+            new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (11,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(11, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9906,12 +10059,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanUsePrivateInstanceFieldOnContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanUsePrivateInstanceFieldOnContainer()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<A>
@@ -9921,11 +10074,11 @@ public partial class Container : IContainer<A>
 
 public class A {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -9966,12 +10119,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DoesNotCallDisposeOnInstanceField()
-        {
-            string userSource = @"
+    [Fact]
+    public void DoesNotCallDisposeOnInstanceField()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -9980,11 +10133,11 @@ public partial class Container : IContainer<IDisposable>
     [Instance] private IDisposable DisposableInstance = null;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10025,12 +10178,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ArrayResolvesAllRegistrationsForType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ArrayResolvesAllRegistrationsForType()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A : IA {}
@@ -10058,11 +10211,11 @@ public partial class Container : IContainer<IA[]>
     [Instance] private IA AInstance = null;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10084,20 +10237,24 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -10213,12 +10370,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ArrayIgnoresDuplicateRegistrationForType1()
-        {
-            string userSource = @"
+    [Fact]
+    public void ArrayIgnoresDuplicateRegistrationForType1()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A : IA {}
@@ -10237,11 +10394,11 @@ public partial class Container : IContainer<IA[]>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10298,12 +10455,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ArrayIgnoresDuplicateRegistrationForType2()
-        {
-            string userSource = @"
+    [Fact]
+    public void ArrayIgnoresDuplicateRegistrationForType2()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A : IA {}
@@ -10327,11 +10484,11 @@ public partial class Container : IContainer<IA[]>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10388,12 +10545,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ArrayIgnoresExludedRegistrations()
-        {
-            string userSource = @"
+    [Fact]
+    public void ArrayIgnoresExludedRegistrations()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A : IA {}
@@ -10410,14 +10567,14 @@ public partial class Container : IContainer<IA[]>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (14,22): Warning SI1105: Warning while resolving dependencies for 'IA[]': Resolving all registration of type 'IA', but there are no such registrations.
-                // Container
-                new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(14, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (14,22): Warning SI1105: Warning while resolving dependencies for 'IA[]': Resolving all registration of type 'IA', but there are no such registrations.
+            // Container
+            new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(14, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10458,12 +10615,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfArrayDependenciesAreRecursive()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfArrayDependenciesAreRecursive()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A : IA { public A(IA[] ia){} }
@@ -10481,14 +10638,14 @@ public partial class Container : IContainer<IA[]>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (15,22): Error SI0101: Error while resolving dependencies for 'IA[]': 'IA[]' has a circular dependency
-                // Container
-                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(15, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (15,22): Error SI0101: Error while resolving dependencies for 'IA[]': 'IA[]' has a circular dependency
+            // Container
+            new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(15, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10510,12 +10667,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfArrayDependenciesRequireAsyncResolutionInSyncContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfArrayDependenciesRequireAsyncResolutionInSyncContainer()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -10534,14 +10691,14 @@ public partial class Container : IContainer<IA[]>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (16,22): Error SI0103: Error while resolving dependencies for 'IA[]': 'IA' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (16,22): Error SI0103: Error while resolving dependencies for 'IA[]': 'IA' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10563,12 +10720,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ArrayDependenciesDontIncludeDelegateParameters()
-        {
-            string userSource = @"
+    [Fact]
+    public void ArrayDependenciesDontIncludeDelegateParameters()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -10587,14 +10744,14 @@ public partial class Container : IContainer<Func<IA, IA[]>>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (16,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<IA, IA[]>': Parameter 'IA' of delegate 'IA[]' is not used in resolution of 'IA[]'.
-                // Container
-                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(16, 22));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (16,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<IA, IA[]>': Parameter 'IA' of delegate 'IA[]' is not used in resolution of 'IA[]'.
+            // Container
+            new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(16, 22));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10663,12 +10820,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveSimpleTypeFromGenericFactoryMethod()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveSimpleTypeFromGenericFactoryMethod()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<string>
@@ -10676,11 +10833,11 @@ public partial class Container : IContainer<string>
     [Factory] T Resolve<T>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10721,12 +10878,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveNamedTypeFromGenericFactoryMethod1()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveNamedTypeFromGenericFactoryMethod1()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -10735,11 +10892,11 @@ public partial class Container : IContainer<List<string>>
     [Factory] List<T> Resolve<T>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10782,12 +10939,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveNamedTypeFromGenericFactoryMethod2()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveNamedTypeFromGenericFactoryMethod2()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -10796,11 +10953,11 @@ public partial class Container : IContainer<List<string[]>>
     [Factory] List<T> Resolve<T>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10843,12 +11000,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveNamedTypeFromGenericFactoryMethod3()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveNamedTypeFromGenericFactoryMethod3()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -10857,11 +11014,11 @@ public partial class Container : IContainer<List<string[]>>
     [Factory] List<T[]> Resolve<T>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10904,12 +11061,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveNamedTypeFromGenericFactoryMethod4()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveNamedTypeFromGenericFactoryMethod4()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<(int, object, int, int)>
@@ -10917,11 +11074,11 @@ public partial class Container : IContainer<(int, object, int, int)>
     [Factory] (T1, T2, T1, T3) Resolve<T1, T2, T3>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -10962,12 +11119,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveArrayTypeFromGenericFactoryMethod()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveArrayTypeFromGenericFactoryMethod()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<(int, object, int, string)[]>
@@ -10975,11 +11132,11 @@ public partial class Container : IContainer<(int, object, int, string)[]>
     [Factory] (T1, T2, T1, T3)[] Resolve<T1, T2, T3>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -11022,12 +11179,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanResolveTypeIncludingClassTypeParameterFromGenericFactoryMethod()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanResolveTypeIncludingClassTypeParameterFromGenericFactoryMethod()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container<T> : IContainer<(T, int)>
@@ -11035,11 +11192,11 @@ public partial class Container<T> : IContainer<(T, int)>
     [Factory] (T, T1) Resolve<T1>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container<T>
 {
     private int _disposed = 0;
@@ -11080,12 +11237,12 @@ partial class Container<T>
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfNotAllTypeParametersUsedInReturnType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfNotAllTypeParametersUsedInReturnType()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<(int, object, int)>
@@ -11093,17 +11250,17 @@ public partial class Container : IContainer<(int, object, int)>
     [Factory] (T1, T2, T1) Resolve<T1, T2, T3>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for '(int, object, int)': We have no source for instance of type '(int, object, int)'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (6,6): Error SI0020: All type parameters must be used in return type of generic factory method 'Container.Resolve<T1, T2, T3>()'
-                // Factory
-                new DiagnosticResult("SI0020", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for '(int, object, int)': We have no source for instance of type '(int, object, int)'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (6,6): Error SI0020: All type parameters must be used in return type of generic factory method 'Container.Resolve<T1, T2, T3>()'
+            // Factory
+            new DiagnosticResult("SI0020", @"Factory", DiagnosticSeverity.Error).WithLocation(6, 6));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -11125,12 +11282,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void LooksForRegisteredInstancesOfArgumentsOfConstructedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void LooksForRegisteredInstancesOfArgumentsOfConstructedType()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<int>))]
@@ -11143,11 +11300,11 @@ public class A<T>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -11192,12 +11349,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorOnRecursiveGenericMethodFactoryDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorOnRecursiveGenericMethodFactoryDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<int>
@@ -11209,14 +11366,14 @@ public class A<T>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0107: Error while resolving dependencies for 'int': The Dependency tree is deeper than the maximum depth of 200.
-                // Container
-                new DiagnosticResult("SI0107", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0107: Error while resolving dependencies for 'int': The Dependency tree is deeper than the maximum depth of 200.
+            // Container
+            new DiagnosticResult("SI0107", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -11238,12 +11395,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void FollowsRecursiveGenericMethodFactoryDependenciesToPossibleResolution()
-        {
-            string userSource = @"
+    [Fact]
+    public void FollowsRecursiveGenericMethodFactoryDependenciesToPossibleResolution()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<A<A<A<A<A<A<A<A<A<int>>>>>>>>>>))]
@@ -11256,11 +11413,11 @@ public class A<T>
 {
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -11505,12 +11662,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfTypeParametersCantMatch()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfTypeParametersCantMatch()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -11519,14 +11676,14 @@ public partial class Container<T> : IContainer<List<(string, int, object)>>
     [Factory] List<(T1, T2, T1)> Resolve<T1, T2>() => default;
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.List<(string, int, object)>': We have no source for instance of type 'System.Collections.Generic.List<(string, int, object)>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.List<(string, int, object)>': We have no source for instance of type 'System.Collections.Generic.List<(string, int, object)>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container<T>
 {
     private int _disposed = 0;
@@ -11548,12 +11705,12 @@ partial class Container<T>
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestNewConstraint()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestNewConstraint()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<D>, IContainer<E>, IContainer<F>, IContainer<int>, IContainer<string>
@@ -11578,42 +11735,42 @@ public class D { public D() {} }
 public class E { internal E() {} }
 public class F { public F(int i) {} }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'E': We have no source for instance of type 'E'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'E': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'E' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'F': We have no source for instance of type 'F'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'F': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'F' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'string': We have no source for instance of type 'string'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'string': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'string' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
-                // Container3
-                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
-                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
-                // Container3
-                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
-            Assert.Equal(3, generated.Length);
-            var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'E': We have no source for instance of type 'E'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'E': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'E' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'F': We have no source for instance of type 'F'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'F': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'F' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'string': We have no source for instance of type 'string'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'string': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'string' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+            // Container3
+            new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+            // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+            // Container3
+            new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+        Assert.Equal(3, generated.Length);
+        var ordered = generated.OrderBy(x => x).ToArray();
+        ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -11814,7 +11971,7 @@ partial class Container1
         throw new global::System.NotImplementedException();
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -11857,7 +12014,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -11879,12 +12036,12 @@ partial class Container3<T1>
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestStructConstraint()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestStructConstraint()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<System.ValueType>
@@ -11906,36 +12063,36 @@ public struct A {}
 public class B {}
 public enum C {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'B': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'B' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'System.ValueType': We have no source for instance of type 'System.ValueType'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'System.ValueType': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'System.ValueType' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
-                // Container3
-                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
-                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
-                // Container3
-                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
-            Assert.Equal(3, generated.Length);
-            var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'B': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'B' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'System.ValueType': We have no source for instance of type 'System.ValueType'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'System.ValueType': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'System.ValueType' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+            // Container3
+            new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+            // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+            // Container3
+            new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+        Assert.Equal(3, generated.Length);
+        var ordered = generated.OrderBy(x => x).ToArray();
+        ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -12035,7 +12192,7 @@ partial class Container1
         throw new global::System.NotImplementedException();
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -12078,7 +12235,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -12100,12 +12257,12 @@ partial class Container3<T1>
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestReferenceConstraint()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestReferenceConstraint()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<I>, IContainer<System.ValueType>
@@ -12128,36 +12285,36 @@ public class B {}
 public enum C {}
 public interface I {}
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
-                // Container3
-                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
-                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
-                // Container3
-                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
-            Assert.Equal(3, generated.Length);
-            var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'A': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+            // Container3
+            new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+            // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+            // Container3
+            new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+        Assert.Equal(3, generated.Length);
+        var ordered = generated.OrderBy(x => x).ToArray();
+        ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -12292,7 +12449,7 @@ partial class Container1
         });
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -12335,7 +12492,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -12357,12 +12514,12 @@ partial class Container3<T1>
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestUnmanagedConstraint()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestUnmanagedConstraint()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container1 : IContainer<A>, IContainer<A?>, IContainer<B>, IContainer<C>, IContainer<D>, IContainer<E>, IContainer<F<int>>, IContainer<G<int>>, IContainer<G<D>>, IContainer<System.ValueType>
@@ -12388,60 +12545,60 @@ public struct E { int _e; }
 public struct F<T> where T : unmanaged { T _t; }
 public struct G<T> where T : struct { T _t; }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify(
-                // (22,26): Warning CS0169: The field 'D._s' is never used
-                // _s
-                new DiagnosticResult("CS0169", @"_s", DiagnosticSeverity.Warning).WithLocation(22, 26),
-                // (23,23): Warning CS0169: The field 'E._e' is never used
-                // _e
-                new DiagnosticResult("CS0169", @"_e", DiagnosticSeverity.Warning).WithLocation(23, 23),
-                // (24,44): Warning CS0169: The field 'F<T>._t' is never used
-                // _t
-                new DiagnosticResult("CS0169", @"_t", DiagnosticSeverity.Warning).WithLocation(24, 44),
-                // (25,41): Warning CS0169: The field 'G<T>._t' is never used
-                // _t
-                new DiagnosticResult("CS0169", @"_t", DiagnosticSeverity.Warning).WithLocation(25, 41));
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'B': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'B' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'D': We have no source for instance of type 'D'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'D': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'D' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'G<D>': We have no source for instance of type 'G<D>'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'G<D>': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'G<D>' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'System.ValueType': We have no source for instance of type 'System.ValueType'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'System.ValueType': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'System.ValueType' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
-                // Container3
-                new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
-                // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
-                // Container3
-                new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
-            Assert.Equal(3, generated.Length);
-            var ordered = generated.OrderBy(x => x).ToArray();
-            ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify(
+            // (22,26): Warning CS0169: The field 'D._s' is never used
+            // _s
+            new DiagnosticResult("CS0169", @"_s", DiagnosticSeverity.Warning).WithLocation(22, 26),
+            // (23,23): Warning CS0169: The field 'E._e' is never used
+            // _e
+            new DiagnosticResult("CS0169", @"_e", DiagnosticSeverity.Warning).WithLocation(23, 23),
+            // (24,44): Warning CS0169: The field 'F<T>._t' is never used
+            // _t
+            new DiagnosticResult("CS0169", @"_t", DiagnosticSeverity.Warning).WithLocation(24, 44),
+            // (25,41): Warning CS0169: The field 'G<T>._t' is never used
+            // _t
+            new DiagnosticResult("CS0169", @"_t", DiagnosticSeverity.Warning).WithLocation(25, 41));
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'A?': We have no source for instance of type 'A?'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'A?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'A?' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'B': We have no source for instance of type 'B'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'B': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'B' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'D': We have no source for instance of type 'D'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'D': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'D' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'G<D>': We have no source for instance of type 'G<D>'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'G<D>': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'G<D>' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'System.ValueType': We have no source for instance of type 'System.ValueType'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'System.ValueType': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'System.ValueType' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (14,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+            // Container3
+            new DiagnosticResult("SI0102", @"Container3", DiagnosticSeverity.Error).WithLocation(14, 22),
+            // (14,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+            // Container3
+            new DiagnosticResult("SI1106", @"Container3", DiagnosticSeverity.Warning).WithLocation(14, 22));
+        Assert.Equal(3, generated.Length);
+        var ordered = generated.OrderBy(x => x).ToArray();
+        ordered[0].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container1
 {
     private int _disposed = 0;
@@ -12648,7 +12805,7 @@ partial class Container1
         throw new global::System.NotImplementedException();
     }
 }");
-            ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[1].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container2<T1>
 {
     private int _disposed = 0;
@@ -12691,7 +12848,7 @@ partial class Container2<T1>
         });
     }
 }");
-            ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        ordered[2].Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container3<T1>
 {
     private int _disposed = 0;
@@ -12713,12 +12870,12 @@ partial class Container3<T1>
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestTypeConstraints1()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestTypeConstraints1()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container1<T1> : IContainer<T1> where T1 : A 
@@ -12759,34 +12916,34 @@ public partial class Container7 : IContainer<A>, IContainer<B>, IContainer<C>
 public class A {}
 public class B : A {}
 public class C {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (24,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
-                // Container5
-                new DiagnosticResult("SI0102", @"Container5", DiagnosticSeverity.Error).WithLocation(24, 22),
-                // (24,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
-                // Container5
-                new DiagnosticResult("SI1106", @"Container5", DiagnosticSeverity.Warning).WithLocation(24, 22),
-                // (29,22): Error SI0102: Error while resolving dependencies for 'T2': We have no source for instance of type 'T2'
-                // Container6
-                new DiagnosticResult("SI0102", @"Container6", DiagnosticSeverity.Error).WithLocation(29, 22),
-                // (29,22): Warning SI1106: Warning while resolving dependencies for 'T2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T2' as the required type arguments do not satisfy the generic constraints.
-                // Container6
-                new DiagnosticResult("SI1106", @"Container6", DiagnosticSeverity.Warning).WithLocation(29, 22),
-                // (34,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
-                // Container7
-                new DiagnosticResult("SI0102", @"Container7", DiagnosticSeverity.Error).WithLocation(34, 22),
-                // (34,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
-                // Container7
-                new DiagnosticResult("SI1106", @"Container7", DiagnosticSeverity.Warning).WithLocation(34, 22));
-            Assert.Equal(7, generated.Length);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (24,22): Error SI0102: Error while resolving dependencies for 'T1': We have no source for instance of type 'T1'
+            // Container5
+            new DiagnosticResult("SI0102", @"Container5", DiagnosticSeverity.Error).WithLocation(24, 22),
+            // (24,22): Warning SI1106: Warning while resolving dependencies for 'T1': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T1' as the required type arguments do not satisfy the generic constraints.
+            // Container5
+            new DiagnosticResult("SI1106", @"Container5", DiagnosticSeverity.Warning).WithLocation(24, 22),
+            // (29,22): Error SI0102: Error while resolving dependencies for 'T2': We have no source for instance of type 'T2'
+            // Container6
+            new DiagnosticResult("SI0102", @"Container6", DiagnosticSeverity.Error).WithLocation(29, 22),
+            // (29,22): Warning SI1106: Warning while resolving dependencies for 'T2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'T2' as the required type arguments do not satisfy the generic constraints.
+            // Container6
+            new DiagnosticResult("SI1106", @"Container6", DiagnosticSeverity.Warning).WithLocation(29, 22),
+            // (34,22): Error SI0102: Error while resolving dependencies for 'C': We have no source for instance of type 'C'
+            // Container7
+            new DiagnosticResult("SI0102", @"Container7", DiagnosticSeverity.Error).WithLocation(34, 22),
+            // (34,22): Warning SI1106: Warning while resolving dependencies for 'C': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C' as the required type arguments do not satisfy the generic constraints.
+            // Container7
+            new DiagnosticResult("SI1106", @"Container7", DiagnosticSeverity.Warning).WithLocation(34, 22));
+        Assert.Equal(7, generated.Length);
+    }
 
-        [Fact]
-        public void TestTypeConstraints2()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestTypeConstraints2()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -12797,23 +12954,23 @@ public partial class Container : IContainer<Enum>, IContainer<E>, IContainer<E?>
 
 public enum E {}
 public struct S {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error while resolving dependencies for 'E?': We have no source for instance of type 'E?'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
-                // (5,22): Warning SI1106: Warning while resolving dependencies for 'E?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'E?' as the required type arguments do not satisfy the generic constraints.
-                // Container
-                new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22),
-                // (5,22): Error SI0102: Error while resolving dependencies for 'S': We have no source for instance of type 'S'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
-                // (5,22): Warning SI1106: Warning while resolving dependencies for 'S': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S' as the required type arguments do not satisfy the generic constraints.
-                // Container
-                new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0102: Error while resolving dependencies for 'E?': We have no source for instance of type 'E?'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
+            // (5,22): Warning SI1106: Warning while resolving dependencies for 'E?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'E?' as the required type arguments do not satisfy the generic constraints.
+            // Container
+            new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22),
+            // (5,22): Error SI0102: Error while resolving dependencies for 'S': We have no source for instance of type 'S'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
+            // (5,22): Warning SI1106: Warning while resolving dependencies for 'S': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S' as the required type arguments do not satisfy the generic constraints.
+            // Container
+            new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 22));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -12905,12 +13062,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestTypeConstraints3()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestTypeConstraints3()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container1 : IContainer<I>, IContainer<C>, IContainer<C2>, IContainer<S>, IContainer<S?>, IContainer<S2>
@@ -12933,33 +13090,33 @@ public class C : I {}
 public class C2 {}
 public struct S : I {}
 public struct S2 {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'C2': We have no source for instance of type 'C2'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'C2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C2' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'S?': We have no source for instance of type 'S?'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'S?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S?' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'S2': We have no source for instance of type 'S2'
-                // Container1
-                new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Warning SI1106: Warning while resolving dependencies for 'S2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S2' as the required type arguments do not satisfy the generic constraints.
-                // Container1
-                new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22));
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'C2': We have no source for instance of type 'C2'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'C2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'C2' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'S?': We have no source for instance of type 'S?'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'S?': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S?' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'S2': We have no source for instance of type 'S2'
+            // Container1
+            new DiagnosticResult("SI0102", @"Container1", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Warning SI1106: Warning while resolving dependencies for 'S2': factory method 'StrongInject.Generator.FactoryMethod' cannot be used to resolve instance of type 'S2' as the required type arguments do not satisfy the generic constraints.
+            // Container1
+            new DiagnosticResult("SI1106", @"Container1", DiagnosticSeverity.Warning).WithLocation(4, 22));
+    }
 
-        [Fact]
-        public void TestTypeConstraints4()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestTypeConstraints4()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container<T1> : IContainer<T1>
@@ -12976,15 +13133,15 @@ public partial class Container<T1, T2, T3> : IContainer<T3> where T2 : T1 where 
 {
     [Factory] T Resolve<T>() where T : T1 => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+    }
 
-        [Fact]
-        public void TestTypeConstraints5()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestTypeConstraints5()
+    {
+        string userSource = @"
 using StrongInject;
 
 public interface A<out T> {}
@@ -13008,27 +13165,27 @@ public partial class Container4 : IContainer<(A<object>, string)>
 {
     [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T2> => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (11,22): Error SI0102: Error while resolving dependencies for '(A<int>, string)': We have no source for instance of type '(A<int>, string)'
-                // Container2
-                new DiagnosticResult("SI0102", @"Container2", DiagnosticSeverity.Error).WithLocation(11, 22),
-                // (11,22): Warning SI1106: Warning while resolving dependencies for '(A<int>, string)': factory method 'Container2.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<int>, string)' as the required type arguments do not satisfy the generic constraints.
-                // Container2
-                new DiagnosticResult("SI1106", @"Container2", DiagnosticSeverity.Warning).WithLocation(11, 22),
-                // (21,22): Error SI0102: Error while resolving dependencies for '(A<object>, string)': We have no source for instance of type '(A<object>, string)'
-                // Container4
-                new DiagnosticResult("SI0102", @"Container4", DiagnosticSeverity.Error).WithLocation(21, 22),
-                // (21,22): Warning SI1106: Warning while resolving dependencies for '(A<object>, string)': factory method 'Container4.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<object>, string)' as the required type arguments do not satisfy the generic constraints.
-                // Container4
-                new DiagnosticResult("SI1106", @"Container4", DiagnosticSeverity.Warning).WithLocation(21, 22));
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (11,22): Error SI0102: Error while resolving dependencies for '(A<int>, string)': We have no source for instance of type '(A<int>, string)'
+            // Container2
+            new DiagnosticResult("SI0102", @"Container2", DiagnosticSeverity.Error).WithLocation(11, 22),
+            // (11,22): Warning SI1106: Warning while resolving dependencies for '(A<int>, string)': factory method 'Container2.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<int>, string)' as the required type arguments do not satisfy the generic constraints.
+            // Container2
+            new DiagnosticResult("SI1106", @"Container2", DiagnosticSeverity.Warning).WithLocation(11, 22),
+            // (21,22): Error SI0102: Error while resolving dependencies for '(A<object>, string)': We have no source for instance of type '(A<object>, string)'
+            // Container4
+            new DiagnosticResult("SI0102", @"Container4", DiagnosticSeverity.Error).WithLocation(21, 22),
+            // (21,22): Warning SI1106: Warning while resolving dependencies for '(A<object>, string)': factory method 'Container4.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<object>, string)' as the required type arguments do not satisfy the generic constraints.
+            // Container4
+            new DiagnosticResult("SI1106", @"Container4", DiagnosticSeverity.Warning).WithLocation(21, 22));
+    }
 
-        [Fact]
-        public void TestTypeConstraints6()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestTypeConstraints6()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A<T1, T2> {}
@@ -13042,21 +13199,21 @@ public partial class Container2<T> : IContainer<(A<T, A<int, string>[]>, int)>
 {
     [Factory] (T1, T2) Resolve<T1, T2>() where T1 : A<T, A<int, T2>[]> => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (11,22): Error SI0102: Error while resolving dependencies for '(A<T, A<int, string>[]>, int)': We have no source for instance of type '(A<T, A<int, string>[]>, int)'
-                // Container2
-                new DiagnosticResult("SI0102", @"Container2", DiagnosticSeverity.Error).WithLocation(11, 22),
-                // (11,22): Warning SI1106: Warning while resolving dependencies for '(A<T, A<int, string>[]>, int)': factory method 'Container2<T>.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<T, A<int, string>[]>, int)' as the required type arguments do not satisfy the generic constraints.
-                // Container2
-                new DiagnosticResult("SI1106", @"Container2", DiagnosticSeverity.Warning).WithLocation(11, 22));
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (11,22): Error SI0102: Error while resolving dependencies for '(A<T, A<int, string>[]>, int)': We have no source for instance of type '(A<T, A<int, string>[]>, int)'
+            // Container2
+            new DiagnosticResult("SI0102", @"Container2", DiagnosticSeverity.Error).WithLocation(11, 22),
+            // (11,22): Warning SI1106: Warning while resolving dependencies for '(A<T, A<int, string>[]>, int)': factory method 'Container2<T>.Resolve<T1, T2>()' cannot be used to resolve instance of type '(A<T, A<int, string>[]>, int)' as the required type arguments do not satisfy the generic constraints.
+            // Container2
+            new DiagnosticResult("SI1106", @"Container2", DiagnosticSeverity.Warning).WithLocation(11, 22));
+    }
 
-        [Fact]
-        public void CanImportGenericFactoryMethod()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanImportGenericFactoryMethod()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module
@@ -13068,11 +13225,11 @@ public class Module
 public partial class Container : IContainer<(int, int)>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13113,12 +13270,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfGenericFactoryMethodsImportedFromMultipleModules()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfGenericFactoryMethodsImportedFromMultipleModules()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13136,14 +13293,14 @@ public class Module2
 public partial class Container : IContainer<(int, int)>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (16,22): Error SI0106: Error while resolving dependencies for '(int, int)': We have multiple sources for instance of type '(int, int)' and no best source. Try adding a single registration for '(int, int)' directly to the container, and moving any existing registrations for '(int, int)' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (16,22): Error SI0106: Error while resolving dependencies for '(int, int)': We have multiple sources for instance of type '(int, int)' and no best source. Try adding a single registration for '(int, int)' directly to the container, and moving any existing registrations for '(int, int)' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(16, 22));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13165,12 +13322,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void IgnoresGenericFactoryMethodsWhereConstraintsDontMatch()
-        {
-            string userSource = @"
+    [Fact]
+    public void IgnoresGenericFactoryMethodsWhereConstraintsDontMatch()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13188,11 +13345,11 @@ public class Module2
 public partial class Container : IContainer<(int, int)>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13233,12 +13390,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ModuleOverridesRegistrationsItImports()
-        {
-            string userSource = @"
+    [Fact]
+    public void ModuleOverridesRegistrationsItImports()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13256,11 +13413,11 @@ public class Module2
 public partial class Container : IContainer<(int, int)>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13301,12 +13458,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ModuleDoesNotOverrideRegistrationsItImportsIfConstraintsDontMatch()
-        {
-            string userSource = @"
+    [Fact]
+    public void ModuleDoesNotOverrideRegistrationsItImportsIfConstraintsDontMatch()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13324,11 +13481,11 @@ public class Module2
 public partial class Container : IContainer<(int, int)>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13369,12 +13526,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ModuleDoesNotOverrideModuleItDoesNotImport()
-        {
-            string userSource = @"
+    [Fact]
+    public void ModuleDoesNotOverrideModuleItDoesNotImport()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13398,14 +13555,14 @@ public class Module3
 public partial class Container : IContainer<(int, int)>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify(
-                // (22,22): Error SI0106: Error while resolving dependencies for '(int, int)': We have multiple sources for instance of type '(int, int)' and no best source. Try adding a single registration for '(int, int)' directly to the container, and moving any existing registrations for '(int, int)' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(22, 22));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify(
+            // (22,22): Error SI0106: Error while resolving dependencies for '(int, int)': We have multiple sources for instance of type '(int, int)' and no best source. Try adding a single registration for '(int, int)' directly to the container, and moving any existing registrations for '(int, int)' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(22, 22));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13427,12 +13584,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void NoErrorIfSameModuleImportedTwice()
-        {
-            string userSource = @"
+    [Fact]
+    public void NoErrorIfSameModuleImportedTwice()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13457,11 +13614,11 @@ public class Module3
 public partial class Container : IContainer<(int, int)>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13502,12 +13659,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ResolveAllDeduplicatesIfSameModuleImportedTwice()
-        {
-            string userSource = @"
+    [Fact]
+    public void ResolveAllDeduplicatesIfSameModuleImportedTwice()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13532,11 +13689,11 @@ public class Module3
 public partial class Container : IContainer<(int, int)[]>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13589,12 +13746,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AppendGenericAndNonGenericResolutions()
-        {
-            string userSource = @"
+    [Fact]
+    public void AppendGenericAndNonGenericResolutions()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -13620,11 +13777,11 @@ public partial class Container : IContainer<(int, int)[]>
 {
     [Factory] public (int, int) M() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            comp.GetDiagnostics().Verify();
-            generatorDiagnostics.Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        comp.GetDiagnostics().Verify();
+        generatorDiagnostics.Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13681,12 +13838,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WrapsTypesInDecoratorsRegisteredByAttributes()
-        {
-            string userSource = @"
+    [Fact]
+    public void WrapsTypesInDecoratorsRegisteredByAttributes()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), typeof(IA))]
@@ -13708,11 +13865,11 @@ public class Decorator2 : IA
 {
     public Decorator2(IA a, B b){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13769,12 +13926,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WrapsTypesInDecoratorsRegisteredByDecoratorFactory()
-        {
-            string userSource = @"
+    [Fact]
+    public void WrapsTypesInDecoratorsRegisteredByDecoratorFactory()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), typeof(IA))]
@@ -13791,11 +13948,11 @@ public partial class Container : IAsyncContainer<IA>
 public interface IA {}
 public class A : IA {}
 public class B {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13852,12 +14009,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfDecoratorsHaveNoParametersOfDecoratedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfDecoratorsHaveNoParametersOfDecoratedType()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), typeof(IA))]
@@ -13875,17 +14032,17 @@ public class Decorator : IA
 {
     public Decorator(Decorator d){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,2): Error SI0022: Decorator 'Decorator' does not have a constructor parameter of decorated type 'IA'.
-                // RegisterDecorator(typeof(Decorator), typeof(IA))
-                new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(Decorator), typeof(IA))", DiagnosticSeverity.Error).WithLocation(6, 2),
-                // (9,6): Error SI0024: Decorator Factory 'Container.Decorator(A)' does not have a parameter of decorated type 'IA'.
-                // DecoratorFactory
-                new DiagnosticResult("SI0024", @"DecoratorFactory", DiagnosticSeverity.Error).WithLocation(9, 6));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,2): Error SI0022: Decorator 'Decorator' does not have a constructor parameter of decorated type 'IA'.
+            // RegisterDecorator(typeof(Decorator), typeof(IA))
+            new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(Decorator), typeof(IA))", DiagnosticSeverity.Error).WithLocation(6, 2),
+            // (9,6): Error SI0024: Decorator Factory 'Container.Decorator(A)' does not have a parameter of decorated type 'IA'.
+            // DecoratorFactory
+            new DiagnosticResult("SI0024", @"DecoratorFactory", DiagnosticSeverity.Error).WithLocation(9, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -13930,12 +14087,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfDecoratorsHaveMultipleParametersOfDecoratedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfDecoratorsHaveMultipleParametersOfDecoratedType()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), typeof(IA))]
@@ -13953,17 +14110,17 @@ public class Decorator : IA
 {
     public Decorator(IA a, B b, IA c){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,2): Error SI0023: Decorator 'Decorator' has multiple constructor parameters of decorated type 'IA'.
-                // RegisterDecorator(typeof(Decorator), typeof(IA))
-                new DiagnosticResult("SI0023", @"RegisterDecorator(typeof(Decorator), typeof(IA))", DiagnosticSeverity.Error).WithLocation(6, 2),
-                // (9,6): Error SI0025: Decorator Factory 'Container.Decorator(IA, IA)' has multiple constructor parameters of decorated type 'IA'.
-                // DecoratorFactory
-                new DiagnosticResult("SI0025", @"DecoratorFactory", DiagnosticSeverity.Error).WithLocation(9, 6));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,2): Error SI0023: Decorator 'Decorator' has multiple constructor parameters of decorated type 'IA'.
+            // RegisterDecorator(typeof(Decorator), typeof(IA))
+            new DiagnosticResult("SI0023", @"RegisterDecorator(typeof(Decorator), typeof(IA))", DiagnosticSeverity.Error).WithLocation(6, 2),
+            // (9,6): Error SI0025: Decorator Factory 'Container.Decorator(IA, IA)' has multiple constructor parameters of decorated type 'IA'.
+            // DecoratorFactory
+            new DiagnosticResult("SI0025", @"DecoratorFactory", DiagnosticSeverity.Error).WithLocation(9, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14008,12 +14165,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WrapsTypesInDecoratorsRegisteredByGenericDecoratorFactory()
-        {
-            string userSource = @"
+    [Fact]
+    public void WrapsTypesInDecoratorsRegisteredByGenericDecoratorFactory()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -14037,11 +14194,11 @@ public partial class Container : IAsyncContainer<List<IA>>
 public interface IA {}
 public class A : IA {}
 public class B {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14146,12 +14303,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DoesNotDecorateDelegateParameters()
-        {
-            string userSource = @"
+    [Fact]
+    public void DoesNotDecorateDelegateParameters()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -14165,14 +14322,14 @@ public class Decorator : IA
 {
     public Decorator(IA a){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<IA, IA>': Return type 'IA' of delegate 'System.Func<IA, IA>' is provided as a parameter to the delegate and so will be returned unchanged.
-                // Container
-                new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1104: Warning while resolving dependencies for 'System.Func<IA, IA>': Return type 'IA' of delegate 'System.Func<IA, IA>' is provided as a parameter to the delegate and so will be returned unchanged.
+            // Container
+            new DiagnosticResult("SI1104", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14221,12 +14378,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DecoratesInstanceFieldOrProperties()
-        {
-            string userSource = @"
+    [Fact]
+    public void DecoratesInstanceFieldOrProperties()
+    {
+        string userSource = @"
 using StrongInject;
 
 [RegisterDecorator(typeof(Decorator), typeof(IA))]
@@ -14240,14 +14397,14 @@ public class Decorator : IA
 {
     public Decorator(IA a){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (7,19): Warning CS0649: Field 'Container._ia' is never assigned to, and will always have its default value null
-                // _ia
-                new DiagnosticResult("CS0649", @"_ia", DiagnosticSeverity.Warning).WithLocation(7, 19));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (7,19): Warning CS0649: Field 'Container._ia' is never assigned to, and will always have its default value null
+            // _ia
+            new DiagnosticResult("CS0649", @"_ia", DiagnosticSeverity.Warning).WithLocation(7, 19));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14269,15 +14426,18 @@ partial class Container
     }
 
     private global::IA _iAField0;
+    private bool _iAField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::IA GetIAField0()
     {
-        if (!object.ReferenceEquals(_iAField0, null))
-            return _iAField0;
+        if (this._iAField0Set)
+            return this._iAField0;
         this._lock0.Wait();
         try
         {
+            if (this._iAField0Set)
+                return this._iAField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::IA iA_0_1;
@@ -14285,6 +14445,7 @@ partial class Container
             iA_0_1 = this._ia;
             iA_0_0 = new global::Decorator(a: iA_0_1);
             this._iAField0 = iA_0_0;
+            this._iAField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -14326,12 +14487,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DecoratesSingleInstanceDependencies()
-        {
-            string userSource = @"
+    [Fact]
+    public void DecoratesSingleInstanceDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 
 [RegisterDecorator(typeof(Decorator), typeof(IA))]
@@ -14345,11 +14506,11 @@ public class Decorator : IA
 {
     public Decorator(IA a){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14381,23 +14542,28 @@ partial class Container
     }
 
     private global::IA _iAField0;
+    private bool _iAField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::IA _iAField1;
+    private bool _iAField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private global::IA GetIAField1()
     {
-        if (!object.ReferenceEquals(_iAField1, null))
-            return _iAField1;
+        if (this._iAField1Set)
+            return this._iAField1;
         this._lock1.Wait();
         try
         {
+            if (this._iAField1Set)
+                return this._iAField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::IA iA_0_0;
             iA_0_0 = this.GetIA();
             this._iAField1 = iA_0_0;
+            this._iAField1Set = true;
             this._disposeAction1 = async () =>
             {
                 await global::StrongInject.Helpers.DisposeAsync(iA_0_0);
@@ -14413,11 +14579,13 @@ partial class Container
 
     private global::IA GetIAField0()
     {
-        if (!object.ReferenceEquals(_iAField0, null))
-            return _iAField0;
+        if (this._iAField0Set)
+            return this._iAField0;
         this._lock0.Wait();
         try
         {
+            if (this._iAField0Set)
+                return this._iAField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::IA iA_0_1;
@@ -14425,6 +14593,7 @@ partial class Container
             iA_0_1 = GetIAField1();
             iA_0_0 = new global::Decorator(a: iA_0_1);
             this._iAField0 = iA_0_0;
+            this._iAField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -14466,12 +14635,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DeduplicatesMultipleRegistrationsOfSameDecorator()
-        {
-            string userSource = @"
+    [Fact]
+    public void DeduplicatesMultipleRegistrationsOfSameDecorator()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -14499,11 +14668,11 @@ public class Decorator : IA
 {
     public Decorator(IA a){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14564,12 +14733,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarnOnNonStaticPublidDecoratorInModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnOnNonStaticPublidDecoratorInModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Module1
@@ -14577,22 +14746,22 @@ public class Module1
     [DecoratorFactory] static int Decorator(int a) => a;
     [DecoratorFactory] public T Decorator<T>(T a) => a;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Warning SI1002: Factory method 'Module1.Decorator(int)' is not either public and static, or protected, and containing module 'Module1' is not a container, so will be ignored.
-                // DecoratorFactory
-                new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(6, 6),
-                // (7,6): Warning SI1002: Factory method 'Module1.Decorator<T>(T)' is not static, and containing module 'Module1' is not a container, so will be ignored.
-                // DecoratorFactory
-                new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(7, 6));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Warning SI1002: Factory method 'Module1.Decorator(int)' is not either public and static, or protected, and containing module 'Module1' is not a container, so will be ignored.
+            // DecoratorFactory
+            new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(6, 6),
+            // (7,6): Warning SI1002: Factory method 'Module1.Decorator<T>(T)' is not static, and containing module 'Module1' is not a container, so will be ignored.
+            // DecoratorFactory
+            new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(7, 6));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void ErrorIfDecoratorParametersAreNotAvailable()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfDecoratorParametersAreNotAvailable()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), typeof(IA))]
@@ -14604,14 +14773,14 @@ public partial class Container : IAsyncContainer<IA>
 public interface IA {}
 public class A : IA {}
 public class B {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error while resolving dependencies for 'IA': We have no source for instance of type 'B'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0102: Error while resolving dependencies for 'IA': We have no source for instance of type 'B'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14633,12 +14802,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposesDecoratorsRegisteredByAttributes()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposesDecoratorsRegisteredByAttributes()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -14665,11 +14834,11 @@ public class DecoratorB : IB
     public DecoratorB(IB b){}
     public void Dispose(){}
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14780,12 +14949,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InitializeDecoratorsRegisteredByAttributes()
-        {
-            string userSource = @"
+    [Fact]
+    public void InitializeDecoratorsRegisteredByAttributes()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -14811,11 +14980,11 @@ public class DecoratorB : IB, IRequiresInitialization
     public DecoratorB(IB b){}
     public void Initialize(){}
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -14944,12 +15113,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestAsyncDecorators()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestAsyncDecorators()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -14961,11 +15130,11 @@ public partial class Container : IAsyncContainer<A>
 }
 
 public class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15044,12 +15213,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestAsyncGenericDecorators()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestAsyncGenericDecorators()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -15062,11 +15231,11 @@ public partial class Container : IAsyncContainer<A>
 
 public interface INeedsInitialization { ValueTask Initialize(); }
 public class A : INeedsInitialization { public ValueTask Initialize() => default; }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15145,12 +15314,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DisposesDecoratorsWithDisposeOptionsButNotThoseWithDefaultOptions()
-        {
-            string userSource = @"
+    [Fact]
+    public void DisposesDecoratorsWithDisposeOptionsButNotThoseWithDefaultOptions()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -15177,11 +15346,11 @@ public class Decorator2 : IA, IDisposable
     public Decorator2(IA a){} 
     public void Dispose(){} 
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15332,12 +15501,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsImplementedInterfacesIsRegisteredAsImplementedInterfacesButNotAsFactoriesOrBaseClasses()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsImplementedInterfacesIsRegisteredAsImplementedInterfacesButNotAsFactoriesOrBaseClasses()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<B>, IContainer<A>, IContainer<I3>, IContainer<I2>, IContainer<I1>, IContainer<IFactory<int>>, IContainer<int>
@@ -15352,20 +15521,20 @@ public class A : I1 {}
 public class B : A, I3, IFactory<int> {
     public int Create() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            comp.GetDiagnostics().Verify(
-                // (6,51): Warning CS0649: Field 'Container._b' is never assigned to, and will always have its default value null
-                // _b
-                new DiagnosticResult("CS0649", @"_b", DiagnosticSeverity.Warning).WithLocation(6, 51));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        comp.GetDiagnostics().Verify(
+            // (6,51): Warning CS0649: Field 'Container._b' is never assigned to, and will always have its default value null
+            // _b
+            new DiagnosticResult("CS0649", @"_b", DiagnosticSeverity.Warning).WithLocation(6, 51));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15558,12 +15727,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsBaseClassesIsRegisteredAsBaseClassesButNotAsImplementedInterfacesOrFactories()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsBaseClassesIsRegisteredAsBaseClassesButNotAsImplementedInterfacesOrFactories()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<C>, IContainer<B>, IContainer<A>, IContainer<IFactory<int>>, IContainer<int>
@@ -15576,20 +15745,20 @@ public class B : A {}
 public class C : B, IFactory<int> {
     public int Create() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'StrongInject.IFactory<int>': We have no source for instance of type 'StrongInject.IFactory<int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            comp.GetDiagnostics().Verify(
-                // (6,41): Warning CS0649: Field 'Container._c' is never assigned to, and will always have its default value null
-                // _c
-                new DiagnosticResult("CS0649", @"_c", DiagnosticSeverity.Warning).WithLocation(6, 41));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'StrongInject.IFactory<int>': We have no source for instance of type 'StrongInject.IFactory<int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        comp.GetDiagnostics().Verify(
+            // (6,41): Warning CS0649: Field 'Container._c' is never assigned to, and will always have its default value null
+            // _c
+            new DiagnosticResult("CS0649", @"_c", DiagnosticSeverity.Warning).WithLocation(6, 41));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15716,12 +15885,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsBaseClassesIsNotRegisteredAsObject()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsBaseClassesIsNotRegisteredAsObject()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<object>
@@ -15730,17 +15899,17 @@ public partial class Container : IContainer<object>
 }
 
 public class A {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'object': We have no source for instance of type 'object'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            comp.GetDiagnostics().Verify(
-                // (6,41): Warning CS0169: The field 'Container._a' is never used
-                // _a
-                new DiagnosticResult("CS0169", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 41));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'object': We have no source for instance of type 'object'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        comp.GetDiagnostics().Verify(
+            // (6,41): Warning CS0169: The field 'Container._a' is never used
+            // _a
+            new DiagnosticResult("CS0169", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 41));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15762,29 +15931,29 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithUseAsFactoryIsRegisteredAsFactoriesButFactoryTargetIsntUsedAsFactory()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithUseAsFactoryIsRegisteredAsFactoriesButFactoryTargetIsntUsedAsFactory()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<IFactory<IFactory<int>>>, IContainer<IFactory<int>>, IContainer<int>
 {
     [Instance(Options.UseAsFactory)] IFactory<IFactory<int>> _fac;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            comp.GetDiagnostics().Verify(
-                // (6,62): Warning CS0649: Field 'Container._fac' is never assigned to, and will always have its default value null
-                // _fac
-                new DiagnosticResult("CS0649", @"_fac", DiagnosticSeverity.Warning).WithLocation(6, 62));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        comp.GetDiagnostics().Verify(
+            // (6,62): Warning CS0649: Field 'Container._fac' is never assigned to, and will always have its default value null
+            // _fac
+            new DiagnosticResult("CS0649", @"_fac", DiagnosticSeverity.Warning).WithLocation(6, 62));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -15870,12 +16039,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleRegistersEverythingForAllFactoryTargetsRecursively()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleRegistersEverythingForAllFactoryTargetsRecursively()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -15890,17 +16059,17 @@ public class C : IFactory<D> { public D Create() => default; }
 public class D : E {}
 public class E : I {}
 public interface I {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0103: Error while resolving dependencies for 'D': 'C' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify(
-                // (7,48): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 48));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0103: Error while resolving dependencies for 'D': 'C' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify(
+            // (7,48): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 48));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -16455,12 +16624,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleDoesNotStackOverflowOnRecursion1()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleDoesNotStackOverflowOnRecursion1()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<A>, IContainer<IFactory<A>>
@@ -16469,14 +16638,14 @@ public partial class Container : IContainer<A>, IContainer<IFactory<A>>
 }
 
 public class A : IFactory<A> { public A Create() => default; }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (6,48): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 48));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (6,48): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 48));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -16550,12 +16719,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleDoesNotStackOverflowOnRecursion2()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleDoesNotStackOverflowOnRecursion2()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<A<int>>, IContainer<IFactory<A<A<int>>>>, IContainer<A<A<int>>>, IContainer<IFactory<A<A<A<int>>>>>, IContainer<A<A<A<int>>>>
@@ -16564,14 +16733,14 @@ public partial class Container : IContainer<A<int>>, IContainer<IFactory<A<A<int
 }
 
 public class A<T> : IFactory<A<A<T>>> { public A<A<T>> Create() => default; }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (6,53): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 53));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (6,53): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(6, 53));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -16812,12 +16981,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleCanBeDecorated()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleCanBeDecorated()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -16833,17 +17002,17 @@ public class C : IFactory<D> { public D Create() => default; }
 public class D : E {}
 public class E : I {}
 public interface I {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0103: Error while resolving dependencies for 'D': 'C' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify(
-                // (7,48): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 48));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0103: Error while resolving dependencies for 'D': 'C' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify(
+            // (7,48): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 48));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -16880,15 +17049,18 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::A a_0_1;
@@ -16896,6 +17068,7 @@ partial class Container
             a_0_1 = this._a;
             a_0_0 = this.M<global::A>(t: a_0_1);
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -16938,15 +17111,18 @@ partial class Container
     }
 
     private global::StrongInject.IFactory<global::B> _iFactoryField1;
+    private bool _iFactoryField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private global::StrongInject.IFactory<global::B> GetIFactoryField1()
     {
-        if (!object.ReferenceEquals(_iFactoryField1, null))
-            return _iFactoryField1;
+        if (this._iFactoryField1Set)
+            return this._iFactoryField1;
         this._lock1.Wait();
         try
         {
+            if (this._iFactoryField1Set)
+                return this._iFactoryField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::A a_0_2;
@@ -16956,6 +17132,7 @@ partial class Container
             iFactory_0_1 = (global::StrongInject.IFactory<global::B>)a_0_2;
             iFactory_0_0 = this.M<global::StrongInject.IFactory<global::B>>(t: iFactory_0_1);
             this._iFactoryField1 = iFactory_0_0;
+            this._iFactoryField1Set = true;
             this._disposeAction1 = async () =>
             {
             };
@@ -17547,12 +17724,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleAndDoNotDecorateIsNotDecorated()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleAndDoNotDecorateIsNotDecorated()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -17568,14 +17745,14 @@ public class C : IFactory<D> { public D Create() => default; }
 public class D : E {}
 public class E : I {}
 public interface I {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (7,72): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 72));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (7,72): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 72));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -18243,12 +18420,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleAndFactoryTargetScopeShouldBeInstancePerResolutionUsesCorrectScope()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleAndFactoryTargetScopeShouldBeInstancePerResolutionUsesCorrectScope()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -18263,14 +18440,14 @@ public class C : IFactory<D> { public D Create() => default; }
 public class D : E {}
 public class E : I {}
 public interface I {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (7,106): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 106));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (7,106): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 106));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -18938,12 +19115,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleAndFactoryTargetScopeShouldBeSingleInstanceUsesCorrectScope()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleAndFactoryTargetScopeShouldBeSingleInstanceUsesCorrectScope()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -18958,14 +19135,14 @@ public class C : IFactory<D> { public D Create() => default; }
 public class D : E {}
 public class E : I {}
 public interface I {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (7,99): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 99));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (7,99): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 99));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -19041,15 +19218,18 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::A a_0_2;
@@ -19059,6 +19239,7 @@ partial class Container
             iFactory_0_1 = (global::StrongInject.IFactory<global::B>)a_0_2;
             b_0_0 = iFactory_0_1.Create();
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = async () =>
             {
                 iFactory_0_1.Release(b_0_0);
@@ -19102,15 +19283,18 @@ partial class Container
     }
 
     private global::C _cField1;
+    private bool _cField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private async global::System.Threading.Tasks.ValueTask<global::C> GetCField1()
     {
-        if (!object.ReferenceEquals(_cField1, null))
-            return _cField1;
+        if (this._cField1Set)
+            return this._cField1;
         await this._lock1.WaitAsync();
         try
         {
+            if (this._cField1Set)
+                return this._cField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_2;
@@ -19144,6 +19328,7 @@ partial class Container
             }
 
             this._cField1 = c_0_0;
+            this._cField1Set = true;
             this._disposeAction1 = async () =>
             {
                 await iAsyncFactory_0_1.ReleaseAsync(c_0_0);
@@ -19221,15 +19406,18 @@ partial class Container
     }
 
     private global::D _dField2;
+    private bool _dField2Set;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction2;
     private async global::System.Threading.Tasks.ValueTask<global::D> GetDField2()
     {
-        if (!object.ReferenceEquals(_dField2, null))
-            return _dField2;
+        if (this._dField2Set)
+            return this._dField2;
         await this._lock2.WaitAsync();
         try
         {
+            if (this._dField2Set)
+                return this._dField2;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::C> c_0_2;
@@ -19256,6 +19444,7 @@ partial class Container
             }
 
             this._dField2 = d_0_0;
+            this._dField2Set = true;
             this._disposeAction2 = async () =>
             {
                 iFactory_0_1.Release(d_0_0);
@@ -19499,12 +19688,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InstanceWithAsEverythingPossibleAndFactoryTargetScopeShouldBeInstancePerDependencyUsesCorrectScope()
-        {
-            string userSource = @"
+    [Fact]
+    public void InstanceWithAsEverythingPossibleAndFactoryTargetScopeShouldBeInstancePerDependencyUsesCorrectScope()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Threading.Tasks;
 
@@ -19520,14 +19709,14 @@ public class C : IFactory<D> { public D Create() => default; }
 public class D : E {}
 public class E : I {}
 public interface I {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify(
-                // (7,106): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
-                // _a
-                new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 106));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify(
+            // (7,106): Warning CS0649: Field 'Container._a' is never assigned to, and will always have its default value null
+            // _a
+            new DiagnosticResult("CS0649", @"_a", DiagnosticSeverity.Warning).WithLocation(7, 106));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20442,12 +20631,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ImportsRegistrationsFromBaseClass()
-        {
-            string userSource = @"
+    [Fact]
+    public void ImportsRegistrationsFromBaseClass()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20458,11 +20647,11 @@ public class Module {}
 public partial class Container : Module, IContainer<A>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20503,12 +20692,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ImportsRegistrationsFromBaseBaseClass()
-        {
-            string userSource = @"
+    [Fact]
+    public void ImportsRegistrationsFromBaseBaseClass()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20521,11 +20710,11 @@ public class InBetween : Module {}
 public partial class Container : InBetween, IContainer<A>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20566,12 +20755,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CanOverrideRegistrationImportedFromBaseClass()
-        {
-            string userSource = @"
+    [Fact]
+    public void CanOverrideRegistrationImportedFromBaseClass()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20583,11 +20772,11 @@ public class Module {}
 public partial class Container : Module, IContainer<A>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20632,12 +20821,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorIfRegistrationFromBaseClassConflictsWithThatFromImportedModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorIfRegistrationFromBaseClassConflictsWithThatFromImportedModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20653,14 +20842,14 @@ public class ModuleB{}
 public partial class Container : ModuleA, IContainer<A>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (14,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(14, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (14,22): Error SI0106: Error while resolving dependencies for 'A': We have multiple sources for instance of type 'A' and no best source. Try adding a single registration for 'A' directly to the container, and moving any existing registrations for 'A' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(14, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20682,12 +20871,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ImportsProtectedInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
-        {
-            string userSource = @"
+    [Fact]
+    public void ImportsProtectedInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20705,11 +20894,11 @@ public class Module
 public partial class Container : Module, IContainer<C>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20782,12 +20971,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ImportsPublicStaticInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
-        {
-            string userSource = @"
+    [Fact]
+    public void ImportsPublicStaticInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20805,11 +20994,11 @@ public class Module
 public partial class Container : Module, IContainer<C>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20882,12 +21071,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ImportsProtectedStaticInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
-        {
-            string userSource = @"
+    [Fact]
+    public void ImportsProtectedStaticInstanceFieldInstancePropertyFactoryAndDecoratorFromBaseClass()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20905,11 +21094,11 @@ public class Module
 public partial class Container : Module, IContainer<C>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -20982,12 +21171,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarningIfInstanceFieldInstancePropertyFactoryAndDecoratorAreNotPublicStaticOrProtected()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarningIfInstanceFieldInstancePropertyFactoryAndDecoratorAreNotPublicStaticOrProtected()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -20999,28 +21188,28 @@ public class Module
     [Factory] private protected A CreateA() => new A();
     [DecoratorFactory] internal A DecorateA(A a) => a;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (8,6): Warning SI1004: Instance field 'Module.A1' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // Instance
-                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(8, 6),
-                // (9,6): Warning SI1004: Instance property 'Module.A2' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // Instance
-                new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(9, 6),
-                // (10,6): Warning SI1002: Factory method 'Module.CreateA()' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // Factory
-                new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(10, 6),
-                // (11,6): Warning SI1002: Factory method 'Module.DecorateA(A)' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
-                // DecoratorFactory
-                new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(11, 6));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (8,6): Warning SI1004: Instance field 'Module.A1' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // Instance
+            new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(8, 6),
+            // (9,6): Warning SI1004: Instance property 'Module.A2' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // Instance
+            new DiagnosticResult("SI1004", @"Instance", DiagnosticSeverity.Warning).WithLocation(9, 6),
+            // (10,6): Warning SI1002: Factory method 'Module.CreateA()' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // Factory
+            new DiagnosticResult("SI1002", @"Factory", DiagnosticSeverity.Warning).WithLocation(10, 6),
+            // (11,6): Warning SI1002: Factory method 'Module.DecorateA(A)' is not either public and static, or protected, and containing module 'Module' is not a container, so will be ignored.
+            // DecoratorFactory
+            new DiagnosticResult("SI1002", @"DecoratorFactory", DiagnosticSeverity.Warning).WithLocation(11, 6));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void OptionalParametersInTypeConstructor()
-        {
-            string userSource = @"
+    [Fact]
+    public void OptionalParametersInTypeConstructor()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A { public A(B b = null, C c = null, string s  = """", D d = null,  int i = 5){} }
@@ -21034,20 +21223,20 @@ public class D {}
 public partial class Container : IContainer<A>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
-                // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
-                // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
+            // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
+            // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21096,12 +21285,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void OptionalParametersInDecoratorTypeConstructor()
-        {
-            string userSource = @"
+    [Fact]
+    public void OptionalParametersInDecoratorTypeConstructor()
+    {
+        string userSource = @"
 using StrongInject;
 
 public interface IA {}
@@ -21118,20 +21307,20 @@ public class D {}
 public partial class Container : IContainer<IA>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (15,22): Info SI2100: Info about resolving dependencies for 'IA': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(15, 22),
-                // (15,22): Info SI2100: Info about resolving dependencies for 'IA': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(15, 22),
-                // (15,22): Info SI2100: Info about resolving dependencies for 'IA': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(15, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (15,22): Info SI2100: Info about resolving dependencies for 'IA': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(15, 22),
+            // (15,22): Info SI2100: Info about resolving dependencies for 'IA': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(15, 22),
+            // (15,22): Info SI2100: Info about resolving dependencies for 'IA': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(15, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21188,12 +21377,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void OptionalParametersInFactoryMethod()
-        {
-            string userSource = @"
+    [Fact]
+    public void OptionalParametersInFactoryMethod()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -21207,20 +21396,20 @@ public partial class Container : IContainer<A>
 {
     [Factory] public A CreateA(B b = null, C c = null, string s  = """", D d = null,  int i = 5) => null;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (11,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(11, 22),
-                // (11,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(11, 22),
-                // (11,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(11, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (11,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(11, 22),
+            // (11,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(11, 22),
+            // (11,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(11, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21271,12 +21460,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void OptionalParametersInDecoratorFactoryMethod()
-        {
-            string userSource = @"
+    [Fact]
+    public void OptionalParametersInDecoratorFactoryMethod()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class A {}
@@ -21291,20 +21480,20 @@ public partial class Container : IContainer<A>
 {
     [DecoratorFactory] public A CreateA(B b = null, C c = null, string s  = """", D d = null,  int i = 5, A a = null) => null;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
-                // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
-                // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
-                // Container
-                new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'B' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
+            // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'string' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22),
+            // (12,22): Info SI2100: Info about resolving dependencies for 'A': We have no source for instance of type 'int' used in an optional parameter. Using The default value instead.
+            // Container
+            new DiagnosticResult("SI2100", @"Container", DiagnosticSeverity.Info).WithLocation(12, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21357,12 +21546,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc1()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc1()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -21374,11 +21563,11 @@ public partial class Container : IAsyncContainer<bool>
     [Factory] long Create(Func<string> func) => default;
     [Factory] bool Create(int i, long l) => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21400,15 +21589,18 @@ partial class Container
     }
 
     private global::System.Int32 _int32Field0;
+    private bool _int32Field0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_int32Field0, null))
-            return _int32Field0;
+        if (this._int32Field0Set)
+            return this._int32Field0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._int32Field0Set)
+                return this._int32Field0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_0_1;
@@ -21431,6 +21623,7 @@ partial class Container
             }
 
             this._int32Field0 = int32_0_0;
+            this._int32Field0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -21530,12 +21723,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc2()
-        {
-            string userSource = @"
+    [Fact]
+    public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc2()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -21547,11 +21740,11 @@ public partial class Container : IAsyncContainer<bool>
     [Factory] long Create(Func<string> func) => default;
     [Factory] bool Create(long l) => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21573,15 +21766,18 @@ partial class Container
     }
 
     private global::System.Int32 _int32Field0;
+    private bool _int32Field0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_int32Field0, null))
-            return _int32Field0;
+        if (this._int32Field0Set)
+            return this._int32Field0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._int32Field0Set)
+                return this._int32Field0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_0_1;
@@ -21604,6 +21800,7 @@ partial class Container
             }
 
             this._int32Field0 = int32_0_0;
+            this._int32Field0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -21703,12 +21900,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc3()
-        {
-            string userSource = @"
+    [Fact]
+    public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc3()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -21720,14 +21917,14 @@ public partial class Container : IAsyncContainer<bool>
     [Factory] long Create(Func<string> func) => default;
     [Factory] bool Create(long l) => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21749,15 +21946,18 @@ partial class Container
     }
 
     private global::System.Int32 _int32Field0;
+    private bool _int32Field0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_int32Field0, null))
-            return _int32Field0;
+        if (this._int32Field0Set)
+            return this._int32Field0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._int32Field0Set)
+                return this._int32Field0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_0_1;
@@ -21780,6 +21980,7 @@ partial class Container
             }
 
             this._int32Field0 = int32_0_0;
+            this._int32Field0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -21891,12 +22092,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc4()
-        {
-            string userSource = @"
+    [Fact]
+    public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc4()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -21908,17 +22109,17 @@ public partial class Container : IAsyncContainer<bool>
     [Factory] long Create(Func<string> func) => default;
     [Factory] bool Create(long l) => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'string' of delegate 'System.Func<string>' has a single instance scope and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22),
-                // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'string' of delegate 'System.Func<string>' has a single instance scope and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22),
+            // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -21950,18 +22151,22 @@ partial class Container
     }
 
     private global::System.String _stringField0;
+    private bool _stringField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private global::System.Int32 _int32Field1;
+    private bool _int32Field1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction1;
     private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field1()
     {
-        if (!object.ReferenceEquals(_int32Field1, null))
-            return _int32Field1;
+        if (this._int32Field1Set)
+            return this._int32Field1;
         await this._lock1.WaitAsync();
         try
         {
+            if (this._int32Field1Set)
+                return this._int32Field1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_0_1;
@@ -21984,6 +22189,7 @@ partial class Container
             }
 
             this._int32Field1 = int32_0_0;
+            this._int32Field1Set = true;
             this._disposeAction1 = async () =>
             {
             };
@@ -21998,11 +22204,13 @@ partial class Container
 
     private async global::System.Threading.Tasks.ValueTask<global::System.String> GetStringField0()
     {
-        if (!object.ReferenceEquals(_stringField0, null))
-            return _stringField0;
+        if (this._stringField0Set)
+            return this._stringField0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._stringField0Set)
+                return this._stringField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_0_2;
@@ -22033,6 +22241,7 @@ partial class Container
             }
 
             this._stringField0 = string_0_0;
+            this._stringField0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -22128,12 +22337,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc5()
-        {
-            string userSource = @"
+    [Fact]
+    public void AsyncSingleInstanceCanBeResolvedFromNonAsyncFunc5()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -22145,14 +22354,14 @@ public partial class Container : IAsyncContainer<bool>
     [Factory] long Create(Func<string> func) => default;
     [Factory] bool Create(Func<ValueTask<long>> l) => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22174,15 +22383,18 @@ partial class Container
     }
 
     private global::System.Int32 _int32Field0;
+    private bool _int32Field0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Func<global::System.Threading.Tasks.ValueTask> _disposeAction0;
     private async global::System.Threading.Tasks.ValueTask<global::System.Int32> GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_int32Field0, null))
-            return _int32Field0;
+        if (this._int32Field0Set)
+            return this._int32Field0;
         await this._lock0.WaitAsync();
         try
         {
+            if (this._int32Field0Set)
+                return this._int32Field0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Threading.Tasks.ValueTask<global::System.Int32> int32_0_1;
@@ -22205,6 +22417,7 @@ partial class Container
             }
 
             this._int32Field0 = int32_0_0;
+            this._int32Field0Set = true;
             this._disposeAction0 = async () =>
             {
             };
@@ -22328,12 +22541,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AsyncSingleInstanceCannotBeResolvedFromAsyncFuncIfContainerIsNonAsync()
-        {
-            string userSource = @"
+    [Fact]
+    public void AsyncSingleInstanceCannotBeResolvedFromAsyncFuncIfContainerIsNonAsync()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 using System.Threading.Tasks;
@@ -22345,17 +22558,17 @@ public partial class Container : IContainer<bool>
     [Factory] long Create(string func) => default;
     [Factory] bool Create(long l) => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22),
-                // (6,22): Error SI0103: Error while resolving dependencies for 'bool': 'int' can only be resolved asynchronously.
-                // Container
-                new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1103: Warning while resolving dependencies for 'bool': Return type 'int' of delegate 'System.Func<int>' has a single instance scope and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22),
+            // (6,22): Error SI0103: Error while resolving dependencies for 'bool': 'int' can only be resolved asynchronously.
+            // Container
+            new DiagnosticResult("SI0103", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22377,12 +22590,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void UseDelegateParameterBugInV_1_0_2()
-        {
-            string userSource = @"
+    [Fact]
+    public void UseDelegateParameterBugInV_1_0_2()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -22462,11 +22675,11 @@ public partial class Container : IContainer<ItemsViewModel>
         => new NavigationService<T>(navigation, createView);
     [Instance] INavigation Navigation => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22518,15 +22731,18 @@ partial class Container
     }
 
     private global::INavigationService<global::ItemDetailViewModel> _iNavigationServiceField0;
+    private bool _iNavigationServiceField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::INavigationService<global::ItemDetailViewModel> GetINavigationServiceField0()
     {
-        if (!object.ReferenceEquals(_iNavigationServiceField0, null))
-            return _iNavigationServiceField0;
+        if (this._iNavigationServiceField0Set)
+            return this._iNavigationServiceField0;
         this._lock0.Wait();
         try
         {
+            if (this._iNavigationServiceField0Set)
+                return this._iNavigationServiceField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::INavigation iNavigation_0_1;
@@ -22544,6 +22760,7 @@ partial class Container
             };
             iNavigationService_0_0 = this.CreateNavigationService<global::ItemDetailViewModel>(navigation: iNavigation_0_1, createView: func_0_2);
             this._iNavigationServiceField0 = iNavigationService_0_0;
+            this._iNavigationServiceField0Set = true;
             this._disposeAction0 = () =>
             {
                 global::StrongInject.Helpers.Dispose(iNavigationService_0_0);
@@ -22558,15 +22775,18 @@ partial class Container
     }
 
     private global::INavigationService<global::NewItemViewModel> _iNavigationServiceField1;
+    private bool _iNavigationServiceField1Set;
     private global::System.Threading.SemaphoreSlim _lock1 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction1;
     private global::INavigationService<global::NewItemViewModel> GetINavigationServiceField1()
     {
-        if (!object.ReferenceEquals(_iNavigationServiceField1, null))
-            return _iNavigationServiceField1;
+        if (this._iNavigationServiceField1Set)
+            return this._iNavigationServiceField1;
         this._lock1.Wait();
         try
         {
+            if (this._iNavigationServiceField1Set)
+                return this._iNavigationServiceField1;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::INavigation iNavigation_0_1;
@@ -22584,6 +22804,7 @@ partial class Container
             };
             iNavigationService_0_0 = this.CreateNavigationService<global::NewItemViewModel>(navigation: iNavigation_0_1, createView: func_0_2);
             this._iNavigationServiceField1 = iNavigationService_0_0;
+            this._iNavigationServiceField1Set = true;
             this._disposeAction1 = () =>
             {
                 global::StrongInject.Helpers.Dispose(iNavigationService_0_0);
@@ -22598,20 +22819,24 @@ partial class Container
     }
 
     private global::MockDataStore _mockDataStoreField2;
+    private bool _mockDataStoreField2Set;
     private global::System.Threading.SemaphoreSlim _lock2 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction2;
     private global::MockDataStore GetMockDataStoreField2()
     {
-        if (!object.ReferenceEquals(_mockDataStoreField2, null))
-            return _mockDataStoreField2;
+        if (this._mockDataStoreField2Set)
+            return this._mockDataStoreField2;
         this._lock2.Wait();
         try
         {
+            if (this._mockDataStoreField2Set)
+                return this._mockDataStoreField2;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::MockDataStore mockDataStore_0_0;
             mockDataStore_0_0 = new global::MockDataStore();
             this._mockDataStoreField2 = mockDataStore_0_0;
+            this._mockDataStoreField2Set = true;
             this._disposeAction2 = () =>
             {
             };
@@ -22625,15 +22850,18 @@ partial class Container
     }
 
     private global::NavigationService _navigationServiceField3;
+    private bool _navigationServiceField3Set;
     private global::System.Threading.SemaphoreSlim _lock3 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction3;
     private global::NavigationService GetNavigationServiceField3()
     {
-        if (!object.ReferenceEquals(_navigationServiceField3, null))
-            return _navigationServiceField3;
+        if (this._navigationServiceField3Set)
+            return this._navigationServiceField3;
         this._lock3.Wait();
         try
         {
+            if (this._navigationServiceField3Set)
+                return this._navigationServiceField3;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::INavigation iNavigation_0_1;
@@ -22641,6 +22869,7 @@ partial class Container
             iNavigation_0_1 = this.Navigation;
             navigationService_0_0 = new global::NavigationService(navigation: iNavigation_0_1);
             this._navigationServiceField3 = navigationService_0_0;
+            this._navigationServiceField3Set = true;
             this._disposeAction3 = () =>
             {
             };
@@ -22746,12 +22975,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void RegressionTest_FalseCircularDependencyBug()
-        {
-            string userSource = @"
+    [Fact]
+    public void RegressionTest_FalseCircularDependencyBug()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -22765,11 +22994,11 @@ public partial class Container : IContainer<A>
 public class A { public A(B b, Func<C> c){} }
 public class B { }
 public class C { public C(B b1, B b2){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22791,20 +23020,24 @@ partial class Container
     }
 
     private global::B _bField0;
+    private bool _bField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::B GetBField0()
     {
-        if (!object.ReferenceEquals(_bField0, null))
-            return _bField0;
+        if (this._bField0Set)
+            return this._bField0;
         this._lock0.Wait();
         try
         {
+            if (this._bField0Set)
+                return this._bField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::B b_0_0;
             b_0_0 = new global::B();
             this._bField0 = b_0_0;
+            this._bField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -22866,12 +23099,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InternalTypeCanBeUsedByInternalContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void InternalTypeCanBeUsedByInternalContainer()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -22880,11 +23113,11 @@ internal partial class Container : IContainer<A>
 }
 
 internal class A { }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22925,12 +23158,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void InternalTypeCanBeUsedByInternalModuleWhichCanBeUsedByInternalContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void InternalTypeCanBeUsedByInternalModuleWhichCanBeUsedByInternalContainer()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -22942,11 +23175,11 @@ internal partial class Container : IContainer<A>
 }
 
 internal class A { }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -22987,12 +23220,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarnWhenInternalTypeUsedByPublicContainer1()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnWhenInternalTypeUsedByPublicContainer1()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -23001,14 +23234,14 @@ public partial class Container : IContainer<A>
 }
 
 internal class A { }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
-                // Register(typeof(A))
-                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+            // Register(typeof(A))
+            new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -23049,12 +23282,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarnWhenInternalTypeUsedByPublicContainer2()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnWhenInternalTypeUsedByPublicContainer2()
+    {
+        string userSource = @"
 using StrongInject;
 
 [RegisterFactory(typeof(A))]
@@ -23063,14 +23296,14 @@ public partial class Container : IContainer<int>
 }
 
 internal class A : IFactory<int> { public int Create() => 42; }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
-                // RegisterFactory(typeof(A))
-                new DiagnosticResult("SI1005", @"RegisterFactory(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+            // RegisterFactory(typeof(A))
+            new DiagnosticResult("SI1005", @"RegisterFactory(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -23121,12 +23354,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarnWhenInternalTypeUsedByPublicModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnWhenInternalTypeUsedByPublicModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -23138,14 +23371,14 @@ public partial class Container : IContainer<A>
 }
 
 internal class A { }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Module'. If 'Module' is imported outside this assembly this may result in errors. Try making 'Module' internal.
-                // Register(typeof(A))
-                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Module'. If 'Module' is imported outside this assembly this may result in errors. Try making 'Module' internal.
+            // Register(typeof(A))
+            new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -23186,12 +23419,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarnWhenInternalModuleUsedByPublicModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnWhenInternalModuleUsedByPublicModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -23203,14 +23436,14 @@ public partial class Container : IContainer<A>
 }
 
 public class A { }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
-                // RegisterModule(typeof(Module))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(7, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,2): Warning SI1006: 'Module' is not public, but is imported by public module 'Container'. If 'Container' is imported outside this assembly this may result in errors. Try making 'Container' internal.
+            // RegisterModule(typeof(Module))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(Module))", DiagnosticSeverity.Warning).WithLocation(7, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -23251,12 +23484,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorWhenLessThanInternallyVisibleTypeUsedByContainer()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorWhenLessThanInternallyVisibleTypeUsedByContainer()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Outer
@@ -23279,35 +23512,35 @@ public partial class Outer
     }
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (15,6): Error SI0026: 'Outer.A' must have at least internal Accessibility. Try making it internal or public.
-                // Register(typeof(A))
-                new DiagnosticResult("SI0026", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(15, 6),
-                // (16,6): Error SI0026: 'Outer.B' must have at least internal Accessibility. Try making it internal or public.
-                // Register(typeof(B))
-                new DiagnosticResult("SI0026", @"Register(typeof(B))", DiagnosticSeverity.Error).WithLocation(16, 6),
-                // (17,6): Error SI0026: 'Outer.C' must have at least internal Accessibility. Try making it internal or public.
-                // Register(typeof(C))
-                new DiagnosticResult("SI0026", @"Register(typeof(C))", DiagnosticSeverity.Error).WithLocation(17, 6),
-                // (18,6): Error SI0026: 'Outer.Inner.D' must have at least internal Accessibility. Try making it internal or public.
-                // Register(typeof(Inner.D))
-                new DiagnosticResult("SI0026", @"Register(typeof(Inner.D))", DiagnosticSeverity.Error).WithLocation(18, 6),
-                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.A': We have no source for instance of type 'Outer.A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
-                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.B': We have no source for instance of type 'Outer.B'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
-                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.C': We have no source for instance of type 'Outer.C'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
-                // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.Inner.D': We have no source for instance of type 'Outer.Inner.D'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (15,6): Error SI0026: 'Outer.A' must have at least internal Accessibility. Try making it internal or public.
+            // Register(typeof(A))
+            new DiagnosticResult("SI0026", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(15, 6),
+            // (16,6): Error SI0026: 'Outer.B' must have at least internal Accessibility. Try making it internal or public.
+            // Register(typeof(B))
+            new DiagnosticResult("SI0026", @"Register(typeof(B))", DiagnosticSeverity.Error).WithLocation(16, 6),
+            // (17,6): Error SI0026: 'Outer.C' must have at least internal Accessibility. Try making it internal or public.
+            // Register(typeof(C))
+            new DiagnosticResult("SI0026", @"Register(typeof(C))", DiagnosticSeverity.Error).WithLocation(17, 6),
+            // (18,6): Error SI0026: 'Outer.Inner.D' must have at least internal Accessibility. Try making it internal or public.
+            // Register(typeof(Inner.D))
+            new DiagnosticResult("SI0026", @"Register(typeof(Inner.D))", DiagnosticSeverity.Error).WithLocation(18, 6),
+            // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.A': We have no source for instance of type 'Outer.A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
+            // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.B': We have no source for instance of type 'Outer.B'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
+            // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.C': We have no source for instance of type 'Outer.C'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28),
+            // (19,28): Error SI0102: Error while resolving dependencies for 'Outer.Inner.D': We have no source for instance of type 'Outer.Inner.D'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(19, 28));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Outer
 {
     partial class Container
@@ -23362,12 +23595,12 @@ partial class Outer
         }
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ErrorOnPrivateModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void ErrorOnPrivateModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 internal partial class Outer
@@ -23383,14 +23616,14 @@ internal partial class Outer
     }
 }
 ";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (9,19): Error SI0401: Module 'Outer.Module' must be public or internal.
-                // Module
-                new DiagnosticResult("SI0401", @"Module", DiagnosticSeverity.Error).WithLocation(9, 19));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,19): Error SI0401: Module 'Outer.Module' must be public or internal.
+            // Module
+            new DiagnosticResult("SI0401", @"Module", DiagnosticSeverity.Error).WithLocation(9, 19));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Outer
 {
     partial class Container
@@ -23434,12 +23667,12 @@ partial class Outer
         }
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void WarnWhenInternalTypeUsedByMoreThanInternallyVisibleModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnWhenInternalTypeUsedByMoreThanInternallyVisibleModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -23461,37 +23694,37 @@ public class Outer1 {
 }
 
 internal class A { }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Module1'. If 'Module1' is imported outside this assembly this may result in errors. Try making 'Module1' internal.
-                // Register(typeof(A))
-                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2),
-                // (9,6): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Module2'. If 'Outer1.Module2' is imported outside this assembly this may result in errors. Try making 'Outer1.Module2' internal.
-                // Register(typeof(A))
-                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(9, 6),
-                // (10,21): Error SI0401: Module 'Outer1.Module2' must be public or internal.
-                // Module2
-                new DiagnosticResult("SI0401", @"Module2", DiagnosticSeverity.Error).WithLocation(10, 21),
-                // (12,6): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Module3'. If 'Outer1.Module3' is imported outside this assembly this may result in errors. Try making 'Outer1.Module3' internal.
-                // Register(typeof(A))
-                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(12, 6),
-                // (13,30): Error SI0401: Module 'Outer1.Module3' must be public or internal.
-                // Module3
-                new DiagnosticResult("SI0401", @"Module3", DiagnosticSeverity.Error).WithLocation(13, 30),
-                // (17,10): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Inner.Module4'. If 'Outer1.Inner.Module4' is imported outside this assembly this may result in errors. Try making 'Outer1.Inner.Module4' internal.
-                // Register(typeof(A))
-                new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(17, 10),
-                // (18,34): Error SI0401: Module 'Outer1.Inner.Module4' must be public or internal.
-                // Module4
-                new DiagnosticResult("SI0401", @"Module4", DiagnosticSeverity.Error).WithLocation(18, 34));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Warning SI1005: 'A' is not public, but is registered with public module 'Module1'. If 'Module1' is imported outside this assembly this may result in errors. Try making 'Module1' internal.
+            // Register(typeof(A))
+            new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(4, 2),
+            // (9,6): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Module2'. If 'Outer1.Module2' is imported outside this assembly this may result in errors. Try making 'Outer1.Module2' internal.
+            // Register(typeof(A))
+            new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(9, 6),
+            // (10,21): Error SI0401: Module 'Outer1.Module2' must be public or internal.
+            // Module2
+            new DiagnosticResult("SI0401", @"Module2", DiagnosticSeverity.Error).WithLocation(10, 21),
+            // (12,6): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Module3'. If 'Outer1.Module3' is imported outside this assembly this may result in errors. Try making 'Outer1.Module3' internal.
+            // Register(typeof(A))
+            new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(12, 6),
+            // (13,30): Error SI0401: Module 'Outer1.Module3' must be public or internal.
+            // Module3
+            new DiagnosticResult("SI0401", @"Module3", DiagnosticSeverity.Error).WithLocation(13, 30),
+            // (17,10): Warning SI1005: 'A' is not public, but is registered with public module 'Outer1.Inner.Module4'. If 'Outer1.Inner.Module4' is imported outside this assembly this may result in errors. Try making 'Outer1.Inner.Module4' internal.
+            // Register(typeof(A))
+            new DiagnosticResult("SI1005", @"Register(typeof(A))", DiagnosticSeverity.Warning).WithLocation(17, 10),
+            // (18,34): Error SI0401: Module 'Outer1.Inner.Module4' must be public or internal.
+            // Module4
+            new DiagnosticResult("SI0401", @"Module4", DiagnosticSeverity.Error).WithLocation(18, 34));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void NoWarningWhenInternalTypeUsedByAtMostInternallyVisibleModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void NoWarningWhenInternalTypeUsedByAtMostInternallyVisibleModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A))]
@@ -23510,16 +23743,16 @@ internal class Outer1 {
 }
 
 internal class A { }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void WarnWhenAtMostInternallyVisibleModuleImportedByMoreThanInternallyVisibleModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void WarnWhenAtMostInternallyVisibleModuleImportedByMoreThanInternallyVisibleModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 internal class InternalModule1 {}
@@ -23564,70 +23797,70 @@ public class PublicOuter {
 
     private class InternalModule4 {}
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (16,2): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
-                // RegisterModule(typeof(InternalModule1))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(16, 2),
-                // (17,2): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
-                // RegisterModule(typeof(InternalOuter.InternalModule2))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(17, 2),
-                // (18,2): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
-                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(18, 2),
-                // (23,6): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
-                // RegisterModule(typeof(InternalModule1))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(23, 6),
-                // (24,6): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
-                // RegisterModule(typeof(InternalOuter.InternalModule2))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(24, 6),
-                // (25,6): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
-                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(25, 6),
-                // (26,6): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
-                // RegisterModule(typeof(InternalModule4))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(26, 6),
-                // (27,21): Error SI0401: Module 'PublicOuter.PublicModule2' must be public or internal.
-                // PublicModule2
-                new DiagnosticResult("SI0401", @"PublicModule2", DiagnosticSeverity.Error).WithLocation(27, 21),
-                // (29,6): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
-                // RegisterModule(typeof(InternalModule1))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(29, 6),
-                // (30,6): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
-                // RegisterModule(typeof(InternalOuter.InternalModule2))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(30, 6),
-                // (31,6): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
-                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(31, 6),
-                // (32,6): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
-                // RegisterModule(typeof(InternalModule4))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(32, 6),
-                // (33,30): Error SI0401: Module 'PublicOuter.PublicModule3' must be public or internal.
-                // PublicModule3
-                new DiagnosticResult("SI0401", @"PublicModule3", DiagnosticSeverity.Error).WithLocation(33, 30),
-                // (37,10): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
-                // RegisterModule(typeof(InternalModule1))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(37, 10),
-                // (38,10): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
-                // RegisterModule(typeof(InternalOuter.InternalModule2))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(38, 10),
-                // (39,10): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
-                // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(39, 10),
-                // (40,10): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
-                // RegisterModule(typeof(InternalModule4))
-                new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(40, 10),
-                // (41,34): Error SI0401: Module 'PublicOuter.Inner.PublicModule4' must be public or internal.
-                // PublicModule4
-                new DiagnosticResult("SI0401", @"PublicModule4", DiagnosticSeverity.Error).WithLocation(41, 34));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (16,2): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
+            // RegisterModule(typeof(InternalModule1))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(16, 2),
+            // (17,2): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
+            // RegisterModule(typeof(InternalOuter.InternalModule2))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(17, 2),
+            // (18,2): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicModule1'. If 'PublicModule1' is imported outside this assembly this may result in errors. Try making 'PublicModule1' internal.
+            // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(18, 2),
+            // (23,6): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+            // RegisterModule(typeof(InternalModule1))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(23, 6),
+            // (24,6): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+            // RegisterModule(typeof(InternalOuter.InternalModule2))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(24, 6),
+            // (25,6): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+            // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(25, 6),
+            // (26,6): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.PublicModule2'. If 'PublicOuter.PublicModule2' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule2' internal.
+            // RegisterModule(typeof(InternalModule4))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(26, 6),
+            // (27,21): Error SI0401: Module 'PublicOuter.PublicModule2' must be public or internal.
+            // PublicModule2
+            new DiagnosticResult("SI0401", @"PublicModule2", DiagnosticSeverity.Error).WithLocation(27, 21),
+            // (29,6): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+            // RegisterModule(typeof(InternalModule1))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(29, 6),
+            // (30,6): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+            // RegisterModule(typeof(InternalOuter.InternalModule2))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(30, 6),
+            // (31,6): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+            // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(31, 6),
+            // (32,6): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.PublicModule3'. If 'PublicOuter.PublicModule3' is imported outside this assembly this may result in errors. Try making 'PublicOuter.PublicModule3' internal.
+            // RegisterModule(typeof(InternalModule4))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(32, 6),
+            // (33,30): Error SI0401: Module 'PublicOuter.PublicModule3' must be public or internal.
+            // PublicModule3
+            new DiagnosticResult("SI0401", @"PublicModule3", DiagnosticSeverity.Error).WithLocation(33, 30),
+            // (37,10): Warning SI1006: 'InternalModule1' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+            // RegisterModule(typeof(InternalModule1))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule1))", DiagnosticSeverity.Warning).WithLocation(37, 10),
+            // (38,10): Warning SI1006: 'InternalOuter.InternalModule2' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+            // RegisterModule(typeof(InternalOuter.InternalModule2))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.InternalModule2))", DiagnosticSeverity.Warning).WithLocation(38, 10),
+            // (39,10): Warning SI1006: 'InternalOuter.Inner.InternalModule3' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+            // RegisterModule(typeof(InternalOuter.Inner.InternalModule3))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalOuter.Inner.InternalModule3))", DiagnosticSeverity.Warning).WithLocation(39, 10),
+            // (40,10): Warning SI1006: 'PublicOuter.InternalModule4' is not public, but is imported by public module 'PublicOuter.Inner.PublicModule4'. If 'PublicOuter.Inner.PublicModule4' is imported outside this assembly this may result in errors. Try making 'PublicOuter.Inner.PublicModule4' internal.
+            // RegisterModule(typeof(InternalModule4))
+            new DiagnosticResult("SI1006", @"RegisterModule(typeof(InternalModule4))", DiagnosticSeverity.Warning).WithLocation(40, 10),
+            // (41,34): Error SI0401: Module 'PublicOuter.Inner.PublicModule4' must be public or internal.
+            // PublicModule4
+            new DiagnosticResult("SI0401", @"PublicModule4", DiagnosticSeverity.Error).WithLocation(41, 34));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void NoWarningWhenAtMostInternallyVisibleModuleImportedByAtMostInternallyVisibleModule()
-        {
-            string userSource = @"
+    [Fact]
+    public void NoWarningWhenAtMostInternallyVisibleModuleImportedByAtMostInternallyVisibleModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 internal class ImportedModule1 {}
@@ -23666,31 +23899,31 @@ internal class Outer {
     [RegisterModule(typeof(Outer.ImportedModule4))]
     private class Module4 {}
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (38,19): Error SI0401: Module 'Outer.Module4' must be public or internal.
-                // Module4
-                new DiagnosticResult("SI0401", @"Module4", DiagnosticSeverity.Error).WithLocation(38, 19));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (38,19): Error SI0401: Module 'Outer.Module4' must be public or internal.
+            // Module4
+            new DiagnosticResult("SI0401", @"Module4", DiagnosticSeverity.Error).WithLocation(38, 19));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void RegisterDynamicWithFactoryMethod()
-        {
+    [Fact]
+    public void RegisterDynamicWithFactoryMethod()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<int> {
     [Factory] int M(dynamic a) => default;
     [Factory] dynamic M() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -23755,24 +23988,24 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ResolveDynamicWithGenericFactoryMethod()
-        {
+    [Fact]
+    public void ResolveDynamicWithGenericFactoryMethod()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<int> {
     [Factory] int M(dynamic a) => default;
     [Factory] T M<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -23837,13 +24070,13 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void RegisterFuncOfDynamicWithFactoryMethod()
-        {
+    [Fact]
+    public void RegisterFuncOfDynamicWithFactoryMethod()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -23851,11 +24084,11 @@ public partial class Container : IContainer<int> {
     [Factory(Scope.SingleInstance)] int M(Func<dynamic> a) => default;
     [Factory] dynamic M() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -23877,15 +24110,18 @@ partial class Container
     }
 
     private global::System.Int32 _int32Field0;
+    private bool _int32Field0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::System.Int32 GetInt32Field0()
     {
-        if (!object.ReferenceEquals(_int32Field0, null))
-            return _int32Field0;
+        if (this._int32Field0Set)
+            return this._int32Field0;
         this._lock0.Wait();
         try
         {
+            if (this._int32Field0Set)
+                return this._int32Field0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Collections.Concurrent.ConcurrentBag<global::System.Action> disposeActions_func_0_1;
@@ -23915,6 +24151,7 @@ partial class Container
             }
 
             this._int32Field0 = int32_0_0;
+            this._int32Field0Set = true;
             this._disposeAction0 = () =>
             {
                 foreach (var disposeAction in disposeActions_func_0_1)
@@ -23958,13 +24195,13 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ResolveFunctionPointerWithGenericFactoryMethod()
-        {
+    [Fact]
+    public void ResolveFunctionPointerWithGenericFactoryMethod()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using StrongInject.Modules;
 
@@ -23985,11 +24222,11 @@ public unsafe partial class Container : IContainer<(int, string, bool, short, us
     [Factory] ushort M4(delegate* unmanaged[Fastcall]<int, string> a) => default;
     [Factory] delegate* unmanaged[Fastcall]<T1, T2> M4<T1, T2>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 unsafe partial class Container
 {
     private int _disposed = 0;
@@ -24070,13 +24307,13 @@ unsafe partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ResolvePointerWithGenericFactoryMethod()
-        {
+    [Fact]
+    public void ResolvePointerWithGenericFactoryMethod()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using StrongInject.Modules;
 
@@ -24085,11 +24322,11 @@ public unsafe partial class Container : IContainer<int> {
     [Factory] int M(int* a) => default;
     [Factory] T* M<T>() where T : unmanaged => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 unsafe partial class Container
 {
     private int _disposed = 0;
@@ -24134,13 +24371,13 @@ unsafe partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void DontResolvePointerWithGenericFactoryMethodReturningNonPointer()
-        {
+    [Fact]
+    public void DontResolvePointerWithGenericFactoryMethodReturningNonPointer()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using StrongInject.Modules;
 
@@ -24149,17 +24386,17 @@ public unsafe partial class Container : IContainer<int> {
     [Factory] int M(int* a) => default;
     [Factory] T M<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,29): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int*'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 29),
-                // (6,29): Warning SI1106: Warning while resolving dependencies for 'int': factory method 'Container.M<T>()' cannot be used to resolve instance of type 'int*' as the required type arguments do not satisfy the generic constraints.
-                // Container
-                new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 29));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,29): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int*'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 29),
+            // (6,29): Warning SI1106: Warning while resolving dependencies for 'int': factory method 'Container.M<T>()' cannot be used to resolve instance of type 'int*' as the required type arguments do not satisfy the generic constraints.
+            // Container
+            new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 29));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24181,13 +24418,13 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void ResolveArrayOfPointersWithGenericFactoryMethod()
-        {
+    [Fact]
+    public void ResolveArrayOfPointersWithGenericFactoryMethod()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using StrongInject.Modules;
 
@@ -24196,11 +24433,11 @@ public unsafe partial class Container : IContainer<int> {
     [Factory] int M(int*[] a) => default;
     [Factory] T M<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 unsafe partial class Container
 {
     private int _disposed = 0;
@@ -24265,13 +24502,13 @@ unsafe partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestFactoryOfNonGeneric()
-        {
+    [Fact]
+    public void TestFactoryOfNonGeneric()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -24279,11 +24516,11 @@ public partial class Container : IContainer<Dictionary<string, int>>, IContainer
     [FactoryOf(typeof(Dictionary<string, int>))] [FactoryOf(typeof(Dictionary<string, object>))] Dictionary<T1, T2> M1<T1, T2>() => default;
     [FactoryOf(typeof(int))] T M2<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24386,24 +24623,24 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestFactoryOfGeneric()
-        {
+    [Fact]
+    public void TestFactoryOfGeneric()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
 public partial class Container : IContainer<Dictionary<string, int>>, IContainer<Dictionary<string, object>> {
     [FactoryOf(typeof(Dictionary<,>))] T M1<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24477,27 +24714,27 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void CannotResolveFactoryOfWhichDoesntMatch()
-        {
+    [Fact]
+    public void CannotResolveFactoryOfWhichDoesntMatch()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
 public partial class Container : IContainer<Dictionary<string, int>>, IContainer<Dictionary<string, object>>, IContainer<IEnumerable<KeyValuePair<string, int>>> {
     [FactoryOf(typeof(Dictionary<string, object>))] [FactoryOf(typeof(IEnumerable<>))] T M1<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.Dictionary<string, int>': We have no source for instance of type 'System.Collections.Generic.Dictionary<string, int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.Dictionary<string, int>': We have no source for instance of type 'System.Collections.Generic.Dictionary<string, int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24581,56 +24818,56 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void FactoryOfNonGenericMustBeResolvableFromMethod()
-        {
+    [Fact]
+    public void FactoryOfNonGenericMustBeResolvableFromMethod()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
 public class Module {
     [FactoryOf(typeof(Dictionary<string, object>))] [FactoryOf(typeof(Dictionary<string, List<int>>))] public static Dictionary<T1, List<T2>> M1<T1, T2>() where T2 : class => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Error SI0029: FactoryOfAttribute Type 'System.Collections.Generic.Dictionary<string, object>' cannot be constructed from the return type 'System.Collections.Generic.Dictionary<T1, System.Collections.Generic.List<T2>>' of method 'Container.M1<T1, T2>()'.
-                // FactoryOf(typeof(Dictionary<string, object>))
-                new DiagnosticResult("SI0029", @"FactoryOf(typeof(Dictionary<string, object>))", DiagnosticSeverity.Error).WithLocation(6, 6),
-                // (6,54): Error SI0030: FactoryOfAttribute Type 'System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>>' cannot be constructed from the return type 'System.Collections.Generic.Dictionary<T1, System.Collections.Generic.List<T2>>' of method 'Container.M1<T1, T2>()'  as constraints do not match.
-                // FactoryOf(typeof(Dictionary<string, List<int>>))
-                new DiagnosticResult("SI0030", @"FactoryOf(typeof(Dictionary<string, List<int>>))", DiagnosticSeverity.Error).WithLocation(6, 54));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Error SI0029: FactoryOfAttribute Type 'System.Collections.Generic.Dictionary<string, object>' cannot be constructed from the return type 'System.Collections.Generic.Dictionary<T1, System.Collections.Generic.List<T2>>' of method 'Container.M1<T1, T2>()'.
+            // FactoryOf(typeof(Dictionary<string, object>))
+            new DiagnosticResult("SI0029", @"FactoryOf(typeof(Dictionary<string, object>))", DiagnosticSeverity.Error).WithLocation(6, 6),
+            // (6,54): Error SI0030: FactoryOfAttribute Type 'System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>>' cannot be constructed from the return type 'System.Collections.Generic.Dictionary<T1, System.Collections.Generic.List<T2>>' of method 'Container.M1<T1, T2>()'  as constraints do not match.
+            // FactoryOf(typeof(Dictionary<string, List<int>>))
+            new DiagnosticResult("SI0030", @"FactoryOf(typeof(Dictionary<string, List<int>>))", DiagnosticSeverity.Error).WithLocation(6, 54));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void FactoryOfGenericMustHaveMethodReturnTypeParameter()
-        {
+    [Fact]
+    public void FactoryOfGenericMustHaveMethodReturnTypeParameter()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
 public class Module {
     [FactoryOf(typeof(Dictionary<,>))] public static Dictionary<T1, T2> M1<T1, T2>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,6): Error SI0028: Method 'Module.M1<T1, T2>()' marked with FactoryOfAttribute of open generic type 'System.Collections.Generic.Dictionary<,>' must have a single type parameter, and return that type parameter.
-                // FactoryOf(typeof(Dictionary<,>))
-                new DiagnosticResult("SI0028", @"FactoryOf(typeof(Dictionary<,>))", DiagnosticSeverity.Error).WithLocation(6, 6));
-            comp.GetDiagnostics().Verify();
-            Assert.Empty(generated);
-        }
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,6): Error SI0028: Method 'Module.M1<T1, T2>()' marked with FactoryOfAttribute of open generic type 'System.Collections.Generic.Dictionary<,>' must have a single type parameter, and return that type parameter.
+            // FactoryOf(typeof(Dictionary<,>))
+            new DiagnosticResult("SI0028", @"FactoryOf(typeof(Dictionary<,>))", DiagnosticSeverity.Error).WithLocation(6, 6));
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
 
-        [Fact]
-        public void FactoryOfMethodCanReturnTask()
-        {
+    [Fact]
+    public void FactoryOfMethodCanReturnTask()
+    {
 
-            string userSource = @"
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24638,11 +24875,11 @@ using System.Threading.Tasks;
 public partial class Container : IAsyncContainer<Dictionary<int, string>>, IAsyncContainer<int> {
     [FactoryOf(typeof(Dictionary<,>))] [FactoryOf(typeof(int))] public static Task<T> M<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24796,13 +25033,13 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void PreferFactoryOfFromParentModules()
-        {
+    }
 
-            string userSource = @"
+    [Fact]
+    public void PreferFactoryOfFromParentModules()
+    {
+
+        string userSource = @"
 using StrongInject;
 
 public class ModuleB {
@@ -24817,11 +25054,11 @@ public class ModuleA {
 [RegisterModule(typeof(ModuleA))]
 public partial class Container : IContainer<int> {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24862,13 +25099,13 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void PreferFactoryOfGenericFromParentModules()
-        {
+    }
 
-            string userSource = @"
+    [Fact]
+    public void PreferFactoryOfGenericFromParentModules()
+    {
+
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -24884,11 +25121,11 @@ public class ModuleA {
 [RegisterModule(typeof(ModuleA))]
 public partial class Container : IContainer<List<int>> {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24931,24 +25168,67 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void CanRegisterGenericType()
-        {
+    }
 
-            string userSource = @"
+    [Fact]
+    public void TestFactoryOfMethodMustBeGeneric()
+    {
+        string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<int> {
+    [FactoryOf(typeof(int))] int M() => default;
+}";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (5,6): Error SI0027: Method 'Container.M()' marked with FactoryOfAttribute must be generic.
+            // FactoryOf(typeof(int))
+            new DiagnosticResult("SI0027", @"FactoryOf(typeof(int))", DiagnosticSeverity.Error).WithLocation(5, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::System.Int32>.Run<TResult, TParam>(global::System.Func<global::System.Int32, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::System.Int32> global::StrongInject.IContainer<global::System.Int32>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+    }
+
+    [Fact]
+    public void CanRegisterGenericType()
+    {
+
+        string userSource = @"
 using StrongInject;
 
 public class A<T> {}
 
 [Register(typeof(A<>))]
 public partial class Container : IContainer<A<int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -24989,13 +25269,13 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void CanRegisterGenericTypeAsBaseClass()
-        {
+    }
 
-            string userSource = @"
+    [Fact]
+    public void CanRegisterGenericTypeAsBaseClass()
+    {
+
+        string userSource = @"
 using StrongInject;
 
 public class Base<T> {}
@@ -25003,14 +25283,14 @@ public class Derived<T> : Base<T> {}
 
 [Register(typeof(Derived<>), typeof(Base<>))]
 public partial class Container : IContainer<Base<int>>, IContainer<Derived<int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (8,22): Error SI0102: Error while resolving dependencies for 'Derived<int>': We have no source for instance of type 'Derived<int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (8,22): Error SI0102: Error while resolving dependencies for 'Derived<int>': We have no source for instance of type 'Derived<int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25065,13 +25345,13 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfRegisterGenericTypeAsBaseWithMismatchingNumberOfTypeArguments()
-        {
+    }
 
-            string userSource = @"
+    [Fact]
+    public void ErrorIfRegisterGenericTypeAsBaseWithMismatchingNumberOfTypeArguments()
+    {
+
+        string userSource = @"
 using StrongInject;
 
 public class Base<T1, T2> {}
@@ -25079,17 +25359,17 @@ public class Derived<T> : Base<T, int> {}
 
 [Register(typeof(Derived<>), typeof(Base<,>))]
 public partial class Container : IContainer<Base<int, int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,2): Error SI0031: 'Derived<>' does not have the same number of unbound type parameters as 'Base<,>'.
-                // Register(typeof(Derived<>), typeof(Base<,>))
-                new DiagnosticResult("SI0031", @"Register(typeof(Derived<>), typeof(Base<,>))", DiagnosticSeverity.Error).WithLocation(7, 2),
-                // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int>': We have no source for instance of type 'Base<int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,2): Error SI0031: 'Derived<>' does not have the same number of unbound type parameters as 'Base<,>'.
+            // Register(typeof(Derived<>), typeof(Base<,>))
+            new DiagnosticResult("SI0031", @"Register(typeof(Derived<>), typeof(Base<,>))", DiagnosticSeverity.Error).WithLocation(7, 2),
+            // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int>': We have no source for instance of type 'Base<int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25111,12 +25391,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfRegisterGenericTypeAsBaseWithTypeArgumentsInDifferentOrder()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfRegisterGenericTypeAsBaseWithTypeArgumentsInDifferentOrder()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Base<T1, T2> {}
@@ -25124,17 +25404,17 @@ public class Derived<T1, T2> : Base<T2, T1> {}
 
 [Register(typeof(Derived<,>), typeof(Base<,>))]
 public partial class Container : IContainer<Base<int, int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,2): Error SI0001: 'Derived<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'Base<T1, T2>'.
-                // Register(typeof(Derived<,>), typeof(Base<,>))
-                new DiagnosticResult("SI0001", @"Register(typeof(Derived<,>), typeof(Base<,>))", DiagnosticSeverity.Error).WithLocation(7, 2),
-                // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int, int>': We have no source for instance of type 'Base<int, int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,2): Error SI0001: 'Derived<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'Base<T1, T2>'.
+            // Register(typeof(Derived<,>), typeof(Base<,>))
+            new DiagnosticResult("SI0001", @"Register(typeof(Derived<,>), typeof(Base<,>))", DiagnosticSeverity.Error).WithLocation(7, 2),
+            // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int, int>': We have no source for instance of type 'Base<int, int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25156,12 +25436,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void CanRegisterGenericTypeAsBaseWithTypeArgumentsInCorrectOrder()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void CanRegisterGenericTypeAsBaseWithTypeArgumentsInCorrectOrder()
+    {
+        string userSource = @"
 using StrongInject;
 
 public interface IBase<T1, T2> {}
@@ -25170,14 +25450,14 @@ public class Derived<T1, T2> : IIntermediate<T2, T1> {}
 
 [Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))]
 public partial class Container : IContainer<IBase<int, int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (8,2): Error SI0001: 'Derived<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'IIntermediate<T1, T2>'.
-                // Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))
-                new DiagnosticResult("SI0001", @"Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))", DiagnosticSeverity.Error).WithLocation(8, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (8,2): Error SI0001: 'Derived<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'IIntermediate<T1, T2>'.
+            // Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))
+            new DiagnosticResult("SI0001", @"Register(typeof(Derived<,>), typeof(IBase<,>), typeof(IIntermediate<,>))", DiagnosticSeverity.Error).WithLocation(8, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25222,12 +25502,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfResolveGenericRegistrationWithNonMatchingConstraints()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfResolveGenericRegistrationWithNonMatchingConstraints()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Base<T1, T2> {}
@@ -25235,17 +25515,17 @@ public class Derived<T1, T2> : Base<T1, T2>  where T1 : class {}
 
 [Register(typeof(Derived<,>), typeof(Base<,>))]
 public partial class Container : IContainer<Base<int, int>>, IContainer<Base<object, int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int, int>': We have no source for instance of type 'Base<int, int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22),
-                // (8,22): Warning SI1106: Warning while resolving dependencies for 'Base<int, int>': Registered type 'Derived<,>' cannot be used to resolve instance of type 'Base<int, int>' as the required type arguments do not satisfy the generic constraints.
-                // Container
-                new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(8, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (8,22): Error SI0102: Error while resolving dependencies for 'Base<int, int>': We have no source for instance of type 'Base<int, int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(8, 22),
+            // (8,22): Warning SI1106: Warning while resolving dependencies for 'Base<int, int>': Registered type 'Derived<,>' cannot be used to resolve instance of type 'Base<int, int>' as the required type arguments do not satisfy the generic constraints.
+            // Container
+            new DiagnosticResult("SI1106", @"Container", DiagnosticSeverity.Warning).WithLocation(8, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25300,12 +25580,12 @@ partial class Container
         });
     }
 }");
-        } 
-        
-        [Fact]
-        public void CanResolveGenericRegistrationFromModule()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void CanResolveGenericRegistrationFromModule()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Base<T1, T2> {}
@@ -25320,11 +25600,11 @@ public class ModuleB{}
 
 [RegisterModule(typeof(ModuleB))]
 public partial class Container : IContainer<Base<int, int>>, IContainer<Derived<int, int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25398,12 +25678,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfMultipleGenericRegistrationsForType1()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfMultipleGenericRegistrationsForType1()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class C<T> {}
@@ -25413,14 +25693,14 @@ public partial class Container : IContainer<C<int>>
 {
     [Factory] C<T> GetC<T>() => new C<T>();
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Error SI0106: Error while resolving dependencies for 'C<int>': We have multiple sources for instance of type 'C<int>' and no best source. Try adding a single registration for 'C<int>' directly to the container, and moving any existing registrations for 'C<int>' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Error SI0106: Error while resolving dependencies for 'C<int>': We have multiple sources for instance of type 'C<int>' and no best source. Try adding a single registration for 'C<int>' directly to the container, and moving any existing registrations for 'C<int>' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25442,12 +25722,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfMultipleGenericRegistrationsForType2()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfMultipleGenericRegistrationsForType2()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Base<T> {}
@@ -25456,14 +25736,14 @@ public class Derived<T> : Base<T> {}
 [Register(typeof(Base<>))]
 [Register(typeof(Derived<>), typeof(Base<>))]
 public partial class Container : IContainer<Base<int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (9,22): Error SI0106: Error while resolving dependencies for 'Base<int>': We have multiple sources for instance of type 'Base<int>' and no best source. Try adding a single registration for 'Base<int>' directly to the container, and moving any existing registrations for 'Base<int>' on the container to an imported module.
-                // Container
-                new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(9, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,22): Error SI0106: Error while resolving dependencies for 'Base<int>': We have multiple sources for instance of type 'Base<int>' and no best source. Try adding a single registration for 'Base<int>' directly to the container, and moving any existing registrations for 'Base<int>' on the container to an imported module.
+            // Container
+            new DiagnosticResult("SI0106", @"Container", DiagnosticSeverity.Error).WithLocation(9, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25485,12 +25765,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void NoErrorIfMultipleEquivalentGenericRegistrationsForType()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void NoErrorIfMultipleEquivalentGenericRegistrationsForType()
+    {
+        string userSource = @"
 using StrongInject;
 
 public class Base<T> {}
@@ -25505,11 +25785,11 @@ public class ModuleB {}
 [RegisterModule(typeof(ModuleA))]
 [RegisterModule(typeof(ModuleB))]
 public partial class Container : IContainer<Base<int>>, IContainer<Derived<int>> {}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25583,12 +25863,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void DelegateCanBeRecursiveThroughASingleton1()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void DelegateCanBeRecursiveThroughASingleton1()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -25598,14 +25878,14 @@ public partial class Container : IContainer<A>
 }
 
 public class A{ public A(Func<A> func){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Warning SI1103: Warning while resolving dependencies for 'A': Return type 'A' of delegate 'System.Func<A>' has a single instance scope and so will always have the same value.
-                // Container
-                new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Warning SI1103: Warning while resolving dependencies for 'A': Return type 'A' of delegate 'System.Func<A>' has a single instance scope and so will always have the same value.
+            // Container
+            new DiagnosticResult("SI1103", @"Container", DiagnosticSeverity.Warning).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25627,15 +25907,18 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Func<global::A> func_0_1;
@@ -25649,6 +25932,7 @@ partial class Container
             };
             a_0_0 = new global::A(func: func_0_1);
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -25690,12 +25974,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void DelegateCanBeRecursiveThroughASingleton2()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void DelegateCanBeRecursiveThroughASingleton2()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -25707,11 +25991,11 @@ public partial class Container : IContainer<B>
 
 public class A{ public A(Func<B> func){} }
 public class B{ public B(A a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25733,15 +26017,18 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Func<global::B> func_0_1;
@@ -25757,6 +26044,7 @@ partial class Container
             };
             a_0_0 = new global::A(func: func_0_1);
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -25802,12 +26090,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void DelegateCanBeRecursiveThroughASingleton3()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void DelegateCanBeRecursiveThroughASingleton3()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -25819,11 +26107,11 @@ public partial class Container : IContainer<A>
 
 public class A{ public A(Func<B> func){} }
 public class B{ public B(A a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25845,15 +26133,18 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::System.Func<global::B> func_0_1;
@@ -25869,6 +26160,7 @@ partial class Container
             };
             a_0_0 = new global::A(func: func_0_1);
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -25910,12 +26202,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfSingletonIsRecursive1()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfSingletonIsRecursive1()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A), Scope.SingleInstance)]
@@ -25926,14 +26218,14 @@ public partial class Container : IContainer<A>
 
 public class A{ public A(B b){} }
 public class B{ public B(A a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
-                // Container
-                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0101: Error while resolving dependencies for 'A': 'A' has a circular dependency
+            // Container
+            new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -25955,12 +26247,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfSingletonIsRecursive2()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfSingletonIsRecursive2()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -25972,14 +26264,14 @@ public partial class Container : IContainer<Func<B>>
 
 public class A{ public A(B b){} }
 public class B{ public B(A a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Error SI0101: Error while resolving dependencies for 'System.Func<B>': 'A' has a circular dependency
-                // Container
-                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Error SI0101: Error while resolving dependencies for 'System.Func<B>': 'A' has a circular dependency
+            // Container
+            new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26001,12 +26293,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AllowFuncWithDirectParameterlessCircularDependency()
-        {
-            string userSource = @"
+    [Fact]
+    public void AllowFuncWithDirectParameterlessCircularDependency()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -26018,11 +26310,11 @@ public partial class Container : IContainer<A>
 
 public class A{ public A(Func<B> func){} }
 public class B{ public B(A a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26083,12 +26375,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void AllowFuncWithDirectParameteredCircularDependency()
-        {
-            string userSource = @"
+    [Fact]
+    public void AllowFuncWithDirectParameteredCircularDependency()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -26100,11 +26392,11 @@ public partial class Container : IContainer<A>
 
 public class A{ public A(Func<int, B> func){} }
 public class B{ public B(int i, A a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26165,12 +26457,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void AllowFuncWithIndirectParameteredCircularDependency()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void AllowFuncWithIndirectParameteredCircularDependency()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -26183,11 +26475,11 @@ public partial class Container : IContainer<A>
 
 public class A{ public A(int i, Func<int, B> func){} }
 public class B{ public B(int i, Func<int, A> func){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26264,12 +26556,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes1()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes1()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -26282,14 +26574,14 @@ public partial class Container : IContainer<A>
 
 public class A{ public A(int i, Func<string, B> func){} }
 public class B{ public B(string s, Func<int, A> func){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Warning SI1107: Warning while resolving dependencies for 'A': Delegate 'System.Func<string, B>' has a circular dependency on itself, which means it will not see the updated values for types 'int' passed as parameters to intervening delegates 'System.Func<int, A>'.
-                // Container
-                new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Warning SI1107: Warning while resolving dependencies for 'A': Delegate 'System.Func<string, B>' has a circular dependency on itself, which means it will not see the updated values for types 'int' passed as parameters to intervening delegates 'System.Func<int, A>'.
+            // Container
+            new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26366,12 +26658,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes2()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes2()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -26387,14 +26679,14 @@ public partial class Container : IContainer<A>, IContainer<B>
 
 public class A{ public A(int i, bool b, Func<string, long, int, bool, B> func){} }
 public class B{ public B(string s, long l, int i, bool b, Func<bool, Func<int, A>> func){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Warning SI1107: Warning while resolving dependencies for 'B': Delegate 'System.Func<bool, System.Func<int, A>>' has a circular dependency on itself, which means it will not see the updated values for types 'int, string, long' passed as parameters to intervening delegates 'System.Func<string, long, int, bool, B>'.
-                // Container
-                new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Warning SI1107: Warning while resolving dependencies for 'B': Delegate 'System.Func<bool, System.Func<int, A>>' has a circular dependency on itself, which means it will not see the updated values for types 'int, string, long' passed as parameters to intervening delegates 'System.Func<string, long, int, bool, B>'.
+            // Container
+            new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26576,12 +26868,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes3()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void WarnOnFuncWithIndirectParameteredCircularDependenciesWithInterveningParameterTypes3()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -26596,17 +26888,17 @@ public partial class Container : IContainer<Func<int, A>>
 
 public class A{ public A(int i, bool b, Func<string, long, int, bool, B> func){} }
 public class B{ public B(string s, long l, int i, bool b, Func<bool, Func<int, A>> func){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (7,22): Warning SI1107: Warning while resolving dependencies for 'System.Func<int, A>': Delegate 'System.Func<int, A>' has a circular dependency on itself, which means it will not see the updated values for types 'string, long, bool' passed as parameters to intervening delegates 'System.Func<string, long, int, bool, B>, System.Func<bool, System.Func<int, A>>'.
-                // Container
-                new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22),
-                // (7,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, A>': Parameter 'bool' of delegate 'System.Func<bool, System.Func<int, A>>' is not used in resolution of 'System.Func<int, A>'.
-                // Container
-                new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (7,22): Warning SI1107: Warning while resolving dependencies for 'System.Func<int, A>': Delegate 'System.Func<int, A>' has a circular dependency on itself, which means it will not see the updated values for types 'string, long, bool' passed as parameters to intervening delegates 'System.Func<string, long, int, bool, B>, System.Func<bool, System.Func<int, A>>'.
+            // Container
+            new DiagnosticResult("SI1107", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22),
+            // (7,22): Warning SI1101: Warning while resolving dependencies for 'System.Func<int, A>': Parameter 'bool' of delegate 'System.Func<bool, System.Func<int, A>>' is not used in resolution of 'System.Func<int, A>'.
+            // Container
+            new DiagnosticResult("SI1101", @"Container", DiagnosticSeverity.Warning).WithLocation(7, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26691,12 +26983,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void AllowFuncWithMultipleDirectParameteredCircularDependencies()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void AllowFuncWithMultipleDirectParameteredCircularDependencies()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -26708,11 +27000,11 @@ public partial class Container : IContainer<A>
 
 public class A{ public A(Func<int, B> func1, Func<int, B> func2){} }
 public class B{ public B(int i, A a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26773,12 +27065,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void CanRegisterGenericDecoratorOfInterface()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void CanRegisterGenericDecoratorOfInterface()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<>), typeof(IA<>))]
@@ -26790,11 +27082,11 @@ public partial class Container : IContainer<IA<int>>
 public interface IA<T> {}
 public class A<T> : IA<T> { public A(){} }
 public class DecA<T> : IA<T> { public DecA(IA<T> a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26843,12 +27135,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void CanRegisterGenericDecoratorOfClass()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void CanRegisterGenericDecoratorOfClass()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<>), typeof(ABase<>))]
@@ -26860,11 +27152,11 @@ public partial class Container : IContainer<ABase<int>>
 public class ABase<T> {}
 public class A<T> : ABase<T> { public A(){} }
 public class DecA<T> : ABase<T> { public DecA(ABase<T> a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26913,12 +27205,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfGenericDecoratorParameterHasIncorrectTypeArguments1()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfGenericDecoratorParameterHasIncorrectTypeArguments1()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<>), typeof(IA<>))]
@@ -26930,14 +27222,14 @@ public partial class Container : IContainer<IA<int>>
 public interface IA<T> {}
 public class A<T> : IA<T> { public A(){} }
 public class DecA<T> : IA<T> { public DecA(IA<int> a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,2): Error SI0022: Decorator 'DecA<T>' does not have a constructor parameter of decorated type 'IA<T>'.
-                // RegisterDecorator(typeof(DecA<>), typeof(IA<>))
-                new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(DecA<>), typeof(IA<>))", DiagnosticSeverity.Error).WithLocation(5, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,2): Error SI0022: Decorator 'DecA<T>' does not have a constructor parameter of decorated type 'IA<T>'.
+            // RegisterDecorator(typeof(DecA<>), typeof(IA<>))
+            new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(DecA<>), typeof(IA<>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -26982,12 +27274,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfGenericDecoratorParameterHasIncorrectTypeArguments2()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfGenericDecoratorParameterHasIncorrectTypeArguments2()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<,>), typeof(IA<,>))]
@@ -26999,14 +27291,14 @@ public partial class Container : IContainer<IA<int, string>>
 public interface IA<T1, T2> {}
 public class A<T1, T2> : IA<T1, T2> { public A(){} }
 public class DecA<T1, T2> : IA<T1, T2> { public DecA(IA<T2, T1> a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,2): Error SI0022: Decorator 'DecA<T1, T2>' does not have a constructor parameter of decorated type 'IA<T1, T2>'.
-                // RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))
-                new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))", DiagnosticSeverity.Error).WithLocation(5, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,2): Error SI0022: Decorator 'DecA<T1, T2>' does not have a constructor parameter of decorated type 'IA<T1, T2>'.
+            // RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))
+            new DiagnosticResult("SI0022", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27051,12 +27343,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfMismatchingNumberOfTypeArgumentsBetweenDecoratorAndDecoratedTypes()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfMismatchingNumberOfTypeArgumentsBetweenDecoratorAndDecoratedTypes()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<>), typeof(IA<>))]
@@ -27068,14 +27360,14 @@ public partial class Container : IContainer<IA<int>>
 public interface IA<T1> {}
 public class A<T1> : IA<T1> { public A(){} }
 public class DecA<T1, T2> : IA<T1> { public DecA(IA<T1> a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,2): Error SI0031: 'DecA<T1, T2>' does not have the same number of unbound type parameters as 'IA<>'.
-                // RegisterDecorator(typeof(DecA<,>), typeof(IA<>))
-                new DiagnosticResult("SI0031", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<>))", DiagnosticSeverity.Error).WithLocation(5, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,2): Error SI0031: 'DecA<T1, T2>' does not have the same number of unbound type parameters as 'IA<>'.
+            // RegisterDecorator(typeof(DecA<,>), typeof(IA<>))
+            new DiagnosticResult("SI0031", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27120,12 +27412,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void ErrorIfNoConversionBetweenDecoratorAndDecoratedTypes()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void ErrorIfNoConversionBetweenDecoratorAndDecoratedTypes()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<,>), typeof(IA<,>))]
@@ -27137,14 +27429,14 @@ public partial class Container : IContainer<IA<int, string>>
 public interface IA<T1, T2> {}
 public class A<T1, T2> : IA<T1, T2> { public A(){} }
 public class DecA<T1, T2> : IA<T2, T1> { public DecA(IA<T1, T2> a){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,2): Error SI0001: 'DecA<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'IA<T1, T2>'.
-                // RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))
-                new DiagnosticResult("SI0001", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))", DiagnosticSeverity.Error).WithLocation(5, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,2): Error SI0001: 'DecA<T1, T2>' does not have an identity, implicit reference, boxing or nullable conversion to 'IA<T1, T2>'.
+            // RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))
+            new DiagnosticResult("SI0001", @"RegisterDecorator(typeof(DecA<,>), typeof(IA<,>))", DiagnosticSeverity.Error).WithLocation(5, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27189,12 +27481,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void DetectsCircularDependencyInGenericDecorator()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void DetectsCircularDependencyInGenericDecorator()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register(typeof(A<>), typeof(IA<>))]
@@ -27206,14 +27498,14 @@ public partial class Container : IContainer<IA<int>>
 public interface IA<T> {}
 public class A<T> : IA<T> { public A(){} }
 public class DecA<T> : IA<T> { public DecA(IA<T> a, IA<string> aString){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (6,22): Error SI0101: Error while resolving dependencies for 'IA<int>': 'IA<string>' has a circular dependency
-                // Container
-                new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,22): Error SI0101: Error while resolving dependencies for 'IA<int>': 'IA<string>' has a circular dependency
+            // Container
+            new DiagnosticResult("SI0101", @"Container", DiagnosticSeverity.Error).WithLocation(6, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27235,12 +27527,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void TestFactoryMethodAsSingleType()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestFactoryMethodAsSingleType()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<object>
@@ -27249,11 +27541,11 @@ public partial class Container : IContainer<object>
 }
 
 public class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27318,12 +27610,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void TestFactoryMethodAsMultipleTypes()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestFactoryMethodAsMultipleTypes()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<IB>, IContainer<IC> 
@@ -27334,11 +27626,11 @@ public partial class Container : IContainer<IB>, IContainer<IC>
 public class A : IB, IC{}
 public interface IB{}
 public interface IC{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27456,12 +27748,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void TestFactoryMethodAsMultipleTypesFirstTypeInvalid()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestFactoryMethodAsMultipleTypesFirstTypeInvalid()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<IB>, IContainer<IC> 
@@ -27472,17 +27764,17 @@ public partial class Container : IContainer<IB>, IContainer<IC>
 public class A : IC{}
 public interface IB{}
 public interface IC{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'IB': We have no source for instance of type 'IB'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (6,6): Error SI0032: Return type 'A' of 'GetA' does not have an identity, implicit reference, boxing or nullable conversion to 'IB'.
-                // Factory(typeof(IB), typeof(IC))
-                new DiagnosticResult("SI0032", @"Factory(typeof(IB), typeof(IC))", DiagnosticSeverity.Error).WithLocation(6, 6));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'IB': We have no source for instance of type 'IB'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (6,6): Error SI0032: Return type 'A' of 'GetA' does not have an identity, implicit reference, boxing or nullable conversion to 'IB'.
+            // Factory(typeof(IB), typeof(IC))
+            new DiagnosticResult("SI0032", @"Factory(typeof(IB), typeof(IC))", DiagnosticSeverity.Error).WithLocation(6, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27557,12 +27849,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestFactoryMethodWithAsTypesNotAutoRegisteredAsSelf()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestFactoryMethodWithAsTypesNotAutoRegisteredAsSelf()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<A> 
@@ -27571,14 +27863,14 @@ public partial class Container : IContainer<A>
 }
 
 public class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'A': We have no source for instance of type 'A'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27600,12 +27892,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void TestFactoryMethodWithAsTypesCanBeRegisteredAsSelf()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestFactoryMethodWithAsTypesCanBeRegisteredAsSelf()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<A> 
@@ -27614,11 +27906,11 @@ public partial class Container : IContainer<A>
 }
 
 public class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27661,29 +27953,29 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void TestGenericFactoryMethodCannotBeRegisteredAsSpecificTypes()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestGenericFactoryMethodCannotBeRegisteredAsSpecificTypes()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<int> 
 {
     [Factory(typeof(int))] T GetT<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
-                // (6,6): Error SI0033: Factory Method 'GetT' cannot be registered as specific types since it is generic.
-                // Factory(typeof(int))
-                new DiagnosticResult("SI0033", @"Factory(typeof(int))", DiagnosticSeverity.Error).WithLocation(6, 6));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'int': We have no source for instance of type 'int'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (6,6): Error SI0033: Factory Method 'GetT' cannot be registered as specific types since it is generic.
+            // Factory(typeof(int))
+            new DiagnosticResult("SI0033", @"Factory(typeof(int))", DiagnosticSeverity.Error).WithLocation(6, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27705,12 +27997,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void TestFactoryMethodCannotBeRegisteredAsUnboundType()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestFactoryMethodCannotBeRegisteredAsUnboundType()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -27718,17 +28010,17 @@ public partial class Container : IContainer<IList<int>>
 {
     [Factory(typeof(IList<>))] List<T> GetListT<T>() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.IList<int>': We have no source for instance of type 'System.Collections.Generic.IList<int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
-                // (7,6): Error SI0033: Factory Method 'GetListT' cannot be registered as specific types since it is generic.
-                // Factory(typeof(IList<>))
-                new DiagnosticResult("SI0033", @"Factory(typeof(IList<>))", DiagnosticSeverity.Error).WithLocation(7, 6));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,22): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.IList<int>': We have no source for instance of type 'System.Collections.Generic.IList<int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(5, 22),
+            // (7,6): Error SI0033: Factory Method 'GetListT' cannot be registered as specific types since it is generic.
+            // Factory(typeof(IList<>))
+            new DiagnosticResult("SI0033", @"Factory(typeof(IList<>))", DiagnosticSeverity.Error).WithLocation(7, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27750,12 +28042,12 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
-        
-        [Fact]
-        public void TestFactoryMethodAsMultipleTypesWithScope()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestFactoryMethodAsMultipleTypesWithScope()
+    {
+        string userSource = @"
 using StrongInject;
 
 public partial class Container : IContainer<IB>, IContainer<IC> 
@@ -27766,11 +28058,11 @@ public partial class Container : IContainer<IB>, IContainer<IC>
 public class A : IB, IC{}
 public interface IB{}
 public interface IC{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27792,20 +28084,24 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::A a_0_0;
             a_0_0 = this.GetA();
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
                 global::StrongInject.Helpers.Dispose(a_0_0);
@@ -27885,12 +28181,59 @@ partial class Container
         });
     }
 }");
-        } 
-        
-        [Fact]
-        public void Test1TPGenericRegisterAttribute()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestFactoryMethodAsUnboundType()
+    {
+        string userSource = @"
+using StrongInject;
+
+public partial class Container : IContainer<IA<int>> 
+{
+    [Factory(typeof(IA<>))] A<int> GetA() => null;
+}
+
+public class A<T> : IA<T> {}
+public interface IA<T>{}";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,22): Error SI0102: Error while resolving dependencies for 'IA<int>': We have no source for instance of type 'IA<int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(4, 22),
+            // (6,6): Error SI0034: Factory method 'GetA' cannot be registered as an instance of open generic type 'IA<>'.
+            // Factory(typeof(IA<>))
+            new DiagnosticResult("SI0034", @"Factory(typeof(IA<>))", DiagnosticSeverity.Error).WithLocation(6, 6));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+    }
+
+    TResult global::StrongInject.IContainer<global::IA<global::System.Int32>>.Run<TResult, TParam>(global::System.Func<global::IA<global::System.Int32>, TParam, TResult> func, TParam param)
+    {
+        throw new global::System.NotImplementedException();
+    }
+
+    global::StrongInject.Owned<global::IA<global::System.Int32>> global::StrongInject.IContainer<global::IA<global::System.Int32>>.Resolve()
+    {
+        throw new global::System.NotImplementedException();
+    }
+}");
+    }
+
+    [Fact]
+    public void Test1TPGenericRegisterAttribute()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<A>]
@@ -27899,11 +28242,11 @@ partial class Container : IContainer<A>
 }
 
 class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27944,12 +28287,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void Test1TPGenericRegisterAttributeSingleInstance()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void Test1TPGenericRegisterAttributeSingleInstance()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<A>(Scope.SingleInstance)]
@@ -27958,11 +28301,11 @@ partial class Container : IContainer<A>
 }
 
 class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -27984,20 +28327,24 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::A a_0_0;
             a_0_0 = new global::A();
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -28039,29 +28386,29 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void Test1TPGenericRegisterAttributeNonNamedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void Test1TPGenericRegisterAttributeNonNamedType()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<int[]>]
 partial class Container : IContainer<int[]>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Error SI0003: 'int[]' is invalid in a registration.
-                // Register<int[]>
-                new DiagnosticResult("SI0003", @"Register<int[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
-                // (5,15): Warning SI1105: Warning while resolving dependencies for 'int[]': Resolving all registration of type 'int', but there are no such registrations.
-                // Container
-                new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Error SI0003: 'int[]' is invalid in a registration.
+            // Register<int[]>
+            new DiagnosticResult("SI0003", @"Register<int[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
+            // (5,15): Warning SI1105: Warning while resolving dependencies for 'int[]': Resolving all registration of type 'int', but there are no such registrations.
+            // Container
+            new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28102,12 +28449,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void Test2TPGenericRegisterAttribute()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void Test2TPGenericRegisterAttribute()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<A, object>]
@@ -28116,11 +28463,11 @@ partial class Container : IContainer<object>
 }
 
 class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28165,12 +28512,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void Test2TPGenericRegisterAttributeNonNamedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void Test2TPGenericRegisterAttributeNonNamedType()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -28178,17 +28525,17 @@ using System.Collections.Generic;
 partial class Container : IContainer<IEnumerable<int>>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,2): Error SI0003: 'int[]' is invalid in a registration.
-                // Register<int[], IEnumerable<int>>
-                new DiagnosticResult("SI0003", @"Register<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2),
-                // (6,15): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.IEnumerable<int>': We have no source for instance of type 'System.Collections.Generic.IEnumerable<int>'
-                // Container
-                new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,2): Error SI0003: 'int[]' is invalid in a registration.
+            // Register<int[], IEnumerable<int>>
+            new DiagnosticResult("SI0003", @"Register<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2),
+            // (6,15): Error SI0102: Error while resolving dependencies for 'System.Collections.Generic.IEnumerable<int>': We have no source for instance of type 'System.Collections.Generic.IEnumerable<int>'
+            // Container
+            new DiagnosticResult("SI0102", @"Container", DiagnosticSeverity.Error).WithLocation(6, 15));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28210,32 +28557,32 @@ partial class Container
         throw new global::System.NotImplementedException();
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void Test2TPGenericRegisterAttributeAsNonNamedType()
-        {
-            string userSource = @"
+    [Fact]
+    public void Test2TPGenericRegisterAttributeAsNonNamedType()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<string, char[]>]
 partial class Container : IContainer<char[]>
 {
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (4,2): Error SI0003: 'char[]' is invalid in a registration.
-                // Register<string, char[]>
-                new DiagnosticResult("SI0003", @"Register<string, char[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
-                // (5,15): Warning SI1105: Warning while resolving dependencies for 'char[]': Resolving all registration of type 'char', but there are no such registrations.
-                // Container
-                new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
-            comp.GetDiagnostics().Verify(
-                // (4,11): Error CS0311: The type 'string' cannot be used as type parameter 'TImpl' in the generic type or method 'RegisterAttribute<TImpl, TService>'. There is no implicit reference conversion from 'string' to 'char[]'.
-                // string
-                new DiagnosticResult("CS0311", @"string", DiagnosticSeverity.Error).WithLocation(4, 11));
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Error SI0003: 'char[]' is invalid in a registration.
+            // Register<string, char[]>
+            new DiagnosticResult("SI0003", @"Register<string, char[]>", DiagnosticSeverity.Error).WithLocation(4, 2),
+            // (5,15): Warning SI1105: Warning while resolving dependencies for 'char[]': Resolving all registration of type 'char', but there are no such registrations.
+            // Container
+            new DiagnosticResult("SI1105", @"Container", DiagnosticSeverity.Warning).WithLocation(5, 15));
+        comp.GetDiagnostics().Verify(
+            // (4,11): Error CS0311: The type 'string' cannot be used as type parameter 'TImpl' in the generic type or method 'RegisterAttribute<TImpl, TService>'. There is no implicit reference conversion from 'string' to 'char[]'.
+            // string
+            new DiagnosticResult("CS0311", @"string", DiagnosticSeverity.Error).WithLocation(4, 11));
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28276,12 +28623,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void Test2TPGenericRegisterAttributeSingleInstance()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void Test2TPGenericRegisterAttributeSingleInstance()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<A, object>(Scope.SingleInstance)]
@@ -28290,11 +28637,11 @@ partial class Container : IContainer<object>
 }
 
 class A{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28316,20 +28663,24 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::A a_0_0;
             a_0_0 = new global::A();
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -28375,12 +28726,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void Test2TPGenericRegisterAttributeSingleInstanceSharesInstanceOfA()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void Test2TPGenericRegisterAttributeSingleInstanceSharesInstanceOfA()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<A, I1>(Scope.SingleInstance)]
@@ -28392,11 +28743,11 @@ partial class Container : IContainer<I1>, IContainer<I2>
 class A : I1, I2 {}
 interface I1{}
 interface I2{}";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28418,20 +28769,24 @@ partial class Container
     }
 
     private global::A _aField0;
+    private bool _aField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::A GetAField0()
     {
-        if (!object.ReferenceEquals(_aField0, null))
-            return _aField0;
+        if (this._aField0Set)
+            return this._aField0;
         this._lock0.Wait();
         try
         {
+            if (this._aField0Set)
+                return this._aField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::A a_0_0;
             a_0_0 = new global::A();
             this._aField0 = a_0_0;
+            this._aField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -28510,12 +28865,12 @@ partial class Container
         });
     }
 }");
-        }
+    }
 
-        [Fact]
-        public void TestGenericRegisterDecoratorAttribute()
-        {
-            string userSource = @"
+    [Fact]
+    public void TestGenericRegisterDecoratorAttribute()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<Impl, IInterface>]
@@ -28527,11 +28882,11 @@ partial class Container : IContainer<IInterface>
 interface IInterface {}
 class Impl : IInterface {}
 class Dec : IInterface { public Dec(IInterface underlying){} }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28580,12 +28935,12 @@ partial class Container
         });
     }
 }");
-        } 
-        
-        [Fact]
-        public void TestGenericRegisterDecoratorAttributeNonNamedType()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestGenericRegisterDecoratorAttributeNonNamedType()
+    {
+        string userSource = @"
 using StrongInject;
 using System.Collections.Generic;
 
@@ -28594,14 +28949,14 @@ partial class Container : IContainer<IEnumerable<int>>
 {
     [Factory] IEnumerable<int> GetEnumerable() => default;
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify(
-                // (5,2): Error SI0003: 'int[]' is invalid in a registration.
-                // RegisterDecorator<int[], IEnumerable<int>>
-                new DiagnosticResult("SI0003", @"RegisterDecorator<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2));
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,2): Error SI0003: 'int[]' is invalid in a registration.
+            // RegisterDecorator<int[], IEnumerable<int>>
+            new DiagnosticResult("SI0003", @"RegisterDecorator<int[], IEnumerable<int>>", DiagnosticSeverity.Error).WithLocation(5, 2));
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28644,12 +28999,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void TestGenericRegisterDecoratorAttributeWithDecoratorOptions()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestGenericRegisterDecoratorAttributeWithDecoratorOptions()
+    {
+        string userSource = @"
 using StrongInject;
 using System;
 
@@ -28677,11 +29032,11 @@ class Dec2 : IInterface
     public Dec2(IInterface underlying){}
     public void Dispose(){}
 }";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28756,12 +29111,12 @@ partial class Container
         });
     }
 }");
-        }
-        
-        [Fact]
-        public void TestNullableEnabledRegistrationCode()
-        {
-            string userSource = @"
+    }
+
+    [Fact]
+    public void TestNullableEnabledRegistrationCode()
+    {
+        string userSource = @"
 using StrongInject;
 
 [Register<A>]
@@ -28776,11 +29131,11 @@ record A(B b, C? c);
 #nullable disable
 record B(C c);
 record C();";
-            var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
-            generatorDiagnostics.Verify();
-            comp.GetDiagnostics().Verify();
-            var file = Assert.Single(generated);
-            file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
 partial class Container
 {
     private int _disposed = 0;
@@ -28802,20 +29157,24 @@ partial class Container
     }
 
     private global::C _cField0;
+    private bool _cField0Set;
     private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
     private global::System.Action _disposeAction0;
     private global::C GetCField0()
     {
-        if (!object.ReferenceEquals(_cField0, null))
-            return _cField0;
+        if (this._cField0Set)
+            return this._cField0;
         this._lock0.Wait();
         try
         {
+            if (this._cField0Set)
+                return this._cField0;
             if (this.Disposed)
                 throw new global::System.ObjectDisposedException(nameof(Container));
             global::C c_0_0;
             c_0_0 = new global::C();
             this._cField0 = c_0_0;
+            this._cField0Set = true;
             this._disposeAction0 = () =>
             {
             };
@@ -28927,6 +29286,350 @@ partial class Container
         });
     }
 }");
+    }
+
+    [Fact]
+    public void TestRegisterFactoryMustBeFactory()
+    {
+        string userSource = @"
+using StrongInject;
+
+[RegisterFactory(typeof(int))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (4,2): Error SI0012: 'int' is registered as a factory but does not implement StrongInject.IFactory<T> or StrongInject.IAsyncFactory<T>
+            // RegisterFactory(typeof(int))
+            new DiagnosticResult("SI0012", @"RegisterFactory(typeof(int))", DiagnosticSeverity.Error).WithLocation(4, 2)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestCannotRegisterUnboundGenericFactory()
+    {
+        string userSource = @"
+using StrongInject;
+
+public class Factory<T> : IFactory<T>
+{
+    public T Create() => default;
+}
+
+[RegisterFactory(typeof(Factory<>))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,2): Error SI0011: Unbound Generic Type 'Factory<>' is invalid in a Factory registration.
+            // RegisterFactory(typeof(Factory<>))
+            new DiagnosticResult("SI0011", @"RegisterFactory(typeof(Factory<>))", DiagnosticSeverity.Error).WithLocation(9, 2)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestCannotRegisterGenericType()
+    {
+        string userSource = @"
+using StrongInject;
+
+public abstract class A{}
+
+[Register(typeof(A))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (6,2): Error SI0010: Cannot register 'A' as it is abstract.
+            // Register(typeof(A))
+            new DiagnosticResult("SI0010", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(6, 2)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestCannotRegisterGenericFactory()
+    {
+        string userSource = @"
+using StrongInject;
+
+public abstract class Factory : IFactory<int>
+{
+    public int Create() => default;
+}
+
+[RegisterFactory(typeof(Factory))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (9,2): Error SI0010: Cannot register 'Factory' as it is abstract.
+            // RegisterFactory(typeof(Factory))
+            new DiagnosticResult("SI0010", @"RegisterFactory(typeof(Factory))", DiagnosticSeverity.Error).WithLocation(9, 2)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestCannotRegisterGenericDecorator()
+    {
+        string userSource = @"
+using StrongInject;
+
+public interface IA{}
+public abstract class A{ public A(IA impl){} }
+
+
+[RegisterDecorator(typeof(A), typeof(IA))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (8,2): Error SI0010: Cannot register 'A' as it is abstract.
+            // RegisterDecorator(typeof(A), typeof(IA))
+            new DiagnosticResult("SI0010", @"RegisterDecorator(typeof(A), typeof(IA))", DiagnosticSeverity.Error).WithLocation(8, 2)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestDirectRecursiveModuleRegistration()
+    {
+        string userSource = @"
+using StrongInject;
+
+[RegisterModule(typeof(Module1))]
+class Module1
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,7): Error SI0009: Module 'Module1' directly or indirectly registers itself.
+            // Module1
+            new DiagnosticResult("SI0009", @"Module1", DiagnosticSeverity.Error).WithLocation(5, 7)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestIndirectRecursiveModuleRegistration()
+    {
+        string userSource = @"
+using StrongInject;
+
+[RegisterModule(typeof(Module2))]
+class Module1
+{
+}
+
+[RegisterModule(typeof(Module1))]
+class Module2
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (5,7): Error SI0009: Module 'Module1' directly or indirectly registers itself.
+            // Module1
+            new DiagnosticResult("SI0009", @"Module1", DiagnosticSeverity.Error).WithLocation(5, 7)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestStructCanBeSingleInstance()
+    {
+        string userSource = @"
+using StrongInject;
+
+struct A {}
+
+[Register(typeof(A), Scope.SingleInstance)]
+partial class Container : IContainer<A>
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        var file = Assert.Single(generated);
+        file.Should().BeIgnoringLineEndings(@"#pragma warning disable CS1998
+partial class Container
+{
+    private int _disposed = 0;
+    private bool Disposed => _disposed != 0;
+    public void Dispose()
+    {
+        var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
+        if (disposed != 0)
+            return;
+        this._lock0.Wait();
+        try
+        {
+            this._disposeAction0?.Invoke();
         }
+        finally
+        {
+            this._lock0.Release();
+        }
+    }
+
+    private global::A _aField0;
+    private bool _aField0Set;
+    private global::System.Threading.SemaphoreSlim _lock0 = new global::System.Threading.SemaphoreSlim(1);
+    private global::System.Action _disposeAction0;
+    private global::A GetAField0()
+    {
+        if (this._aField0Set)
+            return this._aField0;
+        this._lock0.Wait();
+        try
+        {
+            if (this._aField0Set)
+                return this._aField0;
+            if (this.Disposed)
+                throw new global::System.ObjectDisposedException(nameof(Container));
+            global::A a_0_0;
+            a_0_0 = new global::A();
+            this._aField0 = a_0_0;
+            this._aField0Set = true;
+            this._disposeAction0 = () =>
+            {
+            };
+        }
+        finally
+        {
+            this._lock0.Release();
+        }
+
+        return _aField0;
+    }
+
+    TResult global::StrongInject.IContainer<global::A>.Run<TResult, TParam>(global::System.Func<global::A, TParam, TResult> func, TParam param)
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        TResult result;
+        try
+        {
+            result = func(a_0_0, param);
+        }
+        finally
+        {
+        }
+
+        return result;
+    }
+
+    global::StrongInject.Owned<global::A> global::StrongInject.IContainer<global::A>.Resolve()
+    {
+        if (Disposed)
+            throw new global::System.ObjectDisposedException(nameof(Container));
+        global::A a_0_0;
+        a_0_0 = GetAField0();
+        return new global::StrongInject.Owned<global::A>(a_0_0, () =>
+        {
+        });
+    }
+}");
+    }
+    
+    [Fact]
+    public void TestMultipleConstructors()
+    {
+        string userSource = @"
+using StrongInject;
+
+public class A
+{
+    public A(int i){}
+    public A(string s){}
+}
+
+[Register(typeof(A))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (10,2): Error SI0006: 'A' has multiple non-default public constructors.
+            // Register(typeof(A))
+            new DiagnosticResult("SI0006", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(10, 2)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestMultipleConstructorsIncludingDefault()
+    {
+        string userSource = @"
+using StrongInject;
+
+public class A
+{
+    public A(int i){}
+    public A(){}
+}
+
+[Register(typeof(A))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify();
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
+    }
+    
+    [Fact]
+    public void TestNoAccessibleConstructors()
+    {
+        string userSource = @"
+using StrongInject;
+
+public class A{
+    private A()
+    {
+    }
+}
+
+[Register(typeof(A))]
+class Module
+{
+}
+";
+        var comp = RunGeneratorWithStrongInjectReference(userSource, out var generatorDiagnostics, out var generated);
+        generatorDiagnostics.Verify(
+            // (10,2): Error SI0005: 'A' does not have any public constructors.
+            // Register(typeof(A))
+            new DiagnosticResult("SI0005", @"Register(typeof(A))", DiagnosticSeverity.Error).WithLocation(10, 2)
+        );
+        comp.GetDiagnostics().Verify();
+        Assert.Empty(generated);
     }
 }

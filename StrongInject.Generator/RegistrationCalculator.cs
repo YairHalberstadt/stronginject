@@ -343,12 +343,6 @@ namespace StrongInject.Generator
                     return;
                 }
 
-                if (scope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
-                {
-                    _reportDiagnostic(StructWithSingleInstanceScope(registerAttribute, type, _cancellationToken));
-                    return;
-                }
-
                 var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
                 var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
 
@@ -468,7 +462,7 @@ namespace StrongInject.Generator
                 }
                 if (type.IsUnboundGenericType)
                 {
-                    _reportDiagnostic(UnboundGenericType(
+                    _reportDiagnostic(UnboundGenericTypeInFactoryRegistration(
                         type,
                         registerFactoryAttribute.GetLocation(_cancellationToken)));
                     continue;
@@ -494,12 +488,6 @@ namespace StrongInject.Generator
                     ? (Scope)factoryTargetScopeInt
                     : Scope.InstancePerResolution;
 
-                if (factoryScope == Scope.SingleInstance && type.TypeKind == TypeKind.Struct)
-                {
-                    _reportDiagnostic(StructWithSingleInstanceScope(registerFactoryAttribute, type, _cancellationToken));
-                    continue;
-                }
-
                 var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
                 var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
 
@@ -523,12 +511,6 @@ namespace StrongInject.Generator
                     any = true;
 
                     var factoryOf = factoryType.TypeArguments.First();
-
-                    if (factoryTargetScope == Scope.SingleInstance && factoryOf.TypeKind == TypeKind.Struct)
-                    {
-                        _reportDiagnostic(StructWithSingleInstanceScope(registerFactoryAttribute, factoryOf, _cancellationToken));
-                        continue;
-                    }
 
                     bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory);
 
@@ -1530,27 +1512,13 @@ namespace StrongInject.Generator
                 type);
         }
 
-        private static Diagnostic StructWithSingleInstanceScope(AttributeData registerAttribute, ITypeSymbol type, CancellationToken cancellationToken)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "SI0008",
-                    "Struct cannot have Single Instance scope",
-                    "'{0}' is a struct and cannot have a Single Instance scope.",
-                    "StrongInject",
-                    DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
-                registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                type);
-        }
-
         private static Diagnostic RecursiveModuleRegistration(INamedTypeSymbol module, CancellationToken cancellationToken)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0009",
-                    "Registration for Module is recursive",
-                    "Registration for '{0}' is recursive.",
+                    "Module directly or indirectly registers itself.",
+                    "Module '{0}' directly or indirectly registers itself.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
@@ -1572,13 +1540,13 @@ namespace StrongInject.Generator
                 typeSymbol);
         }
 
-        private static Diagnostic UnboundGenericType(ITypeSymbol typeSymbol, Location location)
+        private static Diagnostic UnboundGenericTypeInFactoryRegistration(ITypeSymbol typeSymbol, Location location)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0011",
-                    "Unbound Generic Type is invalid in a registration",
-                    "Unbound Generic Type '{0}' is invalid in a registration.",
+                    "Unbound Generic Type is invalid in a Factory registration",
+                    "Unbound Generic Type '{0}' is invalid in a Factory registration.",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
@@ -1591,8 +1559,8 @@ namespace StrongInject.Generator
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI0012",
-                    "Type is registered as a factory but does not implement StrongInject.IAsyncFactory<T>",
-                    "'{0}' is registered as a factory but does not implement StrongInject.IAsyncFactory<T>",
+                    "Type is registered as a factory but does not implement StrongInject.IFactory<T> or StrongInject.IAsyncFactory<T>",
+                    "'{0}' is registered as a factory but does not implement StrongInject.IFactory<T> or StrongInject.IAsyncFactory<T>",
                     "StrongInject",
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
