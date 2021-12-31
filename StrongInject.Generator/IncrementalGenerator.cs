@@ -6,8 +6,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-using System.Threading;
 
 namespace StrongInject.Generator
 {
@@ -16,113 +16,109 @@ namespace StrongInject.Generator
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            var wellKnownTypesProviderAndDiagsProvider = context.CompilationProvider.Select((comp, _) =>
-            {
-                var diags = new List<Diagnostic>();
-                WellKnownTypes.TryCreate(comp, diags.Add, out WellKnownTypes? wellKnownTypes);
-                return (diags: diags.ToEquatable(), wellKnownTypes);
-            });
-
-            context.RegisterSourceOutput(wellKnownTypesProviderAndDiagsProvider, (ctx, wkt) =>
-            {
-                foreach (var diag in wkt.diags)
+            var diagnosticsAndSources = context.SyntaxProvider.CreateSyntaxProvider<(DiagnosticCollection? diagnostics, SourceText? source,  string? sourceHintName)>(
+                (node, _) => node is ClassDeclarationSyntax,
+                (ctx, cancellationToken) =>
                 {
-                    ctx.ReportDiagnostic(diag);
-                }
-
-            });
-
-            var wellKnownTypesProvider = wellKnownTypesProviderAndDiagsProvider.Select((x, _) => x.wellKnownTypes);
-
-            var classAndMemberAttributesProvider = wellKnownTypesProvider.Select((wkt, _) =>
-                (classAtts: wkt?.GetClassAttributes().ToEquatable(), memberAtts: wkt?.GetMemberAttributes().ToEquatable()));
-
-            var modulesAndContainersProvider = context.SyntaxProvider.CreateSyntaxProvider(
-                    (node, _) => node is ClassDeclarationSyntax,
-                    (ctx, cancellationToken) => ctx.SemanticModel.GetDeclaredSymbol(ctx.Node, cancellationToken))
-                .Where(x => x is INamedTypeSymbol)
-                .Combine(wellKnownTypesProvider)
-                .Select((x, _) =>
-                {
-                    var (symbol, wellKnownTypes) = x;
-                    if (wellKnownTypes is null)
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (ctx.SemanticModel.GetDeclaredSymbol(ctx.Node, cancellationToken) is not INamedTypeSymbol type)
                     {
                         return default;
                     }
 
-                    var type = (INamedTypeSymbol)symbol!;
-                    var isContainer = type!.AllInterfaces.Any(x
-                        => x.OriginalDefinition.Equals(wellKnownTypes.IContainer)
-                           || x.OriginalDefinition.Equals(wellKnownTypes.IAsyncContainer));
-                    return (type, isContainer);
-                })
-                .Combine(classAndMemberAttributesProvider)
-                .Where(x =>
+                    var isContainer = type.AllInterfaces.Any(x =>
+                        x.OriginalDefinition.MetadataName is WellKnownTypes.ICONTAINER_MD_NAME or WellKnownTypes.IASYNC_CONTAINER_MD_NAME);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!isContainer
+                        && !type.GetAttributes().Any(x => WellKnownTypes.IsClassAttribute(x.AttributeClass))
+                        && !type.GetMembers().Any(x =>
+                        {
+                            if (x is IFieldSymbol or IPropertySymbol && x.GetAttributes().Any(x => WellKnownTypes.IsInstanceAttribute(x.AttributeClass)))
+                            {
+                                return true;
+                            }
+
+                            return x is IMethodSymbol && x.GetAttributes().Any(x => WellKnownTypes.IsMethodAttribute(x.AttributeClass));
+                        }))
+                    {
+                        return default;
+                    }
+
+                    var diagnostics = new List<Diagnostic>();
+                    var reportDiagnostic = diagnostics.Add;
+                    if (!type.IsInternal() && !type.IsPublic())
+                    {
+                        reportDiagnostic(ModuleNotPublicOrInternal(
+                            type,
+                            ((TypeDeclarationSyntax)ctx.Node).Identifier
+                            .GetLocation()));
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!WellKnownTypes.TryCreate(ctx.SemanticModel.Compilation, reportDiagnostic, out var wellKnownTypes))
+                    {
+                        return (new DiagnosticCollection(diagnostics), null, null);
+                    }
+
+                    var registrationCalculator = new RegistrationCalculator(ctx.SemanticModel.Compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
+                    if (!isContainer)
+                    {
+                        registrationCalculator.ValidateModuleRegistrations(type);
+                        return (new DiagnosticCollection(diagnostics), null, null);
+                    }
+
+                    var file = ContainerGenerator.GenerateContainerImplementations(
+                        type,
+                        registrationCalculator.GetContainerRegistrations(type),
+                        wellKnownTypes,
+                        reportDiagnostic,
+                        cancellationToken);
+
+                    var source = CSharpSyntaxTree.ParseText(SourceText.From(file, Encoding.UTF8)).GetRoot()
+                        .NormalizeWhitespace().SyntaxTree.GetText();
+
+                    return (new DiagnosticCollection(diagnostics), source, sourceHintName: GenerateNameHint(type));
+                });
+
+            var allDiagnostics = diagnosticsAndSources.Select((x, _) => x.diagnostics)
+                .Collect()
+                .Select((x, _) =>
+                    {
+                        var diags = new HashSet<Diagnostic>(DiagnosticEqualityComparer.Instance);
+                        foreach (var collection in x)
+                        {
+                            if (collection is not null)
+                            {
+                                foreach (var diag in collection.Diagnostics)
+                                {
+                                    diags.Add(diag);
+                                }
+                            }
+                        }
+
+                        return diags;
+                    }
+                );
+
+            var sources = diagnosticsAndSources.Select((x, _) => (x.source, x.sourceHintName));
+            context.RegisterSourceOutput(sources, (context, x) =>
+            {
+                if (x.source is { } source)
                 {
-                    var ((type, isContainer), (classAtts, memberAtts)) = x;
-                    if (classAtts is null || memberAtts is null)
-                    {
-                        return false;
-                    }
-
-                    return isContainer
-                           || type.GetAttributes().Any(x =>
-                               x.AttributeClass is { } attribute &&
-                               classAtts.Contains(attribute))
-                           || type.GetMembers().Any(x => x.GetAttributes().Any(x =>
-                               x.AttributeClass is { } attribute &&
-                               memberAtts.Contains(attribute)));
-                })
-                .Select((x, _) => x.Left);
-
-            context.RegisterSourceOutput(
-                wellKnownTypesProvider
-                    .Combine(context.CompilationProvider)
-                    .Combine(modulesAndContainersProvider.Collect()), (context, x) =>
-                {
-                    var ((wellKnownTypes, compilation), modules) = x;
-                    if (wellKnownTypes is null)
-                    {
-                        return;
-                    }
-
-                    var registrationCalculator = new RegistrationCalculator(compilation, wellKnownTypes, context.ReportDiagnostic, context.CancellationToken);
-                    foreach (var (module, isContainer) in modules)
-                    {
-                        context.CancellationToken.ThrowIfCancellationRequested();
-
-                        if (!module.IsInternal() && !module.IsPublic())
-                        {
-                            context.ReportDiagnostic(ModuleNotPublicOrInternal(
-                                module,
-                                ((TypeDeclarationSyntax)module.DeclaringSyntaxReferences[0].GetSyntax()).Identifier
-                                .GetLocation()));
-                        }
-
-                        if (isContainer)
-                        {
-                            var file = ContainerGenerator.GenerateContainerImplementations(
-                                module,
-                                registrationCalculator.GetContainerRegistrations(module),
-                                wellKnownTypes,
-                                context.ReportDiagnostic,
-                                context.CancellationToken);
-
-                            var source = CSharpSyntaxTree.ParseText(SourceText.From(file, Encoding.UTF8)).GetRoot()
-                                .NormalizeWhitespace().SyntaxTree.GetText();
-                            context.AddSource(
-                                GenerateNameHint(module),
-                                source);
-                        }
-                        else
-                        {
-                            registrationCalculator.ValidateModuleRegistrations(module);
-                        }
-                    }
+                    context.AddSource(x.sourceHintName!, source);
                 }
-            );
+            });
+            
+            context.RegisterSourceOutput(allDiagnostics, (context, x) =>
+            {
+                foreach (var diag in x)
+                {
+                    context.ReportDiagnostic(diag);
+                }
+            });
         }
-        
+
         private string GenerateNameHint(INamedTypeSymbol container)
         {
             var stringBuilder = new StringBuilder(container.ContainingNamespace.FullName());
@@ -152,91 +148,109 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                module);
-        }
-    }
-
-    internal class EquatableEnumerable<T> : IEnumerable<T>, IEquatable<EquatableEnumerable<T>>
-    {
-        private readonly IEnumerable<T> _underlying;
-
-        public EquatableEnumerable(IEnumerable<T> underlying)
-        {
-            _underlying = underlying;
+                module.ToDisplayString());
         }
 
-        public IEnumerator<T> GetEnumerator()
+        private class DiagnosticCollection : IEquatable<DiagnosticCollection>
         {
-            return _underlying.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)_underlying).GetEnumerator();
-        }
-
-        public bool Equals(EquatableEnumerable<T>? other)
-        {
-            if (ReferenceEquals(null, other))
+            public DiagnosticCollection(List<Diagnostic> diagnostics)
             {
-                return false;
+                Diagnostics = diagnostics;
             }
 
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
+            public List<Diagnostic> Diagnostics { get; }
 
-            using var enumerator = GetEnumerator();
-            using var otherEnumerator = GetEnumerator();
-            while (true)
-            {
-                var hasAny = enumerator.MoveNext();
-                var otherHasAny = otherEnumerator.MoveNext();
 
-                if (hasAny && otherHasAny)
+            public bool Equals(DiagnosticCollection? other)
+            {
+                if (other is null)
                 {
-                    if (!EqualityComparer<T>.Default.Equals(enumerator.Current, otherEnumerator.Current))
+                    return false;
+                }
+
+                if (ReferenceEquals(this, other))
+                {
+                    return true;
+                }
+
+                if (Diagnostics.Count != other.Diagnostics.Count)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < Diagnostics.Count; i++)
+                {
+                    if (DiagnosticEqualityComparer.Instance.Equals(Diagnostics[i], other.Diagnostics[i]))
                     {
                         return false;
                     }
                 }
-                else
-                {
-                    return hasAny == otherHasAny;
-                }
-            }
-        }
 
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
                 return true;
             }
 
-            if (obj.GetType() != this.GetType())
+            public override bool Equals(object? obj)
             {
-                return false;
+                if (obj is not DiagnosticCollection other)
+                {
+                    return false;
+                }
+                return Equals(other);
             }
 
-            return Equals((EquatableEnumerable<T>)obj);
+            public override int GetHashCode()
+            {
+                if (Diagnostics.Count == 0)
+                {
+                    return 0;
+                }
+                
+                return (Diagnostics.Count.GetHashCode() * -1521134295 + DiagnosticEqualityComparer.Instance.GetHashCode(Diagnostics[0])) * -1521134295;
+            }
         }
 
-        public override int GetHashCode()
+        private class DiagnosticEqualityComparer : IEqualityComparer<Diagnostic>
         {
-            return _underlying.GetHashCode();
-        }
-    }
+            private DiagnosticEqualityComparer() {}
 
-    internal static class EquatableEnumerable
-    {
-        public static EquatableEnumerable<T> ToEquatable<T>(this IEnumerable<T> @this)
-            => new EquatableEnumerable<T>(@this);
+            public static DiagnosticEqualityComparer Instance { get; } = new();
+            
+            private static readonly Func<Diagnostic, IReadOnlyList<object?>> _getArguments = (Func<Diagnostic, IReadOnlyList<object?>>)Delegate.CreateDelegate(
+                typeof(Func<Diagnostic, IReadOnlyList<object?>>),
+                typeof(Diagnostic).GetProperty("Arguments", BindingFlags.NonPublic | BindingFlags.Instance)!.GetMethod!);
+            
+            public bool Equals(Diagnostic x, Diagnostic y)
+            {
+                if (ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+
+                if (ReferenceEquals(x, null))
+                {
+                    return false;
+                }
+
+                if (ReferenceEquals(y, null))
+                {
+                    return false;
+                }
+
+                if (x.GetType() != y.GetType())
+                {
+                    return false;
+                }
+
+                return x.Id == y.Id && x.Location.Equals(y.Location) && _getArguments(x).SequenceEqual(_getArguments(y));
+            }
+
+            public int GetHashCode(Diagnostic obj)
+            {
+                unchecked
+                {
+                    return (obj.Id.GetHashCode() * 397) ^ obj.Location.GetHashCode();
+                }
+            }
+        }
     }
 }

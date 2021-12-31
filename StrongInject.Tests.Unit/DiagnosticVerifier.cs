@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Xunit;
 
@@ -9,10 +10,22 @@ namespace StrongInject.Generator.Tests.Unit
 {
     public static class DiagnosticVerifier
     {
+        private static readonly Func<Diagnostic, IReadOnlyList<object?>> _getArguments = (Func<Diagnostic, IReadOnlyList<object?>>)Delegate.CreateDelegate(
+            typeof(Func<Diagnostic, IReadOnlyList<object?>>),
+            typeof(Diagnostic).GetProperty("Arguments", BindingFlags.NonPublic | BindingFlags.Instance)!.GetMethod!);
+        
         public static void VerifyDiagnostics(
             IEnumerable<Diagnostic> diagnostics,
             DiagnosticResult[] expected)
         {
+            foreach (var diag in diagnostics)
+            {
+                foreach (var arg in _getArguments(diag)!)
+                {
+                    Assert.False(arg is ISymbol, $@"Diagnostic '{diag}' contains an argument that is an ISymbol.
+Use strings for all arguments, as symbols cannot be compared across compilations.");
+                }
+            }
             var sortedDiagnostics = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToList();
             VerifyDiagnosticResults(sortedDiagnostics, expected);
         }

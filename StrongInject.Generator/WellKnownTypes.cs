@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace StrongInject.Generator
 {
@@ -36,10 +37,25 @@ namespace StrongInject.Generator
         INamedTypeSymbol ObjectDisposedException,
         INamedTypeSymbol Helpers)
     {
+        public const string STRONGINJECT_NAMESPACE = "StrongInject";
+        public const string ICONTAINER_MD_NAME = "IContainer`1";
+        public const string IASYNC_CONTAINER_MD_NAME = "IAsyncContainer`1";
+        public const string REGISTER_ATTRIBUTE_MD_NAME = "RegisterAttribute";
+        public const string REGISTER_ATTRIBUTE_1_MD_NAME = "RegisterAttribute`1";
+        public const string REGISTER_ATTRIBUTE_2_MD_NAME = "RegisterAttribute`2";
+        public const string REGISTER_MODULE_MD_NAME = "RegisterModuleAttribute";
+        public const string REGISTER_FACTORY_ATTRIBUTE_MD_NAME = "RegisterFactoryAttribute";
+        public const string REGISTER_DECORATOR_ATTRIBUTE_MD_NAME = "RegisterDecoratorAttribute";
+        public const string REGISTER_DECORATOR_ATTRIBUTE_2_MD_NAME = "RegisterDecoratorAttribute`2";
+        public const string FACTORY_ATTRIBUTE_MD_NAME = "FactoryAttribute";
+        public const string DECORATOR_FACTORY_ATTRIBUTE_MD_NAME = "DecoratorFactoryAttribute";
+        public const string FACTORY_OF_ATTRIBUTE_MD_NAME = "FactoryOfAttribute";
+        public const string INSTANCE_ATTRIBUTE_MD_NAME = "InstanceAttribute";
+        
         public static bool TryCreate(Compilation compilation, Action<Diagnostic> reportDiagnostic, out WellKnownTypes wellKnownTypes)
         {
-            var iContainer = compilation.GetTypeOrReport("StrongInject.IContainer`1", reportDiagnostic);
-            var iAsyncContainer = compilation.GetTypeOrReport("StrongInject.IAsyncContainer`1", reportDiagnostic);
+            var iContainer = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + ICONTAINER_MD_NAME, reportDiagnostic);
+            var iAsyncContainer = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + IASYNC_CONTAINER_MD_NAME, reportDiagnostic);
             var iFactory = compilation.GetTypeOrReport("StrongInject.IFactory`1", reportDiagnostic);
             var iAsyncFactory = compilation.GetTypeOrReport("StrongInject.IAsyncFactory`1", reportDiagnostic);
             var iRequiresInitialization = compilation.GetTypeOrReport("StrongInject.IRequiresInitialization", reportDiagnostic);
@@ -62,17 +78,17 @@ namespace StrongInject.Generator
             var owned = compilation.GetTypeOrReport("StrongInject.Owned`1", reportDiagnostic);
             var iAsyncOwned = compilation.GetTypeOrReport("StrongInject.IAsyncOwned`1", reportDiagnostic);
             var asyncOwned = compilation.GetTypeOrReport("StrongInject.AsyncOwned`1", reportDiagnostic);
-            var registerAttribute = compilation.GetTypeOrReport("StrongInject.RegisterAttribute", reportDiagnostic);
-            var registerAttribute_1 = compilation.GetTypeOrReport("StrongInject.RegisterAttribute`1", reportDiagnostic);
-            var registerAttribute_2 = compilation.GetTypeOrReport("StrongInject.RegisterAttribute`2", reportDiagnostic);
-            var registerModuleAttribute = compilation.GetTypeOrReport("StrongInject.RegisterModuleAttribute", reportDiagnostic);
-            var registerFactoryAttribute = compilation.GetTypeOrReport("StrongInject.RegisterFactoryAttribute", reportDiagnostic);
-            var registerDecoratorAttribute = compilation.GetTypeOrReport("StrongInject.RegisterDecoratorAttribute", reportDiagnostic);
-            var registerDecoratorAttribute_2 = compilation.GetTypeOrReport("StrongInject.RegisterDecoratorAttribute`2", reportDiagnostic);
-            var factoryAttribute = compilation.GetTypeOrReport("StrongInject.FactoryAttribute", reportDiagnostic);
-            var decoratorFactoryAttribute = compilation.GetTypeOrReport("StrongInject.DecoratorFactoryAttribute", reportDiagnostic);
-            var factoryOfAttribute = compilation.GetTypeOrReport("StrongInject.FactoryOfAttribute", reportDiagnostic);
-            var instanceAttribute = compilation.GetTypeOrReport("StrongInject.InstanceAttribute", reportDiagnostic);
+            var registerAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + REGISTER_ATTRIBUTE_MD_NAME, reportDiagnostic);
+            var registerAttribute_1 = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + REGISTER_ATTRIBUTE_1_MD_NAME, reportDiagnostic);
+            var registerAttribute_2 = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + REGISTER_ATTRIBUTE_2_MD_NAME, reportDiagnostic);
+            var registerModuleAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + REGISTER_MODULE_MD_NAME, reportDiagnostic);
+            var registerFactoryAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + REGISTER_FACTORY_ATTRIBUTE_MD_NAME, reportDiagnostic);
+            var registerDecoratorAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + REGISTER_DECORATOR_ATTRIBUTE_MD_NAME, reportDiagnostic);
+            var registerDecoratorAttribute_2 = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + REGISTER_DECORATOR_ATTRIBUTE_2_MD_NAME, reportDiagnostic);
+            var factoryAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + FACTORY_ATTRIBUTE_MD_NAME, reportDiagnostic);
+            var decoratorFactoryAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + DECORATOR_FACTORY_ATTRIBUTE_MD_NAME, reportDiagnostic);
+            var factoryOfAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + FACTORY_OF_ATTRIBUTE_MD_NAME, reportDiagnostic);
+            var instanceAttribute = compilation.GetTypeOrReport(STRONGINJECT_NAMESPACE + "." + INSTANCE_ATTRIBUTE_MD_NAME, reportDiagnostic);
             var valueTask1 = compilation.GetTypeOrReport("System.Threading.Tasks.ValueTask`1", reportDiagnostic);
             var task1 = compilation.GetTypeOrReport("System.Threading.Tasks.Task`1", reportDiagnostic);
             var objectDisposedException = compilation.GetTypeOrReport("System.ObjectDisposedException", reportDiagnostic);
@@ -147,30 +163,62 @@ namespace StrongInject.Generator
 
             return true;
         }
-        
-        public IEnumerable<INamedTypeSymbol> GetClassAttributes()
+
+        public static bool IsClassAttribute(INamedTypeSymbol? type)
         {
-            return new[]
-            { 
-                RegisterAttribute,
-                RegisterAttribute_1,
-                RegisterAttribute_2,
-                RegisterDecoratorAttribute,
-                RegisterDecoratorAttribute_2,
-                RegisterFactoryAttribute,
-                RegisterModuleAttribute,
+            if (!IsStrongInjectType(type))
+                return false;
+
+            switch (type?.OriginalDefinition.MetadataName)
+            {
+                case REGISTER_ATTRIBUTE_MD_NAME:
+                case REGISTER_ATTRIBUTE_1_MD_NAME:
+                case REGISTER_ATTRIBUTE_2_MD_NAME:
+                case REGISTER_DECORATOR_ATTRIBUTE_MD_NAME:
+                case REGISTER_DECORATOR_ATTRIBUTE_2_MD_NAME:
+                case REGISTER_FACTORY_ATTRIBUTE_MD_NAME:
+                case REGISTER_MODULE_MD_NAME:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool IsStrongInjectType(INamedTypeSymbol? type)
+        {
+            return type is
+            {
+                ContainingType: null,
+                ContainingNamespace:
+                {
+                    Name: STRONGINJECT_NAMESPACE,
+                    ContainingNamespace: null or { IsGlobalNamespace: true }
+                }
             };
         }
 
-        public IEnumerable<INamedTypeSymbol> GetMemberAttributes()
+        public static bool IsMethodAttribute(INamedTypeSymbol? type)
         {
-            return new[]
+            if (!IsStrongInjectType(type))
+                return false;
+            
+            switch (type?.OriginalDefinition.MetadataName)
             {
-                FactoryAttribute,
-                FactoryOfAttribute,
-                DecoratorFactoryAttribute,
-                InstanceAttribute,
-            };
+                case FACTORY_ATTRIBUTE_MD_NAME:
+                case FACTORY_OF_ATTRIBUTE_MD_NAME:
+                case DECORATOR_FACTORY_ATTRIBUTE_MD_NAME:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        
+        public static bool IsInstanceAttribute(INamedTypeSymbol? type)
+        {
+            if (!IsStrongInjectType(type))
+                return false;
+            
+            return type?.OriginalDefinition.MetadataName is INSTANCE_ATTRIBUTE_MD_NAME;
         }
     }
 }

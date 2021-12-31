@@ -99,7 +99,7 @@ namespace StrongInject.Generator
                         DiagnosticSeverity.Warning,
                         isEnabledByDefault: true),
                     location,
-                    type),
+                    type.ToDisplayString()),
 
                 DisposalStyleDeterminant.OwnedType => Diagnostic.Create(
                     new DiagnosticDescriptor(
@@ -110,9 +110,9 @@ namespace StrongInject.Generator
                         DiagnosticSeverity.Warning,
                         isEnabledByDefault: true),
                     location,
-                    type,
-                    _wellKnownTypes.Owned.Construct(type),
-                    _wellKnownTypes.AsyncOwned.Construct(type)),
+                    type.ToDisplayString(),
+                    _wellKnownTypes.Owned.Construct(type).ToDisplayString(),
+                    _wellKnownTypes.AsyncOwned.Construct(type).ToDisplayString()),
 
                 _ => throw new NotImplementedException(),
             };

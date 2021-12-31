@@ -1466,8 +1466,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                registeredType,
-                registeredAsType);
+                registeredType.ToDisplayString(),
+                registeredAsType.ToDisplayString());
         }
 
         private static Diagnostic InvalidType(ITypeSymbol typeSymbol, Location location)
@@ -1481,7 +1481,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                typeSymbol);
+                typeSymbol.ToDisplayString());
         }
 
         private static Diagnostic NoConstructor(AttributeData registerAttribute, INamedTypeSymbol type, CancellationToken cancellationToken)
@@ -1495,7 +1495,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                type);
+                type.ToDisplayString());
         }
 
         private static Diagnostic MultipleConstructors(AttributeData registerAttribute, INamedTypeSymbol type, CancellationToken cancellationToken)
@@ -1509,7 +1509,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                type);
+                type.ToDisplayString());
         }
 
         private static Diagnostic RecursiveModuleRegistration(INamedTypeSymbol module, CancellationToken cancellationToken)
@@ -1523,7 +1523,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 (module.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellationToken) as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? Location.None,
-                module);
+                module.ToDisplayString());
         }
 
         private static Diagnostic TypeIsAbstract(ITypeSymbol typeSymbol, Location location)
@@ -1537,7 +1537,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                typeSymbol);
+                typeSymbol.ToDisplayString());
         }
 
         private static Diagnostic UnboundGenericTypeInFactoryRegistration(ITypeSymbol typeSymbol, Location location)
@@ -1551,7 +1551,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                typeSymbol);
+                typeSymbol.ToDisplayString());
         }
 
         private static Diagnostic FactoryRegistrationNotAFactory(ITypeSymbol typeSymbol, Location location)
@@ -1565,7 +1565,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                typeSymbol);
+                typeSymbol.ToDisplayString());
         }
 
         private static Diagnostic TypeImplementsSyncAndAsyncRequiresInitialization(ITypeSymbol typeSymbol, Location location)
@@ -1579,7 +1579,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                typeSymbol);
+                typeSymbol.ToDisplayString());
         }
 
         private static Diagnostic FactoryMethodReturnsVoid(IMethodSymbol methodSymbol, Location location)
@@ -1593,7 +1593,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                methodSymbol);
+                methodSymbol.ToDisplayString());
         }
 
         private static Diagnostic FactoryMethodParameterIsPassedByRef(IMethodSymbol method, IParameterSymbol parameter, Location location)
@@ -1607,8 +1607,8 @@ namespace StrongInject.Generator
                         DiagnosticSeverity.Error,
                         isEnabledByDefault: true),
                     location,
-                    parameter,
-                    method,
+                    parameter.ToDisplayString(),
+                    method.ToDisplayString(),
                     parameter.RefKind);
         }
 
@@ -1623,8 +1623,8 @@ namespace StrongInject.Generator
                         DiagnosticSeverity.Error,
                         isEnabledByDefault: true),
                     location,
-                    parameter,
-                    constructor,
+                    parameter.ToDisplayString(),
+                    constructor.ToDisplayString(),
                     parameter.RefKind);
         }
 
@@ -1639,7 +1639,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                methodSymbol);
+                methodSymbol.ToDisplayString());
         }
 
         private static Diagnostic InstancePropertyIsWriteOnly(IPropertySymbol propertySymbol, Location location)
@@ -1653,7 +1653,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                propertySymbol);
+                propertySymbol.ToDisplayString());
         }
 
         private static Diagnostic DecoratorDoesNotHaveParameterOfDecoratedType(AttributeData registerDecoratorAttribute, INamedTypeSymbol decoratorType, INamedTypeSymbol decoratedType, CancellationToken cancellationToken)
@@ -1667,8 +1667,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 registerDecoratorAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                decoratorType,
-                decoratedType);
+                decoratorType.ToDisplayString(),
+                decoratedType.ToDisplayString());
         }
 
         private static Diagnostic DecoratorHasMultipleParametersOfDecoratedType(AttributeData registerDecoratorAttribute, INamedTypeSymbol decoratorType, INamedTypeSymbol decoratedType, CancellationToken cancellationToken)
@@ -1682,8 +1682,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 registerDecoratorAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                decoratorType,
-                decoratedType);
+                decoratorType.ToDisplayString(),
+                decoratedType.ToDisplayString());
         }
 
         private static Diagnostic DecoratorFactoryMethodDoesNotHaveParameterOfDecoratedType(AttributeData decoratorFactoryAttribute, IMethodSymbol method, ITypeSymbol decoratedType, CancellationToken cancellationToken)
@@ -1697,8 +1697,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 decoratorFactoryAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                method,
-                decoratedType);
+                method.ToDisplayString(),
+                decoratedType.ToDisplayString());
         }
 
         private static Diagnostic DecoratorFactoryMethodHasMultipleParametersOfDecoratedType(AttributeData decoratorFactoryAttribute, IMethodSymbol method, ITypeSymbol decoratedType, CancellationToken cancellationToken)
@@ -1712,8 +1712,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 decoratorFactoryAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                method,
-                decoratedType);
+                method.ToDisplayString(),
+                decoratedType.ToDisplayString());
         }
 
         private static Diagnostic TypeDoesNotHaveAtLeastInternalAccessibility(ITypeSymbol typeSymbol, Location location)
@@ -1727,7 +1727,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                typeSymbol);
+                typeSymbol.ToDisplayString());
         }
 
         private static Diagnostic FactoryOfMethodMustBeGeneric(IMethodSymbol methodSymbol, Location location)
@@ -1741,7 +1741,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                methodSymbol);
+                methodSymbol.ToDisplayString());
         }
 
         private static Diagnostic FactoryOfOpenGenericMustReturnSingleTypeParamater(IMethodSymbol methodSymbol, ITypeSymbol ofType, Location location)
@@ -1755,8 +1755,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                methodSymbol,
-                ofType);
+                methodSymbol.ToDisplayString(),
+                ofType.ToDisplayString());
         }
 
         private static Diagnostic CannotConstructFactoryOfTypeFromMethod(IMethodSymbol methodSymbol, ITypeSymbol ofType, Location location)
@@ -1770,9 +1770,9 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                ofType,
-                methodSymbol.ReturnType,
-                methodSymbol);
+                ofType.ToDisplayString(),
+                methodSymbol.ReturnType.ToDisplayString(),
+                methodSymbol.ToDisplayString());
         }
 
         private static Diagnostic CannotConstructFactoryOfTypeFromMethodAsConstraintsDoNotMatch(IMethodSymbol methodSymbol, ITypeSymbol ofType, Location location)
@@ -1786,9 +1786,9 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                ofType,
-                methodSymbol.ReturnType,
-                methodSymbol);
+                ofType.ToDisplayString(),
+                methodSymbol.ReturnType.ToDisplayString(),
+                methodSymbol.ToDisplayString());
         }
 
         private static Diagnostic MismatchingNumberOfTypeParameters(AttributeData registerAttribute, INamedTypeSymbol registeredType, INamedTypeSymbol registeredAsType, CancellationToken cancellationToken)
@@ -1802,8 +1802,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 registerAttribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation() ?? Location.None,
-                registeredType,
-                registeredAsType);
+                registeredType.ToDisplayString(),
+                registeredAsType.ToDisplayString());
         }
         
         private static Diagnostic FactoryMethodDoesNotHaveSuitableConversion(IMethodSymbol method, ITypeSymbol returnType, INamedTypeSymbol registeredAsType, Location location)
@@ -1817,9 +1817,9 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                returnType,
+                returnType.ToDisplayString(),
                 method.Name,
-                registeredAsType);
+                registeredAsType.ToDisplayString());
         }
         
         private static Diagnostic GenericFactoryMethodWithAsTypes(IMethodSymbol method, Location location)
@@ -1848,7 +1848,7 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 method.Name,
-                asType);
+                asType.ToDisplayString());
         }
         
         private static Diagnostic WarnSimpleRegistrationImplementingFactory(ITypeSymbol type, ITypeSymbol factoryType, Location location)
@@ -1862,8 +1862,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),
                 location,
-                type,
-                factoryType);
+                type.ToDisplayString(),
+                factoryType.ToDisplayString());
         }
 
         private static Diagnostic WarnFactoryMethodNotPublicStaticOrProtected(ITypeSymbol module, IMethodSymbol method, Location location)
@@ -1877,8 +1877,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),
                 location,
-                method,
-                module);
+                method.ToDisplayString(),
+                module.ToDisplayString());
         }
 
         private static Diagnostic WarnInstanceFieldOrPropertyNotPublicStaticOrProtected(ITypeSymbol module, ISymbol fieldOrProperty, Location location)
@@ -1893,8 +1893,8 @@ namespace StrongInject.Generator
                     isEnabledByDefault: true),
                 location,
                 fieldOrProperty is IFieldSymbol ? "field" : "property",
-                fieldOrProperty,
-                module);
+                fieldOrProperty.ToDisplayString(),
+                module.ToDisplayString());
         }
 
         private static Diagnostic WarnTypeNotPublic(ITypeSymbol typeSymbol, ITypeSymbol moduleSymbol, Location location)
@@ -1908,8 +1908,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),
                 location,
-                typeSymbol,
-                moduleSymbol);
+                typeSymbol.ToDisplayString(),
+                moduleSymbol.ToDisplayString());
         }
 
         private static Diagnostic WarnModuleNotPublic(ITypeSymbol importedModuleSymbol, ITypeSymbol moduleSymbol, Location location)
@@ -1923,8 +1923,8 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),
                 location,
-                importedModuleSymbol,
-                moduleSymbol);
+                importedModuleSymbol.ToDisplayString(),
+                moduleSymbol.ToDisplayString());
         }
     }
 }

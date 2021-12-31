@@ -13,6 +13,7 @@
   <ItemGroup>
     <Compile Remove="ClassifyConversion.cs" />
     <Compile Remove="SourceGenerator.cs" />
+    <Compile Remove="CompilationWrapper.cs" />
   </ItemGroup>
 
 </Project>
