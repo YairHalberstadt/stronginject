@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace StrongInject.Generator
 {
@@ -16,7 +17,7 @@ namespace StrongInject.Generator
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            var diagnosticsAndSources = context.SyntaxProvider.CreateSyntaxProvider<(DiagnosticCollection? diagnostics, SourceText? source,  string? sourceHintName)>(
+            var trees = context.SyntaxProvider.CreateSyntaxProvider(
                 (node, _) => node is ClassDeclarationSyntax,
                 (ctx, cancellationToken) =>
                 {
@@ -45,77 +46,58 @@ namespace StrongInject.Generator
                         return default;
                     }
 
-                    var diagnostics = new List<Diagnostic>();
-                    var reportDiagnostic = diagnostics.Add;
-                    if (!type.IsInternal() && !type.IsPublic())
-                    {
-                        reportDiagnostic(ModuleNotPublicOrInternal(
-                            type,
-                            ((TypeDeclarationSyntax)ctx.Node).Identifier
-                            .GetLocation()));
-                    }
-
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (!WellKnownTypes.TryCreate(ctx.SemanticModel.Compilation, reportDiagnostic, out var wellKnownTypes))
-                    {
-                        return (new DiagnosticCollection(diagnostics), null, null);
-                    }
-
-                    var registrationCalculator = new RegistrationCalculator(ctx.SemanticModel.Compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
-                    if (!isContainer)
-                    {
-                        registrationCalculator.ValidateModuleRegistrations(type);
-                        return (new DiagnosticCollection(diagnostics), null, null);
-                    }
-
-                    var file = ContainerGenerator.GenerateContainerImplementations(
-                        type,
-                        registrationCalculator.GetContainerRegistrations(type),
-                        wellKnownTypes,
-                        reportDiagnostic,
-                        cancellationToken);
-
-                    var source = CSharpSyntaxTree.ParseText(SourceText.From(file, Encoding.UTF8)).GetRoot()
-                        .NormalizeWhitespace().SyntaxTree.GetText();
-
-                    return (new DiagnosticCollection(diagnostics), source, sourceHintName: GenerateNameHint(type));
+                    return (isContainer, ctx.Node);
                 });
 
-            var allDiagnostics = diagnosticsAndSources.Select((x, _) => x.diagnostics)
-                .Collect()
-                .Select((x, _) =>
-                    {
-                        var diags = new HashSet<Diagnostic>(DiagnosticEqualityComparer.Instance);
-                        foreach (var collection in x)
-                        {
-                            if (collection is not null)
-                            {
-                                foreach (var diag in collection.Diagnostics)
-                                {
-                                    diags.Add(diag);
-                                }
-                            }
-                        }
-
-                        return diags;
-                    }
-                );
-
-            var sources = diagnosticsAndSources.Select((x, _) => (x.source, x.sourceHintName));
-            context.RegisterSourceOutput(sources, (context, x) =>
-            {
-                if (x.source is { } source)
-                {
-                    context.AddSource(x.sourceHintName!, source);
-                }
-            });
+            var compilationWrapper = context.CompilationProvider.Select((x, _) => new CompilationWrapper(x));
             
-            context.RegisterSourceOutput(allDiagnostics, (context, x) =>
+            context.RegisterSourceOutput(trees.Combine(compilationWrapper), (context, x) =>
             {
-                foreach (var diag in x)
+                var (isContainer, node) = x.Left;
+                if (node is null)
                 {
-                    context.ReportDiagnostic(diag);
+                    return;
                 }
+                var compilation = x.Right.Compilation;
+                var cancellationToken = context.CancellationToken;
+                var reportDiagnostic = context.ReportDiagnostic;
+                if (compilation.GetSemanticModel(node.SyntaxTree).GetDeclaredSymbol(node, cancellationToken) is not INamedTypeSymbol type)
+                {
+                    throw new InvalidOperationException(node.ToString());
+                }
+                
+                if (!type.IsInternal() && !type.IsPublic())
+                {
+                    reportDiagnostic(ModuleNotPublicOrInternal(
+                        type,
+                        ((TypeDeclarationSyntax)node).Identifier
+                        .GetLocation()));
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!WellKnownTypes.TryCreate(compilation, reportDiagnostic, out var wellKnownTypes))
+                {
+                    return;
+                }
+
+                var registrationCalculator = new RegistrationCalculator(compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
+                if (!isContainer)
+                {
+                    registrationCalculator.ValidateModuleRegistrations(type);
+                    return;
+                }
+
+                var file = ContainerGenerator.GenerateContainerImplementations(
+                    type,
+                    registrationCalculator.GetContainerRegistrations(type),
+                    wellKnownTypes,
+                    reportDiagnostic,
+                    cancellationToken);
+
+                var source = CSharpSyntaxTree.ParseText(SourceText.From(file, Encoding.UTF8)).GetRoot()
+                    .NormalizeWhitespace().SyntaxTree.GetText();
+                
+                context.AddSource(GenerateNameHint(type), source);
             });
         }
 
@@ -150,107 +132,44 @@ namespace StrongInject.Generator
                 location,
                 module.ToDisplayString());
         }
+    }
+}
 
-        private class DiagnosticCollection : IEquatable<DiagnosticCollection>
+public class CompilationWrapper : IEquatable<CompilationWrapper>
+{
+    public Compilation Compilation;
+    private long _version;
+    private static long _nextVersion;
+
+    public CompilationWrapper(Compilation compilation)
+    {
+        Compilation = compilation;
+        _version = Interlocked.Increment(ref _nextVersion);
+    }
+    
+    public bool Equals(CompilationWrapper? other)
+    {
+        if (other is null)
+            return false;
+        if (other._version > _version)
         {
-            public DiagnosticCollection(List<Diagnostic> diagnostics)
-            {
-                Diagnostics = diagnostics;
-            }
-
-            public List<Diagnostic> Diagnostics { get; }
-
-
-            public bool Equals(DiagnosticCollection? other)
-            {
-                if (other is null)
-                {
-                    return false;
-                }
-
-                if (ReferenceEquals(this, other))
-                {
-                    return true;
-                }
-
-                if (Diagnostics.Count != other.Diagnostics.Count)
-                {
-                    return false;
-                }
-
-                for (int i = 0; i < Diagnostics.Count; i++)
-                {
-                    if (DiagnosticEqualityComparer.Instance.Equals(Diagnostics[i], other.Diagnostics[i]))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
-            public override bool Equals(object? obj)
-            {
-                if (obj is not DiagnosticCollection other)
-                {
-                    return false;
-                }
-                return Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                if (Diagnostics.Count == 0)
-                {
-                    return 0;
-                }
-                
-                return (Diagnostics.Count.GetHashCode() * -1521134295 + DiagnosticEqualityComparer.Instance.GetHashCode(Diagnostics[0])) * -1521134295;
-            }
+            (Compilation, _version) = (other.Compilation, other._version);
         }
-
-        private class DiagnosticEqualityComparer : IEqualityComparer<Diagnostic>
+        else
         {
-            private DiagnosticEqualityComparer() {}
-
-            public static DiagnosticEqualityComparer Instance { get; } = new();
-            
-            private static readonly Func<Diagnostic, IReadOnlyList<object?>> _getArguments = (Func<Diagnostic, IReadOnlyList<object?>>)Delegate.CreateDelegate(
-                typeof(Func<Diagnostic, IReadOnlyList<object?>>),
-                typeof(Diagnostic).GetProperty("Arguments", BindingFlags.NonPublic | BindingFlags.Instance)!.GetMethod!);
-            
-            public bool Equals(Diagnostic x, Diagnostic y)
-            {
-                if (ReferenceEquals(x, y))
-                {
-                    return true;
-                }
-
-                if (ReferenceEquals(x, null))
-                {
-                    return false;
-                }
-
-                if (ReferenceEquals(y, null))
-                {
-                    return false;
-                }
-
-                if (x.GetType() != y.GetType())
-                {
-                    return false;
-                }
-
-                return x.Id == y.Id && x.Location.Equals(y.Location) && _getArguments(x).SequenceEqual(_getArguments(y));
-            }
-
-            public int GetHashCode(Diagnostic obj)
-            {
-                unchecked
-                {
-                    return (obj.Id.GetHashCode() * 397) ^ obj.Location.GetHashCode();
-                }
-            }
+            (other.Compilation, other._version) = (Compilation, _version);
         }
+        
+        return true;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as CompilationWrapper);
+    }
+
+    public override int GetHashCode()
+    {
+        return 0;
     }
 }
