@@ -45,7 +45,7 @@ namespace StrongInject.Generator
                     {
                         return default;
                     }
-
+                    
                     return (isContainer, ctx.Node);
                 });
 
@@ -80,16 +80,16 @@ namespace StrongInject.Generator
                     return;
                 }
 
-                var registrationCalculator = new RegistrationCalculator(compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
+                var registrationCalculator = new RegistrationCalculator(compilation, wellKnownTypes, cancellationToken);
                 if (!isContainer)
                 {
-                    registrationCalculator.ValidateModuleRegistrations(type);
+                    registrationCalculator.ValidateModuleRegistrations(type, reportDiagnostic);
                     return;
                 }
 
                 var file = ContainerGenerator.GenerateContainerImplementations(
                     type,
-                    registrationCalculator.GetContainerRegistrations(type),
+                    registrationCalculator.GetContainerRegistrations(type, reportDiagnostic),
                     wellKnownTypes,
                     reportDiagnostic,
                     cancellationToken);
