@@ -36,7 +36,7 @@ namespace StrongInject.Generator
             unchecked
             {
                 return (SymbolEqualityComparer.Default.GetHashCode(Type) * -1521134295
-                        + Scope.GetHashCode()) * -1521134295;
+                        + (int)Scope) * -1521134295;
             }
         }
     }
@@ -60,7 +60,7 @@ namespace StrongInject.Generator
             unchecked
             {
                 return (SymbolEqualityComparer.Default.GetHashCode(FactoryOf) * -1521134295
-                        + Scope.GetHashCode()) * -1521134295;
+                        + (int)Scope) * -1521134295;
             }
         }
     }
@@ -123,7 +123,7 @@ namespace StrongInject.Generator
             unchecked
             {
                 return (SymbolEqualityComparer.Default.GetHashCode(Method) * -1521134295
-                        + Scope.GetHashCode()) * -1521134295;
+                        + (int)Scope) * -1521134295;
             }
         }
     }
