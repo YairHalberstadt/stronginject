@@ -22,10 +22,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all" />
+    <ProjectReference Include="..\StrongInject.Generator.Roslyn38\StrongInject.Generator.Roslyn38.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all" />
+    <ProjectReference Include="..\StrongInject.Generator.Roslyn40\StrongInject.Generator.Roslyn40.csproj" IncludeAssets="none" PrivateAssets="none" ExcludeAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="$(OutputPath)\netstandard2.0\StrongInject.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\netstandard2.0\StrongInject.Generator.Roslyn38.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn3.8/cs" Visible="false" />
+    <None Include="$(OutputPath)\netstandard2.0\StrongInject.Generator.Roslyn40.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.0/cs" Visible="false" />
+    <None Include="buildTransitive\**\*" Pack="true" PackagePath="buildTransitive" />
   </ItemGroup>
 
 </Project>
