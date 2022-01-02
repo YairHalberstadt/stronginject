@@ -513,8 +513,12 @@ namespace StrongInject.Generator
             {
                 private readonly ITypeSymbol _toConstruct;
 
+                [CodacyCannotFigureOutHowToHandleThisFieldUnlessAnAttributeIsApplied]
                 private ImmutableArray<FactoryMethod>.Enumerator _factoryMethodsEnumerator;
+
+                [CodacyCannotFigureOutHowToHandleThisFieldUnlessAnAttributeIsApplied]
                 private ImmutableArray<FactoryOfMethod>.Enumerator _factoryOfMethodsEnumerator;
+
                 private FactoryMethod _current;
 
                 public RelevantFactoryMethodsEnumerator(ImmutableArray<FactoryMethod> factoryMethods, ImmutableArray<FactoryOfMethod> factoryOfMethods, ITypeSymbol toConstruct)
@@ -549,6 +553,14 @@ namespace StrongInject.Generator
                         return false;
                     }
                 }
+            }
+
+            /// <summary>
+            /// This is a workaround to Codacy reporting invalid warnings for fields that cannot be made readonly.
+            /// </summary>
+            [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+            private sealed class CodacyCannotFigureOutHowToHandleThisFieldUnlessAnAttributeIsAppliedAttribute : Attribute
+            {
             }
         }
     }
