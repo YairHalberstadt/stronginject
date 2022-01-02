@@ -53,7 +53,7 @@ namespace StrongInject.Generator
 
             if (typeParamInstanceSource is null && instanceSource is null)
             {
-                sourcesNotMatchingConstraints = sourcesNotMatchingConstraints.Concat(typeParamSourcesNotMatchingConstraints);
+                sourcesNotMatchingConstraints = ConcatIfNotEmptyArray(sourcesNotMatchingConstraints, typeParamSourcesNotMatchingConstraints);
                 return false;
             }
 
@@ -73,6 +73,17 @@ namespace StrongInject.Generator
             instanceSource = null!;
             isAmbiguous = true;
             return false;
+        }
+
+        private static IEnumerable<T> ConcatIfNotEmptyArray<T>(IEnumerable<T> first, IEnumerable<T> second)
+        {
+            if (first is T[] { Length: 0 })
+                return second;
+
+            if (second is T[] { Length: 0 })
+                return first;
+
+            return first.Concat(second);
         }
 
         public IEnumerable<FactoryMethod> ResolveAll(ITypeSymbol type)
