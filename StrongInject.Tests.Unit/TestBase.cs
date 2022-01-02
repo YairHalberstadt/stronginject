@@ -77,7 +77,7 @@ namespace StrongInject.Generator.Tests.Unit
         
         protected Compilation runGenerator(Compilation compilation, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
-            CreateDriver(compilation, new SourceGenerator()).RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out var duplicatedDiagnostics);
+            CreateDriver(compilation, new IncrementalGenerator().AsSourceGenerator()).RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out var duplicatedDiagnostics);
             diagnostics = duplicatedDiagnostics.Distinct().ToImmutableArray();
             var generatedTrees = updatedCompilation.SyntaxTrees.Where(x => !compilation.SyntaxTrees.Any(y => y.Equals(x))).ToImmutableArray();
             foreach (var generated in generatedTrees)

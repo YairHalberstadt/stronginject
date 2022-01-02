@@ -23,11 +23,8 @@ namespace StrongInject.Generator
                 return;
             }
 
-            var classAttributes = wellKnownTypes.GetClassAttributes();
-            var memberAttributes = wellKnownTypes.GetMemberAttributes();
-            
             var registrationCalculator =
-                new RegistrationCalculator(compilation, wellKnownTypes, reportDiagnostic, cancellationToken);
+                new RegistrationCalculator(compilation, wellKnownTypes, cancellationToken);
             
             foreach (var syntaxTree in context.Compilation.SyntaxTrees)
             {
@@ -47,12 +44,16 @@ namespace StrongInject.Generator
                     })
                     .Where(x =>
                         x.isContainer
-                        || x.type.GetAttributes().Any(x =>
-                            x.AttributeClass is { } attribute &&
-                            classAttributes.Contains(attribute))
-                        || x.type.GetMembers().Any(x => x.GetAttributes().Any(x =>
-                            x.AttributeClass is { } attribute &&
-                            memberAttributes.Contains(attribute))));
+                        || x.type.GetAttributes().Any(x => WellKnownTypes.IsClassAttribute(x.AttributeClass))
+                        || x.type.GetMembers().Any(x =>
+                        {
+                            if (x is IFieldSymbol or IPropertySymbol && x.GetAttributes().Any(x => WellKnownTypes.IsInstanceAttribute(x.AttributeClass)))
+                            {
+                                return true;
+                            }
+
+                            return x is IMethodSymbol && x.GetAttributes().Any(x => WellKnownTypes.IsMethodAttribute(x.AttributeClass));
+                        }));
 
                 foreach (var module in modules)
                 {
@@ -69,7 +70,7 @@ namespace StrongInject.Generator
                     {
                         var file = ContainerGenerator.GenerateContainerImplementations(
                             module.type,
-                            registrationCalculator.GetContainerRegistrations(module.type),
+                            registrationCalculator.GetContainerRegistrations(module.type, reportDiagnostic),
                             wellKnownTypes,
                             reportDiagnostic,
                             cancellationToken);
@@ -82,7 +83,7 @@ namespace StrongInject.Generator
                     }
                     else
                     {
-                        registrationCalculator.ValidateModuleRegistrations(module.type);
+                        registrationCalculator.ValidateModuleRegistrations(module.type, reportDiagnostic);
                     }
                 }
             }

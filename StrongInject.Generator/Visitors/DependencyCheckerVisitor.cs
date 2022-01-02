@@ -392,8 +392,8 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    type);
+                    target.ToDisplayString(),
+                    type.ToDisplayString());
         }
 
         private Diagnostic NoSourceForType(Location location, ITypeSymbol target, ITypeSymbol type)
@@ -408,8 +408,8 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    type);
+                    target.ToDisplayString(),
+                    type.ToDisplayString());
         }
 
         private Diagnostic RequiresAsyncResolution(Location location, ITypeSymbol target, ITypeSymbol type)
@@ -424,8 +424,8 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    type);
+                    target.ToDisplayString(),
+                    type.ToDisplayString());
         }
 
         private Diagnostic DelegateHasMultipleParametersOfTheSameType(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol parameterType)
@@ -440,9 +440,9 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    delegateType,
-                    parameterType);
+                    target.ToDisplayString(),
+                    delegateType.ToDisplayString(),
+                    parameterType.ToDisplayString());
         }
 
         private Diagnostic DelegateParameterIsPassedByRef(Location location, ITypeSymbol target, ITypeSymbol delegateType, IParameterSymbol parameter)
@@ -457,9 +457,9 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    parameter,
-                    delegateType,
+                    target.ToDisplayString(),
+                    parameter.ToDisplayString(),
+                    delegateType.ToDisplayString(),
                     parameter.RefKind);
         }
 
@@ -476,8 +476,8 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    type);
+                    target.ToDisplayString(),
+                    type.ToDisplayString());
         }
 
         private const int MAX_DEPENDENCY_TREE_DEPTH = 200;
@@ -494,7 +494,7 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
+                    target.ToDisplayString(),
                     MAX_DEPENDENCY_TREE_DEPTH);
         }
 
@@ -510,10 +510,10 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    parameterType,
-                    delegateType,
-                    delegateReturnType);
+                    target.ToDisplayString(),
+                    parameterType.ToDisplayString(),
+                    delegateType.ToDisplayString(),
+                    delegateReturnType.ToDisplayString());
         }
 
         private Diagnostic WarnDelegateReturnTypeProvidedByAnotherDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
@@ -528,9 +528,9 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    delegateReturnType,
-                    delegateType);
+                    target.ToDisplayString(),
+                    delegateReturnType.ToDisplayString(),
+                    delegateType.ToDisplayString());
         }
 
         private Diagnostic WarnDelegateReturnTypeIsSingleInstance(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
@@ -545,9 +545,9 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    delegateReturnType,
-                    delegateType);
+                    target.ToDisplayString(),
+                    delegateReturnType.ToDisplayString(),
+                    delegateType.ToDisplayString());
         }
 
         private Diagnostic WarnDelegateReturnTypeProvidedBySameDelegate(Location location, ITypeSymbol target, ITypeSymbol delegateType, ITypeSymbol delegateReturnType)
@@ -562,9 +562,9 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    delegateReturnType,
-                    delegateType);
+                    target.ToDisplayString(),
+                    delegateReturnType.ToDisplayString(),
+                    delegateType.ToDisplayString());
         }
 
         private Diagnostic WarnNoRegistrationsForElementType(Location location, ITypeSymbol target, ITypeSymbol elementType)
@@ -579,8 +579,8 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    elementType);
+                    target.ToDisplayString(),
+                    elementType.ToDisplayString());
         }
 
         private Diagnostic WarnFactoryMethodNotMatchingConstraint(Location location, ITypeSymbol target, ITypeSymbol type, IMethodSymbol factoryMethodNotMatchingConstraints)
@@ -595,9 +595,9 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    factoryMethodNotMatchingConstraints,
-                    type);
+                    target.ToDisplayString(),
+                    factoryMethodNotMatchingConstraints.ToDisplayString(),
+                    type.ToDisplayString());
         }
 
         private Diagnostic WarnRegistrationNotMatchingConstraint(Location location, ITypeSymbol target, ITypeSymbol type, ITypeSymbol registeredType)
@@ -612,9 +612,9 @@ namespace StrongInject.Generator.Visitors
                     isEnabledByDefault: true,
                     PrintResolutionPath()),
                 location,
-                target,
-                registeredType,
-                type);
+                target.ToDisplayString(),
+                registeredType.ToDisplayString(),
+                type.ToDisplayString());
         }
 
         private Diagnostic WarnCircularDependencyWithInterveningDelegateParameter(Location location, ITypeSymbol target, ITypeSymbol delegateType, List<DelegateParameter> interveningDelegateParameters)
@@ -629,10 +629,10 @@ namespace StrongInject.Generator.Visitors
                     isEnabledByDefault: true,
                     PrintResolutionPath()),
                 location,
-                target,
-                delegateType,
-                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.Type)),
-                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.ContainingType).Distinct()));
+                target.ToDisplayString(),
+                delegateType.ToDisplayString(),
+                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.Type.ToDisplayString())),
+                string.Join(", ", interveningDelegateParameters.Select(x => x.Parameter.ContainingType.ToDisplayString()).Distinct()));
         }
 
         private Diagnostic InfoNoSourceForOptionalParameter(Location location, ITypeSymbol target, ITypeSymbol type)
@@ -647,8 +647,8 @@ namespace StrongInject.Generator.Visitors
                         isEnabledByDefault: true,
                         PrintResolutionPath()),
                     location,
-                    target,
-                    type);
+                    target.ToDisplayString(),
+                    type.ToDisplayString());
         }
     }
 }
