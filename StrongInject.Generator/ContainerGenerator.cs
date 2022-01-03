@@ -128,12 +128,13 @@ namespace StrongInject.Generator
                 resolveMethodSource.Append(resolveMethodSymbol.Name);
                 resolveMethodSource.Append("(){");
 
-                if (DependencyCheckerVisitor.HasCircularOrMissingDependencies(
+                if (DependencyCheckerVisitor.CheckDependencies(
                         target,
                         isAsync,
                         _containerScope,
                         _reportDiagnostic,
-                        _containerDeclarationLocation))
+                        _containerDeclarationLocation,
+                        _cancellationToken))
                 {
                     // error reported. Implement with throwing implementation to remove NotImplemented error CS0535
                     const string THROW_NOT_IMPLEMENTED_EXCEPTION = "throw new global::System.NotImplementedException();}";
@@ -143,7 +144,7 @@ namespace StrongInject.Generator
                 }
                 else
                 {
-                    requiresUnsafe |= RequiresUnsafeVisitor.RequiresUnsafe(target, _containerScope);
+                    requiresUnsafe |= RequiresUnsafeVisitor.RequiresUnsafe(target, _containerScope, _cancellationToken);
 
                     var variableCreationSource = new StringBuilder();
                     variableCreationSource.Append("if(Disposed)");
@@ -155,7 +156,8 @@ namespace StrongInject.Generator
                         disposalLowerer: CreateDisposalLowerer(new DisposalStyle(isAsync, DisposalStyleDeterminant.Container)),
                         isSingleInstanceCreation: false,
                         isAsyncContext: isAsync,
-                        out var resultVariableName);
+                        out var resultVariableName,
+                        _cancellationToken);
 
                     CreateVariables(
                         ops,
@@ -296,7 +298,8 @@ namespace StrongInject.Generator
                     disposalLowerer: CreateDisposalLowerer(new DisposalStyle(_implementsAsyncContainer, DisposalStyleDeterminant.Container)),
                     isSingleInstanceCreation: true,
                     isAsyncContext: isAsync,
-                    out var variableName);
+                    out var variableName,
+                    _cancellationToken);
                 CreateVariables(
                     ops,
                     methodSource,
@@ -490,6 +493,7 @@ namespace StrongInject.Generator
 
             void EmitStatement(Operation operation)
             {
+                _cancellationToken.ThrowIfCancellationRequested();
                 switch (operation.Statement)
                 {
                     case SingleInstanceReferenceStatement(var variableName, var source, var isAsync):
@@ -875,7 +879,7 @@ namespace StrongInject.Generator
             file.Append(@"private int _disposed = 0; private bool Disposed => _disposed != 0;");
             var singleInstanceMethodsDisposalOrderings = _singleInstanceMethods.Count == 0
                 ? Enumerable.Empty<(string name, string disposeFieldName, string lockName)>()
-                : PartialOrderingOfSingleInstanceDependenciesVisitor.GetPartialOrdering(_containerScope, _singleInstanceMethods.Keys.ToHashSet()).Select(x => _singleInstanceMethods[x]);
+                : PartialOrderingOfSingleInstanceDependenciesVisitor.GetPartialOrdering(_containerScope, _singleInstanceMethods.Keys.ToHashSet(), _cancellationToken).Select(x => _singleInstanceMethods[x]);
 
             if (anyAsync)
             {

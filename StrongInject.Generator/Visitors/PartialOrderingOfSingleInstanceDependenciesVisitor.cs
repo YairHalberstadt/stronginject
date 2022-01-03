@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace StrongInject.Generator.Visitors
 {
@@ -9,13 +10,13 @@ namespace StrongInject.Generator.Visitors
         private List<InstanceSource>? _results;
         private readonly HashSet<InstanceSource> _alreadyAdded = new();
 
-        private PartialOrderingOfSingleInstanceDependenciesVisitor(InstanceSourcesScope containerScope) : base(containerScope)
+        private PartialOrderingOfSingleInstanceDependenciesVisitor(InstanceSourcesScope containerScope, CancellationToken cancellationToken) : base(containerScope, cancellationToken)
         {
         }
 
-        public static IEnumerable<InstanceSource> GetPartialOrdering(InstanceSourcesScope containerScope, HashSet<InstanceSource> usedSingleInstanceSources)
+        public static IEnumerable<InstanceSource> GetPartialOrdering(InstanceSourcesScope containerScope, HashSet<InstanceSource> usedSingleInstanceSources, CancellationToken cancellationToken)
         {
-            var visitor = new PartialOrderingOfSingleInstanceDependenciesVisitor(containerScope);
+            var visitor = new PartialOrderingOfSingleInstanceDependenciesVisitor(containerScope, cancellationToken);
             IEnumerable<InstanceSource> results = Array.Empty<InstanceSource>();
             foreach (var source in usedSingleInstanceSources)
             {

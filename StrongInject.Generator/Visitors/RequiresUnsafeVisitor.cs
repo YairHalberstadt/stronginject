@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Threading;
 
 namespace StrongInject.Generator.Visitors
 {
@@ -6,13 +7,13 @@ namespace StrongInject.Generator.Visitors
     {
         private bool _requiresUnsafe = false;
 
-        private RequiresUnsafeVisitor(InstanceSourcesScope containerScope) : base(containerScope)
+        private RequiresUnsafeVisitor(InstanceSourcesScope containerScope, CancellationToken cancellationToken) : base(containerScope, cancellationToken)
         {
         }
 
-        public static bool RequiresUnsafe(ITypeSymbol target, InstanceSourcesScope containerScope)
+        public static bool RequiresUnsafe(ITypeSymbol target, InstanceSourcesScope containerScope, CancellationToken cancellationToken)
         {
-            var visitor = new RequiresUnsafeVisitor(containerScope);
+            var visitor = new RequiresUnsafeVisitor(containerScope, cancellationToken);
             var state = new State(containerScope);
             visitor.VisitCore(visitor.GetInstanceSource(target, state, parameterSymbol: null), state);
             return visitor._requiresUnsafe;

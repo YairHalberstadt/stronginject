@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace StrongInject.Generator.Visitors
 {
@@ -16,7 +17,12 @@ namespace StrongInject.Generator.Visitors
         private readonly List<InstanceSource> _resolutionPath = new();
         private bool _anyErrors;
 
-        private DependencyCheckerVisitor(ITypeSymbol target, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
+        private DependencyCheckerVisitor(
+            ITypeSymbol target,
+            InstanceSourcesScope containerScope,
+            Action<Diagnostic> reportDiagnostic,
+            Location location,
+            CancellationToken cancellationToken) : base(cancellationToken)
         {
             _target = target;
             _containerScope = containerScope;
@@ -24,9 +30,15 @@ namespace StrongInject.Generator.Visitors
             _location = location;
         }
 
-        public static bool HasCircularOrMissingDependencies(ITypeSymbol target, bool isAsync, InstanceSourcesScope containerScope, Action<Diagnostic> reportDiagnostic, Location location)
+        public static bool CheckDependencies(
+            ITypeSymbol target,
+            bool isAsync,
+            InstanceSourcesScope containerScope,
+            Action<Diagnostic> reportDiagnostic,
+            Location location,
+            CancellationToken cancellationToken)
         {
-            var visitor = new DependencyCheckerVisitor(target, containerScope, reportDiagnostic, location);
+            var visitor = new DependencyCheckerVisitor(target, containerScope, reportDiagnostic, location, cancellationToken);
             var state = new State(containerScope, isAsync);
             visitor.VisitCore(visitor.GetInstanceSource(target, state, parameterSymbol: null), state);
             return visitor._anyErrors;
