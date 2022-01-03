@@ -33,67 +33,136 @@ namespace StrongInject.Generator
             _compilation = compilation;
         }
 
-        public IEnumerable<DecoratorSource> ResolveDecorators(ITypeSymbol type)
+        public ResolveDecoratorsEnumerable ResolveDecorators(ITypeSymbol type)
         {
-            if (type is INamedTypeSymbol namedType)
+            return new ResolveDecoratorsEnumerable(_compilation, _namedTypeDecoratorSources, _arrayDecoratorSources, _typeParameterDecoratorSources, type);
+        }
+
+        public readonly struct ResolveDecoratorsEnumerable
+        {
+            private readonly Compilation _compilation;
+            private readonly Dictionary<INamedTypeSymbol, List<DecoratorSource>> _namedTypeDecoratorSources;
+            private readonly List<DecoratorSource> _arrayDecoratorSources;
+            private readonly List<DecoratorSource> _typeParameterDecoratorSources;
+            private readonly ITypeSymbol _type;
+
+            public ResolveDecoratorsEnumerable(Compilation compilation, Dictionary<INamedTypeSymbol, List<DecoratorSource>> namedTypeDecoratorSources, List<DecoratorSource> arrayDecoratorSources, List<DecoratorSource> typeParameterDecoratorSources, ITypeSymbol type)
             {
-                if (_namedTypeDecoratorSources.TryGetValue(namedType.OriginalDefinition, out var decoratorSources))
+                _compilation = compilation;
+                _namedTypeDecoratorSources = namedTypeDecoratorSources;
+                _arrayDecoratorSources = arrayDecoratorSources;
+                _typeParameterDecoratorSources = typeParameterDecoratorSources;
+                _type = type;
+            }
+
+            public ResolveDecoratorsEnumerator GetEnumerator()
+                => new ResolveDecoratorsEnumerator(_compilation, _namedTypeDecoratorSources, _arrayDecoratorSources, _typeParameterDecoratorSources, _type);
+        }
+
+        public struct ResolveDecoratorsEnumerator
+        {
+            private static readonly List<DecoratorSource> _emptyDecoratorSources = new List<DecoratorSource>();
+
+            private readonly Compilation _compilation;
+            private readonly ITypeSymbol _type;
+
+            private List<DecoratorSource>.Enumerator _decoratorSources;
+            private List<DecoratorSource>.Enumerator _arrayDecoratorSources;
+            private List<DecoratorSource>.Enumerator _typeParameterDecoratorSources;
+            private DecoratorSource _current;
+
+            public ResolveDecoratorsEnumerator(Compilation compilation, Dictionary<INamedTypeSymbol, List<DecoratorSource>> namedTypeDecoratorSources, List<DecoratorSource> arrayDecoratorSources, List<DecoratorSource> typeParameterDecoratorSources, ITypeSymbol type)
+            {
+                _compilation = compilation;
+                _type = type;
+
+                _arrayDecoratorSources = arrayDecoratorSources.GetEnumerator();
+                _typeParameterDecoratorSources = typeParameterDecoratorSources.GetEnumerator();
+
+                if (type is INamedTypeSymbol namedType
+                    && namedTypeDecoratorSources.TryGetValue(namedType.OriginalDefinition, out var decoratorSources))
                 {
-                    foreach (var source in decoratorSources)
+                    _decoratorSources = decoratorSources.GetEnumerator();
+                }
+                else
+                {
+                    _decoratorSources = _emptyDecoratorSources.GetEnumerator();
+                }
+
+                _current = null!;
+            }
+
+            public DecoratorSource Current => _current;
+
+            public bool MoveNext()
+            {
+                if (_type is INamedTypeSymbol namedType)
+                {
+                    while (_decoratorSources.MoveNext())
                     {
-                        switch (source)
+                        switch (_decoratorSources.Current)
                         {
                             case DecoratorFactoryMethod decoratorFactoryMethod:
-                                if (CanConstructFromGenericFactoryMethod(type, decoratorFactoryMethod,
+                                if (CanConstructFromGenericFactoryMethod(_compilation, _type, decoratorFactoryMethod,
                                     out var constructedFactoryMethod))
                                 {
-                                    yield return constructedFactoryMethod;
+                                    _current = constructedFactoryMethod;
+                                    return true;
                                 }
 
                                 break;
+
                             case DecoratorRegistration decoratorRegistration:
                                 var constructed = decoratorRegistration.Type.Construct(namedType.TypeArguments.ToArray());
                                 var originalConstructor = decoratorRegistration.Constructor;
                                 var constructor = constructed.InstanceConstructors.First(
                                     x => x.OriginalDefinition.Equals(originalConstructor));
 
-                                yield return decoratorRegistration with
+                                _current = decoratorRegistration with
                                 {
                                     Constructor = constructor,
                                     Type = constructed,
                                     DecoratedType = namedType,
                                 };
 
-                                break;
-                            default:
+                                return true;
+
+                            case var source:
                                 throw new NotImplementedException(source.ToString());
+
+                            default:
+                                throw new InvalidOperationException("This case is not reachable. It exists only because Codacy doesn't understand 'case var x'.");
                         }
                     }
                 }
-            }
-            else if (type is IArrayTypeSymbol)
-            {
-                foreach (var factory in _arrayDecoratorSources)
+                else if (_type is IArrayTypeSymbol)
                 {
-                    if (CanConstructFromGenericFactoryMethod(type, (DecoratorFactoryMethod)factory, out var constructedFactoryMethod))
+                    while (_arrayDecoratorSources.MoveNext())
                     {
-                        yield return constructedFactoryMethod;
+                        if (CanConstructFromGenericFactoryMethod(_compilation, _type, (DecoratorFactoryMethod)_arrayDecoratorSources.Current, out var constructedFactoryMethod))
+                        {
+                            _current = constructedFactoryMethod;
+                            return true;
+                        }
                     }
                 }
-            }
 
-            foreach (var factory in _typeParameterDecoratorSources)
-            {
-                if (CanConstructFromGenericFactoryMethod(type, (DecoratorFactoryMethod)factory, out var constructedFactoryMethod))
+                while (_typeParameterDecoratorSources.MoveNext())
                 {
-                    yield return constructedFactoryMethod;
+                    if (CanConstructFromGenericFactoryMethod(_compilation, _type, (DecoratorFactoryMethod)_typeParameterDecoratorSources.Current, out var constructedFactoryMethod))
+                    {
+                        _current = constructedFactoryMethod;
+                        return true;
+                    }
                 }
+
+                return false;
             }
         }
 
-        private bool CanConstructFromGenericFactoryMethod(ITypeSymbol toConstruct, DecoratorFactoryMethod factoryMethod, out DecoratorFactoryMethod constructedFactoryMethod)
+        private static bool CanConstructFromGenericFactoryMethod(Compilation compilation, ITypeSymbol toConstruct, DecoratorFactoryMethod factoryMethod, out DecoratorFactoryMethod constructedFactoryMethod)
         {
-            if (!CanConstructFromGenericMethodReturnType(_compilation, toConstruct, factoryMethod.DecoratedType, factoryMethod.Method, out var constructedMethod, out _))
+            if (!CanConstructFromGenericMethodReturnType(compilation, toConstruct, factoryMethod.DecoratedType, factoryMethod.Method, out var constructedMethod, out _))
             {
                 constructedFactoryMethod = null!;
                 return false;

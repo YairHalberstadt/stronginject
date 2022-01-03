@@ -53,7 +53,7 @@ namespace StrongInject.Generator
 
             if (typeParamInstanceSource is null && instanceSource is null)
             {
-                sourcesNotMatchingConstraints = sourcesNotMatchingConstraints.Concat(typeParamSourcesNotMatchingConstraints);
+                sourcesNotMatchingConstraints = ConcatIfNotEmptyArray(sourcesNotMatchingConstraints, typeParamSourcesNotMatchingConstraints);
                 return false;
             }
 
@@ -73,6 +73,17 @@ namespace StrongInject.Generator
             instanceSource = null!;
             isAmbiguous = true;
             return false;
+        }
+
+        private static IEnumerable<T> ConcatIfNotEmptyArray<T>(IEnumerable<T> first, IEnumerable<T> second)
+        {
+            if (first is T[] { Length: 0 })
+                return second;
+
+            if (second is T[] { Length: 0 })
+                return first;
+
+            return first.Concat(second);
         }
 
         public IEnumerable<FactoryMethod> ResolveAll(ITypeSymbol type)
@@ -453,9 +464,9 @@ namespace StrongInject.Generator
                 }
             }
 
-            private IEnumerable<FactoryMethod> GetAllRelevantFactoryMethods(ITypeSymbol toConstruct)
+            private RelevantFactoryMethodsEnumerable GetAllRelevantFactoryMethods(ITypeSymbol toConstruct)
             {
-                return _factoryMethods.Concat(_factoryOfMethods.Where(x => IsRelevant(x, toConstruct)).Select(x => x.Underlying));
+                return new RelevantFactoryMethodsEnumerable(_factoryMethods, _factoryOfMethods, toConstruct);
             }
 
             private static bool IsRelevant(FactoryOfMethod factoryOfMethod, ITypeSymbol toConstruct)
@@ -479,6 +490,65 @@ namespace StrongInject.Generator
                 };
                 constraintsDoNotMatch = false;
                 return true;
+            }
+
+            private readonly struct RelevantFactoryMethodsEnumerable
+            {
+                private readonly ImmutableArray<FactoryMethod> _factoryMethods;
+                private readonly ImmutableArray<FactoryOfMethod> _factoryOfMethods;
+                private readonly ITypeSymbol _toConstruct;
+
+                public RelevantFactoryMethodsEnumerable(ImmutableArray<FactoryMethod> factoryMethods, ImmutableArray<FactoryOfMethod> factoryOfMethods, ITypeSymbol toConstruct)
+                {
+                    _factoryMethods = factoryMethods;
+                    _factoryOfMethods = factoryOfMethods;
+                    _toConstruct = toConstruct;
+                }
+
+                public RelevantFactoryMethodsEnumerator GetEnumerator()
+                    => new RelevantFactoryMethodsEnumerator(_factoryMethods, _factoryOfMethods, _toConstruct);
+            }
+
+            private struct RelevantFactoryMethodsEnumerator
+            {
+                private readonly ITypeSymbol _toConstruct;
+
+                private ImmutableArray<FactoryMethod>.Enumerator _factoryMethodsEnumerator;
+                private ImmutableArray<FactoryOfMethod>.Enumerator _factoryOfMethodsEnumerator;
+                private FactoryMethod _current;
+
+                public RelevantFactoryMethodsEnumerator(ImmutableArray<FactoryMethod> factoryMethods, ImmutableArray<FactoryOfMethod> factoryOfMethods, ITypeSymbol toConstruct)
+                {
+                    _toConstruct = toConstruct;
+
+                    _factoryMethodsEnumerator = factoryMethods.GetEnumerator();
+                    _factoryOfMethodsEnumerator = factoryOfMethods.GetEnumerator();
+                    _current = null!;
+                }
+
+                public FactoryMethod Current => _current;
+
+                public bool MoveNext()
+                {
+                    if (_factoryMethodsEnumerator.MoveNext())
+                    {
+                        _current = _factoryMethodsEnumerator.Current;
+                        return true;
+                    }
+                    else
+                    {
+                        while (_factoryOfMethodsEnumerator.MoveNext())
+                        {
+                            if (IsRelevant(_factoryOfMethodsEnumerator.Current, _toConstruct))
+                            {
+                                _current = _factoryOfMethodsEnumerator.Current.Underlying;
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }
+                }
             }
         }
     }
