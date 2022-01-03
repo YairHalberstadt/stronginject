@@ -30,10 +30,10 @@ namespace StrongInject.Generator
             {
                 DelegateCreationStatement { InternalOperations: var ops, DisposeActionsName: var disposeActionsName } => _disposalStyle.IsAsync
                     ? ops.Any(x => x.Disposal is not null)
-                        ? new Disposal.DelegateDisposal(disposeActionsName, _wellKnownTypes.ConcurrentBagOfFuncTask, IsAsync: true)
+                        ? new Disposal.DelegateDisposal(disposeActionsName, WellKnownTypes.CONCURRENT_BAG_FUNC_TASK_EMIT_NAME, IsAsync: true)
                         : null
                     : ops.Any(x => x.Disposal is { IsAsync: false })
-                        ? new Disposal.DelegateDisposal(disposeActionsName, _wellKnownTypes.ConcurrentBagOfAction, IsAsync: false)
+                        ? new Disposal.DelegateDisposal(disposeActionsName, WellKnownTypes.CONCURRENT_BAG_ACTION_EMIT_NAME, IsAsync: false)
                         : null,
                 DependencyCreationStatement { Source: var source, Dependencies: var dependencies } =>
                     source switch
@@ -67,12 +67,12 @@ namespace StrongInject.Generator
 
             Disposal? ExactTypeKnown(ITypeSymbol type, string variableName)
             {
-                var isAsyncDisposable = type.AllInterfaces.Contains(_wellKnownTypes.IAsyncDisposable);
+                var isAsyncDisposable = type.AllInterfaces.Any(x => WellKnownTypes.IsIAsyncDisposable(x));
 
                 if (isAsyncDisposable && _disposalStyle.IsAsync)
                     return new Disposal.IDisposable(variableName, IsAsync: true);
 
-                if (type.AllInterfaces.Contains(_wellKnownTypes.IDisposable))
+                if (type.AllInterfaces.Any(x => WellKnownTypes.IsIDisposable(x)))
                     return new Disposal.IDisposable(variableName, IsAsync: false);
 
                 if (isAsyncDisposable)
@@ -103,7 +103,7 @@ namespace StrongInject.Generator
 
                 DisposalStyleDeterminant.OwnedType => Diagnostic.Create(
                     new DiagnosticDescriptor(
-                        "SI1301",
+                        "SI1302",
                         "Cannot call asynchronous dispose for Type using 'Owned<T>'; use 'AsyncOwned<T>' instead",
                         "Cannot call asynchronous dispose for '{0}' using '{1}'; use '{2}' instead",
                         "StrongInject",
@@ -111,8 +111,8 @@ namespace StrongInject.Generator
                         isEnabledByDefault: true),
                     location,
                     type.ToDisplayString(),
-                    _wellKnownTypes.Owned.Construct(type).ToDisplayString(),
-                    _wellKnownTypes.AsyncOwned.Construct(type).ToDisplayString()),
+                    WellKnownTypes.ConstructedOwnedDisplayName(type.ToDisplayString()),
+                    WellKnownTypes.ConstructedAsyncOwnedDisplayName(type.ToDisplayString())),
 
                 _ => throw new NotImplementedException(),
             };

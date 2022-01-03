@@ -34,9 +34,7 @@ namespace StrongInject.Generator
                     .Where(x => x != null)
                     .Select(x =>
                     {
-                        var isContainer = x!.AllInterfaces.Any(x
-                            => x.OriginalDefinition.Equals(wellKnownTypes.IContainer)
-                               || x.OriginalDefinition.Equals(wellKnownTypes.IAsyncContainer));
+                        var isContainer = x!.AllInterfaces.Any(x => WellKnownTypes.IsContainerOrAsyncContainer(x));
                         return (type: x, isContainer);
                     })
                     .Where(x =>

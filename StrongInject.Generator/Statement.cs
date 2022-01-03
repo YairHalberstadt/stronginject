@@ -16,7 +16,7 @@ namespace StrongInject.Generator
     {
         public string DisposeActionsName { get; } = "disposeActions_" + VariableName;
     }
-    internal sealed record DisposeActionsCreationStatement(string VariableName, ITypeSymbol Type) : Statement;
+    internal sealed record DisposeActionsCreationStatement(string VariableName, string TypeName) : Statement;
     internal sealed record SingleInstanceReferenceStatement(string VariableName, InstanceSource Source, bool IsAsync) : Statement;
     internal sealed record InitializationStatement(string? VariableName, string VariableToInitializeName, bool IsAsync) : Statement;
     internal sealed record AwaitStatement(string? VariableName, string VariableToAwaitName, ITypeSymbol? Type) : Statement

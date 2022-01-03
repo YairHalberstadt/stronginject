@@ -181,7 +181,7 @@ namespace StrongInject.Generator.Visitors
                 _currentlyVisitingDelegates.Remove(delegateSource);
                 var delegateCreationStatement = new DelegateCreationStatement(state.Name, delegateSource, order, targetName);
                 targetOperation = CreateOperation(delegateCreationStatement, state.Name, state.OperationDependencies);
-                if (targetOperation.Disposal is Disposal.DelegateDisposal { DisposeActionsType: var disposeActionsType })
+                if (targetOperation.Disposal is Disposal.DelegateDisposal { DisposeActionsTypeName: var disposeActionsType })
                 {
                     var disposeActionsOperation = CreateOperation(new DisposeActionsCreationStatement(delegateCreationStatement.DisposeActionsName, disposeActionsType), state.Name, _emptyList);
                     state.OperationDependencies.Add(disposeActionsOperation);

@@ -27,8 +27,7 @@ namespace StrongInject.Generator
                         return default;
                     }
 
-                    var isContainer = type.AllInterfaces.Any(x =>
-                        x.OriginalDefinition.MetadataName is WellKnownTypes.ICONTAINER_MD_NAME or WellKnownTypes.IASYNC_CONTAINER_MD_NAME);
+                    var isContainer = type.AllInterfaces.Any(x => WellKnownTypes.IsContainerOrAsyncContainer(x));
 
                     cancellationToken.ThrowIfCancellationRequested();
                     if (!isContainer

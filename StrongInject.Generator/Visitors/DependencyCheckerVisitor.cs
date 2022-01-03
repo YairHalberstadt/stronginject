@@ -364,7 +364,7 @@ namespace StrongInject.Generator.Visitors
                             default: throw new NotImplementedException(decorator.GetType().ToString());
                         }
                         break;
-                    case ForwardedInstanceSource { AsType: var forwardedType, Underlying: { OfType: var type } }:
+                    case ForwardedInstanceSource { AsType: var forwardedType, Underlying.OfType: var type }:
                         result.Append("Casting instance of Type '");
                         result.Append(type);
                         result.Append("' to '");
