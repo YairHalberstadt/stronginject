@@ -20,7 +20,6 @@ namespace StrongInject.Tests.Integration
         [Register<A>]
         public partial class Container : IContainer<A>
         {
-            
         }
 
         [Fact]

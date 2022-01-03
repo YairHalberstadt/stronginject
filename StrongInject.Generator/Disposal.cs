@@ -7,6 +7,6 @@ namespace StrongInject.Generator
         internal sealed record IDisposable(string VariableName, bool IsAsync) : Disposal(IsAsync);
         internal sealed record DisposalHelpers(string VariableName, bool IsAsync) : Disposal(IsAsync);
         internal sealed record FactoryDisposal(string VariableName, string FactoryName, bool IsAsync) : Disposal(IsAsync);
-        internal sealed record DelegateDisposal(string DisposeActionsName, ITypeSymbol DisposeActionsType, bool IsAsync) : Disposal(IsAsync);
+        internal sealed record DelegateDisposal(string DisposeActionsName, string DisposeActionsTypeName, bool IsAsync) : Disposal(IsAsync);
     };
 }

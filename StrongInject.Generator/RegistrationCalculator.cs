@@ -70,9 +70,8 @@ namespace StrongInject.Generator
         internal IReadOnlyDictionary<ITypeSymbol, InstanceSources> GetModuleRegistrations(INamedTypeSymbol module, Action<Diagnostic> reportDiagnostic)
         {
             var registrations = GetRegistrations(module, dependantModules: null, reportDiagnostic);
-            WarnOnNonStaticPublicOrProtectedFactoryMethods(module, reportDiagnostic);
+            WarnOnNonStaticPublicOrProtectedMethodsWithStrongInjectAttributes(module, reportDiagnostic);
             WarnOnNonStaticPublicOrProtectedInstanceFieldsOrProperties(module, reportDiagnostic);
-            WarnOnNonStaticPublicDecoratorFactoryMethods(module, reportDiagnostic);
             return registrations.NonGenericRegistrations;
         }
 
@@ -146,7 +145,7 @@ namespace StrongInject.Generator
         {
             Dictionary<ITypeSymbol, InstanceSources>? importedModuleRegistrations = null;
             foreach (var registerModuleAttribute in module.GetAttributes()
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterModuleAttribute) ?? false)
+                .Where(x => WellKnownTypes.IsRegisterModuleAttribute(x.AttributeClass))
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -245,7 +244,7 @@ namespace StrongInject.Generator
             Action<Diagnostic> reportDiagnostic)
         {
             foreach (var registerAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterAttribute) ?? false)
+                .Where(x => WellKnownTypes.IsRegisterAttribute(x.AttributeClass))
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -286,7 +285,7 @@ namespace StrongInject.Generator
             }
             
             foreach (var registerAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_1) ?? false)
+                .Where(x => WellKnownTypes.IsRegisterAttribute1(x.AttributeClass))
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -306,8 +305,8 @@ namespace StrongInject.Generator
             }
             
             foreach (var registerAttribute in moduleAttributes
-                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterAttribute_2) ?? false)
-                         .Sort())
+                .Where(x => WellKnownTypes.IsRegisterAttribute2(x.AttributeClass))
+                .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
                 var type = registerAttribute.AttributeClass!.TypeArguments[0];
@@ -353,8 +352,8 @@ namespace StrongInject.Generator
                     return;
                 }
 
-                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
-                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
+                var requiresInitialization = type.AllInterfaces.Any(x => WellKnownTypes.IsRequiresInitialization(x));
+                var requiresAsyncInitialization = type.AllInterfaces.Any(x => WellKnownTypes.IsRequiresAsyncInitialization(x));
 
                 if (requiresInitialization && requiresAsyncInitialization)
                 {
@@ -452,9 +451,7 @@ namespace StrongInject.Generator
 
         private void ReportSuspiciousSimpleRegistrations(INamedTypeSymbol type, AttributeData registerAttribute, Action<Diagnostic> reportDiagnostic)
         {
-            if (type.AllInterfaces.FirstOrDefault(x 
-                => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory)
-                || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory)) is { } factoryType)
+            if (type.AllInterfaces.FirstOrDefault(x => WellKnownTypes.IsFactoryOrAsyncFactory(x)) is { } factoryType)
             {
                 reportDiagnostic(WarnSimpleRegistrationImplementingFactory(type, factoryType, registerAttribute.GetLocation(_cancellationToken)));
             }
@@ -463,7 +460,7 @@ namespace StrongInject.Generator
         private void AppendFactoryRegistrations(Dictionary<ITypeSymbol, InstanceSources> registrations, ImmutableArray<AttributeData> moduleAttributes, ITypeSymbol module, Action<Diagnostic> reportDiagnostic)
         {
             foreach (var registerFactoryAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterFactoryAttribute) ?? false)
+                .Where(x => WellKnownTypes.IsRegisterFactoryAttribute(x.AttributeClass))
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -512,8 +509,8 @@ namespace StrongInject.Generator
                     ? (Scope)factoryTargetScopeInt
                     : Scope.InstancePerResolution;
 
-                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
-                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
+                var requiresInitialization = type.AllInterfaces.Any(x => WellKnownTypes.IsRequiresInitialization(x));
+                var requiresAsyncInitialization = type.AllInterfaces.Any(x => WellKnownTypes.IsRequiresAsyncInitialization(x));
 
                 if (requiresInitialization && requiresAsyncInitialization)
                 {
@@ -528,15 +525,13 @@ namespace StrongInject.Generator
                     IsAsync: requiresAsyncInitialization);
 
                 bool any = false;
-                foreach (var factoryType in type.AllInterfaces.Where(x
-                    => x.OriginalDefinition.Equals(_wellKnownTypes.IFactory)
-                    || x.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory)))
+                foreach (var factoryType in type.AllInterfaces.Where(x=> WellKnownTypes.IsFactoryOrAsyncFactory(x)))
                 {
                     any = true;
 
                     var factoryOf = factoryType.TypeArguments.First();
 
-                    bool isAsync = factoryType.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory);
+                    bool isAsync = WellKnownTypes.IsAsyncFactory(factoryType);
 
                     var factoryRegistration = new FactorySource(factoryOf, ForwardedInstanceSource.Create(factoryType, registration), factoryTargetScope, isAsync);
 
@@ -683,9 +678,7 @@ namespace StrongInject.Generator
 
         private IEnumerable<InstanceSource> CreateInstanceSourceIfFactoryMethod(IMethodSymbol method, INamedTypeSymbol module, Action<Diagnostic> reportDiagnostic)
         {
-            var attribute = method.GetAttributes().FirstOrDefault(x
-                => x.AttributeClass is { } attribute
-                   && attribute.Equals(_wellKnownTypes.FactoryAttribute))!;
+            var attribute = method.GetAttributes().FirstOrDefault(x=> WellKnownTypes.IsFactoryAttribute(x.AttributeClass))!;
 
             if (attribute is not null)
             {
@@ -860,9 +853,7 @@ namespace StrongInject.Generator
 
         private IEnumerable<FactoryOfMethod> CreateInstanceSourcesIfFactoryOfMethod(IMethodSymbol method, Action<Diagnostic> reportDiagnostic)
         {
-            var attributes = method.GetAttributes().Where(x
-                => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.FactoryOfAttribute))!;
+            var attributes = method.GetAttributes().Where(x => WellKnownTypes.IsFactoryOfAttribute(x.AttributeClass))!;
 
             foreach (var attribute in attributes)
             {
@@ -1078,8 +1069,8 @@ namespace StrongInject.Generator
                 if (useAsFactory)
                 {
                     var type = instanceSource.OfType;
-                    var isAsync = type.OriginalDefinition.Equals(_wellKnownTypes.IAsyncFactory);
-                    var isFactory = isAsync || type.OriginalDefinition.Equals(_wellKnownTypes.IFactory);
+                    var isFactory = WellKnownTypes.IsFactoryOrAsyncFactory(type);
+                    var isAsync = WellKnownTypes.IsAsyncFactory(type);
                     if (isFactory)
                     {
                         var scope = (Scope)(((int)options) >> 24);
@@ -1126,9 +1117,7 @@ namespace StrongInject.Generator
 
         private InstanceFieldOrProperty? CreateInstanceSourceIfInstanceFieldOrProperty(ISymbol fieldOrProperty, out AttributeData attribute, Action<Diagnostic> reportDiagnostic)
         {
-            attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
-                => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.InstanceAttribute))!;
+            attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x => WellKnownTypes.IsInstanceAttribute(x.AttributeClass))!;
             if (attribute is not null)
             {
                 if (fieldOrProperty is IFieldSymbol { Type: var fieldType })
@@ -1157,17 +1146,15 @@ namespace StrongInject.Generator
             return null;
         }
 
-        private void WarnOnNonStaticPublicOrProtectedFactoryMethods(INamedTypeSymbol module, Action<Diagnostic> reportDiagnostic)
+        private void WarnOnNonStaticPublicOrProtectedMethodsWithStrongInjectAttributes(INamedTypeSymbol module, Action<Diagnostic> reportDiagnostic)
         {
             foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected())))
             {
-                var attribute = method.GetAttributes().FirstOrDefault(x
-                    => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.FactoryAttribute));
+                var attribute = method.GetAttributes().FirstOrDefault(x=> WellKnownTypes.IsMethodAttribute(x.AttributeClass));
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-                    reportDiagnostic(WarnFactoryMethodNotPublicStaticOrProtected(module, method, location));
+                    reportDiagnostic(WarnStrongInjectMethodNotPublicStaticOrProtected(module, method, attribute, location));
                 }
             }
         }
@@ -1176,28 +1163,11 @@ namespace StrongInject.Generator
         {
             foreach (var fieldOrProperty in module.GetMembers().Where(x => x is IFieldSymbol or IPropertySymbol && !IsPubliclyAccessibleStaticFieldOrProperty(x) && !IsProtectedFieldOrProperty(x)))
             {
-                var attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x
-                    => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.InstanceAttribute));
+                var attribute = fieldOrProperty.GetAttributes().FirstOrDefault(x => WellKnownTypes.IsInstanceAttribute(x.AttributeClass));
                 if (attribute is not null)
                 {
                     var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
                     reportDiagnostic(WarnInstanceFieldOrPropertyNotPublicStaticOrProtected(module, fieldOrProperty, location));
-                }
-            }
-        }
-
-        private void WarnOnNonStaticPublicDecoratorFactoryMethods(INamedTypeSymbol module, Action<Diagnostic> reportDiagnostic)
-        {
-            foreach (var method in module.GetMembers().OfType<IMethodSymbol>().Where(x => !(x.IsStatic && x.DeclaredAccessibility == Accessibility.Public || x.IsProtected())))
-            {
-                var attribute = method.GetAttributes().FirstOrDefault(x
-                    => x.AttributeClass is { } attribute
-                    && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute));
-                if (attribute is not null)
-                {
-                    var location = attribute.ApplicationSyntaxReference?.GetSyntax(_cancellationToken).GetLocation() ?? Location.None;
-                    reportDiagnostic(WarnFactoryMethodNotPublicStaticOrProtected(module, method, location));
                 }
             }
         }
@@ -1210,7 +1180,7 @@ namespace StrongInject.Generator
             Action<Diagnostic> reportDiagnostic)
         {
             foreach (var registerDecoratorAttribute in moduleAttributes
-                .Where(x => x.AttributeClass?.Equals(_wellKnownTypes.RegisterDecoratorAttribute) ?? false)
+                .Where(x => WellKnownTypes.IsRegisterDecoratorAttribute(x.AttributeClass))
                 .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -1248,7 +1218,7 @@ namespace StrongInject.Generator
             }
             
             foreach (var registerDecoratorAttribute in moduleAttributes
-                         .Where(x => x.AttributeClass?.OriginalDefinition.Equals(_wellKnownTypes.RegisterDecoratorAttribute_2) ?? false)
+                         .Where(x => WellKnownTypes.IsRegisterDecoratorAttribute2(x.AttributeClass))
                          .Sort())
             {
                 _cancellationToken.ThrowIfCancellationRequested();
@@ -1309,8 +1279,8 @@ namespace StrongInject.Generator
                     return;
                 }
 
-                var requiresInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresInitialization);
-                var requiresAsyncInitialization = type.AllInterfaces.Contains(_wellKnownTypes.IRequiresAsyncInitialization);
+                var requiresInitialization = type.AllInterfaces.Any(x => WellKnownTypes.IsRequiresInitialization(x));
+                var requiresAsyncInitialization = type.AllInterfaces.Any(x => WellKnownTypes.IsRequiresAsyncInitialization(x));
 
                 if (requiresInitialization && requiresAsyncInitialization)
                 {
@@ -1421,9 +1391,7 @@ namespace StrongInject.Generator
 
         private DecoratorFactoryMethod? CreateDecoratorSourceIfDecoratorFactoryMethod(IMethodSymbol method, out AttributeData attribute, Action<Diagnostic> reportDiagnostic)
         {
-            attribute = method.GetAttributes().FirstOrDefault(x
-                => x.AttributeClass is { } attribute
-                && attribute.Equals(_wellKnownTypes.DecoratorFactoryAttribute))!;
+            attribute = method.GetAttributes().FirstOrDefault(x=> WellKnownTypes.IsDecoratorFactoryAttribute(x.AttributeClass))!;
             if (attribute is not null)
             {
                 if (method.ReturnType is { SpecialType: not SpecialType.System_Void } returnType)
@@ -1895,18 +1863,19 @@ namespace StrongInject.Generator
                 factoryType.ToDisplayString());
         }
 
-        private static Diagnostic WarnFactoryMethodNotPublicStaticOrProtected(ITypeSymbol module, IMethodSymbol method, Location location)
+        private static Diagnostic WarnStrongInjectMethodNotPublicStaticOrProtected(ITypeSymbol module, IMethodSymbol method, AttributeData attributeData, Location location)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor(
                     "SI1002",
-                    "Factory method is not either public and static, or protected, and containing module is not a container, so will be ignored",
-                    "Factory method '{0}' is not either public and static, or protected, and containing module '{1}' is not a container, so will be ignored.",
+                    "Method marked with attribute is not either public and static, or protected, and containing module is not a container, so will be ignored",
+                    "Method '{0}' marked with '{1}' is not either public and static, or protected, and containing module '{2}' is not a container, so will be ignored.",
                     "StrongInject",
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true),
                 location,
                 method.ToDisplayString(),
+                attributeData.AttributeClass?.Name,
                 module.ToDisplayString());
         }
 
