@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Configurations>Debug;Release;Wpf;All</Configurations>
+    <RootNamespace>StrongInject.Generator</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,8 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="StrongInject.Generator.Roslyn38" />
-    <InternalsVisibleTo Include="StrongInject.Generator.Roslyn40" />
+    <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="StrongInject.Tests.Unit" />
   </ItemGroup>
 
