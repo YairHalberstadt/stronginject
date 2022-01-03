@@ -132,44 +132,61 @@ namespace StrongInject.Generator
                 location,
                 module.ToDisplayString());
         }
-    }
-}
-
-public class CompilationWrapper : IEquatable<CompilationWrapper>
-{
-    public Compilation Compilation;
-    private long _version;
-    private static long _nextVersion;
-
-    public CompilationWrapper(Compilation compilation)
-    {
-        Compilation = compilation;
-        _version = Interlocked.Increment(ref _nextVersion);
-    }
-    
-    public bool Equals(CompilationWrapper? other)
-    {
-        if (other is null)
-            return false;
-        if (other._version > _version)
-        {
-            (Compilation, _version) = (other.Compilation, other._version);
-        }
-        else
-        {
-            (other.Compilation, other._version) = (Compilation, _version);
-        }
         
-        return true;
-    }
+        private class CompilationWrapper : IEquatable<CompilationWrapper>
+        {
+            // We need to lock both this and other for Equals, which is difficult to do without risking a deadlock.
+            // Given how rarely Equals is likely to be called, just use a shared lock among all instances.
+            private static readonly object _lock = new();
+            public Compilation Compilation
+            {
+                get
+                {
+                    lock (_lock)
+                    {
+                        return _compilation;
+                    }
+                }
+            }
 
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as CompilationWrapper);
-    }
+            private long _version;
+            private Compilation _compilation;
+            private static long _nextVersion;
 
-    public override int GetHashCode()
-    {
-        return 0;
+            public CompilationWrapper(Compilation compilation)
+            {
+                _compilation = compilation;
+                _version = Interlocked.Increment(ref _nextVersion);
+            }
+    
+            public bool Equals(CompilationWrapper? other)
+            {
+                if (other is null)
+                    return false;
+                lock (_lock)
+                {
+                    if (other._version > _version)
+                    {
+                        (_compilation, _version) = (other._compilation, other._version);
+                    }
+                    else
+                    {
+                        (other._compilation, other._version) = (_compilation, _version);
+                    }
+                }
+
+                return true;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return Equals(obj as CompilationWrapper);
+            }
+
+            public override int GetHashCode()
+            {
+                return 0;
+            }
+        }
     }
 }
