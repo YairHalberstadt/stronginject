@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 
 namespace StrongInject.Generator.Visitors
 {
@@ -7,7 +8,7 @@ namespace StrongInject.Generator.Visitors
         private readonly HashSet<InstanceSource> _visited = new();
         protected readonly InstanceSourcesScope _containerScope;
 
-        protected SimpleVisitor(InstanceSourcesScope containerScope)
+        protected SimpleVisitor(InstanceSourcesScope containerScope, CancellationToken cancellationToken) : base(cancellationToken)
         {
             _containerScope = containerScope;
         }

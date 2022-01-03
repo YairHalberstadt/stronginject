@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 
 namespace StrongInject.Generator.Visitors
 {
@@ -6,13 +7,13 @@ namespace StrongInject.Generator.Visitors
     {
         private readonly List<InstanceSource> _singleInstanceVariablesToCreateEarly = new();
 
-        private SingleInstanceVariablesToCreateEarlyVisitor(InstanceSourcesScope containerScope) : base(containerScope)
+        private SingleInstanceVariablesToCreateEarlyVisitor(InstanceSourcesScope containerScope, CancellationToken cancellationToken) : base(containerScope, cancellationToken)
         {
         }
 
-        public static List<InstanceSource> CalculateVariables(InstanceSource source, InstanceSourcesScope currentScope, InstanceSourcesScope containerScope)
+        public static List<InstanceSource> CalculateVariables(InstanceSource source, InstanceSourcesScope currentScope, InstanceSourcesScope containerScope, CancellationToken cancellationToken)
         {
-            var visitor = new SingleInstanceVariablesToCreateEarlyVisitor(containerScope);
+            var visitor = new SingleInstanceVariablesToCreateEarlyVisitor(containerScope, cancellationToken);
             visitor.VisitCore(source, new State(currentScope));
             return visitor._singleInstanceVariablesToCreateEarly;
         }
@@ -25,7 +26,7 @@ namespace StrongInject.Generator.Visitors
                 return false;
             if (source.Scope == Scope.SingleInstance)
             {
-                if (RequiresAsyncVisitor.RequiresAsync(source, _containerScope))
+                if (RequiresAsyncVisitor.RequiresAsync(source, _containerScope, _cancellationToken))
                 {
                     _singleInstanceVariablesToCreateEarly.Add(source);
                 }

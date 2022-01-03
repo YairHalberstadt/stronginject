@@ -1,14 +1,24 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.Threading;
 
 namespace StrongInject.Generator.Visitors
 {
     internal abstract class BaseVisitor<State> : IVisitor<State> where State : struct, BaseVisitor<State>.IState
     {
+        protected readonly CancellationToken _cancellationToken;
+        
         private bool _exitFast = false;
+
+        protected BaseVisitor(CancellationToken cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+        }
+
         protected void ExitFast() => _exitFast = true;
         public void VisitCore(InstanceSource? source, State state)
         {
+            _cancellationToken.ThrowIfCancellationRequested();
             if (!_exitFast && ShouldVisitBeforeUpdateState(source, state) && source is not null)
             {
                 UpdateState(source, ref state);

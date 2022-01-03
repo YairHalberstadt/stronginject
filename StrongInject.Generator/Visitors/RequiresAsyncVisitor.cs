@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 
 namespace StrongInject.Generator.Visitors
 {
@@ -6,13 +7,13 @@ namespace StrongInject.Generator.Visitors
     {
         private bool _requiresAsync = false;
 
-        private RequiresAsyncVisitor(InstanceSourcesScope containerScope) : base(containerScope)
+        private RequiresAsyncVisitor(InstanceSourcesScope containerScope, CancellationToken cancellationToken) : base(containerScope, cancellationToken)
         {
         }
 
-        public static bool RequiresAsync(InstanceSource source, InstanceSourcesScope containerScope)
+        public static bool RequiresAsync(InstanceSource source, InstanceSourcesScope containerScope, CancellationToken cancellationToken)
         {
-            var visitor = new RequiresAsyncVisitor(containerScope);
+            var visitor = new RequiresAsyncVisitor(containerScope, cancellationToken);
             visitor.VisitCore(source, new State(containerScope));
             return visitor._requiresAsync;
         }
