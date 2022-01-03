@@ -23,9 +23,6 @@ namespace StrongInject.Generator
                 return;
             }
 
-            var registrationCalculator =
-                new RegistrationCalculator(compilation, wellKnownTypes, cancellationToken);
-            
             foreach (var syntaxTree in context.Compilation.SyntaxTrees)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -65,6 +62,7 @@ namespace StrongInject.Generator
                             .GetLocation()));
                     }
 
+                    var registrationCalculator = new RegistrationCalculator(compilation, wellKnownTypes, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
                     if (module.isContainer)
                     {
@@ -118,7 +116,7 @@ namespace StrongInject.Generator
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true),
                 location,
-                module);
+                module.ToDisplayString());
         }
 
         void ISourceGenerator.Initialize(GeneratorInitializationContext context)
