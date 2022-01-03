@@ -29450,7 +29450,10 @@ class Module2
         generatorDiagnostics.Verify(
             // (5,7): Error SI0009: Module 'Module1' directly or indirectly registers itself.
             // Module1
-            new DiagnosticResult("SI0009", @"Module1", DiagnosticSeverity.Error).WithLocation(5, 7)
+            new DiagnosticResult("SI0009", @"Module1", DiagnosticSeverity.Error).WithLocation(5, 7),
+            // (10,7): Error SI0009: Module 'Module2' directly or indirectly registers itself.
+            // Module2
+            new DiagnosticResult("SI0009", @"Module2", DiagnosticSeverity.Error).WithLocation(10, 7)
         );
         comp.GetDiagnostics().Verify();
         Assert.Empty(generated);

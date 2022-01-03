@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\StrongInject\StrongInject.csproj" />
     <ProjectReference Include="..\StrongInject.Generator\StrongInject.Generator.csproj" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\StrongInject.Generator.Roslyn38\StrongInject.Generator.Roslyn38.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
 </Project>

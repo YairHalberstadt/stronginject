@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections.Concurrent;
@@ -7,7 +8,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
@@ -67,24 +67,30 @@ namespace StrongInject.Generator.Tests.Unit
         protected Compilation RunGeneratorWithStrongInjectReference(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
             var compilation = CreateCompilationWithStrongInjectReference(source);
-            return runGenerator(compilation, out diagnostics, out generatedFiles);
+            return RunGenerator(compilation, out diagnostics, out generatedFiles);
         }
         protected Compilation RunGenerator(string source, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles, params MetadataReference[] metadataReferences)
         {
             var compilation = CreateCompilation(source, metadataReferences);
-            return runGenerator(compilation, out diagnostics, out generatedFiles);
+            return RunGenerator(compilation, out diagnostics, out generatedFiles);
         }
         
-        protected Compilation runGenerator(Compilation compilation, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
+        protected Compilation RunGenerator(Compilation compilation, out ImmutableArray<Diagnostic> diagnostics, out ImmutableArray<string> generatedFiles)
         {
-            CreateDriver(compilation, new SourceGenerator()).RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out var duplicatedDiagnostics);
-            diagnostics = duplicatedDiagnostics.Distinct().ToImmutableArray();
+            CreateDriver(compilation, new SourceGenerator()).RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out diagnostics);
+            CreateDriver(compilation, new IncrementalGenerator().AsSourceGenerator()).RunGeneratorsAndUpdateCompilation(compilation, out var incrementalCompilation, out var incrementalDiagnostics);
             var generatedTrees = updatedCompilation.SyntaxTrees.Where(x => !compilation.SyntaxTrees.Any(y => y.Equals(x))).ToImmutableArray();
+            var incrementalGeneratedTrees = incrementalCompilation.SyntaxTrees.Where(x => !compilation.SyntaxTrees.Any(y => y.Equals(x))).ToImmutableArray();
             foreach (var generated in generatedTrees)
             {
                 _outputHelper.WriteLine($"{generated.FilePath}:\n{generated.GetText()}");
             }
             generatedFiles = generatedTrees.Select(x => x.GetText().ToString()).ToImmutableArray();
+            
+            var incrementalGeneratedFiles = incrementalGeneratedTrees.Select(x => x.GetText().ToString()).ToImmutableArray();
+            generatedFiles.Should().BeEquivalentTo(incrementalGeneratedFiles);
+            diagnostics.Select(x => x.ToString()).Should().BeEquivalentTo(incrementalDiagnostics.Select(x => x.ToString()));
+            
             return updatedCompilation;
         }
     }
