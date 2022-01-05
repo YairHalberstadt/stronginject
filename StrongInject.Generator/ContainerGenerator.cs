@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace StrongInject.Generator
@@ -32,7 +31,7 @@ namespace StrongInject.Generator
         private readonly InstanceSourcesScope _containerScope;
 
         private readonly Dictionary<InstanceSource, (string name, string disposeFieldName, string lockName)> _singleInstanceMethods = new();
-        private readonly StringBuilder _containerMembersSource = new();
+        private AutoIndenter _containerMembersSource = default!;
         private readonly List<(INamedTypeSymbol containerInterface, bool isAsync)> _containerInterfaces;
         private readonly bool _implementsSyncContainer;
         private readonly bool _implementsAsyncContainer;
@@ -68,7 +67,10 @@ namespace StrongInject.Generator
 
         private string GenerateContainerImplementations()
         {
-            Debug.Assert(_containerMembersSource.Length == 0);
+            Debug.Assert(_containerMembersSource is null);
+            var classMembersIndent = _container.GetContainingTypesAndThis().Count()
+                                     + (_container.ContainingNamespace is { IsGlobalNamespace: false } ? 1 : 0);
+            _containerMembersSource = new AutoIndenter(classMembersIndent);
 
             bool requiresUnsafe = false;
 
@@ -78,7 +80,7 @@ namespace StrongInject.Generator
 
                 var target = constructedContainerInterface.TypeArguments[0];
 
-                var runMethodSource = new StringBuilder();
+                var runMethodSource = _containerMembersSource.GetSubIndenter();
                 var runMethodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers(isAsync
                     ? "RunAsync"
                     : "Run")[0];
@@ -86,6 +88,7 @@ namespace StrongInject.Generator
                 {
                     runMethodSource.Append("async ");
                 }
+
                 runMethodSource.Append(runMethodSymbol.ReturnType.FullName());
                 runMethodSource.Append(' ');
                 runMethodSource.Append(constructedContainerInterface.FullName());
@@ -96,22 +99,25 @@ namespace StrongInject.Generator
                 {
                     var typeParam = runMethodSymbol.TypeParameters[i];
                     if (i != 0)
-                        runMethodSource.Append(',');
+                        runMethodSource.Append(", ");
                     runMethodSource.Append(typeParam.Name);
                 }
+
                 runMethodSource.Append(">(");
                 for (int i = 0; i < runMethodSymbol.Parameters.Length; i++)
                 {
                     var param = runMethodSymbol.Parameters[i];
                     if (i != 0)
-                        runMethodSource.Append(',');
+                        runMethodSource.Append(", ");
                     runMethodSource.Append(param.Type.FullName());
                     runMethodSource.Append(' ');
                     runMethodSource.Append(param.Name);
                 }
-                runMethodSource.Append("){");
 
-                var resolveMethodSource = new StringBuilder();
+                runMethodSource.AppendLine(")");
+                runMethodSource.AppendLine("{");
+
+                var resolveMethodSource = _containerMembersSource.GetSubIndenter();
                 var resolveMethodSymbol = (IMethodSymbol)constructedContainerInterface.GetMembers(isAsync
                     ? "ResolveAsync"
                     : "Resolve")[0];
@@ -119,12 +125,15 @@ namespace StrongInject.Generator
                 {
                     resolveMethodSource.Append("async ");
                 }
+
                 resolveMethodSource.Append(resolveMethodSymbol.ReturnType.FullName());
                 resolveMethodSource.Append(' ');
                 resolveMethodSource.Append(constructedContainerInterface.FullName());
                 resolveMethodSource.Append('.');
                 resolveMethodSource.Append(resolveMethodSymbol.Name);
-                resolveMethodSource.Append("(){");
+                resolveMethodSource.AppendLine("()");
+                resolveMethodSource.AppendLine("{");
+
 
                 if (DependencyCheckerVisitor.CheckDependencies(
                         target,
@@ -135,17 +144,16 @@ namespace StrongInject.Generator
                         _cancellationToken))
                 {
                     // error reported. Implement with throwing implementation to remove NotImplemented error CS0535
-                    const string THROW_NOT_IMPLEMENTED_EXCEPTION = "throw new global::System.NotImplementedException();}";
-                    runMethodSource.Append(THROW_NOT_IMPLEMENTED_EXCEPTION);
-                    resolveMethodSource.Append(THROW_NOT_IMPLEMENTED_EXCEPTION);
-
+                    const string THROW_NOT_IMPLEMENTED_EXCEPTION = "throw new global::System.NotImplementedException();";
+                    runMethodSource.AppendLine(THROW_NOT_IMPLEMENTED_EXCEPTION);
+                    resolveMethodSource.AppendLine(THROW_NOT_IMPLEMENTED_EXCEPTION);
                 }
                 else
                 {
                     requiresUnsafe |= RequiresUnsafeVisitor.RequiresUnsafe(target, _containerScope, _cancellationToken);
 
-                    var variableCreationSource = new StringBuilder();
-                    variableCreationSource.Append("if(Disposed)");
+                    var variableCreationSource = runMethodSource.GetSubIndenter();
+                    variableCreationSource.AppendLine("if (Disposed)");
                     ThrowObjectDisposedException(variableCreationSource);
 
                     var ops = LoweringVisitor.LowerResolution(
@@ -162,17 +170,26 @@ namespace StrongInject.Generator
                         variableCreationSource,
                         _containerScope);
 
-                    var disposalSource = new StringBuilder();
-                    EmitDisposals(disposalSource, ops);
-
                     runMethodSource.Append(variableCreationSource);
                     runMethodSource.Append(runMethodSymbol.TypeParameters[0].Name);
-                    runMethodSource.Append(" result;try{result=");
+                    runMethodSource.AppendLine(" result;");
+                    runMethodSource.AppendLine("try");
+                    runMethodSource.AppendLine("{");
+                    runMethodSource.Append("result = ");
                     runMethodSource.Append(isAsync ? "await func(" : "func(");
                     runMethodSource.Append(resultVariableName);
-                    runMethodSource.Append(", param);}finally{");
+                    runMethodSource.AppendLine(", param);");
+
+                    runMethodSource.AppendLine("}");
+                    runMethodSource.AppendLine("finally");
+                    runMethodSource.AppendLine("{");
+
+                    var disposalSource = runMethodSource.GetSubIndenter();
+                    EmitDisposals(disposalSource, ops);
                     runMethodSource.Append(disposalSource);
-                    runMethodSource.Append("}return result;}");
+
+                    runMethodSource.AppendLine("}");
+                    runMethodSource.AppendLine("return result;");
 
                     var ownedTypeName = isAsync
                         ? WellKnownTypes.ConstructedAsyncOwnedEmitName(target.FullName())
@@ -182,46 +199,52 @@ namespace StrongInject.Generator
                     resolveMethodSource.Append(ownedTypeName);
                     resolveMethodSource.Append('(');
                     resolveMethodSource.Append(resultVariableName);
-                    resolveMethodSource.Append(isAsync ? ",async()=>{" : ",()=>{");
+                    resolveMethodSource.AppendLine(isAsync ? ", async () =>" : ", () =>");
+                    resolveMethodSource.AppendLine("{");
+
                     resolveMethodSource.Append(disposalSource);
-                    resolveMethodSource.Append("});}");
+
+                    resolveMethodSource.AppendLine("});");
                 }
 
+                runMethodSource.AppendLine("}");
+                resolveMethodSource.AppendLine("}");
+
+                _containerMembersSource.AppendLine();
                 _containerMembersSource.Append(runMethodSource);
+                _containerMembersSource.AppendLine();
                 _containerMembersSource.Append(resolveMethodSource);
             }
-
-            var file = new StringBuilder("#pragma warning disable CS1998\n");
-            var closingBraceCount = 0;
+            
+            var file = new AutoIndenter(0);
+            file.AppendLine("#pragma warning disable CS1998");
             if (_container.ContainingNamespace is { IsGlobalNamespace: false })
             {
-                closingBraceCount++;
                 file.Append("namespace ");
-                file.Append(_container.ContainingNamespace.FullName());
-                file.Append('{');
+                file.AppendLine(_container.ContainingNamespace.FullName());
+                file.AppendLine("{");
             }
 
             foreach (var type in _container.GetContainingTypesAndThis().Reverse())
             {
-                closingBraceCount++;
                 if (requiresUnsafe)
                 {
                     file.Append("unsafe ");
                 }
                 file.Append("partial class ");
-                file.Append(type.NameWithGenerics());
-                file.Append('{');
+                file.AppendLine(type.NameWithGenerics());
+                file.AppendLine("{");
             }
 
             GenerateDisposeMethods(_implementsSyncContainer, _implementsAsyncContainer, file);
 
             file.Append(_containerMembersSource);
 
-            for (int i = 0; i < closingBraceCount; i++)
+            while (file.Indent != 0)
             {
-                file.Append('}');
+                file.AppendLine("}");
             }
-
+            
             return file.ToString();
         }
 
@@ -247,47 +270,47 @@ namespace StrongInject.Generator
                 var name = "Get" + type.ToIdentifier("SingleInstance") + "Field" + index;
                 singleInstanceMethod = (name, disposeFieldName, lockName);
                 _singleInstanceMethods.Add(instanceSource, singleInstanceMethod);
-                
-                _containerMembersSource.Append("private ");
-                _containerMembersSource.Append(type.FullName());
-                _containerMembersSource.Append(' ');
-                _containerMembersSource.Append(singleInstanceFieldName);
-                _containerMembersSource.Append(';');
-                
-                _containerMembersSource.Append("private bool ");
-                _containerMembersSource.Append(singleInstanceFieldSetName);
-                _containerMembersSource.Append(';');
 
-                _containerMembersSource.Append("private global::System.Threading.SemaphoreSlim ");
-                _containerMembersSource.Append(lockName );
-                _containerMembersSource.Append("=new global::System.Threading.SemaphoreSlim(1);");
-                
-                _containerMembersSource.Append((_implementsAsyncContainer
+                var methodSource = _containerMembersSource.GetSubIndenter();
+                methodSource.Append("private ");
+                methodSource.Append(type.FullName());
+                methodSource.Append(' ');
+                methodSource.Append(singleInstanceFieldName);
+                methodSource.AppendLine(';');
+
+                methodSource.Append("private bool ");
+                methodSource.Append(singleInstanceFieldSetName);
+                methodSource.AppendLine(';');
+
+                methodSource.Append("private global::System.Threading.SemaphoreSlim ");
+                methodSource.Append(lockName);
+                methodSource.AppendLine(" = new global::System.Threading.SemaphoreSlim(1);");
+
+                methodSource.Append((_implementsAsyncContainer
                     ? "private global::System.Func<global::System.Threading.Tasks.ValueTask> "
                     : "private global::System.Action "));
-                _containerMembersSource.Append(disposeFieldName);
-                _containerMembersSource.Append(';');
-                
-                var methodSource = new StringBuilder();
+                methodSource.Append(disposeFieldName);
+                methodSource.AppendLine(';');
+
                 methodSource.Append(isAsync ? "private async " : "private ");
                 methodSource.Append(isAsync ? WellKnownTypes.ConstructedValueTask1EmitName(type.FullName()) : type.FullName());
                 methodSource.Append(' ');
                 methodSource.Append(name);
-                methodSource.Append("(){");
-                
+                methodSource.AppendLine("()");
+                methodSource.AppendLine("{");
                 CheckFieldSet(methodSource, singleInstanceFieldSetName, singleInstanceFieldName);
-                
+
                 if (isAsync)
                     methodSource.Append("await ");
                 methodSource.Append("this.");
                 methodSource.Append(lockName);
-                methodSource.Append(isAsync ? ".WaitAsync();" : ".Wait();");
+                methodSource.AppendLine(isAsync ? ".WaitAsync();" : ".Wait();");
 
-                methodSource.Append("try{");
-                
+                methodSource.AppendLine("try");
+                methodSource.AppendLine("{");
                 CheckFieldSet(methodSource, singleInstanceFieldSetName, singleInstanceFieldName);
-                
-                methodSource.Append("if(this.Disposed)");
+
+                methodSource.AppendLine("if (this.Disposed)");
                 ThrowObjectDisposedException(methodSource);
 
                 var ops = LoweringVisitor.LowerResolution(
@@ -305,40 +328,51 @@ namespace StrongInject.Generator
 
                 methodSource.Append("this.");
                 methodSource.Append(singleInstanceFieldName);
-                methodSource.Append('=');
+                methodSource.Append(" = ");
                 methodSource.Append(variableName);
-                methodSource.Append(';');
-                
+                methodSource.AppendLine(';');
+
                 methodSource.Append("this.");
                 methodSource.Append(singleInstanceFieldSetName);
-                methodSource.Append("=true;");
-                
+                methodSource.AppendLine(" = true;");
+
                 methodSource.Append("this.");
                 methodSource.Append(disposeFieldName);
-                methodSource.Append('=');
+                methodSource.Append(" = ");
                 if (_implementsAsyncContainer)
-                    methodSource.Append("async");
-                methodSource.Append("() => {");
+                    methodSource.Append("async ");
+                methodSource.AppendLine("() =>");
+                methodSource.AppendLine("{");
                 EmitDisposals(methodSource, ops);
-                methodSource.Append("};");
-                
-                methodSource.Append("}finally{this.");
+                methodSource.AppendLine("};");
+                methodSource.AppendLine("}");
+                methodSource.AppendLine("finally");
+                methodSource.AppendLine("{");
+
+                methodSource.Append("this.");
                 methodSource.Append(lockName);
-                methodSource.Append(".Release();}return ");
+                methodSource.AppendLine(".Release();");
+
+                methodSource.AppendLine("}");
+                methodSource.Append("return ");
                 methodSource.Append(singleInstanceFieldName);
-                methodSource.Append(";}");
+                methodSource.AppendLine(";");
+                methodSource.AppendLine("}");
+
+                _containerMembersSource.AppendLine();
                 _containerMembersSource.Append(methodSource);
             }
+
             return singleInstanceMethod.name;
 
-            static void CheckFieldSet(StringBuilder methodSource, string singleInstanceFieldSetName, string singleInstanceFieldName)
+            static void CheckFieldSet(AutoIndenter methodSource, string singleInstanceFieldSetName, string singleInstanceFieldName)
             {
-                methodSource.Append("if(this.");
+                methodSource.Append("if (this.");
                 methodSource.Append(singleInstanceFieldSetName);
-                methodSource.Append(')');
-                methodSource.Append("return this.");
+                methodSource.AppendLine(")");
+                methodSource.AppendIndented("return this.");
                 methodSource.Append(singleInstanceFieldName);
-                methodSource.Append(';');
+                methodSource.AppendLine(';');
             }
         }
 
@@ -347,7 +381,7 @@ namespace StrongInject.Generator
 
         private void CreateVariables(
             ImmutableArray<Operation> operations,
-            StringBuilder methodSource,
+            AutoIndenter methodSource,
             InstanceSourcesScope instanceSourcesScope)
         {
             _cancellationToken.ThrowIfCancellationRequested();
@@ -364,21 +398,21 @@ namespace StrongInject.Generator
                 {
                     methodSource.Append("var ");
                     methodSource.Append(hasAwaitStartedVariableName);
-                    methodSource.Append("=false;");
+                    methodSource.AppendLine(" = false;");
 
                     if (awaitResultType is not null)
                     {
                         methodSource.Append("var ");
-                        methodSource.Append(awaitResultVariableName);
-                        methodSource.Append("=default(");
+                        methodSource.Append(awaitResultVariableName!);
+                        methodSource.Append(" = default(");
                         methodSource.Append(awaitResultType.FullName());
-                        methodSource.Append(");");
+                        methodSource.AppendLine(");");
 
                         if (operation.CanDisposeAwaitStatementResultLocally())
                         {
                             methodSource.Append("var ");
                             methodSource.Append(hasAwaitCompletedVariableName);
-                            methodSource.Append("=false;");
+                            methodSource.AppendLine(" = false;");
                         }
                     }
                 }
@@ -412,8 +446,8 @@ namespace StrongInject.Generator
                     {
                         methodSource.Append(typeName);
                         methodSource.Append(" ");
-                        methodSource.Append(name);
-                        methodSource.Append(";");
+                        methodSource.Append(name!);
+                        methodSource.AppendLine(";");
                     }
                 }
             }
@@ -425,7 +459,8 @@ namespace StrongInject.Generator
 
                 if (i != operations.Length - 1 && (operation.CanDisposeLocally || operation.AwaitStatement is not null))
                 {
-                    methodSource.Append("try{");
+                    methodSource.AppendLine("try");
+                    methodSource.AppendLine("{");
                 }
             }
 
@@ -434,21 +469,24 @@ namespace StrongInject.Generator
                 var operation = operations[i];
                 if (operation.CanDisposeLocally || operation.AwaitStatement is not null)
                 {
-                    methodSource.Append("}catch{");
-                    if (operation.AwaitStatement is 
+                    methodSource.AppendLine("}");
+                    methodSource.AppendLine("catch");
+                    methodSource.AppendLine("{");
+                    if (operation.AwaitStatement is
+                        {
+                            HasAwaitStartedVariableName: var hasAwaitStartedVariableName,
+                            VariableName: var variableName,
+                            VariableToAwaitName: var variableToAwaitName,
+                            HasAwaitCompletedVariableName: var hasAwaitCompletedVariableName
+                        })
                     {
-                        HasAwaitStartedVariableName: var hasAwaitStartedVariableName,
-                        VariableName: var variableName,
-                        VariableToAwaitName: var variableToAwaitName,
-                        HasAwaitCompletedVariableName: var hasAwaitCompletedVariableName
-                    })
-                    {
-                        methodSource.Append("if(!");
+                        methodSource.Append("if (!");
                         methodSource.Append(hasAwaitStartedVariableName);
-                        methodSource.Append("){");
+                        methodSource.AppendLine(")");
+                        methodSource.AppendLine("{");
                         if (!operation.CanDisposeLocally)
                         {
-                            methodSource.Append("_=");
+                            methodSource.Append("_ = ");
                             methodSource.Append(variableToAwaitName);
                             var isValueTask = operation.Statement switch
                             {
@@ -468,23 +506,34 @@ namespace StrongInject.Generator
                             {
                                 methodSource.Append(".AsTask()");
                             }
-                            methodSource.Append(".ContinueWith(failedTask => _ = failedTask.Exception, global::System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);}");
+
+                            methodSource.AppendLine(".ContinueWith(failedTask => _ = failedTask.Exception, global::System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);");
+                            methodSource.AppendLine("}");
                         }
                         else
                         {
-                            methodSource.Append(variableName);
-                            methodSource.Append("=await ");
+                            methodSource.Append(variableName!);
+                            methodSource.Append(" = await ");
                             methodSource.Append(variableToAwaitName);
-                            methodSource.Append(";}else if (!");
+                            methodSource.AppendLine(";");
+                            methodSource.AppendLine("}");
+                            methodSource.Append("else if (!");
                             methodSource.Append(hasAwaitCompletedVariableName);
-                            methodSource.Append("){throw;}");
+                            methodSource.AppendLine(")");
+                            methodSource.AppendLine("{");
+                            methodSource.AppendLine("throw;");
+                            methodSource.AppendLine("}");
                         }
                     }
+
                     if (operation.CanDisposeLocally)
                     {
                         EmitDisposal(methodSource, operation);
                     }
-                    methodSource.Append("throw;}");
+
+                    methodSource.AppendLine("throw;");
+
+                    methodSource.AppendLine("}");
                 }
             }
 
@@ -497,17 +546,17 @@ namespace StrongInject.Generator
                         {
                             var name = GetSingleInstanceMethod(source, isAsync);
                             methodSource.Append(variableName);
-                            methodSource.Append('=');
+                            methodSource.Append(" = ");
                             methodSource.Append(name);
-                            methodSource.Append("();");
+                            methodSource.AppendLine("();");
                         }
                         break;
                     case DisposeActionsCreationStatement(var variableName, var type):
                         {
                             methodSource.Append(variableName);
-                            methodSource.Append("=new ");
+                            methodSource.Append(" = new ");
                             methodSource.Append(type);
-                            methodSource.Append("();");
+                            methodSource.AppendLine("();");
                             break;
                         }
                     case DelegateCreationStatement
@@ -526,41 +575,45 @@ namespace StrongInject.Generator
                         var disposeAsynchronously = operation.Disposal is { IsAsync: true };
                         // definitely assign the delegate variable so it can be referenced inside the delegate 
                         methodSource.Append(variableName);
-                        methodSource.Append("=null;");
+                        methodSource.AppendLine(" = null;");
                         methodSource.Append(variableName);
-                        methodSource.Append(isAsync ? "=async(" : "=(");
+                        methodSource.Append(isAsync ? " = async(" : " = (");
 
                         var newScope = instanceSourcesScope.Enter(source);
                         foreach (var (parameter, index) in parameters.WithIndex())
                         {
                             if (index != 0)
-                                methodSource.Append(',');
+                                methodSource.Append(", ");
                             methodSource.Append(((DelegateParameter)newScope[parameter.Type]).Name);
                         }
 
-                        methodSource.Append(")=>{");
+                        methodSource.AppendLine(") =>");
+                        methodSource.AppendLine("{");
+                        
+                            CreateVariables(
+                                internalOps,
+                                methodSource,
+                                newScope);
 
-                        CreateVariables(
-                            internalOps,
-                            methodSource,
-                            newScope);
+                            if (isDisposed)
+                            {
+                                methodSource.Append(disposeActionsName);
+                                methodSource.Append(".Add(");
+                                if (disposeAsynchronously)
+                                    methodSource.Append("async ");
+                                methodSource.AppendLine("() =>");
+                                methodSource.AppendLine("{");
+                                    EmitDisposals(methodSource, internalOps);
+                                methodSource.AppendLine("});");
+                            }
 
-                        if (isDisposed)
-                        {
-                            methodSource.Append(disposeActionsName);
-                            methodSource.Append(".Add(");
-                            if (disposeAsynchronously)
-                                methodSource.Append("async");
-                            methodSource.Append("() => {");
-                            EmitDisposals(methodSource, internalOps);
-                            methodSource.Append("});");
-                        }
+                            methodSource.Append("return ");
+                            methodSource.Append(internalTargetName);
+                            methodSource.AppendLine(";");
+                        methodSource.AppendLine("};");
 
-                        methodSource.Append("return ");
-                        methodSource.Append(internalTargetName);
-                        methodSource.Append(";};");
                         break;
-                    case OwnedCreationLocalFunctionStatement(var source, var isAsyncLocalFunction, var localFunctionName, var internalOperations, var internalTargetName):
+                    case OwnedCreationLocalFunctionStatement(var source, var isAsyncLocalFunction, var localFunctionName, var internalOps, var internalTargetName):
                         if (isAsyncLocalFunction)
                             methodSource.Append("async ");
 
@@ -570,33 +623,33 @@ namespace StrongInject.Generator
 
                         methodSource.Append(' ');
                         methodSource.Append(localFunctionName);
-                        methodSource.Append("(){");
+                        methodSource.AppendLine("()");
+                        methodSource.AppendLine("{");
+                            CreateVariables(
+                                internalOps,
+                                methodSource,
+                                instanceSourcesScope);
 
-                        CreateVariables(
-                            internalOperations,
-                            methodSource,
-                            instanceSourcesScope);
-
-                        methodSource.Append("return new ");
-                        methodSource.Append(source.OwnedType.FullName());
-                        methodSource.Append('(');
-                        methodSource.Append(internalTargetName);
-                        methodSource.Append(',');
-                        if (source.IsAsync)
-                            methodSource.Append("async");
-                        methodSource.Append("()=>{");
-
-                        EmitDisposals(methodSource, internalOperations);
-
-                        methodSource.Append("});}");
+                            methodSource.Append("return new ");
+                            methodSource.Append(source.OwnedType.FullName());
+                            methodSource.Append('(');
+                            methodSource.Append(internalTargetName);
+                            methodSource.Append(", ");
+                            if (source.IsAsync)
+                                methodSource.Append("async ");
+                            methodSource.AppendLine("() =>");
+                            methodSource.AppendLine("{");
+                                EmitDisposals(methodSource, internalOps);
+                            methodSource.AppendLine("});");
+                        methodSource.AppendLine("}");
                         break;
                     case OwnedCreationStatement(var variableName, _, var isAsyncLocalFunction, var localFunctionName):
                         methodSource.Append(variableName);
-                        methodSource.Append('=');
+                        methodSource.Append(" = ");
                         if (isAsyncLocalFunction)
                             methodSource.Append("await ");
                         methodSource.Append(localFunctionName);
-                        methodSource.Append("();");
+                        methodSource.AppendLine("();");
                         break;
                     case DependencyCreationStatement(var variableName, var source, var dependencies):
 
@@ -605,13 +658,13 @@ namespace StrongInject.Generator
                             case FactorySource { IsAsync: var isAsync }:
                                 var factoryName = dependencies[0];
                                 methodSource.Append(variableName);
-                                methodSource.Append('=');
-                                methodSource.Append(factoryName);
+                                methodSource.Append(" = ");
+                                methodSource.Append(factoryName!);
                                 methodSource.Append('.');
                                 methodSource.Append(isAsync
                                     ? "CreateAsync"
                                     : "Create");
-                                methodSource.Append("();");
+                                methodSource.AppendLine("();");
                                 break;
                             case Registration { Constructor: var constructor }:
                                 {
@@ -626,20 +679,20 @@ namespace StrongInject.Generator
                             case ArraySource { ArrayType: var arrayType }:
                                 {
                                     methodSource.Append(variableName);
-                                    methodSource.Append("=new ");
-                                    methodSource.Append(arrayType.FullName());
-                                    methodSource.Append('{');
-
+                                    methodSource.Append(" = new ");
+                                    methodSource.AppendLine(arrayType.FullName());
+                                    methodSource.AppendLine('{');
                                     var elementType = arrayType.ElementType.FullName();
                                     foreach (var dependency in dependencies)
                                     {
                                         methodSource.Append('(');
                                         methodSource.Append(elementType);
                                         methodSource.Append(')');
-                                        methodSource.Append(dependency);
-                                        methodSource.Append(',');
+                                        methodSource.Append(dependency!);
+                                        methodSource.AppendLine(',');
                                     }
-                                    methodSource.Append("};");
+
+                                    methodSource.AppendLine("};");
                                     break;
                                 }
                             case WrappedDecoratorInstanceSource { Decorator: var decoratorSource }:
@@ -659,19 +712,19 @@ namespace StrongInject.Generator
                             case InstanceFieldOrProperty { FieldOrPropertySymbol: var fieldOrPropertySymbol }:
                                 {
                                     methodSource.Append(variableName);
-                                    methodSource.Append("=");
+                                    methodSource.Append(" = ");
                                     GenerateMemberAccess(methodSource, fieldOrPropertySymbol);
-                                    methodSource.Append(";");
+                                    methodSource.AppendLine(";");
                                     break;
                                 }
                             case ForwardedInstanceSource { AsType: var asType }:
                                 {
                                     methodSource.Append(variableName);
-                                    methodSource.Append("=(");
+                                    methodSource.Append(" = (");
                                     methodSource.Append(asType.FullName());
                                     methodSource.Append(")");
-                                    methodSource.Append(dependencies[0]);
-                                    methodSource.Append(";");
+                                    methodSource.Append(dependencies[0]!);
+                                    methodSource.AppendLine(";");
                                     break;
                                 }
                             default:
@@ -689,19 +742,19 @@ namespace StrongInject.Generator
                         HasAwaitCompletedVariableName: var hasAwaitCompletedVariableName
                     }:
                         methodSource.Append(hasAwaitStartedVariableName);
-                        methodSource.Append("=true;");
+                        methodSource.AppendLine(" = true;");
                         if (variableName is not null)
                         {
                             methodSource.Append(variableName);
-                            methodSource.Append('=');
+                            methodSource.Append(" = ");
                         }
                         methodSource.Append("await ");
                         methodSource.Append(variableToAwaitName);
-                        methodSource.Append(";");
+                        methodSource.AppendLine(";");
                         if (operation.CanDisposeAwaitStatementResultLocally())
                         {
                             methodSource.Append(hasAwaitCompletedVariableName);
-                            methodSource.Append("=true;");
+                            methodSource.AppendLine(" = true;");
                         }
                         break;
                     default:
@@ -711,7 +764,7 @@ namespace StrongInject.Generator
                 void GenerateMethodCall(string variableName, IMethodSymbol method, ImmutableArray<string?> dependencies)
                 {
                     methodSource.Append(variableName);
-                    methodSource.Append('=');
+                    methodSource.Append(" = ");
                     if (method.MethodKind == MethodKind.Constructor)
                     {
                         methodSource.Append("new ");
@@ -727,7 +780,7 @@ namespace StrongInject.Generator
                             {
                                 var typeArgument = method.TypeArguments[i];
                                 if (i != 0)
-                                    methodSource.Append(',');
+                                    methodSource.Append(", ");
                                 methodSource.Append(typeArgument.FullName());
                             }
                             methodSource.Append('>');
@@ -743,25 +796,25 @@ namespace StrongInject.Generator
                         {
                             if (!isFirst)
                             {
-                                methodSource.Append(',');
+                                methodSource.Append(", ");
                             }
                             isFirst = false;
                             methodSource.Append(parameter.Name);
-                            methodSource.Append(':');
+                            methodSource.Append(": ");
                             methodSource.Append(name);
                         }
                     }
-                    methodSource.Append(");");
+                    methodSource.AppendLine(");");
                 }
             }
         }
 
-        private void GenerateInitializeCall(StringBuilder methodSource, string? variableName, string variableToInitializeName, bool isAsync)
+        private void GenerateInitializeCall(AutoIndenter methodSource, string? variableName, string variableToInitializeName, bool isAsync)
         {
             if (isAsync)
             {
-                methodSource.Append(variableName);
-                methodSource.Append("=((");
+                methodSource.Append(variableName!);
+                methodSource.Append(" = ((");
                 methodSource.Append(WellKnownTypes.IREQUIRES_ASYNC_INITIALIZATION_EMIT_NAME);
             }
             else
@@ -775,10 +828,10 @@ namespace StrongInject.Generator
             methodSource.Append(isAsync
                 ? "InitializeAsync"
                 : "Initialize");
-            methodSource.Append("();");
+            methodSource.AppendLine("();");
         }
 
-        private static void GenerateMemberAccess(StringBuilder methodSource, ISymbol member)
+        private static void GenerateMemberAccess(AutoIndenter methodSource, ISymbol member)
         {
             if (member.IsStatic)
             {
@@ -793,7 +846,7 @@ namespace StrongInject.Generator
             methodSource.Append(member.Name);
         }
 
-        private void EmitDisposals(StringBuilder methodSource, ImmutableArray<Operation> operations)
+        private void EmitDisposals(AutoIndenter methodSource, ImmutableArray<Operation> operations)
         {
             for (int i = operations.Length - 1; i >= 0; i--)
             {
@@ -801,7 +854,7 @@ namespace StrongInject.Generator
             }
         }
 
-        private void EmitDisposal(StringBuilder methodSource, Operation operation)
+        private void EmitDisposal(AutoIndenter methodSource, Operation operation)
         {
             switch (operation.Disposal)
             {
@@ -813,7 +866,8 @@ namespace StrongInject.Generator
                     {
                         methodSource.Append("foreach (var disposeAction in ");
                         methodSource.Append(disposeActionsName);
-                        methodSource.Append(isAsync ? ")await disposeAction();" : ")disposeAction();");
+                        methodSource.AppendLine(")");
+                        methodSource.AppendLine(isAsync ? "await disposeAction();" : "disposeAction();");
                         break;
                     }
                 case Disposal.FactoryDisposal { VariableName: var variableName, FactoryName: var factoryName, IsAsync: var isAsync }:
@@ -828,7 +882,7 @@ namespace StrongInject.Generator
                         : "Release");
                     methodSource.Append('(');
                     methodSource.Append(variableName);
-                    methodSource.Append(");");
+                    methodSource.AppendLine(");");
                     break;
                 case Disposal.DisposalHelpers { VariableName: var variableName, IsAsync: var isAsync }:
                     if (isAsync)
@@ -842,7 +896,7 @@ namespace StrongInject.Generator
                         : "Dispose");
                     methodSource.Append('(');
                     methodSource.Append(variableName);
-                    methodSource.Append(");");
+                    methodSource.AppendLine(");");
                     break;
                 case Disposal.IDisposable { VariableName: var variableName, IsAsync: var isAsync }:
                     if (isAsync)
@@ -852,7 +906,7 @@ namespace StrongInject.Generator
                         methodSource.Append(')');
                         methodSource.Append(variableName);
                         methodSource.Append(")." + nameof(IAsyncDisposable.DisposeAsync) + '(');
-                        methodSource.Append(");");
+                        methodSource.AppendLine(");");
                     }
                     else
                     {
@@ -861,7 +915,7 @@ namespace StrongInject.Generator
                         methodSource.Append(')');
                         methodSource.Append(variableName);
                         methodSource.Append(")." + nameof(IDisposable.Dispose) + '(');
-                        methodSource.Append(");");
+                        methodSource.AppendLine(");");
                     }
                     break;
                 case null:
@@ -871,60 +925,86 @@ namespace StrongInject.Generator
             }
         }
 
-        private void GenerateDisposeMethods(bool anySync, bool anyAsync, StringBuilder file)
+        private void GenerateDisposeMethods(bool anySync, bool anyAsync, AutoIndenter file)
         {
-            file.Append(@"private int _disposed = 0; private bool Disposed => _disposed != 0;");
+            file.AppendLine(@"private int _disposed = 0;");
+            file.AppendLine(@"private bool Disposed => _disposed != 0;");
             var singleInstanceMethodsDisposalOrderings = _singleInstanceMethods.Count == 0
                 ? Enumerable.Empty<(string name, string disposeFieldName, string lockName)>()
                 : PartialOrderingOfSingleInstanceDependenciesVisitor.GetPartialOrdering(_containerScope, _singleInstanceMethods.Keys.ToHashSet(), _cancellationToken).Select(x => _singleInstanceMethods[x]);
 
             if (anyAsync)
             {
-                file.Append(@"public async global::System.Threading.Tasks.ValueTask DisposeAsync() {
-var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
-if (disposed != 0) return;");
+                file.AppendLine(@"public async global::System.Threading.Tasks.ValueTask DisposeAsync()");
+                file.AppendLine(@"{");
+                file.AppendLine(@"var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);");
+                file.AppendLine(@"if (disposed != 0)");
+                file.AppendLineIndented(@"return;");
                 foreach (var (_, disposeFieldName, lockName) in singleInstanceMethodsDisposalOrderings)
                 {
                     file.Append(@"await this.");
                     file.Append(lockName);
-                    file.Append(".WaitAsync();try{await(this.");
+                    file.AppendLine(".WaitAsync();");
+                    file.AppendLine("try");
+                    file.AppendLine("{");
+                    file.Append("await (this.");
                     file.Append(disposeFieldName);
-                    file.Append("?.Invoke()??default);}finally{this.");
+                    file.AppendLine("?.Invoke() ?? default);");
+
+                    file.AppendLine("}");
+                    file.AppendLine("finally");
+                    file.AppendLine("{");
+                    file.Append("this.");
                     file.Append(lockName);
-                    file.Append(@".Release();}");
+                    file.AppendLine(".Release();");
+                    file.AppendLine("}");
                 }
-                file.Append('}');
+
+                file.AppendLine("}");
                 if (anySync)
                 {
-                    file.Append(@"void global::System.IDisposable.Dispose() { throw new global::StrongInject.StrongInjectException(""This container requires async disposal""); }");
+                    file.AppendLine(@"void global::System.IDisposable.Dispose()");
+                    file.AppendLine(@"{");
+                    file.AppendLine(@"throw new global::StrongInject.StrongInjectException(""This container requires async disposal"");");
+                    file.AppendLine(@"}");
                 }
             }
             else
             {
-                file.Append(@"public void Dispose() {
-var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);
-if (disposed != 0) return;");
+                file.AppendLine("public void Dispose()");
+                file.AppendLine(@"{");
+                file.AppendLine("var disposed = global::System.Threading.Interlocked.Exchange(ref this._disposed, 1);");
+                file.AppendLine("if (disposed != 0)");
+                file.AppendLineIndented("return;");
                 foreach (var (_, disposeFieldName, lockName) in singleInstanceMethodsDisposalOrderings)
                 {
                     file.Append(@"this.");
                     file.Append(lockName);
-                    file.Append(".Wait();try{this.");
+                    file.AppendLine(".Wait();");
+                    file.AppendLine("try");
+                    file.AppendLine("{");
+                    file.Append("this.");
                     file.Append(disposeFieldName);
-                    file.Append("?.Invoke();}finally{this.");
+                    file.AppendLine("?.Invoke();");
+                    file.AppendLine("}");
+                    file.AppendLine("finally");
+                    file.AppendLine("{");
+                    file.Append("this.");
                     file.Append(lockName);
-                    file.Append(@".Release();}");
+                    file.AppendLine(".Release();");
+                    file.AppendLine("}");
                 }
-                file.Append('}');
+                file.AppendLine('}');
             }
         }
 
-        void ThrowObjectDisposedException(StringBuilder methodSource)
+        void ThrowObjectDisposedException(AutoIndenter methodSource)
         {
-            methodSource.Append("throw new ");
+            methodSource.AppendIndented("throw new ");
             methodSource.Append(WellKnownTypes.OBJECT_DISPOSED_EXCEPTION_EMIT_NAME);
             methodSource.Append("(nameof(");
             methodSource.Append(_container.NameWithTypeParameters());
-            methodSource.Append("));");
+            methodSource.AppendLine("));");
         }
     }
 }
