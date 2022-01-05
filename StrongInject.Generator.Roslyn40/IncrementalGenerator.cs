@@ -93,10 +93,7 @@ namespace StrongInject.Generator
                     reportDiagnostic,
                     cancellationToken);
 
-                var source = CSharpSyntaxTree.ParseText(SourceText.From(file, Encoding.UTF8)).GetRoot()
-                    .NormalizeWhitespace().SyntaxTree.GetText();
-                
-                context.AddSource(GenerateNameHint(type), source);
+                context.AddSource(GenerateNameHint(type), file);
             });
         }
 

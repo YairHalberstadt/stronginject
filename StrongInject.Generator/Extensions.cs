@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -78,6 +79,27 @@ namespace StrongInject.Generator
                 {
                     yield return result;
                 }
+            }
+        }
+
+        public static IndentScope Indented(this IndentedTextWriter textWriter)
+        {
+            textWriter.Indent++;
+            return new IndentScope(textWriter);
+        }
+
+        public readonly struct IndentScope : IDisposable
+        {
+            private readonly IndentedTextWriter _textWriter;
+
+            public IndentScope(IndentedTextWriter textWriter)
+            {
+                _textWriter = textWriter;
+            }
+
+            public void Dispose()
+            {
+                _textWriter.Indent--;
             }
         }
     }

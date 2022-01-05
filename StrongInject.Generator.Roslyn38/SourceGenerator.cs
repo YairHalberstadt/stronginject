@@ -70,12 +70,10 @@ namespace StrongInject.Generator
                             wellKnownTypes,
                             reportDiagnostic,
                             cancellationToken);
-
-                        var source = CSharpSyntaxTree.ParseText(SourceText.From(file, Encoding.UTF8)).GetRoot()
-                            .NormalizeWhitespace().SyntaxTree.GetText();
+                        
                         context.AddSource(
                             GenerateNameHint(module.type),
-                            source);
+                            file);
                     }
                     else
                     {
