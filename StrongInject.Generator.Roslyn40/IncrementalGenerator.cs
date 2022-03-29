@@ -1,12 +1,7 @@
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -17,39 +12,86 @@ namespace StrongInject.Generator
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            var trees = context.SyntaxProvider.CreateSyntaxProvider(
-                (node, _) => node is ClassDeclarationSyntax,
-                (ctx, cancellationToken) =>
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (ctx.SemanticModel.GetDeclaredSymbol(ctx.Node, cancellationToken) is not INamedTypeSymbol type)
+            var trees = context.SyntaxProvider.CreateSyntaxProvider((node, _) =>
+            {
+                if (node is not ClassDeclarationSyntax
                     {
-                        return default;
-                    }
+                        BaseList: var baseList,
+                        AttributeLists: var attributes,
+                        Members: var members,
+                    })
+                {
+                    return false;
+                }
 
-                    var isContainer = type.AllInterfaces.Any(x => WellKnownTypes.IsContainerOrAsyncContainer(x));
-
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (!isContainer
-                        && !type.GetAttributes().Any(x => WellKnownTypes.IsClassAttribute(x.AttributeClass))
-                        && !type.GetMembers().Any(x =>
+                if (baseList is not null)
+                {
+                    foreach (var type in baseList.Types)
+                    {
+                        if (type.Type is NameSyntax name && WellKnownTypes.IsContainerCandidate(name))
                         {
-                            if (x is IFieldSymbol or IPropertySymbol && x.GetAttributes().Any(x => WellKnownTypes.IsInstanceAttribute(x.AttributeClass)))
+                            return true;
+                        }
+                    }
+                }
+
+                foreach (var attributeList in attributes)
+                {
+                    foreach (var attribute in attributeList.Attributes)
+                    {
+                        if (WellKnownTypes.IsClassAttributeCandidate(attribute.Name))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                foreach (var member in members)
+                {
+                    foreach (var attributeList in member.AttributeLists)
+                    {
+                        foreach (var attribute in attributeList.Attributes)
+                        {
+                            if (WellKnownTypes.IsMemberAttributeCandidate(attribute.Name))
                             {
                                 return true;
                             }
-
-                            return x is IMethodSymbol && x.GetAttributes().Any(x => WellKnownTypes.IsMethodAttribute(x.AttributeClass));
-                        }))
-                    {
-                        return default;
+                        }
                     }
-                    
-                    return (isContainer, ctx.Node);
-                });
+                }
+
+                return false;
+            }, (ctx, cancellationToken) =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (ctx.SemanticModel.GetDeclaredSymbol(ctx.Node, cancellationToken) is not INamedTypeSymbol type)
+                {
+                    return default;
+                }
+
+                var isContainer = type.AllInterfaces.Any(x => WellKnownTypes.IsContainerOrAsyncContainer(x));
+
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!isContainer
+                    && !type.GetAttributes().Any(x => WellKnownTypes.IsClassAttribute(x.AttributeClass))
+                    && !type.GetMembers().Any(x =>
+                    {
+                        if (x is IFieldSymbol or IPropertySymbol && x.GetAttributes().Any(x => WellKnownTypes.IsInstanceAttribute(x.AttributeClass)))
+                        {
+                            return true;
+                        }
+
+                        return x is IMethodSymbol && x.GetAttributes().Any(x => WellKnownTypes.IsMethodAttribute(x.AttributeClass));
+                    }))
+                {
+                    return default;
+                }
+
+                return (isContainer, ctx.Node);
+            });
 
             var compilationWrapper = context.CompilationProvider.Select((x, _) => new CompilationWrapper(x));
-            
+
             context.RegisterSourceOutput(trees.Combine(compilationWrapper), (context, x) =>
             {
                 var (isContainer, node) = x.Left;
@@ -64,7 +106,7 @@ namespace StrongInject.Generator
                 {
                     throw new InvalidOperationException(node.ToString());
                 }
-                
+
                 if (!type.IsInternal() && !type.IsPublic())
                 {
                     reportDiagnostic(ModuleNotPublicOrInternal(

@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace StrongInject.Generator
 {
@@ -56,6 +55,27 @@ namespace StrongInject.Generator
         private const string IASYNC_DISPOSABLE_MD_NAME = "IAsyncDisposable";
         private const string TASK_1_MD_NAME = "Task`1";
         private const string VALUE_TASK_1_MD_NAME = "ValueTask`1";
+        
+        
+        private const string ICONTAINER_SOURCE_NAME = "IContainer";
+        private const string IASYNC_CONTAINER_SOURCE_NAME = "IAsyncContainer";
+        
+        private const string REGISTER_ATTRIBUTE_SOURCE_NAME = "RegisterAttribute";
+        private const string REGISTER_ATTRIBUTE_SHORT_SOURCE_NAME = "Register";
+        private const string REGISTER_MODULE_SOURCE_NAME = "RegisterModuleAttribute";
+        private const string REGISTER_MODULE_SHORT_SOURCE_NAME = "RegisterModule";
+        private const string REGISTER_FACTORY_ATTRIBUTE_SOURCE_NAME = "RegisterFactoryAttribute";
+        private const string REGISTER_FACTORY_ATTRIBUTE_SHORT_SOURCE_NAME = "RegisterFactory";
+        private const string REGISTER_DECORATOR_ATTRIBUTE_SOURCE_NAME = "RegisterDecoratorAttribute";
+        private const string REGISTER_DECORATOR_ATTRIBUTE_SHORT_SOURCE_NAME = "RegisterDecorator";
+        private const string FACTORY_ATTRIBUTE_SOURCE_NAME = "FactoryAttribute";
+        private const string FACTORY_ATTRIBUTE_SHORT_SOURCE_NAME = "Factory";
+        private const string DECORATOR_FACTORY_ATTRIBUTE_SOURCE_NAME = "DecoratorFactoryAttribute";
+        private const string DECORATOR_FACTORY_ATTRIBUTE_SHORT_SOURCE_NAME = "DecoratorFactory";
+        private const string FACTORY_OF_ATTRIBUTE_SOURCE_NAME = "FactoryOfAttribute";
+        private const string FACTORY_OF_ATTRIBUTE_SHORT_SOURCE_NAME = "FactoryOf";
+        private const string INSTANCE_ATTRIBUTE_SOURCE_NAME = "InstanceAttribute";
+        private const string INSTANCE_ATTRIBUTE_SHORT_SOURCE_NAME = "Instance";
         
         
         public static bool TryCreate(Compilation compilation, Action<Diagnostic> reportDiagnostic, out WellKnownTypes wellKnownTypes)
@@ -367,6 +387,65 @@ namespace StrongInject.Generator
                 return false;
 
             return type?.OriginalDefinition.MetadataName is TASK_1_MD_NAME or VALUE_TASK_1_MD_NAME;
+        }
+
+        public static bool IsContainerCandidate(NameSyntax name)
+        {
+            var (identifier, arity) = GetIdentifier(name);
+
+            return arity == 1 && identifier is ICONTAINER_SOURCE_NAME or IASYNC_CONTAINER_SOURCE_NAME;
+        }
+        
+        public static bool IsClassAttributeCandidate(NameSyntax name)
+        {
+            var (identifier, _) = GetIdentifier(name);
+            switch (identifier)
+            {
+                case REGISTER_ATTRIBUTE_SOURCE_NAME:
+                case REGISTER_ATTRIBUTE_SHORT_SOURCE_NAME:
+                case REGISTER_DECORATOR_ATTRIBUTE_SOURCE_NAME:
+                case REGISTER_DECORATOR_ATTRIBUTE_SHORT_SOURCE_NAME:
+                case REGISTER_FACTORY_ATTRIBUTE_SOURCE_NAME:
+                case REGISTER_FACTORY_ATTRIBUTE_SHORT_SOURCE_NAME:
+                case REGISTER_MODULE_SOURCE_NAME:
+                case REGISTER_MODULE_SHORT_SOURCE_NAME:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        
+        public static bool IsMemberAttributeCandidate(NameSyntax name)
+        {
+            var (identifier, _) = GetIdentifier(name);
+            
+            switch (identifier)
+            {
+                case FACTORY_ATTRIBUTE_SOURCE_NAME:
+                case FACTORY_ATTRIBUTE_SHORT_SOURCE_NAME:
+                case FACTORY_OF_ATTRIBUTE_SOURCE_NAME:
+                case FACTORY_OF_ATTRIBUTE_SHORT_SOURCE_NAME:
+                case DECORATOR_FACTORY_ATTRIBUTE_SOURCE_NAME:
+                case DECORATOR_FACTORY_ATTRIBUTE_SHORT_SOURCE_NAME:
+                case INSTANCE_ATTRIBUTE_SOURCE_NAME:
+                case INSTANCE_ATTRIBUTE_SHORT_SOURCE_NAME:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static (string identifier, int arity) GetIdentifier(NameSyntax name)
+        {
+            var simpleName = name switch
+            {
+                SimpleNameSyntax s => s,
+                AliasQualifiedNameSyntax { Name: var s } => s,
+                QualifiedNameSyntax { Right: var s } => s,
+                var other => throw new NotImplementedException(other.GetType().ToString())
+            };
+
+            return (simpleName.Identifier.Text, simpleName.Arity);
         }
     }
 }
