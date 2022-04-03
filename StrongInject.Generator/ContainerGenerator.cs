@@ -36,6 +36,7 @@ namespace StrongInject.Generator
         private readonly bool _implementsSyncContainer;
         private readonly bool _implementsAsyncContainer;
         private readonly Location _containerDeclarationLocation;
+        private readonly RequiresAsyncChecker _requiresAsyncChecker;
 
         private ContainerGenerator(
             INamedTypeSymbol container,
@@ -49,6 +50,7 @@ namespace StrongInject.Generator
             _reportDiagnostic = reportDiagnostic;
             _cancellationToken = cancellationToken;
             _containerScope = containerScope;
+            _requiresAsyncChecker = new RequiresAsyncChecker(_containerScope, _cancellationToken);
 
             _containerInterfaces = _container.AllInterfaces
                 .Where(x=> WellKnownTypes.IsContainerOrAsyncContainer(x))
@@ -157,6 +159,7 @@ namespace StrongInject.Generator
                     ThrowObjectDisposedException(variableCreationSource);
 
                     var ops = LoweringVisitor.LowerResolution(
+                        requiresAsyncChecker: _requiresAsyncChecker,
                         target: _containerScope[target],
                         containerScope: _containerScope,
                         disposalLowerer: CreateDisposalLowerer(new DisposalStyle(isAsync, DisposalStyleDeterminant.Container)),
@@ -314,6 +317,7 @@ namespace StrongInject.Generator
                 ThrowObjectDisposedException(methodSource);
 
                 var ops = LoweringVisitor.LowerResolution(
+                    requiresAsyncChecker: _requiresAsyncChecker,
                     target: instanceSource,
                     containerScope: _containerScope,
                     disposalLowerer: CreateDisposalLowerer(new DisposalStyle(_implementsAsyncContainer, DisposalStyleDeterminant.Container)),

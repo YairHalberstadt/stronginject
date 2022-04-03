@@ -8,6 +8,7 @@ namespace StrongInject.Generator.Visitors
 {
     internal class LoweringVisitor : BaseVisitor<LoweringVisitor.State>
     {
+        private readonly RequiresAsyncChecker _requiresAsyncChecker;
         private readonly Dictionary<InstanceSource, (Operation operation, string name)> _existingVariables = new();
         private readonly Dictionary<DelegateSource, string> _currentlyVisitingDelegates;
         private int _variableCount = 0;
@@ -20,6 +21,7 @@ namespace StrongInject.Generator.Visitors
         private static readonly List<Operation> _emptyList = new();
 
         private LoweringVisitor(
+            RequiresAsyncChecker requiresAsyncChecker,
             InstanceSource target,
             InstanceSourcesScope containerScope,
             DisposalLowerer disposalLowerer,
@@ -36,6 +38,8 @@ namespace StrongInject.Generator.Visitors
                     _existingVariables.Add(source, value);
                 }
             }
+
+            _requiresAsyncChecker = requiresAsyncChecker;
             _target = target;
             _containerScope = containerScope;
             _disposalLowerer = disposalLowerer;
@@ -45,6 +49,7 @@ namespace StrongInject.Generator.Visitors
         }
 
         public static ImmutableArray<Operation> LowerResolution(
+            RequiresAsyncChecker requiresAsyncChecker,
             InstanceSource target,
             InstanceSourcesScope containerScope,
             DisposalLowerer disposalLowerer,
@@ -52,6 +57,7 @@ namespace StrongInject.Generator.Visitors
             bool isAsyncContext,
             out string targetName,
             CancellationToken cancellationToken) => LowerResolution(
+                requiresAsyncChecker,
                 target,
                 containerScope,
                 containerScope,
@@ -64,6 +70,7 @@ namespace StrongInject.Generator.Visitors
                 cancellationToken);
 
         private static ImmutableArray<Operation> LowerResolution(
+            RequiresAsyncChecker requiresAsyncChecker,
             InstanceSource target,
             InstanceSourcesScope currentScope,
             InstanceSourcesScope containerScope,
@@ -76,6 +83,7 @@ namespace StrongInject.Generator.Visitors
             CancellationToken cancellationToken)
         {
             var visitor = new LoweringVisitor(
+                requiresAsyncChecker,
                 target,
                 containerScope,
                 disposalLowerer,
@@ -112,7 +120,7 @@ namespace StrongInject.Generator.Visitors
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
             {
                 name = GenerateName(source, state);
-                var isAsync = RequiresAsyncVisitor.RequiresAsync(source, _containerScope, _cancellationToken);
+                var isAsync = _requiresAsyncChecker.RequiresAsync(source);
                 var statement = new SingleInstanceReferenceStatement(name, source, isAsync);
                 Operation targetOperation;
                 if (isAsync)
@@ -169,6 +177,7 @@ namespace StrongInject.Generator.Visitors
             {
                 _currentlyVisitingDelegates.Add(delegateSource, state.Name);
                 var order = LowerResolution(
+                    requiresAsyncChecker: _requiresAsyncChecker,
                     target: GetInstanceSource(delegateSource.ReturnType, state, null)!,
                     currentScope: state.InstanceSourcesScope,
                     containerScope: _containerScope,
@@ -194,6 +203,7 @@ namespace StrongInject.Generator.Visitors
             {
                 var internalTarget = GetInstanceSource(ownedSource.OwnedValueType, state, null)!;
                 var internalOperations = LowerResolution(
+                    requiresAsyncChecker: _requiresAsyncChecker,
                     internalTarget,
                     currentScope: state.InstanceSourcesScope,
                     containerScope: _containerScope,
@@ -295,7 +305,7 @@ namespace StrongInject.Generator.Visitors
             if (_isAsyncContext && !delegateSource.IsAsync)
             {
                 state.InstanceSourcesScope = state.PreviousScope!;
-                foreach (var dependency in SingleInstanceVariablesToCreateEarlyVisitor.CalculateVariables(delegateSource, state.InstanceSourcesScope, _containerScope, _cancellationToken))
+                foreach (var dependency in SingleInstanceVariablesToCreateEarlyVisitor.CalculateVariables(_requiresAsyncChecker, delegateSource, state.InstanceSourcesScope, _containerScope, _cancellationToken))
                 {
                     VisitCore(dependency, state);
                 }
