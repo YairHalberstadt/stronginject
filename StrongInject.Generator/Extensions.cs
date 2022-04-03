@@ -37,6 +37,15 @@ namespace StrongInject.Generator
             return value;
         }
         
+        public static TValue GetOrCreate<TKey, TState, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TState state, Func<TKey, TState, TValue> create)
+        {
+            if (!dic.TryGetValue(key, out var value))
+            {
+                dic[key] = value = create(key, state);
+            }
+            return value;
+        }
+        
         public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value, out TValue? existingValue)
         {
             if (!dic.TryGetValue(key, out existingValue))

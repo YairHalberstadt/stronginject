@@ -11,15 +11,17 @@ namespace StrongInject.Generator.Visitors
     /// </summary>
     internal class SingleInstanceVariablesToCreateEarlyVisitor : SimpleVisitor
     {
+        private readonly RequiresAsyncChecker _requiresAsyncChecker;
         private readonly List<InstanceSource> _singleInstanceVariablesToCreateEarly = new();
 
-        private SingleInstanceVariablesToCreateEarlyVisitor(InstanceSourcesScope containerScope, CancellationToken cancellationToken) : base(containerScope, cancellationToken)
+        private SingleInstanceVariablesToCreateEarlyVisitor(RequiresAsyncChecker requiresAsyncChecker, InstanceSourcesScope containerScope, CancellationToken cancellationToken) : base(containerScope, cancellationToken)
         {
+            _requiresAsyncChecker = requiresAsyncChecker;
         }
         
-        public static List<InstanceSource> CalculateVariables(InstanceSource source, InstanceSourcesScope currentScope, InstanceSourcesScope containerScope, CancellationToken cancellationToken)
+        public static List<InstanceSource> CalculateVariables(RequiresAsyncChecker requiresAsyncChecker, InstanceSource source, InstanceSourcesScope currentScope, InstanceSourcesScope containerScope, CancellationToken cancellationToken)
         {
-            var visitor = new SingleInstanceVariablesToCreateEarlyVisitor(containerScope, cancellationToken);
+            var visitor = new SingleInstanceVariablesToCreateEarlyVisitor(requiresAsyncChecker, containerScope, cancellationToken);
             visitor.VisitCore(source, new State(currentScope));
             return visitor._singleInstanceVariablesToCreateEarly;
         }
@@ -32,7 +34,7 @@ namespace StrongInject.Generator.Visitors
                 return false;
             if (source.Scope == Scope.SingleInstance)
             {
-                if (RequiresAsyncVisitor.RequiresAsync(source, _containerScope, _cancellationToken))
+                if (_requiresAsyncChecker.RequiresAsync(source))
                 {
                     _singleInstanceVariablesToCreateEarly.Add(source);
                 }
