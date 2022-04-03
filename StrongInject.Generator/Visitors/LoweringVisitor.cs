@@ -86,7 +86,7 @@ namespace StrongInject.Generator.Visitors
                 cancellationToken);
             var state = new State { InstanceSourcesScope = currentScope, Dependencies = new(), OperationDependencies = new() };
             visitor.VisitCore(target, state);
-            targetName = state.Dependencies[0].name!;
+            targetName = state.Dependencies[0]!;
             return isAsyncContext ? Order(visitor._order) : visitor._order.ToImmutableArray();
         }
 
@@ -94,18 +94,19 @@ namespace StrongInject.Generator.Visitors
         {
             if (source is null)
             {
-                state.Dependencies.Add((null, null));
+                // Add an entry to mark an optional dependency that isn't provided.
+                state.Dependencies.Add(null);
                 return false;
             }
             if (source.Scope is not Scope.InstancePerDependency && _existingVariables.TryGetValue(source, out var value))
             {
-                state.Dependencies.Add((value.name, source));
+                state.Dependencies.Add(value.name);
                 state.OperationDependencies.Add(value.operation);
                 return false;
             }
             if (source is DelegateSource ds && _currentlyVisitingDelegates.TryGetValue(ds, out var name))
             {
-                state.Dependencies.Add((name, source));
+                state.Dependencies.Add(name);
                 return false;
             }
             if (source is { Scope: Scope.SingleInstance } and not (InstanceFieldOrProperty or ForwardedInstanceSource) && !(ReferenceEquals(_target, source) && _isSingleInstanceCreation))
@@ -130,13 +131,13 @@ namespace StrongInject.Generator.Visitors
                     _order.Add(targetOperation);
                 }
                 _existingVariables.Add(source, (targetOperation, name));
-                state.Dependencies.Add((name, source));
+                state.Dependencies.Add(name);
                 state.OperationDependencies.Add(targetOperation);
                 return false;
             }
             if (source is DelegateParameter { Name: var variableName })
             {
-                state.Dependencies.Add((variableName, source));
+                state.Dependencies.Add(variableName);
                 return false;
             }
             return true;
@@ -150,7 +151,7 @@ namespace StrongInject.Generator.Visitors
         protected override void UpdateState(InstanceSource source, ref State state)
         {
             state.Name = GenerateName(source, state);
-            state.Dependencies.Add((state.Name, source));
+            state.Dependencies.Add(state.Name);
             state.Dependencies = new();
             state.OperationDependencies = new();
             base.UpdateState(source, ref state);
@@ -235,7 +236,7 @@ namespace StrongInject.Generator.Visitors
                         new DependencyCreationStatement(
                             state.Name,
                             source,
-                            state.Dependencies.Select(x => x.name).ToImmutableArray()),
+                            state.Dependencies.ToImmutableArray()),
                         state.Name,
                         state.OperationDependencies);
                     _order.Add(operation);
@@ -264,7 +265,7 @@ namespace StrongInject.Generator.Visitors
                         new DependencyCreationStatement(
                             taskVariableName,
                             source,
-                            state.Dependencies.Select(x => x.name).ToImmutableArray()), state.Name, state.OperationDependencies, awaitStatement);
+                            state.Dependencies.ToImmutableArray()), state.Name, state.OperationDependencies, awaitStatement);
                     _order.Add(operation);
                     targetOperation = CreateOperation(awaitStatement, state.Name, new() { operation });
                     _order.Add(targetOperation);
@@ -275,7 +276,7 @@ namespace StrongInject.Generator.Visitors
                         new DependencyCreationStatement(
                             state.Name,
                             source,
-                            state.Dependencies.Select(x => x.name).ToImmutableArray()),
+                            state.Dependencies.ToImmutableArray()),
                         state.Name,
                         state.OperationDependencies);
                     _order.Add(targetOperation);
@@ -330,7 +331,7 @@ namespace StrongInject.Generator.Visitors
                 }
             }
             public string Name { get; set; }
-            public List<(string? name, InstanceSource? source)> Dependencies { get; set; }
+            public List<string?> Dependencies { get; set; }
             public List<Operation> ParentOperationDependencies { get; private set; }
             public List<Operation> OperationDependencies
             {
