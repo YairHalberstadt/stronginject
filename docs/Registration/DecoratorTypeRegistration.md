@@ -12,7 +12,7 @@
 
 # Decorator Type Registration
 
-You can register a type as a decorator for it's base classes/interfaces. StrongInject will look for a suitable constructor to use to instantiate it.
+You can register a type as a decorator for its base classes/interfaces. StrongInject will look for a suitable constructor to use to instantiate it.
 
 To register a type as a decorator, add the `[RegisterDecorator]` attribute to a container or module.
 

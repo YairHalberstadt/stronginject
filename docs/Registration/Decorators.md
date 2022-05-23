@@ -12,9 +12,9 @@
 
 # Decorators
 
-A Decorator is different to other registrations, in that it does not provide an instance of a type, but rather wraps/modifies an *underlying* instance of a type, which is redolved in the normal manner.
+A Decorator is different to other registrations, in that it does not provide an instance of a type, but rather wraps/modifies an *underlying* instance of a type, which is resolved in the normal manner.
 
-If multiple decorators are registered for a type, all of them will be applied, by wrapping one decorator in another, onion style. The order in which decorators wrap each other is deterministic but an implmentation detail - you should not rely on this order.
+If multiple decorators are registered for a type, all of them will be applied, by wrapping one decorator in another, onion style. The order in which decorators wrap each other is deterministic but an implementation detail - you should not rely on this order.
 
 Decorators are not applied to delegate parameters, or to `[Instance]` fields and properties with Options.DoNotDecorate applied. They are applied to everything else.
 

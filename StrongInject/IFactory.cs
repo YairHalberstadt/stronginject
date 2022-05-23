@@ -5,7 +5,7 @@ namespace StrongInject
     /// <summary>
     /// A type implementing this interface can be registered as a factory for <typeparamref name="T"/>.
     /// It can be registered either via the <see cref="RegisterFactoryAttribute"/>,
-    /// or by marking a field/property with the <see cref="InstanceAttribute"/> and configuring it's <see cref="InstanceAttribute.Options"/>.
+    /// or by marking a field/property with the <see cref="InstanceAttribute"/> and configuring its <see cref="InstanceAttribute.Options"/>.
     /// 
     /// In general it's easier to use factory methods instead (methods marked with the <see cref="FactoryAttribute"/>.
     /// Only use this if you either need control over the lifetime of the factory,
@@ -28,7 +28,7 @@ namespace StrongInject
     /// <summary>
     /// A type implementing this interface can be registered as an async factory for <typeparamref name="T"/>.
     /// It can be registered either via the <see cref="RegisterFactoryAttribute"/>,
-    /// or by marking a field/property with the <see cref="InstanceAttribute"/> and configuring it's <see cref="InstanceAttribute.Options"/>.
+    /// or by marking a field/property with the <see cref="InstanceAttribute"/> and configuring its <see cref="InstanceAttribute.Options"/>.
     /// 
     /// In general it's easier to use factory methods instead (methods marked with the <see cref="FactoryAttribute"/>.
     /// Only use this if you either need control over the lifetime of the factory,

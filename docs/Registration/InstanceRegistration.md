@@ -38,7 +38,7 @@ In order for an instance field or property to be exported by a module it must be
 
 The registration can be modified using the `options` parameter. See the [documentation](https://github.com/YairHalberstadt/stronginject/wiki/Registration#options) for more details.
 
-This allows you to register the instance as more than just the type of the the field/property. In particular it is possible to register the instance as it's:
+This allows you to register the instance as more than just the type of the the field/property. In particular it is possible to register the instance as its:
 
 1. Base classes
 2. Interfaces
