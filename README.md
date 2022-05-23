@@ -543,7 +543,7 @@ You can't specify the scope of a decorator, as its scope is the same as that of 
 
 The decorator constructor must have exactly one parameter of the decorated type, but can have any other parameters as well so long as they are not of the decorated type.
 
-Instances provided by [delegate parameters](#delegate-support) are never decorated.
+Instances passed to [parameters of delegates](#delegate-support) are never decorated.
 
 You can also define decorator factory methods, and even generic decorator factory methods via the `[DecoratorFactoryAttribute]`:
 
