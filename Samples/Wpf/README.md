@@ -14,7 +14,7 @@ The WPF app is not built by the Debug/Release configurations as it can only be b
 
 WPF classically expects user controls and view models to have a parameterless constructor, and then use a service locator instead of DI to access needed services. This is rightly [considered an anti pattern](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
-Instead we instantiate a tree of view models using StrongInject. Each ViewModel accepts any child ViewModels directly in it's constructor, or via a `Func`. Every `ViewModel` exposes the child ViewModels as properties.
+Instead we instantiate a tree of view models using StrongInject. Each ViewModel accepts any child ViewModels directly in its constructor, or via a `Func`. Every `ViewModel` exposes the child ViewModels as properties.
 
 We resolve the `MainWindow` directly, and the `MainWindow` sets the `MainWindowViewModel` as its `DataContext` in its constructor.
 
