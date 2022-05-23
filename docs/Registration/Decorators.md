@@ -16,7 +16,7 @@ A Decorator is different to other registrations, in that it does not provide an 
 
 If multiple decorators are registered for a type, all of them will be applied, by wrapping one decorator in another, onion style. The order in which decorators wrap each other is deterministic but an implementation detail - you should not rely on this order.
 
-Decorators are not applied to delegate parameters, or to `[Instance]` fields and properties with Options.DoNotDecorate applied. They are applied to everything else.
+Decorators are not applied to parameters of delegates, or to `[Instance]` fields and properties with Options.DoNotDecorate applied. They are applied to everything else.
 
 ## Decorator Registration
 
